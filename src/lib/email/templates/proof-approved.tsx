@@ -3,25 +3,18 @@
  * Sent to admin when customer approves a proof
  */
 
-import {
-  Button,
-  Heading,
-  Hr,
-  Link,
-  Section,
-  Text,
-} from '@react-email/components';
-import * as React from 'react';
-import { EmailLayout } from './email-layout';
+import { Button, Heading, Hr, Link, Section, Text } from '@react-email/components'
+import * as React from 'react'
+import { EmailLayout } from './email-layout'
 
 interface ProofApprovedEmailProps {
-  orderNumber: string;
-  customerName: string;
-  customerEmail: string;
-  proofLabel: string;
-  customerMessage?: string;
-  orderUrl: string;
-  allProofsApproved: boolean;
+  orderNumber: string
+  customerName: string
+  customerEmail: string
+  proofLabel: string
+  customerMessage?: string
+  orderUrl: string
+  allProofsApproved: boolean
 }
 
 export const ProofApprovedEmail = ({
@@ -47,9 +40,7 @@ export const ProofApprovedEmail = ({
       <Section style={mainSection}>
         <Text style={greeting}>Production Team,</Text>
 
-        <Text style={paragraph}>
-          {customerName} has approved the following proof:
-        </Text>
+        <Text style={paragraph}>{customerName} has approved the following proof:</Text>
 
         {/* Proof Details */}
         <Section style={proofBox}>
@@ -61,7 +52,8 @@ export const ProofApprovedEmail = ({
           </Text>
           {customerMessage && (
             <Text style={customerMessageBox}>
-              <strong>Customer message:</strong><br />
+              <strong>Customer message:</strong>
+              <br />
               {customerMessage}
             </Text>
           )}
@@ -106,8 +98,8 @@ export const ProofApprovedEmail = ({
         </ul>
       </Section>
     </EmailLayout>
-  );
-};
+  )
+}
 
 // Styles
 const heroBannerSuccess = {
@@ -116,7 +108,7 @@ const heroBannerSuccess = {
   borderRadius: '8px',
   textAlign: 'center' as const,
   marginBottom: '24px',
-};
+}
 
 const heroBannerInfo = {
   backgroundColor: '#3b82f6',
@@ -124,52 +116,52 @@ const heroBannerInfo = {
   borderRadius: '8px',
   textAlign: 'center' as const,
   marginBottom: '24px',
-};
+}
 
 const heroHeading = {
   color: '#ffffff',
   fontSize: '28px',
   fontWeight: '700',
   margin: '0 0 8px',
-};
+}
 
 const heroSubtext = {
   color: '#ffffff',
   opacity: 0.9,
   fontSize: '18px',
   margin: '0',
-};
+}
 
 const mainSection = {
   padding: '0',
-};
+}
 
 const greeting = {
   fontSize: '16px',
   lineHeight: '24px',
   marginBottom: '16px',
   fontWeight: '600',
-};
+}
 
 const paragraph = {
   fontSize: '16px',
   lineHeight: '24px',
   color: '#374151',
   marginBottom: '24px',
-};
+}
 
 const proofBox = {
   backgroundColor: '#f3f4f6',
   padding: '20px',
   borderRadius: '8px',
   marginBottom: '24px',
-};
+}
 
 const proofLabel = {
   fontSize: '14px',
   margin: '0 0 8px',
   color: '#1f2937',
-};
+}
 
 const customerMessageBox = {
   fontSize: '14px',
@@ -178,7 +170,7 @@ const customerMessageBox = {
   backgroundColor: '#e0e7ff',
   padding: '12px',
   borderRadius: '6px',
-};
+}
 
 const successBox = {
   backgroundColor: '#d1fae5',
@@ -186,26 +178,26 @@ const successBox = {
   borderRadius: '8px',
   border: '2px solid #10b981',
   marginBottom: '24px',
-};
+}
 
 const successHeading = {
   fontSize: '16px',
   fontWeight: '700',
   margin: '0 0 12px',
   color: '#065f46',
-};
+}
 
 const successText = {
   fontSize: '14px',
   lineHeight: '20px',
   color: '#047857',
   margin: '0',
-};
+}
 
 const buttonContainer = {
   textAlign: 'center' as const,
   marginBottom: '32px',
-};
+}
 
 const primaryButton = {
   backgroundColor: '#1f2937',
@@ -217,12 +209,12 @@ const primaryButton = {
   textAlign: 'center' as const,
   display: 'inline-block',
   padding: '12px 32px',
-};
+}
 
 const divider = {
   borderColor: '#e5e7eb',
   margin: '32px 0',
-};
+}
 
 const footerNote = {
   fontSize: '14px',
@@ -230,7 +222,7 @@ const footerNote = {
   color: '#374151',
   marginBottom: '12px',
   fontWeight: '600',
-};
+}
 
 const actionList = {
   fontSize: '14px',
@@ -238,6 +230,6 @@ const actionList = {
   color: '#6b7280',
   paddingLeft: '20px',
   margin: '8px 0',
-};
+}
 
-export default ProofApprovedEmail;
+export default ProofApprovedEmail

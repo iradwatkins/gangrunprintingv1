@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-
     // Find most recent pending decision
     const pendingDecision = await prisma.sEOBrainDecision.findFirst({
       where: { status: 'PENDING' },
@@ -47,7 +46,6 @@ export async function POST(request: NextRequest) {
         status: 'APPROVED',
       },
     })
-
 
     // Execute the decision
     await seoBrain.executeDecision(pendingDecision.id, text)

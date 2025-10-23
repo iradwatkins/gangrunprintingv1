@@ -1,4 +1,5 @@
 # Square Payment Systematic Fix - Complete Resolution
+
 ## GangRun Printing - October 11, 2025
 
 ---
@@ -16,6 +17,7 @@ Systematically fixed Square payment integration (Credit Card + Cash App Pay) bas
 **Symptom**: Infinite "Loading payment form..." message
 
 **Root Cause**:
+
 ```typescript
 // ❌ BROKEN CODE (before fix):
 useEffect(() => {
@@ -28,6 +30,7 @@ useEffect(() => {
 ```
 
 **Issue**:
+
 - React refs attach during render cycle
 - useEffect runs, checks ref, finds it's not ready
 - Returns immediately without setting up retry logic
@@ -35,6 +38,7 @@ useEffect(() => {
 - Results in permanent loading state
 
 **Solution**: Remove early ref checks, let Square's attach() method handle container waiting:
+
 ```typescript
 // ✅ FIXED CODE:
 useEffect(() => {
@@ -52,6 +56,7 @@ useEffect(() => {
 **Issue**: Square supports Cash App Pay, but it wasn't implemented
 
 **Solution**: Created dedicated component with proper implementation:
+
 - PaymentRequest object (amount, currency, country)
 - Event-based tokenization
 - Proper error handling
@@ -64,6 +69,7 @@ useEffect(() => {
 ### **1. SquareCardPayment Component** (`/src/components/checkout/square-card-payment.tsx`)
 
 **Changes Made**:
+
 ```diff
 - // CRITICAL FIX: Don't initialize until the container ref is attached
 - if (!cardContainerRef.current) {
@@ -75,6 +81,7 @@ useEffect(() => {
 ```
 
 **Also Removed**:
+
 ```diff
 - // Double-check container still exists
 - if (!cardContainerRef.current) {
@@ -84,6 +91,7 @@ useEffect(() => {
 ```
 
 **Why This Works**:
+
 - Square's `cardInstance.attach('#card-container')` internally waits for container
 - No need for manual ref checks
 - Proper initialization sequence maintained
@@ -154,6 +162,7 @@ export function CashAppPayment({
 ```
 
 **Key Features**:
+
 - ✅ PaymentRequest object (required by Cash App Pay)
 - ✅ Event-based tokenization handling
 - ✅ Proper error handling for unsupported merchants
@@ -165,11 +174,13 @@ export function CashAppPayment({
 ### **3. Checkout Page Integration** (`/src/app/(customer)/checkout/page.tsx`)
 
 **Added Import**:
+
 ```typescript
 import { CashAppPayment } from '@/components/checkout/cash-app-payment'
 ```
 
 **Replaced Dummy Button**:
+
 ```diff
   {selectedPaymentMethod === 'cashapp' && (
     <div className="p-4 bg-white border-t">
@@ -200,12 +211,14 @@ import { CashAppPayment } from '@/components/checkout/cash-app-payment'
 ### **Square SDK Loading Strategy**
 
 1. **Root Layout** (`/src/app/layout.tsx`):
+
    ```typescript
    <Script
      src="https://web.squarecdn.com/v1/square.js"
      strategy="beforeInteractive"
    />
    ```
+
    - Loads Square SDK early (before page interactive)
    - Cached across all pages
    - Available immediately when checkout loads
@@ -220,6 +233,7 @@ import { CashAppPayment } from '@/components/checkout/cash-app-payment'
      attempts++
    }
    ```
+
    - Maximum 5 seconds wait (50 × 100ms)
    - Throws error if SDK fails to load
    - Ensures SDK is ready before initialization
@@ -227,6 +241,7 @@ import { CashAppPayment } from '@/components/checkout/cash-app-payment'
 ### **Payment Flow**
 
 #### **Credit Card**:
+
 ```
 User clicks "Credit Card"
   → SquareCardPayment renders
@@ -242,6 +257,7 @@ User clicks "Credit Card"
 ```
 
 #### **Cash App Pay**:
+
 ```
 User clicks "Cash App Pay"
   → CashAppPayment renders
@@ -261,6 +277,7 @@ User clicks "Cash App Pay"
 ```
 
 ### **Both Use Same Backend**:
+
 ```typescript
 // Same API endpoint for both payment methods
 const response = await fetch('/api/checkout/process-square-payment', {
@@ -306,6 +323,7 @@ const response = await fetch('/api/checkout/process-square-payment', {
 7. **Expected**: Cash App Pay modal opens (if enabled by Square)
 
 **Note**: Cash App Pay availability depends on:
+
 - Square account settings
 - Merchant configuration
 - User's device/browser support
@@ -328,11 +346,13 @@ If option not available → Contact Square Support
 ## 📈 **Performance Improvements**
 
 ### **Before**:
+
 - Card payment stuck on "Loading payment form..."
 - Timing issues with ref checks
 - Cash App Pay not implemented
 
 ### **After**:
+
 - ✅ Credit card form loads instantly
 - ✅ No timing issues
 - ✅ Cash App Pay fully implemented
@@ -344,6 +364,7 @@ If option not available → Contact Square Support
 ## 🔐 **Environment Variables (Verified)**
 
 ### **.env.production** (Updated):
+
 ```bash
 SQUARE_ACCESS_TOKEN=EAAAlxUo1UKk1Lin6wHkpILz-NgqN0-OiNMWN9LBAK-axvt4gmBUCKw8PW1HZeJD
 SQUARE_ENVIRONMENT=production
@@ -360,6 +381,7 @@ NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-AJF8fI5VayKCq9veQRAw5g
 ## 📂 **Files Modified/Created**
 
 ### **Modified**:
+
 1. `/src/components/checkout/square-card-payment.tsx`
    - Removed early ref checks (lines 53-58, 81-84)
    - Improved initialization logic
@@ -373,6 +395,7 @@ NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-AJF8fI5VayKCq9veQRAw5g
    - Square SDK script (already added earlier)
 
 ### **Created**:
+
 1. `/src/components/checkout/cash-app-payment.tsx`
    - Full Cash App Pay implementation
    - 270+ lines of robust code
@@ -409,12 +432,14 @@ Implementation based on official Square documentation:
 ## ✅ **Success Metrics**
 
 ### **Before Fix**:
+
 - ❌ Credit card form: Stuck on "Loading payment form..."
 - ❌ Cash App Pay: Not implemented
 - ❌ SquareDebugger: Showed card container missing
 - ❌ Console errors: Ref timing issues
 
 ### **After Fix**:
+
 - ✅ Credit card form: Loads instantly
 - ✅ Cash App Pay: Fully implemented
 - ✅ SquareDebugger: Shows all checks passing
@@ -425,11 +450,13 @@ Implementation based on official Square documentation:
 ## 🎯 **Next Steps for User**
 
 ### **Immediate Testing**:
+
 1. ✅ Test credit card payment with Square test card
 2. ✅ Test Cash App Pay (if enabled in Square Dashboard)
 3. ✅ Verify payment processing in Square Dashboard
 
 ### **Optional**:
+
 4. Enable Cash App Pay in Square Dashboard (if desired)
 5. Test in production with real transactions
 6. Monitor payment success rates
@@ -441,6 +468,7 @@ Implementation based on official Square documentation:
 ### **If Credit Card Form Still Not Loading**:
 
 1. **Check Browser Console**:
+
    ```javascript
    // Look for these logs:
    [Square] Starting initialization process
@@ -470,6 +498,7 @@ Implementation based on official Square documentation:
 **Error**: "Cash App Pay is not available for this merchant"
 
 **Reasons**:
+
 1. Not enabled in Square Dashboard
 2. Application ID doesn't support it
 3. Location settings restrict it
@@ -481,18 +510,21 @@ Implementation based on official Square documentation:
 ## 📊 **Summary**
 
 ### **Problems Solved**:
+
 1. ✅ Credit card payment form timing issue → FIXED
 2. ✅ Cash App Pay not implemented → IMPLEMENTED
 3. ✅ Environment variables missing → VERIFIED CORRECT
 4. ✅ Duplicate .env.production issues → RESOLVED
 
 ### **Components Working**:
+
 1. ✅ SquareCardPayment - Credit card processing
 2. ✅ CashAppPayment - Cash App Pay processing
 3. ✅ Both use unified backend API
 4. ✅ Full error handling and logging
 
 ### **Production Ready**:
+
 - ✅ All Square payment methods working
 - ✅ Proper error handling
 - ✅ Enhanced logging for debugging
@@ -508,6 +540,7 @@ Implementation based on official Square documentation:
 ### **Issue**: Square SDK rejected custom styling
 
 **Error Message**:
+
 ```
 Failed to initialize payment form: One or more style selectors and/or CSS properties are invalid
 Invalid style value 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' for property 'fontFamily'.
@@ -515,11 +548,13 @@ Invalid style value '[object Object]' for property '::placeholder'.
 ```
 
 **Root Cause**:
+
 1. Square SDK doesn't accept complex font-family fallback chains
 2. Nested `::placeholder` object inside `input` selector is invalid
 3. Must use flat selector structure at root level
 
 **Solution**:
+
 ```typescript
 // ✅ FIXED - Simplified styling that Square accepts
 const cardInstance = await paymentsInstance.card({
@@ -547,12 +582,14 @@ const cardInstance = await paymentsInstance.card({
 ```
 
 **Changes Made**:
+
 - Removed complex fontFamily with multiple fallbacks
 - Moved `::placeholder` selector from nested to root level
 - Simplified focus state styling
 - Kept essential visual styling only
 
 **Deployment**:
+
 - ✅ Fixed: October 11, 2025 @ 2:45 PM
 - ✅ Build successful (no errors)
 - ✅ PM2 restart successful
@@ -565,6 +602,7 @@ const cardInstance = await paymentsInstance.card({
 ### **Issue 1**: CSP Blocking Square Fonts
 
 **Error Message**:
+
 ```
 Refused to load the font 'https://d1g145x70srn7h.cloudfront.net/fonts/sqmarket/sqmarket-regular.woff2'
 because it violates the following Content Security Policy directive: "font-src 'self' data:".
@@ -573,6 +611,7 @@ because it violates the following Content Security Policy directive: "font-src '
 **Root Cause**: Square loads fonts from CloudFront CDN, which wasn't in CSP allow list
 
 **Solution**: Updated `middleware.ts` to allow Square font sources:
+
 ```typescript
 font-src 'self' data: https://*.squarecdn.com https://d1g145x70srn7h.cloudfront.net;
 ```
@@ -584,17 +623,20 @@ font-src 'self' data: https://*.squarecdn.com https://d1g145x70srn7h.cloudfront.
 **Problem**: Browser was loading old JavaScript bundle with broken styling code
 
 **Root Cause**:
+
 - Next.js caches built JavaScript in `.next` folder
 - Browser caches JavaScript bundles aggressively
 - Old bundle still had `fontFamily: 'system-ui, -apple-system...'` error
 
 **Solution**:
+
 1. Deleted `.next` build cache: `rm -rf .next`
 2. Fresh rebuild: `npm run build`
 3. Restarted PM2: `pm2 restart gangrunprinting`
 4. Browser now fetches new JavaScript with fixed styling
 
 **Deployment**:
+
 - ✅ Fixed: October 11, 2025 @ 3:00 PM
 - ✅ CSP updated in middleware.ts
 - ✅ Build cache cleared
@@ -609,6 +651,7 @@ font-src 'self' data: https://*.squarecdn.com https://d1g145x70srn7h.cloudfront.
 **Status**: ✅ **FULLY OPERATIONAL**
 
 **Testing Instructions**:
+
 1. **Hard refresh your browser**: Press `Ctrl+Shift+R` (Windows/Linux) or `Cmd+Shift+R` (Mac)
 2. Navigate to: https://gangrunprinting.com/checkout
 3. Add product to cart and proceed to checkout

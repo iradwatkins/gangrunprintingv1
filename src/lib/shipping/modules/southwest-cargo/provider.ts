@@ -27,7 +27,6 @@ export class SouthwestCargoProvider implements ShippingProvider {
     toAddress: ShippingAddress,
     packages: ShippingPackage[]
   ): Promise<ShippingRate[]> {
-
     // Check if destination has Southwest Cargo airport (from 82 airports)
     const hasAirport = await isStateAvailable(toAddress.state)
 
@@ -35,11 +34,9 @@ export class SouthwestCargoProvider implements ShippingProvider {
       return []
     }
 
-
     // Calculate total weight
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
     const billableWeight = ensureMinimumWeight(roundWeight(totalWeight))
-
 
     // Calculate both PICKUP and DASH rates
     // Both require customer airport pickup (no home delivery)

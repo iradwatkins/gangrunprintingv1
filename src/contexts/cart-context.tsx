@@ -183,17 +183,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } })
   }, [])
 
-  const removeItem = useCallback((id: string) => {
-    // Find the item before removing for analytics
-    const item = state.items.find((i) => i.id === id)
+  const removeItem = useCallback(
+    (id: string) => {
+      // Find the item before removing for analytics
+      const item = state.items.find((i) => i.id === id)
 
-    if (item) {
-      // Track remove from cart in Google Analytics
-      logEvent('remove_from_cart', 'Ecommerce', item.name, item.quantity)
-    }
+      if (item) {
+        // Track remove from cart in Google Analytics
+        logEvent('remove_from_cart', 'Ecommerce', item.name, item.quantity)
+      }
 
-    dispatch({ type: 'REMOVE_ITEM', payload: id })
-  }, [state.items])
+      dispatch({ type: 'REMOVE_ITEM', payload: id })
+    },
+    [state.items]
+  )
 
   const clearCart = useCallback(() => {
     dispatch({ type: 'CLEAR_CART' })

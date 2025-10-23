@@ -82,6 +82,7 @@ PM2 restarted with new credentials loaded.
    - You'll be redirected to success page
 
 6. **Verify in Square Dashboard:**
+
    ```
    https://squareup.com/dashboard/sales/transactions
    ```

@@ -138,7 +138,6 @@ export class StatusChangeEmailService {
         html,
         text,
       })
-
     } catch (error) {
       console.error('[StatusChangeEmail] Failed to send custom template:', error)
       // Fallback to default email
@@ -149,10 +148,7 @@ export class StatusChangeEmailService {
   /**
    * Send default status update email (no custom template)
    */
-  private static async sendDefaultStatusEmail(
-    order: any,
-    status: any
-  ): Promise<void> {
+  private static async sendDefaultStatusEmail(order: any, status: any): Promise<void> {
     const emailContent = getOrderStatusUpdateEmail({
       orderNumber: order.orderNumber,
       customerName: order.User?.name || 'Valued Customer',
@@ -167,16 +163,12 @@ export class StatusChangeEmailService {
       html: emailContent.html,
       text: emailContent.text,
     })
-
   }
 
   /**
    * Replace template variables with actual values
    */
-  private static replaceVariables(
-    template: string,
-    variables: Record<string, string>
-  ): string {
+  private static replaceVariables(template: string, variables: Record<string, string>): string {
     let result = template
 
     // Support both {{variable}} and {variable} syntax
@@ -252,10 +244,7 @@ GangRun Printing Team
     return {
       subject: this.replaceVariables(template.subject, variables),
       html: this.replaceVariables(templateContent.html || '', variables),
-      text: this.replaceVariables(
-        templateContent.text || 'Plain text version of email',
-        variables
-      ),
+      text: this.replaceVariables(templateContent.text || 'Plain text version of email', variables),
     }
   }
 }

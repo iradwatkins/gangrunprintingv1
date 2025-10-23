@@ -8,6 +8,7 @@
 ## 🎉 Summary
 
 Successfully implemented FunnelKit tracking system with:
+
 - Client-side tracking library (UTM params, device detection, session tracking)
 - API endpoint for recording funnel visits
 - Order attribution system (funnelId + funnelStepId)
@@ -22,6 +23,7 @@ Successfully implemented FunnelKit tracking system with:
 **File:** `/src/lib/funnel-tracking.ts`
 
 **Features:**
+
 - ✅ UTM parameter capture from URL (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`)
 - ✅ Device detection (mobile, tablet, desktop)
 - ✅ Browser detection (Chrome, Firefox, Safari, Edge)
@@ -58,11 +60,13 @@ getStoredUTMParams(): UTMParams
 **Endpoints:**
 
 **POST /api/funnels/track**
+
 - Records funnel visits to database
 - Captures: funnelId, funnelStepId, userId (if logged in), sessionId, UTM params, device info
 - Creates `FunnelVisit` record in database
 
 **Request Body:**
+
 ```json
 {
   "funnelId": "funnel_123",
@@ -85,6 +89,7 @@ getStoredUTMParams(): UTMParams
 ```
 
 **GET /api/funnels/track?sessionId=xxx**
+
 - Retrieves tracking history for a session
 - Returns last 50 visits
 - Useful for debugging and analytics
@@ -94,11 +99,13 @@ getStoredUTMParams(): UTMParams
 ### 3. Order Attribution System
 
 **Updated Files:**
+
 - `/src/types/service.ts` - Added `funnelId` and `funnelStepId` to `CreateOrderInput`
 - `/src/services/OrderService.ts` - Added funnel fields to order creation
 - `/src/app/api/checkout/route.ts` - Captures funnel attribution from request body
 
 **Database Fields (Already in Schema):**
+
 ```prisma
 model Order {
   funnelId     String? // Track which funnel generated this order
@@ -108,6 +115,7 @@ model Order {
 ```
 
 **Checkout Flow:**
+
 1. Frontend calls `getFunnelAttribution()` before checkout
 2. Frontend includes `funnelId` and `funnelStepId` in checkout API request
 3. Backend stores attribution in Order record
@@ -215,18 +223,21 @@ Analytics can track conversion rates
 ### Session Management
 
 **Session ID:**
+
 - Generated: `fs_${timestamp}_${random}`
 - Stored: Cookie (`funnel_session_id`)
 - Expiry: 30 days
 - Purpose: Track customer journey across visits
 
 **Funnel Attribution:**
+
 - Stored: sessionStorage (`funnel_attribution`)
 - Expiry: 24 hours
 - Purpose: Connect order to funnel source
 - Format: `{ funnelId, funnelStepId, timestamp }`
 
 **UTM Parameters:**
+
 - Stored: Cookie (`utm_params`)
 - Expiry: 30 days
 - Purpose: Track campaign source
@@ -260,6 +271,7 @@ model FunnelVisit {
 ```
 
 **Indexes:**
+
 - sessionId (for session history queries)
 - funnelId + timestamp (for funnel analytics)
 - userId + timestamp (for user journey analysis)

@@ -118,7 +118,9 @@ export function BulkActionsBar({
       }
 
       if (result.result.failed.length > 0) {
-        toast.error(`Failed to update ${result.result.failed.length} orders. Check console for details.`)
+        toast.error(
+          `Failed to update ${result.result.failed.length} orders. Check console for details.`
+        )
         console.error('Failed orders:', result.result.failed)
       }
 
@@ -157,7 +159,9 @@ export function BulkActionsBar({
               {selectedOrderIds.length}
             </Badge>
             <span className="font-medium">
-              {selectedOrderIds.length === 1 ? '1 order selected' : `${selectedOrderIds.length} orders selected`}
+              {selectedOrderIds.length === 1
+                ? '1 order selected'
+                : `${selectedOrderIds.length} orders selected`}
             </span>
           </div>
 
@@ -212,7 +216,8 @@ export function BulkActionsBar({
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Bulk Status Update</AlertDialogTitle>
             <AlertDialogDescription>
-              You are about to update {selectedOrderIds.length} order{selectedOrderIds.length !== 1 ? 's' : ''} to:
+              You are about to update {selectedOrderIds.length} order
+              {selectedOrderIds.length !== 1 ? 's' : ''} to:
             </AlertDialogDescription>
           </AlertDialogHeader>
 

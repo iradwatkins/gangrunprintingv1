@@ -75,7 +75,7 @@ for (const viewport of viewports) {
       if (!isVisible) {
         await page.screenshot({
           path: `test-checkout-${viewport.name.toLowerCase()}-no-button.png`,
-          fullPage: true
+          fullPage: true,
         })
         throw new Error(`❌ Add to Cart button not visible on ${viewport.name}`)
       }
@@ -101,7 +101,7 @@ for (const viewport of viewports) {
       if (!drawerVisible) {
         await page.screenshot({
           path: `test-checkout-${viewport.name.toLowerCase()}-no-drawer.png`,
-          fullPage: true
+          fullPage: true,
         })
         throw new Error(`❌ Cart drawer did not open on ${viewport.name}`)
       }
@@ -158,7 +158,7 @@ for (const viewport of viewports) {
       if (!continueEnabled) {
         await page.screenshot({
           path: `test-checkout-${viewport.name.toLowerCase()}-button-disabled.png`,
-          fullPage: true
+          fullPage: true,
         })
         throw new Error(`❌ "Continue to Payment" button is disabled on ${viewport.name}`)
       }
@@ -188,9 +188,8 @@ for (const viewport of viewports) {
         // Take screenshot of shipping page
         await page.screenshot({
           path: `test-checkout-${viewport.name.toLowerCase()}-shipping.png`,
-          fullPage: true
+          fullPage: true,
         })
-
       } else if (currentURL.includes('/checkout/payment')) {
         console.log('   ✅ Navigated to payment page')
 
@@ -228,9 +227,8 @@ for (const viewport of viewports) {
         // Take screenshot
         await page.screenshot({
           path: `test-checkout-${viewport.name.toLowerCase()}-payment.png`,
-          fullPage: true
+          fullPage: true,
         })
-
       } else {
         throw new Error(`❌ Unexpected URL after Continue to Payment: ${currentURL}`)
       }

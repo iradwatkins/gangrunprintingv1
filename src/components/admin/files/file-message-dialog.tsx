@@ -1,85 +1,89 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { MessageSquare, Send, User, Clock, Download, CheckCircle, XCircle } from 'lucide-react';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { MessageSquare, Send, User, Clock, Download, CheckCircle, XCircle } from 'lucide-react'
 
 interface OrderFile {
-  id: string;
-  filename: string;
-  fileUrl: string;
-  fileType: string;
-  label?: string;
-  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED';
-  uploadedByRole: string;
-  createdAt: string;
+  id: string
+  filename: string
+  fileUrl: string
+  fileType: string
+  label?: string
+  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED'
+  uploadedByRole: string
+  createdAt: string
 }
 
 interface Message {
-  id: string;
-  message: string;
-  authorRole: string;
-  authorName: string;
-  createdAt: string;
-  isInternal: boolean;
+  id: string
+  message: string
+  authorRole: string
+  authorName: string
+  createdAt: string
+  isInternal: boolean
 }
 
 interface Props {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  orderId: string;
-  file: OrderFile;
-  onMessageSent: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  orderId: string
+  file: OrderFile
+  onMessageSent: () => void
 }
 
 const approvalStatusConfig = {
   WAITING: { label: 'Awaiting Approval', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
   APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-800', icon: CheckCircle },
   REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-800', icon: XCircle },
-  NOT_REQUIRED: { label: 'No Approval Needed', color: 'bg-gray-100 text-gray-800', icon: CheckCircle },
-};
+  NOT_REQUIRED: {
+    label: 'No Approval Needed',
+    color: 'bg-gray-100 text-gray-800',
+    icon: CheckCircle,
+  },
+}
 
 export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessageSent }: Props) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sending, setSending] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([])
+  const [newMessage, setNewMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [sending, setSending] = useState(false)
 
   const fetchMessages = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await fetch(`/api/orders/${orderId}/files/${file.id}/messages`);
+      const response = await fetch(`/api/orders/${orderId}/files/${file.id}/messages`)
       if (response.ok) {
-        const data = await response.json();
-        setMessages(data.messages || []);
+        const data = await response.json()
+        setMessages(data.messages || [])
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('Error fetching messages:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     if (open) {
-      fetchMessages();
+      fetchMessages()
     }
-  }, [open, file.id]);
+  }, [open, file.id])
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim()) return
 
-    setSending(true);
+    setSending(true)
     try {
       const response = await fetch(`/api/orders/${orderId}/files/${file.id}/messages`, {
         method: 'POST',
@@ -90,25 +94,25 @@ export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessage
           message: newMessage,
           isInternal: false,
         }),
-      });
+      })
 
       if (response.ok) {
-        setNewMessage('');
-        fetchMessages();
-        onMessageSent();
+        setNewMessage('')
+        fetchMessages()
+        onMessageSent()
       } else {
-        alert('Failed to send message');
+        alert('Failed to send message')
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      alert('Failed to send message');
+      console.error('Error sending message:', error)
+      alert('Failed to send message')
     } finally {
-      setSending(false);
+      setSending(false)
     }
-  };
+  }
 
-  const statusConfig = approvalStatusConfig[file.approvalStatus];
-  const StatusIcon = statusConfig.icon;
+  const statusConfig = approvalStatusConfig[file.approvalStatus]
+  const StatusIcon = statusConfig.icon
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -191,7 +195,7 @@ export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessage
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && e.ctrlKey) {
-                handleSendMessage();
+                handleSendMessage()
               }
             }}
           />
@@ -205,5 +209,5 @@ export function FileMessageDialog({ open, onOpenChange, orderId, file, onMessage
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -417,7 +417,11 @@ export default function SimpleConfigurationForm({
     if (config.design && configData.designOptions) {
       const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
       if (selectedDesign) {
-        if (selectedDesign.requiresSideSelection && selectedDesign.sideOptions && config.designSide) {
+        if (
+          selectedDesign.requiresSideSelection &&
+          selectedDesign.sideOptions &&
+          config.designSide
+        ) {
           // SIDE_BASED pricing (Standard/Rush design)
           designCost = selectedDesign.sideOptions[config.designSide].price
         } else if (selectedDesign.basePrice) {
@@ -552,7 +556,11 @@ export default function SimpleConfigurationForm({
     if (config.design && configData.designOptions) {
       const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
       if (selectedDesign) {
-        if (selectedDesign.requiresSideSelection && selectedDesign.sideOptions && config.designSide) {
+        if (
+          selectedDesign.requiresSideSelection &&
+          selectedDesign.sideOptions &&
+          config.designSide
+        ) {
           // SIDE_BASED pricing (Standard/Rush design)
           designCost = selectedDesign.sideOptions[config.designSide].price
         } else if (selectedDesign.basePrice) {
@@ -1174,45 +1182,46 @@ export default function SimpleConfigurationForm({
             </SelectContent>
           </Select>
 
-        {/* Side Selection for Standard/Rush Design */}
-        {showDesignSideSelection && (
-          <div className="ml-6 space-y-2 mt-3 p-3 border rounded-lg bg-gray-50">
-            <Label className="text-sm font-medium">Select Sides *</Label>
-            <Select
-              value={configuration.designSide || ''}
-              onValueChange={(value) => handleDesignSideChange(value as 'oneSide' | 'twoSides')}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose number of sides..." />
-              </SelectTrigger>
-              <SelectContent>
-                {(() => {
-                  const selectedDesign = configData.designOptions?.find(
-                    (d) => d.id === configuration.design
-                  )
-                  if (selectedDesign?.sideOptions) {
-                    return (
-                      <>
-                        <SelectItem value="oneSide">
-                          One Side Price ($) {selectedDesign.sideOptions.oneSide.price.toFixed(0)}
-                        </SelectItem>
-                        <SelectItem value="twoSides">
-                          Two Sides Price ($) {selectedDesign.sideOptions.twoSides.price.toFixed(0)}
-                        </SelectItem>
-                      </>
+          {/* Side Selection for Standard/Rush Design */}
+          {showDesignSideSelection && (
+            <div className="ml-6 space-y-2 mt-3 p-3 border rounded-lg bg-gray-50">
+              <Label className="text-sm font-medium">Select Sides *</Label>
+              <Select
+                value={configuration.designSide || ''}
+                onValueChange={(value) => handleDesignSideChange(value as 'oneSide' | 'twoSides')}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose number of sides..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {(() => {
+                    const selectedDesign = configData.designOptions?.find(
+                      (d) => d.id === configuration.design
                     )
-                  }
-                  return null
-                })()}
-              </SelectContent>
-            </Select>
-            {!configuration.designSide && (
-              <p className="text-sm text-orange-600">
-                ⚠️ Please select the number of sides for your design
-              </p>
-            )}
-          </div>
-        )}
+                    if (selectedDesign?.sideOptions) {
+                      return (
+                        <>
+                          <SelectItem value="oneSide">
+                            One Side Price ($) {selectedDesign.sideOptions.oneSide.price.toFixed(0)}
+                          </SelectItem>
+                          <SelectItem value="twoSides">
+                            Two Sides Price ($){' '}
+                            {selectedDesign.sideOptions.twoSides.price.toFixed(0)}
+                          </SelectItem>
+                        </>
+                      )
+                    }
+                    return null
+                  })()}
+                </SelectContent>
+              </Select>
+              {!configuration.designSide && (
+                <p className="text-sm text-orange-600">
+                  ⚠️ Please select the number of sides for your design
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Info message for professional design options */}
           {configuration.design && configuration.design !== 'design_upload_own' && (

@@ -226,6 +226,7 @@ npx tsx src/scripts/seo-brain/test-seo-brain-system.ts
 ```
 
 **Expected Output:**
+
 ```
 ✅ Passed: 10
 ❌ Failed: 0
@@ -244,6 +245,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ```
 
 **Input:**
+
 - Product: "5000 4x6 Flyers"
 - Size: "4x6"
 - Material: "9pt Cardstock"
@@ -252,6 +254,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 - Keywords: "flyer printing, club flyers"
 
 **Output:**
+
 - 200 city landing pages
 - 1 main product image
 - 200 city hero images
@@ -261,17 +264,20 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ### 2. Monitor Progress
 
 **Telegram notifications:**
+
 - 🚀 "Campaign started!" (immediate)
 - 🎉 "200 cities complete!" (after 6-7 hours)
 
 ### 3. Daily Optimization
 
 **Automatic (3 AM):**
+
 - Performance analysis
 - Winner pattern extraction
 - Loser improvement options
 
 **Telegram decision request:**
+
 ```
 🔧 Decision Needed: Improve miami-fl
 
@@ -289,6 +295,7 @@ Reply: A, B, or C
 **Reply:** `B`
 
 **System executes:**
+
 - Regenerates intro using winner pattern
 - Regenerates benefits section
 - Adds CTA placements
@@ -300,28 +307,28 @@ Reply: A, B, or C
 
 ### 200-City Campaign
 
-| Metric | Value |
-|--------|-------|
-| Total Cities | 200 |
-| Batch Size | 10 cities |
-| Batch Delay | 2 seconds |
-| Total Batches | 20 |
-| Ollama API Calls | ~800 |
-| Google AI API Calls | 201 |
-| Total Time | 6-7 hours |
-| Content per City | 500-word intro + 10 benefits + 15 FAQs |
-| Images per City | 1 hero image |
+| Metric              | Value                                  |
+| ------------------- | -------------------------------------- |
+| Total Cities        | 200                                    |
+| Batch Size          | 10 cities                              |
+| Batch Delay         | 2 seconds                              |
+| Total Batches       | 20                                     |
+| Ollama API Calls    | ~800                                   |
+| Google AI API Calls | 201                                    |
+| Total Time          | 6-7 hours                              |
+| Content per City    | 500-word intro + 10 benefits + 15 FAQs |
+| Images per City     | 1 hero image                           |
 
 ### Daily Optimization
 
-| Metric | Value |
-|--------|-------|
-| Analysis Frequency | 3 AM daily |
-| Analysis Time | 5-10 minutes |
-| Winner Detection | Top 20% (40 cities) |
-| Loser Detection | Bottom 20% (40 cities) |
-| Decisions per Day | 1-5 (only underperformers) |
-| User Response Time | Immediate (Telegram) |
+| Metric             | Value                      |
+| ------------------ | -------------------------- |
+| Analysis Frequency | 3 AM daily                 |
+| Analysis Time      | 5-10 minutes               |
+| Winner Detection   | Top 20% (40 cities)        |
+| Loser Detection    | Bottom 20% (40 cities)     |
+| Decisions per Day  | 1-5 (only underperformers) |
+| User Response Time | Immediate (Telegram)       |
 
 ---
 
@@ -353,6 +360,7 @@ Reply: A, B, or C
 ### Immediate (Required)
 
 1. ✅ Get Telegram Chat ID
+
    ```bash
    npx tsx src/scripts/seo-brain/setup-telegram.ts
    ```
@@ -362,6 +370,7 @@ Reply: A, B, or C
    - Import all 9 JSON files from `src/n8n-workflows/`
 
 3. ✅ Run system tests
+
    ```bash
    npx tsx src/scripts/seo-brain/test-seo-brain-system.ts
    ```

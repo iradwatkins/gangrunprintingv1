@@ -1,1 +1,74 @@
-{"createdAt":"2025-10-20T23:00:00.547Z","updatedAt":"2025-10-20T23:00:00.547Z","id":"ka86L9LlL5tIHf4W","name":"GangRun - Post-Purchase Thank You","active":false,"isArchived":false,"nodes":[{"parameters":{"httpMethod":"POST","path":"gangrun-order-created","options":{}},"name":"Webhook - Order Created","type":"n8n-nodes-base.webhook","typeVersion":1,"position":[250,300],"webhookId":"gangrun-order-created","id":"e0fc4b59-2ebd-4ef0-a7b2-7b1dfc939c6b"},{"parameters":{"url":"https://gangrunprinting.com/api/marketing/emails/render","authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth","sendBody":true,"bodyParameters":{"parameters":[{"name":"template","value":"thank_you"},{"name":"to","value":"={{ $json.data.User.email }}"},{"name":"subject","value":"Thank You for Your Order! 🎉"},{"name":"data","value":"={{ JSON.stringify({\n  customerName: $json.data.User.name,\n  orderNumber: $json.data.orderNumber,\n  orderTotal: $json.data.total,\n  trackingUrl: 'https://gangrunprinting.com/orders/' + $json.data.id + '/track'\n}) }}"}]},"options":{}},"name":"Send Thank You Email","type":"n8n-nodes-base.httpRequest","typeVersion":4.1,"position":[470,300],"id":"0a4e6761-8cc5-4b49-88d2-b625cbe08acf"}],"connections":{"Webhook - Order Created":{"main":[[{"node":"Send Thank You Email","type":"main","index":0}]]}},"settings":{"timezone":"America/Chicago"},"staticData":null,"meta":null,"pinData":null,"versionId":null,"triggerCount":0,"tags":[],"shared":[{"createdAt":"2025-10-20T23:00:00.548Z","updatedAt":"2025-10-20T23:00:00.548Z","role":"workflow:owner","workflowId":"ka86L9LlL5tIHf4W","projectId":"tFB2q6JWkfPj6FdL","project":{"createdAt":"2025-09-11T20:13:27.250Z","updatedAt":"2025-09-11T20:14:08.507Z","id":"tFB2q6JWkfPj6FdL","name":"Ira Watkins <iradwatkins@gmail.com>","type":"personal","icon":null,"description":null}}]}
+{
+  "createdAt": "2025-10-20T23:00:00.547Z",
+  "updatedAt": "2025-10-20T23:00:00.547Z",
+  "id": "ka86L9LlL5tIHf4W",
+  "name": "GangRun - Post-Purchase Thank You",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "gangrun-order-created", "options": {} },
+      "name": "Webhook - Order Created",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "gangrun-order-created",
+      "id": "e0fc4b59-2ebd-4ef0-a7b2-7b1dfc939c6b"
+    },
+    {
+      "parameters": {
+        "url": "https://gangrunprinting.com/api/marketing/emails/render",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "template", "value": "thank_you" },
+            { "name": "to", "value": "={{ $json.data.User.email }}" },
+            { "name": "subject", "value": "Thank You for Your Order! 🎉" },
+            {
+              "name": "data",
+              "value": "={{ JSON.stringify({\n  customerName: $json.data.User.name,\n  orderNumber: $json.data.orderNumber,\n  orderTotal: $json.data.total,\n  trackingUrl: 'https://gangrunprinting.com/orders/' + $json.data.id + '/track'\n}) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Send Thank You Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [470, 300],
+      "id": "0a4e6761-8cc5-4b49-88d2-b625cbe08acf"
+    }
+  ],
+  "connections": {
+    "Webhook - Order Created": {
+      "main": [[{ "node": "Send Thank You Email", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "timezone": "America/Chicago" },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": null,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-10-20T23:00:00.548Z",
+      "updatedAt": "2025-10-20T23:00:00.548Z",
+      "role": "workflow:owner",
+      "workflowId": "ka86L9LlL5tIHf4W",
+      "projectId": "tFB2q6JWkfPj6FdL",
+      "project": {
+        "createdAt": "2025-09-11T20:13:27.250Z",
+        "updatedAt": "2025-09-11T20:14:08.507Z",
+        "id": "tFB2q6JWkfPj6FdL",
+        "name": "Ira Watkins <iradwatkins@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

@@ -182,12 +182,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-
     // Delete removed images from MinIO
     const existingImageUrls = existingProduct.ProductImage.map((img) => img.Image.url)
     const newImageUrls = images?.map((img: Record<string, unknown>) => img.url) || []
     const imagesToDelete = existingImageUrls.filter((url) => !newImageUrls.includes(url))
-
 
     for (const url of imagesToDelete) {
       try {
@@ -196,7 +194,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         console.error('[PUT Product] Failed to delete image from MinIO:', error)
       }
     }
-
 
     // Update product using transaction
     const product = await prisma.$transaction(async (tx) => {

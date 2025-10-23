@@ -5,7 +5,10 @@ import ProductDetailClient from '@/components/product/product-detail-client'
 import { type Metadata } from 'next'
 import { generateAllProductSchemas } from '@/lib/schema-generators'
 import { type PrismaProductImage } from '@/types/product'
-import { getApprovedProductSEO, generateProductMetaTags } from '@/lib/seo-brain/generate-product-seo'
+import {
+  getApprovedProductSEO,
+  generateProductMetaTags,
+} from '@/lib/seo-brain/generate-product-seo'
 import { Breadcrumbs, BreadcrumbSchema } from '@/components/customer/breadcrumbs'
 
 // Force dynamic rendering to prevent chunk loading issues
@@ -195,11 +198,9 @@ async function getProduct(slug: string) {
 // Helper function to fetch product configuration - calls the API endpoint via HTTP
 async function getProductConfiguration(productId: string) {
   try {
-
     // Use fetch to call the API endpoint
     // In Docker, use internal port; works in both dev and production
     const apiUrl = `http://localhost:3002/api/products/${productId}/configuration`
-
 
     const response = await fetch(apiUrl, {
       cache: 'no-store', // Don't cache during SSR
@@ -207,7 +208,6 @@ async function getProductConfiguration(productId: string) {
         'Content-Type': 'application/json',
       },
     })
-
 
     if (!response.ok) {
       console.error('[ProductPage] API returned error status:', response.status)

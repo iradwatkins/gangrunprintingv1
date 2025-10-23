@@ -21,13 +21,7 @@ import { ProductImageUpload } from '@/components/admin/product-image-upload' // 
 import { AIProductDesigner } from '@/components/admin/ai-product-designer'
 import { useProductForm } from '@/hooks/use-product-form'
 import toast from '@/lib/toast'
-import {
-  ArrowLeft,
-  Save,
-  Loader2,
-  AlertCircle,
-  RefreshCw,
-} from 'lucide-react'
+import { ArrowLeft, Save, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { responseToJsonSafely } from '@/lib/safe-json'
 
 export default function NewProductPage() {
@@ -219,11 +213,12 @@ export default function NewProductPage() {
       options.paperStockSets.length > 0
     ) {
       // Find a visible category (not hidden) - prefer "Business Card" if available
-      const visibleCategory = options.categories.find((cat: any) =>
-        cat.name === 'Business Card' || cat.slug === 'business-card'
-      ) || options.categories.find((cat: any) =>
-        !cat.isHidden
-      ) || options.categories[0]
+      const visibleCategory =
+        options.categories.find(
+          (cat: any) => cat.name === 'Business Card' || cat.slug === 'business-card'
+        ) ||
+        options.categories.find((cat: any) => !cat.isHidden) ||
+        options.categories[0]
 
       updateFormData({
         name: 'Test Product ' + Date.now(),
@@ -804,7 +799,8 @@ export default function NewProductPage() {
                   return (
                     <div>
                       <p className="font-medium text-sm mb-2">
-                        Preview: {selectedSet.name} ({selectedSet.addOnSetItems?.length || 0} add-ons)
+                        Preview: {selectedSet.name} ({selectedSet.addOnSetItems?.length || 0}{' '}
+                        add-ons)
                       </p>
                       <div className="space-y-1">
                         {selectedSet.addOnSetItems?.slice(0, 5).map((item: any) => (

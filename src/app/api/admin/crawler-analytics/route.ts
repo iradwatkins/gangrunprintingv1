@@ -103,13 +103,21 @@ function identifyCrawler(userAgent: string): string | null {
  * Categorize crawler type
  */
 function categorizeCrawler(crawlerName: string): string {
-  if (crawlerName.includes('Google') || crawlerName.includes('Bing') ||
-      crawlerName.includes('Apple') || crawlerName.includes('DuckDuckGo')) {
+  if (
+    crawlerName.includes('Google') ||
+    crawlerName.includes('Bing') ||
+    crawlerName.includes('Apple') ||
+    crawlerName.includes('DuckDuckGo')
+  ) {
     return 'Search Engine'
   }
-  if (crawlerName.includes('ChatGPT') || crawlerName.includes('Claude') ||
-      crawlerName.includes('Perplexity') || crawlerName.includes('AI') ||
-      crawlerName.includes('GPT')) {
+  if (
+    crawlerName.includes('ChatGPT') ||
+    crawlerName.includes('Claude') ||
+    crawlerName.includes('Perplexity') ||
+    crawlerName.includes('AI') ||
+    crawlerName.includes('GPT')
+  ) {
     return 'AI Search'
   }
   if (crawlerName.includes('Archive') || crawlerName.includes('Crawl')) {
@@ -134,10 +142,7 @@ export async function GET(request: NextRequest) {
     // Validate admin access
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -170,10 +175,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(mockAnalytics)
   } catch (error) {
     console.error('Crawler analytics error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -212,9 +214,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Crawler tracking error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

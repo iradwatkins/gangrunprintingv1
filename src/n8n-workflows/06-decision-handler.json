@@ -67,15 +67,15 @@
   ],
   "connections": {
     "Webhook: Execute Decision": {
-      "main": [[{"node": "Execute Decision", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Execute Decision", "type": "main", "index": 0 }]]
     },
     "Execute Decision": {
-      "main": [[{"node": "Notify Complete", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Notify Complete", "type": "main", "index": 0 }]]
     },
     "Notify Complete": {
-      "main": [[{"node": "Respond", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Respond", "type": "main", "index": 0 }]]
     }
   },
   "active": true,
-  "tags": [{"name": "SEO Brain"}]
+  "tags": [{ "name": "SEO Brain" }]
 }

@@ -19,12 +19,13 @@ Southwest Cargo is a **simple weight-based shipping module** with **82 airport p
 
 Simple 2-tier pricing based on total package weight:
 
-| Weight Range | Formula | Example (50 lbs) | Example (150 lbs) |
-|--------------|---------|------------------|-------------------|
-| 0-50 lbs | **$80 flat rate** | $80.00 | N/A |
-| 51+ lbs | **$102 + (weight × $1.75)** | N/A | $364.50 |
+| Weight Range | Formula                     | Example (50 lbs) | Example (150 lbs) |
+| ------------ | --------------------------- | ---------------- | ----------------- |
+| 0-50 lbs     | **$80 flat rate**           | $80.00           | N/A               |
+| 51+ lbs      | **$102 + (weight × $1.75)** | N/A              | $364.50           |
 
 **Calculation Examples:**
+
 - 10 lbs: $80.00 (flat rate)
 - 50 lbs: $80.00 (flat rate)
 - 51 lbs: $102 + (51 × $1.75) = $191.25
@@ -35,13 +36,14 @@ Simple 2-tier pricing based on total package weight:
 
 3-tier pricing for faster delivery:
 
-| Weight Range | Formula | Example (50 lbs) | Example (75 lbs) | Example (150 lbs) |
-|--------------|---------|------------------|------------------|-------------------|
-| 0-50 lbs | **$85 + $10 handling** | $95.00 | N/A | N/A |
-| 51-100 lbs | **$133 + $10 handling** | N/A | $143.00 | N/A |
-| 101+ lbs | **$133 + $10 + (weight × $1.75)** | N/A | N/A | $405.50 |
+| Weight Range | Formula                           | Example (50 lbs) | Example (75 lbs) | Example (150 lbs) |
+| ------------ | --------------------------------- | ---------------- | ---------------- | ----------------- |
+| 0-50 lbs     | **$85 + $10 handling**            | $95.00           | N/A              | N/A               |
+| 51-100 lbs   | **$133 + $10 handling**           | N/A              | $143.00          | N/A               |
+| 101+ lbs     | **$133 + $10 + (weight × $1.75)** | N/A              | N/A              | $405.50           |
 
 **Calculation Examples:**
+
 - 10 lbs: $85 + $10 = $95.00
 - 50 lbs: $85 + $10 = $95.00
 - 51 lbs: $133 + $10 = $143.00
@@ -54,6 +56,7 @@ Simple 2-tier pricing based on total package weight:
 **Default Markup:** 5% (configurable in `/src/lib/shipping/modules/southwest-cargo/config.ts`)
 
 All prices shown to customers include the 5% markup:
+
 - Base price × 1.05 = Customer price
 
 Example: $80.00 base → $84.00 displayed
@@ -82,30 +85,37 @@ AL, AR, AZ, CA, CO, CT, DC, FL, GA, HI, IN, KY, LA, MA, MD, MI, MO, NC, NE, NH, 
 ## Customer Checkout Flow
 
 ### 1. Enter Shipping Address
+
 Customer enters destination address with state.
 
 ### 2. Automatic Rate Calculation
+
 - System checks if state has Southwest Cargo airport
 - Calculates weight-based rates (Pickup & Dash)
 - Applies 5% markup
 - Returns rates with estimated delivery times
 
 ### 3. Select Shipping Method
+
 Customer sees both options (if available):
+
 - **Southwest Cargo Pickup** - $XX.XX (3 business days)
 - **Southwest Cargo Dash** - $XX.XX (1 business day, guaranteed)
 
 ### 4. Select Airport Pickup Location
+
 - Dropdown shows all airports in customer's state
 - Format: "Airport Name (CODE)"
 - Example: "Phoenix Sky Harbor International (PHX)"
 
 ### 5. Complete Order
+
 Customer completes payment with selected airport for pickup.
 
 ## Code Structure
 
 ### Configuration
+
 **File:** `/src/lib/shipping/modules/southwest-cargo/config.ts`
 
 ```typescript
@@ -127,9 +137,11 @@ export const SOUTHWEST_CARGO_RATES: SouthwestCargoRates = {
 ```
 
 ### Provider
+
 **File:** `/src/lib/shipping/modules/southwest-cargo/provider.ts`
 
 Main shipping provider class that:
+
 - Implements `ShippingProvider` interface
 - Calculates rates using weight tier logic
 - Validates destination has Southwest airport
@@ -137,9 +149,11 @@ Main shipping provider class that:
 - Creates shipping labels
 
 ### Airport Availability
+
 **File:** `/src/lib/shipping/modules/southwest-cargo/airport-availability.ts`
 
 Checks if Southwest Cargo serves a location:
+
 - Queries database for active airports by state
 - Caches results for 1 hour (performance)
 - Returns empty rates if state not serviced
@@ -148,12 +162,14 @@ Checks if Southwest Cargo serves a location:
 
 **Shipping Method Selector:**
 `/src/components/checkout/shipping-method-selector.tsx`
+
 - Displays all available shipping options
 - Shows Southwest with plane icon
 - "Airport Pickup" badge for Southwest rates
 
 **Airport Selector:**
 `/src/components/checkout/airport-selector.tsx`
+
 - Dropdown of all airports in customer's state
 - Searchable/filterable
 - Shows airport code and location
@@ -163,15 +179,19 @@ Checks if Southwest Cargo serves a location:
 ### Automated Tests
 
 **Pricing Verification:**
+
 ```bash
 npx tsx scripts/test-southwest-pricing.ts
 ```
+
 Verifies pricing calculations match WooCommerce configuration.
 
 **Checkout Flow:**
+
 ```bash
 npx tsx scripts/test-southwest-checkout.ts
 ```
+
 End-to-end test with 7 weight scenarios across different states.
 
 ### Manual Testing
@@ -194,17 +214,20 @@ End-to-end test with 7 weight scenarios across different states.
 ### Southwest rates not appearing
 
 **Check 1:** Is the destination state serviced?
+
 ```sql
 SELECT * FROM "Airport" WHERE carrier = 'SOUTHWEST_CARGO' AND state = 'XX';
 ```
 
 **Check 2:** Are airports seeded in database?
+
 ```sql
 SELECT COUNT(*) FROM "Airport" WHERE carrier = 'SOUTHWEST_CARGO';
 -- Should return 82
 ```
 
 **Fix:** Run seed script
+
 ```bash
 npx tsx src/scripts/seed-southwest-airports.ts
 ```
@@ -212,6 +235,7 @@ npx tsx src/scripts/seed-southwest-airports.ts
 ### Incorrect pricing
 
 **Check 1:** Review current configuration
+
 ```bash
 npx tsx scripts/test-southwest-pricing.ts
 ```
@@ -223,11 +247,13 @@ npx tsx scripts/test-southwest-pricing.ts
 ### Airport dropdown empty
 
 **Check 1:** Verify API endpoint
+
 ```bash
 curl http://localhost:3020/api/airports | jq
 ```
 
 **Check 2:** Check database airports for state
+
 ```sql
 SELECT * FROM "Airport" WHERE carrier = 'SOUTHWEST_CARGO' AND state = 'TX';
 ```
@@ -237,6 +263,7 @@ SELECT * FROM "Airport" WHERE carrier = 'SOUTHWEST_CARGO' AND state = 'TX';
 ### Adding New Airports
 
 1. **Add to database** via Prisma
+
 ```typescript
 await prisma.airport.create({
   data: {
@@ -246,7 +273,7 @@ await prisma.airport.create({
     state: 'ST',
     carrier: 'SOUTHWEST_CARGO',
     isActive: true,
-  }
+  },
 })
 ```
 
@@ -257,10 +284,12 @@ await prisma.airport.create({
 1. **Edit config file:** `/src/lib/shipping/modules/southwest-cargo/config.ts`
 2. **Update weight tiers** - modify baseRate, additionalPerPound, or handlingFee
 3. **Run tests** to verify
+
 ```bash
 npx tsx scripts/test-southwest-pricing.ts
 npx tsx scripts/test-southwest-checkout.ts
 ```
+
 4. **Restart application**
 
 ### Adjusting Markup
@@ -280,18 +309,21 @@ This module was migrated from WooCommerce conditional shipping rates to Next.js.
 ### Changes from WooCommerce
 
 ✅ **Preserved:**
+
 - Exact pricing structure (2 tiers for Pickup, 3 for Dash)
 - Weight-based calculations
 - Airport pickup selection
 - Simple customer experience
 
 ✅ **Improvements:**
+
 - Database-driven airport data (was hardcoded)
 - Cached airport lookups for performance
 - TypeScript type safety
 - Automated testing suite
 
 ❌ **Removed:**
+
 - Third tier for Pickup (101+ lbs) - this was added incorrectly and removed to match WooCommerce
 
 ### Key Lesson

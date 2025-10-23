@@ -12,16 +12,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
 
-    const {
-      funnelId,
-      funnelStepId,
-      pageUrl,
-      referrer,
-      utm,
-      device,
-      sessionId,
-      timestamp,
-    } = body
+    const { funnelId, funnelStepId, pageUrl, referrer, utm, device, sessionId, timestamp } = body
 
     // Get current user if logged in (optional)
     const { user } = await validateRequest()
@@ -75,10 +66,7 @@ export async function GET(request: Request) {
     const sessionId = searchParams.get('sessionId')
 
     if (!sessionId) {
-      return NextResponse.json(
-        { error: 'sessionId required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'sessionId required' }, { status: 400 })
     }
 
     const visits = await prisma.funnelVisit.findMany({
@@ -94,9 +82,6 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error('Error retrieving tracking data:', error)
-    return NextResponse.json(
-      { error: 'Failed to retrieve tracking data' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to retrieve tracking data' }, { status: 500 })
   }
 }

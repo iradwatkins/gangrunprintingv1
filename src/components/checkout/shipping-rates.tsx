@@ -50,7 +50,6 @@ export function ShippingRates({
   onRateSelected,
   onAirportSelected,
 }: ShippingRatesProps) {
-
   const [rates, setRates] = useState<ShippingRate[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -74,7 +73,6 @@ export function ShippingRates({
   }, [addressKey, itemsKey])
 
   useEffect(() => {
-
     // Only fetch once per address/items combination
     if (hasFetchedRef.current) {
       return
@@ -137,8 +135,7 @@ export function ShippingRates({
           } else {
           }
         }
-      } catch (error) {
-      }
+      } catch (error) {}
     }
 
     //   toAddress,
@@ -169,7 +166,6 @@ export function ShippingRates({
       if (!response.ok) {
         throw new Error(data.error || 'Failed to calculate shipping')
       }
-
 
       setRates(data.rates || [])
       setTotalWeight(data.totalWeight || '0')

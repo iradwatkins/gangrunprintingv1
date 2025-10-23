@@ -2,10 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     // Validate admin authentication
     const { user } = await validateRequest()
@@ -20,10 +17,7 @@ export async function PUT(
 
     // Validation
     if (!name || !email) {
-      return NextResponse.json(
-        { error: 'Name and email are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name and email are required' }, { status: 400 })
     }
 
     // Check if customer exists
@@ -71,9 +65,6 @@ export async function PUT(
     })
   } catch (error) {
     console.error('Error updating customer:', error)
-    return NextResponse.json(
-      { error: 'Failed to update customer' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update customer' }, { status: 500 })
   }
 }

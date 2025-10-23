@@ -95,9 +95,7 @@ export function NotificationsDropdown() {
       <DropdownMenuContent align="end" className="w-80">
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Notifications</span>
-          {unreadCount > 0 && (
-            <Badge variant="secondary">{unreadCount} new</Badge>
-          )}
+          {unreadCount > 0 && <Badge variant="secondary">{unreadCount} new</Badge>}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
@@ -106,9 +104,7 @@ export function NotificationsDropdown() {
             Loading notifications...
           </div>
         ) : notifications.length === 0 ? (
-          <div className="p-4 text-center text-sm text-muted-foreground">
-            No new notifications
-          </div>
+          <div className="p-4 text-center text-sm text-muted-foreground">No new notifications</div>
         ) : (
           <div className="max-h-[400px] overflow-y-auto">
             {notifications.map((notification) => (
@@ -122,12 +118,8 @@ export function NotificationsDropdown() {
                     <Package className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {notification.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {notification.message}
-                    </p>
+                    <p className="text-sm font-medium leading-none">{notification.title}</p>
+                    <p className="text-xs text-muted-foreground">{notification.message}</p>
                     <div className="flex items-center gap-2">
                       <Badge
                         className={`${getStatusColor(notification.status)} text-white`}

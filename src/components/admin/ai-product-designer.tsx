@@ -98,12 +98,7 @@ export function AIProductDesigner({
 
   return (
     <>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => setOpen(true)}
-        className="gap-2"
-      >
+      <Button type="button" variant="outline" onClick={() => setOpen(true)} className="gap-2">
         <Sparkles className="h-4 w-4 text-purple-600" />
         AI Designer
       </Button>
@@ -115,9 +110,7 @@ export function AIProductDesigner({
               <Sparkles className="h-5 w-5 text-purple-600" />
               AI Product Designer
             </DialogTitle>
-            <DialogDescription>
-              Generate SEO-optimized product content using AI
-            </DialogDescription>
+            <DialogDescription>Generate SEO-optimized product content using AI</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -222,7 +215,7 @@ export function AIProductDesigner({
                     <div className="mt-4">
                       <Label>Paste Claude Code's JSON response here:</Label>
                       <Textarea
-                        placeholder='Paste JSON from Claude Code here...'
+                        placeholder="Paste JSON from Claude Code here..."
                         rows={8}
                         className="mt-1 font-mono text-xs"
                         onChange={(e) => {

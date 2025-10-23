@@ -129,7 +129,6 @@
 
 ```tsx
 import { TechnicalSpecsTable, getDefaultSpecs } from '@/components/product/TechnicalSpecsTable'
-
 ;<TechnicalSpecsTable specs={getDefaultSpecs('Business Cards')} title="Technical Specifications" />
 ```
 
@@ -147,7 +146,6 @@ import { TechnicalSpecsTable, getDefaultSpecs } from '@/components/product/Techn
 
 ```tsx
 import { HowItWorksSection } from '@/components/product/HowItWorksSection'
-
 ;<HowItWorksSection />
 ```
 
@@ -191,7 +189,6 @@ import { TrustBadgesSection, TrustBadgesCompact } from '@/components/product/Tru
 
 ```tsx
 import { CitySpecificSection } from '@/components/product/CitySpecificSection'
-
 ;<CitySpecificSection
   city={{
     name: 'Chicago',
@@ -214,7 +211,6 @@ import { CitySpecificSection } from '@/components/product/CitySpecificSection'
 
 ```tsx
 import { ComparisonTable } from '@/components/product/ComparisonTable'
-
 ;<ComparisonTable
   productCategory="Business Cards"
   competitor1Name="Vistaprint"

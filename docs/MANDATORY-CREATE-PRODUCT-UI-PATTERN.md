@@ -23,9 +23,11 @@ This document defines the **MANDATORY** UI pattern for the Create Product interf
 ## 📸 Visual Reference
 
 ### ✅ CORRECT Design (Must Look Like This)
+
 Reference screenshot: `.aaaaaa/cargo/ilikethis.png`
 
 **Characteristics:**
+
 - Clean Card-based layout
 - Simple Select dropdowns
 - Inline preview badges/pills
@@ -34,9 +36,11 @@ Reference screenshot: `.aaaaaa/cargo/ilikethis.png`
 - Professional, uncluttered appearance
 
 ### ❌ INCORRECT Design (Never Use This)
+
 Reference screenshot: `.aaaaaa/cargo/idontlikethis.png`
 
 **Problems:**
+
 - Complex expandable sections
 - Excessive borders and visual noise
 - Verbose "How it works" boxes
@@ -52,6 +56,7 @@ Reference screenshot: `.aaaaaa/cargo/idontlikethis.png`
 The Create Product page (`/admin/products/new`) **MUST** follow this exact structure:
 
 ### 1. Header Section
+
 ```tsx
 <div className="flex items-center justify-between">
   {/* Back button + Title */}
@@ -63,12 +68,15 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
   {/* Action buttons */}
   <div className="flex gap-2">
     <Button variant="outline">Quick Fill (Test)</Button>
-    <Button type="button" onClick={handleSubmit}>Create Product</Button>
+    <Button type="button" onClick={handleSubmit}>
+      Create Product
+    </Button>
   </div>
 </div>
 ```
 
 ### 2. Basic Info & Images Card
+
 ```tsx
 <Card>
   <CardHeader>
@@ -83,15 +91,14 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ```
 
 ### 3. Quantity Set Card (Required)
+
 ```tsx
 <Card>
   <CardHeader>
     <CardTitle>Quantity Set (Choose One) *</CardTitle>
   </CardHeader>
   <CardContent>
-    <p className="text-sm text-muted-foreground">
-      Select a quantity set for this product...
-    </p>
+    <p className="text-sm text-muted-foreground">Select a quantity set for this product...</p>
     <Select>{/* Dropdown */}</Select>
     {/* Preview with badge pills showing values */}
   </CardContent>
@@ -99,15 +106,14 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ```
 
 ### 4. Paper Stock Set Card (Required)
+
 ```tsx
 <Card>
   <CardHeader>
     <CardTitle>Paper Stock Set (Choose One) *</CardTitle>
   </CardHeader>
   <CardContent>
-    <p className="text-sm text-muted-foreground">
-      Select a paper stock set for this product...
-    </p>
+    <p className="text-sm text-muted-foreground">Select a paper stock set for this product...</p>
     <Select>{/* Dropdown */}</Select>
     {/* Preview with list showing paper details + pricing */}
   </CardContent>
@@ -115,15 +121,14 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ```
 
 ### 5. Size Set Card (Required)
+
 ```tsx
 <Card>
   <CardHeader>
     <CardTitle>Size Set (Choose One) *</CardTitle>
   </CardHeader>
   <CardContent>
-    <p className="text-sm text-muted-foreground">
-      Select a size set for this product...
-    </p>
+    <p className="text-sm text-muted-foreground">Select a size set for this product...</p>
     <Select>{/* Dropdown */}</Select>
     {/* Preview with pill badges showing sizes */}
     {/* Optional: Custom dimensions note */}
@@ -132,15 +137,14 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ```
 
 ### 6. Turnaround Time Set Card (Optional)
+
 ```tsx
 <Card>
   <CardHeader>
     <CardTitle>Turnaround Time Set (Choose One)</CardTitle>
   </CardHeader>
   <CardContent>
-    <p className="text-sm text-muted-foreground">
-      Select a turnaround time set...
-    </p>
+    <p className="text-sm text-muted-foreground">Select a turnaround time set...</p>
     <Select>
       <SelectItem value="none">No turnaround options</SelectItem>
       {/* Other options */}
@@ -151,6 +155,7 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ```
 
 ### 7. Design Services Card (Optional)
+
 ```tsx
 <Card>
   <CardHeader>
@@ -170,6 +175,7 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ```
 
 ### 8. Add-on Options Card (Optional)
+
 ```tsx
 <Card>
   <CardHeader>
@@ -189,6 +195,7 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ```
 
 ### 9. Bottom Action Buttons
+
 ```tsx
 <div className="flex justify-between items-center py-6 border-t">
   <Button variant="ghost">Cancel</Button>
@@ -203,6 +210,7 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 ## 🎨 Styling Rules
 
 ### Colors
+
 - **Primary buttons:** Default primary color (orange/coral in production)
 - **Secondary buttons:** Outlined with appropriate contrast
 - **Preview backgrounds:** `bg-muted/50`
@@ -211,12 +219,14 @@ The Create Product page (`/admin/products/new`) **MUST** follow this exact struc
 - **Design items:** `bg-purple-100 text-purple-900 border-purple-300`
 
 ### Spacing
+
 - **Card spacing:** `space-y-6` between cards
 - **Content padding:** Standard `CardContent` padding
 - **Form elements:** `space-y-4` within cards
 - **Preview gap:** `gap-1` for pills/badges, `space-y-1` for lists
 
 ### Typography
+
 - **Card titles:** Default `CardTitle` component
 - **Helper text:** `text-sm text-muted-foreground`
 - **Preview headers:** `font-medium text-sm mb-2`
@@ -261,13 +271,15 @@ These components are approved and should be used:
 ## 📝 Preview Pattern Rules
 
 ### Badge Pills (for quantities, sizes)
+
 ```tsx
 <div className="flex flex-wrap gap-1">
   {items.map((item) => (
     <span
       className={`px-2 py-1 text-xs rounded ${
-        isDefault ? 'bg-primary text-primary-foreground font-medium' :
-                    'bg-background text-foreground border'
+        isDefault
+          ? 'bg-primary text-primary-foreground font-medium'
+          : 'bg-background text-foreground border'
       }`}
     >
       {item}
@@ -278,13 +290,15 @@ These components are approved and should be used:
 ```
 
 ### List Items (for paper stocks, turnaround times)
+
 ```tsx
 <div className="space-y-1">
   {items.map((item) => (
     <div
       className={`px-2 py-1 text-xs rounded flex items-center justify-between ${
-        isDefault ? 'bg-primary text-primary-foreground font-medium' :
-                    'bg-background text-foreground border'
+        isDefault
+          ? 'bg-primary text-primary-foreground font-medium'
+          : 'bg-background text-foreground border'
       }`}
     >
       <span>{item.name}</span>
@@ -298,6 +312,7 @@ These components are approved and should be used:
 ```
 
 ### Container
+
 ```tsx
 <div className="border rounded-lg p-3 bg-muted/50">
   <p className="font-medium text-sm mb-2">Preview: {selectedSet.name}</p>
@@ -319,6 +334,7 @@ These components are approved and should be used:
 - **Same helper text style**
 
 **The only differences allowed:**
+
 1. Page title: "Create Product" vs "Edit Product"
 2. Button text: "Create Product" vs "Save Changes"
 3. No "View Product" button (product doesn't exist yet)
@@ -331,6 +347,7 @@ These components are approved and should be used:
 **Primary file:** `/src/app/admin/products/new/page.tsx`
 
 **Key dependencies:**
+
 - `@/hooks/use-product-form` - Form state management
 - `@/components/ui/card` - Card components
 - `@/components/ui/select` - Dropdown components
@@ -348,7 +365,7 @@ Before any changes to the Create Product page, verify:
 - [ ] All Cards render correctly
 - [ ] Select dropdowns work for all fields
 - [ ] Preview badges/pills appear when item selected
-- [ ] Required fields show asterisk (*)
+- [ ] Required fields show asterisk (\*)
 - [ ] Optional fields show "Optional" in title
 - [ ] Top "Create Product" button works
 - [ ] Bottom "Create Product" button works
@@ -371,12 +388,14 @@ If you are asked to modify the Create Product page:
 5. **DOCUMENT** - If approved, update this document with the changes
 
 **Examples of allowed modifications:**
+
 - Bug fixes that don't change visual appearance
 - Adding new optional Card sections following the same pattern
 - Performance optimizations
 - Accessibility improvements
 
 **Examples of forbidden modifications:**
+
 - Changing from Card-based to tabbed layout
 - Adding progress bars or workflow indicators
 - Replacing Select dropdowns with custom complex components
@@ -388,6 +407,7 @@ If you are asked to modify the Create Product page:
 ## 📅 History
 
 **October 13, 2025 - Initial Pattern Established**
+
 - User explicitly stated: "this create a product interface is mandatory to be used"
 - User explicitly stated: "You cannot change from this type of create a product interface"
 - User explicitly stated: "It works perfectly"

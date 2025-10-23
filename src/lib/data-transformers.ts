@@ -78,7 +78,8 @@ export function transformProductForFrontend(product: Product): TransformedProduc
     productSizeGroups: product.productSizeGroups || (product as any).ProductSizeGroup,
     productQuantityGroups: product.productQuantityGroups || (product as any).ProductQuantityGroup,
     productPaperStockSets: product.productPaperStockSets || (product as any).ProductPaperStockSet,
-    productTurnaroundTimeSets: product.productTurnaroundTimeSets || (product as any).ProductTurnaroundTimeSet,
+    productTurnaroundTimeSets:
+      product.productTurnaroundTimeSets || (product as any).ProductTurnaroundTimeSet,
     productAddOnSets: product.productAddOnSets || (product as any).ProductAddOnSet,
 
     // Keep backward compatibility

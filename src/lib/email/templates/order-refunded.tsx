@@ -126,8 +126,8 @@ export const OrderRefundedEmail = ({
         </Heading>
         <ul style={expectList}>
           <li style={expectItem}>
-            <strong>Processing Time:</strong> Refunds typically take 5-10 business days to appear
-            on your statement
+            <strong>Processing Time:</strong> Refunds typically take 5-10 business days to appear on
+            your statement
           </li>
           <li style={expectItem}>
             <strong>Statement Description:</strong> Look for "GANGRUN PRINTING" or "REFUND" on your
@@ -138,8 +138,8 @@ export const OrderRefundedEmail = ({
             bank if it's been over 10 business days
           </li>
           <li style={expectItem}>
-            <strong>Different Card:</strong> If your original card has expired or been replaced,
-            the refund will still process to your account
+            <strong>Different Card:</strong> If your original card has expired or been replaced, the
+            refund will still process to your account
           </li>
         </ul>
       </Section>
@@ -153,9 +153,8 @@ export const OrderRefundedEmail = ({
           • Keep this email as proof of refund processing
           <br />
           • The refund will appear on the same payment method used for the original purchase
-          <br />
-          • If you don't see the refund after {refundEta || '10 business days'}, contact your bank
-          first
+          <br />• If you don't see the refund after {refundEta || '10 business days'}, contact your
+          bank first
           <br />• Still have questions? We're here to help - contact us below
         </Text>
       </Section>

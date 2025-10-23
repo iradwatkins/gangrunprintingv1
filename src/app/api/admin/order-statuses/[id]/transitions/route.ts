@@ -22,10 +22,7 @@ const addTransitionSchema = z.object({
  *
  * Get all valid transitions from this status
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user } = await validateRequest()
 
@@ -103,10 +100,7 @@ export async function GET(
  *
  * Add a new valid transition from this status
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user } = await validateRequest()
 
@@ -151,10 +145,7 @@ export async function POST(
     })
 
     if (existingTransition) {
-      return NextResponse.json(
-        { error: 'This transition already exists' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'This transition already exists' }, { status: 400 })
     }
 
     // Create transition
@@ -175,11 +166,14 @@ export async function POST(
       },
     })
 
-    return NextResponse.json({
-      success: true,
-      transition,
-      message: `Transition from "${fromStatus.name}" to "${toStatus.name}" created`,
-    }, { status: 201 })
+    return NextResponse.json(
+      {
+        success: true,
+        transition,
+        message: `Transition from "${fromStatus.name}" to "${toStatus.name}" created`,
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('[Transitions API] POST error:', error)
 
@@ -215,10 +209,7 @@ export async function DELETE(
     const toStatusId = searchParams.get('toStatusId')
 
     if (!toStatusId) {
-      return NextResponse.json(
-        { error: 'toStatusId query parameter is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'toStatusId query parameter is required' }, { status: 400 })
     }
 
     // Find and delete transition

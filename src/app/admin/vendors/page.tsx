@@ -320,104 +320,104 @@ export default function VendorsPage() {
           </DialogHeader>
 
           <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Vendor Name *</Label>
-                  <Input
-                    required
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="contactEmail">Contact Email *</Label>
-                  <Input
-                    required
-                    id="contactEmail"
-                    type="email"
-                    value={formData.contactEmail}
-                    onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="orderEmail">Order Email</Label>
-                  <Input
-                    id="orderEmail"
-                    placeholder="orders@vendor.com"
-                    type="email"
-                    value={formData.orderEmail}
-                    onChange={(e) => setFormData({ ...formData, orderEmail: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Shipping Address *</Label>
-                <p className="text-sm text-muted-foreground">
-                  This address will be used as the "Ship From" address for FedEx/carrier rates
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    placeholder="Street Address"
-                    value={formData.address.street}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        address: { ...formData.address, street: e.target.value },
-                      })
-                    }
-                  />
-                  <Input
-                    placeholder="City"
-                    value={formData.address.city}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        address: { ...formData.address, city: e.target.value },
-                      })
-                    }
-                  />
-                  <Input
-                    placeholder="State"
-                    value={formData.address.state}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        address: { ...formData.address, state: e.target.value },
-                      })
-                    }
-                  />
-                  <Input
-                    placeholder="ZIP Code"
-                    value={formData.address.zip}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        address: { ...formData.address, zip: e.target.value },
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.isActive}
-                  id="isActive"
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="name">Vendor Name *</Label>
+                <Input
+                  required
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
-                <Label htmlFor="isActive">Active Vendor</Label>
+              </div>
+              <div>
+                <Label htmlFor="contactEmail">Contact Email *</Label>
+                <Input
+                  required
+                  id="contactEmail"
+                  type="email"
+                  value={formData.contactEmail}
+                  onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="orderEmail">Order Email</Label>
+                <Input
+                  id="orderEmail"
+                  placeholder="orders@vendor.com"
+                  type="email"
+                  value={formData.orderEmail}
+                  onChange={(e) => setFormData({ ...formData, orderEmail: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label>Shipping Address *</Label>
+              <p className="text-sm text-muted-foreground">
+                This address will be used as the "Ship From" address for FedEx/carrier rates
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  placeholder="Street Address"
+                  value={formData.address.street}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, street: e.target.value },
+                    })
+                  }
+                />
+                <Input
+                  placeholder="City"
+                  value={formData.address.city}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, city: e.target.value },
+                    })
+                  }
+                />
+                <Input
+                  placeholder="State"
+                  value={formData.address.state}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, state: e.target.value },
+                    })
+                  }
+                />
+                <Input
+                  placeholder="ZIP Code"
+                  value={formData.address.zip}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, zip: e.target.value },
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={formData.isActive}
+                id="isActive"
+                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+              />
+              <Label htmlFor="isActive">Active Vendor</Label>
+            </div>
+          </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

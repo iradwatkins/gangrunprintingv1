@@ -1,4 +1,5 @@
 # Phase 1 Implementation Plan - DRY + SoC Refactoring
+
 **Date:** October 18, 2025
 **Status:** Ready for Approval
 **Risk Level:** HIGH (Business-Critical Pricing Logic)
@@ -10,6 +11,7 @@
 This document outlines the **detailed implementation plan** for Phase 1 of the DRY + SoC refactoring, focusing on the most business-critical improvements.
 
 **Phase 1 Goals:**
+
 1. Consolidate pricing engine (eliminate duplication)
 2. Extract product configuration service (improve testability)
 3. Adopt existing OrderService (consistency)
@@ -24,20 +26,22 @@ This document outlines the **detailed implementation plan** for Phase 1 of the D
 
 ### Pricing Engine Files (1,700 total lines)
 
-| File | Lines | Status | Usage |
-|------|-------|--------|-------|
-| `/src/lib/pricing/unified-pricing-engine.ts` | 915 | ✅ ACTIVE | Used by `/api/pricing/calculate` |
-| `/src/lib/pricing-engine.ts` | 495 | ⚠️ UNKNOWN | May be legacy |
-| `/src/lib/pricing-calculator.ts` | 290 | ⚠️ UNKNOWN | Class-based alternative |
-| `/src/lib/price-utils.ts` | ?? | ⚠️ UNKNOWN | Utility functions |
-| `/src/lib/pricing/base-price-engine.ts` | ?? | ⚠️ UNKNOWN | Base implementation |
+| File                                         | Lines | Status     | Usage                            |
+| -------------------------------------------- | ----- | ---------- | -------------------------------- |
+| `/src/lib/pricing/unified-pricing-engine.ts` | 915   | ✅ ACTIVE  | Used by `/api/pricing/calculate` |
+| `/src/lib/pricing-engine.ts`                 | 495   | ⚠️ UNKNOWN | May be legacy                    |
+| `/src/lib/pricing-calculator.ts`             | 290   | ⚠️ UNKNOWN | Class-based alternative          |
+| `/src/lib/price-utils.ts`                    | ??    | ⚠️ UNKNOWN | Utility functions                |
+| `/src/lib/pricing/base-price-engine.ts`      | ??    | ⚠️ UNKNOWN | Base implementation              |
 
 **Critical Finding:**
+
 - **`unifiedPricingEngine`** is actively used by production API
 - Other implementations may be legacy/unused
 - Need to verify usage before deletion
 
 **Risk Assessment:**
+
 - 🔴 **CRITICAL:** Pricing is business-critical per [PRICING-REFERENCE.md](../PRICING-REFERENCE.md)
 - 🔴 **HIGH:** Changes could cause calculation errors
 - 🟡 **MEDIUM:** Need comprehensive testing before deployment
@@ -77,6 +81,7 @@ grep -r "calculatePrice" src/
 ```
 
 **Questions to Answer:**
+
 - Is `pricing-engine.ts` (495 lines) used anywhere?
 - Is `PricingCalculator` class used?
 - Are there any references in admin components?
@@ -102,6 +107,7 @@ ELSE IF cannot determine usage:
 ### Step 1.1.3: Proposed Solution (Pending Verification)
 
 **Option A: unifiedPricingEngine is ONLY implementation used**
+
 ```
 ACTION:
 1. Keep: /src/lib/pricing/unified-pricing-engine.ts ✅
@@ -111,6 +117,7 @@ ACTION:
 ```
 
 **Option B: Multiple implementations ARE used**
+
 ```
 ACTION:
 1. Create: /src/services/PricingService.ts (facade pattern)
@@ -120,6 +127,7 @@ ACTION:
 ```
 
 **Option C: Cannot determine usage safely**
+
 ```
 ACTION:
 1. STOP refactoring
@@ -132,6 +140,7 @@ ACTION:
 **Before deploying any pricing changes:**
 
 ✅ **Unit Tests:**
+
 - Test base product pricing calculation
 - Test turnaround multiplier logic
 - Test each addon pricing model (18 addons)
@@ -140,22 +149,26 @@ ACTION:
 - Test edge cases (zero quantity, custom sizes, etc.)
 
 ✅ **Integration Tests:**
+
 - Test full API endpoint `/api/pricing/calculate`
 - Test with real product configurations
 - Compare results against [PRICING-REFERENCE.md](../PRICING-REFERENCE.md) examples
 
 ✅ **Regression Tests:**
+
 - Run existing test suite: `npm test`
 - Verify calculations match current production values
 - Test all product categories (business cards, flyers, etc.)
 
 ✅ **Manual Verification:**
+
 - Test in browser on product configuration page
 - Verify prices update correctly
 - Verify turnaround options show correct prices
 - Verify addon selections adjust totals
 
 **Test Script Reference:**
+
 - `/scripts/test-addon-pricing.ts` - Automated pricing verification
 
 ---
@@ -167,6 +180,7 @@ ACTION:
 **File:** `/src/app/api/products/[id]/configuration/route.ts` (648 lines)
 
 **Issues:**
+
 ```typescript
 export async function GET(request: NextRequest, { params }) {
   // Lines 1-50: HTTP handling + auth
@@ -178,12 +192,20 @@ export async function GET(request: NextRequest, { params }) {
     include: {
       productCategory: true,
       productImages: { include: { Image: true } },
-      productPaperStockSets: { /* deeply nested */ },
-      productSizes: { /* ... */ },
-      productQuantities: { /* ... */ },
-      productAddons: { /* ... */ },
+      productPaperStockSets: {
+        /* deeply nested */
+      },
+      productSizes: {
+        /* ... */
+      },
+      productQuantities: {
+        /* ... */
+      },
+      productAddons: {
+        /* ... */
+      },
       // 8+ more relations...
-    }
+    },
   })
 
   // Lines 151-400: Complex data transformations
@@ -199,6 +221,7 @@ export async function GET(request: NextRequest, { params }) {
 ```
 
 **Violates SoC:**
+
 - HTTP layer mixed with data access
 - Business logic mixed with presentation
 - Cannot test without HTTP mocking
@@ -237,6 +260,7 @@ export async function GET(request: NextRequest, { params }) {
 ### Implementation Steps
 
 **Step 1.2.1: Create Repository**
+
 ```typescript
 // /src/repositories/ProductRepository.ts
 
@@ -249,13 +273,14 @@ export class ProductRepository {
         productCategory: true,
         productImages: { include: { Image: true } },
         // ... etc
-      }
+      },
     })
   }
 }
 ```
 
 **Step 1.2.2: Create Transformer**
+
 ```typescript
 // /src/transformers/ProductConfigurationTransformer.ts
 
@@ -277,6 +302,7 @@ export class ProductConfigurationTransformer {
 ```
 
 **Step 1.2.3: Create Service**
+
 ```typescript
 // /src/services/ProductConfigurationService.ts
 
@@ -299,6 +325,7 @@ export class ProductConfigurationService {
 ```
 
 **Step 1.2.4: Update API Route**
+
 ```typescript
 // /src/app/api/products/[id]/configuration/route.ts (NOW 20 lines)
 
@@ -318,6 +345,7 @@ export async function GET(request: NextRequest, { params }) {
 ```
 
 **Benefits:**
+
 - ✅ Route reduced from 648 → 20 lines (97% reduction)
 - ✅ Business logic testable without HTTP mocking
 - ✅ Transformation logic reusable
@@ -397,7 +425,7 @@ export async function POST(request: NextRequest) {
     items: data.items,
     customer: data.customer,
     shipping: data.shipping,
-    payment: data.payment
+    payment: data.payment,
   })
 
   if (!result.success) {
@@ -409,6 +437,7 @@ export async function POST(request: NextRequest) {
 ```
 
 **Benefits:**
+
 - ✅ Route reduced from 200+ → 15 lines
 - ✅ Consistent order creation logic
 - ✅ Reusable in admin panel
@@ -429,6 +458,7 @@ export async function POST(request: NextRequest) {
 2. `/src/lib/api/responses.ts` (98 lines)
 
 **Duplication:**
+
 ```typescript
 // api-response.ts
 export function createErrorResponse(message: string, status: number) {
@@ -444,11 +474,13 @@ export function errorResponse(message: string, code: number) {
 ### Solution: Consolidate to One File
 
 **Step 1.4.1: Choose Best Implementation**
+
 - Keep: `/src/lib/api/responses.ts` (better organized, newer)
 - Migrate: All imports to this file
 - Delete: `/src/lib/api-response.ts`
 
 **Step 1.4.2: Find and Replace**
+
 ```bash
 # Find all usages
 grep -r "from '@/lib/api-response'" src/
@@ -469,12 +501,12 @@ sed -i "s|createErrorResponse|errorResponse|g" src/**/*.ts
 
 ### Phase 1 Risks
 
-| Risk | Severity | Mitigation |
-|------|----------|----------|
+| Risk                           | Severity    | Mitigation                            |
+| ------------------------------ | ----------- | ------------------------------------- |
 | **Pricing calculation errors** | 🔴 CRITICAL | Comprehensive testing, staged rollout |
-| **Breaking existing features** | 🟡 HIGH | Feature flags, canary deployment |
-| **Incomplete migration** | 🟡 MEDIUM | Complete verification before deletion |
-| **Performance regression** | 🟢 LOW | Benchmark before/after |
+| **Breaking existing features** | 🟡 HIGH     | Feature flags, canary deployment      |
+| **Incomplete migration**       | 🟡 MEDIUM   | Complete verification before deletion |
+| **Performance regression**     | 🟢 LOW      | Benchmark before/after                |
 
 ### Testing Strategy
 
@@ -509,21 +541,25 @@ git push
 ### Recommended Approach: Staged Rollout
 
 **Week 1:**
+
 - Task 1.4: Consolidate API response handlers (LOW RISK)
 - Deploy and verify
 - If successful, proceed
 
 **Week 2:**
+
 - Task 1.3: Adopt OrderService (LOW RISK)
 - Deploy and verify
 - If successful, proceed
 
 **Week 3:**
+
 - Task 1.2: Extract ProductConfiguration service (MEDIUM RISK)
 - Deploy and verify
 - Monitor for issues
 
 **Week 4:**
+
 - Task 1.1: Pricing consolidation (HIGH RISK)
 - EXTENSIVE testing before deployment
 - Canary deployment (10% traffic first)
@@ -532,6 +568,7 @@ git push
 ### Alternative: All at Once (Higher Risk)
 
 **If timeline is critical:**
+
 - Complete all tasks in development
 - Test extensively in staging
 - Single deployment to production
@@ -552,12 +589,12 @@ git push
 
 **Metrics to Track:**
 
-| Metric | Before | Target | Measurement |
-|--------|--------|--------|-------------|
-| Duplicated Code | 3,475 lines | <1,500 lines | LOC count |
-| Pricing Bugs | Baseline | -80% | Issue tracker |
-| API Response Time | Baseline | <10% increase | Application monitoring |
-| Test Coverage | ?? | >80% | Jest coverage |
+| Metric            | Before      | Target        | Measurement            |
+| ----------------- | ----------- | ------------- | ---------------------- |
+| Duplicated Code   | 3,475 lines | <1,500 lines  | LOC count              |
+| Pricing Bugs      | Baseline    | -80%          | Issue tracker          |
+| API Response Time | Baseline    | <10% increase | Application monitoring |
+| Test Coverage     | ??          | >80%          | Jest coverage          |
 
 ---
 
@@ -566,6 +603,7 @@ git push
 ### Before Starting Implementation
 
 1. **Run comprehensive analysis:**
+
    ```bash
    # Verify pricing file usage
    grep -r "pricing-engine\|pricing-calculator\|PricingCalculator" src/
@@ -578,11 +616,13 @@ git push
    ```
 
 2. **Create feature branch:**
+
    ```bash
    git checkout -b refactor/phase-1-dry-soc
    ```
 
 3. **Set up testing environment:**
+
    ```bash
    # Ensure all tests run
    npm test

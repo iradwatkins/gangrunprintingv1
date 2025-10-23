@@ -148,7 +148,9 @@ export async function checkAbandonedCarts() {
       }
     }
 
-    console.log(`✅ Checked ${abandonedCarts.length} abandoned carts, ${eligibleCarts.length} eligible for workflow`)
+    console.log(
+      `✅ Checked ${abandonedCarts.length} abandoned carts, ${eligibleCarts.length} eligible for workflow`
+    )
   } catch (error) {
     console.error('Error checking abandoned carts:', error)
   }

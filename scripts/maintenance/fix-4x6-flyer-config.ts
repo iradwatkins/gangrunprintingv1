@@ -53,7 +53,9 @@ async function main() {
   console.log(`   Assigned quantity group: ${flyerQuantityGroup.name}`)
 
   console.log('\n=== Testing Configuration API ===')
-  console.log(`Run: curl https://gangrunprinting.com/api/products/${productId}/configuration | jq '.quantities'`)
+  console.log(
+    `Run: curl https://gangrunprinting.com/api/products/${productId}/configuration | jq '.quantities'`
+  )
 
   await prisma.$disconnect()
 }

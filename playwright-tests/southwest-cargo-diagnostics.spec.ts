@@ -31,7 +31,7 @@ test.describe('Southwest Cargo Airport Display Diagnostics', () => {
    */
   test('API /api/airports should return all 82 Southwest Cargo airports', async ({ page }) => {
     console.log('\n🧪 TEST 1: API Endpoint Direct Test')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
 
     // Navigate to API endpoint
     const response = await page.goto(`${BASE_URL}/api/airports`)
@@ -60,7 +60,9 @@ test.describe('Southwest Cargo Airport Display Diagnostics', () => {
       console.log(`\n   ⚠️  ROOT CAUSE: Database has NO airports`)
       console.log(`      Fix: Run seed script: npx tsx src/scripts/seed-southwest-airports.ts`)
     } else if (airportCount < 82) {
-      console.log(`\n   ⚠️  ROOT CAUSE: Database has only ${airportCount} airports (missing ${82 - airportCount})`)
+      console.log(
+        `\n   ⚠️  ROOT CAUSE: Database has only ${airportCount} airports (missing ${82 - airportCount})`
+      )
       console.log(`      Fix: Run seed script to add missing airports`)
     }
 
@@ -95,7 +97,7 @@ test.describe('Southwest Cargo Airport Display Diagnostics', () => {
    */
   test('Locations page should display all 82 airports in Air Cargo tab', async ({ page }) => {
     console.log('\n🧪 TEST 2: Locations Page Display Test')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
 
     // Track API calls
     const apiCalls: any[] = []
@@ -211,7 +213,7 @@ test.describe('Southwest Cargo Airport Display Diagnostics', () => {
     page,
   }) => {
     console.log('\n🧪 TEST 3: Checkout Airport Selector Test')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
 
     // This test requires:
     // 1. Authentication
@@ -255,10 +257,7 @@ test.describe('Southwest Cargo Airport Display Diagnostics', () => {
       console.log(`   ✅ Reached checkout page`)
 
       // Look for shipping method selection
-      const hasSouthwestOption = await page
-        .locator('text=/Southwest.*Cargo/i')
-        .first()
-        .isVisible()
+      const hasSouthwestOption = await page.locator('text=/Southwest.*Cargo/i').first().isVisible()
       console.log(`\n   Southwest Cargo option visible: ${hasSouthwestOption ? '✅' : '❌'}`)
 
       if (hasSouthwestOption) {
@@ -285,7 +284,9 @@ test.describe('Southwest Cargo Airport Display Diagnostics', () => {
           console.log(`      Status: ${optionCount === 82 ? '✅ PASS' : '❌ FAIL'}`)
 
           if (optionCount < 82) {
-            console.log(`\n   ⚠️  ROOT CAUSE: Airport selector showing ${optionCount} instead of 82`)
+            console.log(
+              `\n   ⚠️  ROOT CAUSE: Airport selector showing ${optionCount} instead of 82`
+            )
             console.log(`      Check: src/components/checkout/airport-selector.tsx`)
             console.log(`      - Verify /api/airports is called`)
             console.log(`      - Check if filtering is applied incorrectly`)
@@ -303,7 +304,7 @@ test.describe('Southwest Cargo Airport Display Diagnostics', () => {
    */
   test('Database should contain exactly 82 active Southwest Cargo airports', async ({ page }) => {
     console.log('\n🧪 TEST 4: Database Analysis via API')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
 
     // Call API with different filters to diagnose
     console.log(`\n   🔍 Testing API with various filters...`)

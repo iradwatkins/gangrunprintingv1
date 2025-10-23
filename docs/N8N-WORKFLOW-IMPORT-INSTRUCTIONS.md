@@ -86,10 +86,12 @@ If file upload doesn't work:
 ### 1. Update Webhook URLs (if needed)
 
 The webhook workflows (#7 and #8) use these paths:
+
 - Post-Purchase: `/webhook/gangrun-order-created`
 - Order Delivered: `/webhook/gangrun-order-delivered`
 
 **Verify webhook URLs:**
+
 1. Open each webhook workflow
 2. Click the **"Webhook"** node
 3. Verify the webhook path matches database records:
@@ -98,6 +100,7 @@ The webhook workflows (#7 and #8) use these paths:
    ```
 
 **Expected webhook URLs:**
+
 - `http://localhost:5678/webhook/gangrun-order-created`
 - `http://localhost:5678/webhook/gangrun-order-delivered`
 
@@ -105,14 +108,14 @@ The webhook workflows (#7 and #8) use these paths:
 
 Verify each cron workflow has the correct schedule:
 
-| Workflow | Schedule | Cron Expression |
-|----------|----------|----------------|
-| Abandoned Cart (3hr) | Every hour | `0 * * * *` |
-| Abandoned Cart (24hr) | Every hour | `0 * * * *` |
-| Abandoned Cart (72hr) | Every hour | `0 * * * *` |
-| Win-back Campaign | Daily at 10 AM | `0 10 * * *` |
-| Order Anniversaries | Daily at 9 AM | `0 9 * * *` |
-| Review Collection | Daily at 2 PM | `0 14 * * *` |
+| Workflow              | Schedule       | Cron Expression |
+| --------------------- | -------------- | --------------- |
+| Abandoned Cart (3hr)  | Every hour     | `0 * * * *`     |
+| Abandoned Cart (24hr) | Every hour     | `0 * * * *`     |
+| Abandoned Cart (72hr) | Every hour     | `0 * * * *`     |
+| Win-back Campaign     | Daily at 10 AM | `0 10 * * *`    |
+| Order Anniversaries   | Daily at 9 AM  | `0 9 * * *`     |
+| Review Collection     | Daily at 2 PM  | `0 14 * * *`    |
 
 ### 3. Test Each Workflow
 
@@ -153,6 +156,7 @@ curl -X POST "https://gangrunprinting.com/api/marketing/emails/render" \
 ### Issue: Import fails with "Invalid JSON"
 
 **Solution:**
+
 - Verify JSON file is not corrupted
 - Check for syntax errors in JSON
 - Try Method 3 (copy-paste) instead
@@ -160,6 +164,7 @@ curl -X POST "https://gangrunprinting.com/api/marketing/emails/render" \
 ### Issue: Workflow nodes show errors after import
 
 **Solution:**
+
 - Check API endpoint URLs are correct (`https://gangrunprinting.com/api/...`)
 - Verify all required parameters are set
 - Test API endpoints manually with curl
@@ -167,6 +172,7 @@ curl -X POST "https://gangrunprinting.com/api/marketing/emails/render" \
 ### Issue: Cron schedules not triggering
 
 **Solution:**
+
 - Verify workflow is **Active** (green toggle)
 - Check timezone is set to `America/Chicago`
 - Check N8N execution logs for errors
@@ -174,6 +180,7 @@ curl -X POST "https://gangrunprinting.com/api/marketing/emails/render" \
 ### Issue: Webhooks not receiving events
 
 **Solution:**
+
 1. Verify webhook URLs in database match N8N:
    ```sql
    SELECT * FROM "N8NWebhook" WHERE "isActive" = true;
@@ -212,12 +219,14 @@ After importing all workflows:
 ### N8N Dashboard
 
 **View Executions:**
+
 1. Go to **"Executions"** tab (sidebar)
 2. Filter by workflow name
 3. Check success/failure status
 4. View execution details and logs
 
 **Monitor Active Workflows:**
+
 1. Go to **"Workflows"** page
 2. Check "Last Execution" column
 3. Verify recent executions are successful
@@ -225,6 +234,7 @@ After importing all workflows:
 ### Database Monitoring
 
 **Check webhook trigger counts:**
+
 ```sql
 SELECT
   name,
@@ -236,6 +246,7 @@ ORDER BY "lastTriggered" DESC;
 ```
 
 **Check webhook logs for errors:**
+
 ```sql
 SELECT
   w.name,
@@ -266,11 +277,13 @@ After successful import and testing:
 ## Support
 
 **Documentation:**
+
 - Main Guide: `/docs/N8N-MARKETING-AUTOMATION-SETUP.md`
 - Location Guide: `/docs/WHERE-IS-MARKETING-AUTOMATION.md`
 - Implementation Details: `/docs/MARKETING-AUTOMATION-COMPLETE.md`
 
 **Key Resources:**
+
 - N8N: https://n8n.agistaffers.com
 - Resend Dashboard: https://resend.com/emails
 - Admin Dashboard: https://gangrunprinting.com/admin/marketing/automation

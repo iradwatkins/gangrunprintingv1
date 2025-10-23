@@ -92,7 +92,7 @@ export function OrderStatusDropdown({
       setStatus(newStatus)
 
       // Find the new status details
-      const newStatusDetails = validNextStates.find(s => s.slug === newStatus)
+      const newStatusDetails = validNextStates.find((s) => s.slug === newStatus)
       toast.success(`Order status updated to ${newStatusDetails?.name || newStatus}`)
 
       // Call the callback if provided
@@ -202,10 +202,16 @@ export function OrderStatusDropdown({
                     </div>
                     <span className="flex-1">{nextState.name}</span>
                     {nextState.requiresPayment && (
-                      <Icons.CreditCard className="h-3 w-3 text-muted-foreground" title="Requires payment" />
+                      <Icons.CreditCard
+                        className="h-3 w-3 text-muted-foreground"
+                        title="Requires payment"
+                      />
                     )}
                     {nextState.requiresAdmin && (
-                      <Icons.Shield className="h-3 w-3 text-muted-foreground" title="Requires admin" />
+                      <Icons.Shield
+                        className="h-3 w-3 text-muted-foreground"
+                        title="Requires admin"
+                      />
                     )}
                   </div>
                 </DropdownMenuItem>

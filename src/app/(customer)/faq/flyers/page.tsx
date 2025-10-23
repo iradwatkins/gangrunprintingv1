@@ -48,12 +48,10 @@ export default function FlyerFAQPage() {
       {/* CTA Section */}
       <div className="bg-white border-t mt-12">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Ready to Print Your Flyers?
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Print Your Flyers?</h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Get high-quality flyers printed fast with competitive pricing.
-            Perfect for promotions, events, and marketing campaigns.
+            Get high-quality flyers printed fast with competitive pricing. Perfect for promotions,
+            events, and marketing campaigns.
           </p>
           <div className="flex gap-4 justify-center">
             <Link
@@ -90,9 +88,7 @@ export default function FlyerFAQPage() {
             href="/faq"
           >
             <h4 className="font-semibold text-gray-900 mb-2">General Printing FAQ</h4>
-            <p className="text-sm text-gray-600">
-              Common questions about our printing services
-            </p>
+            <p className="text-sm text-gray-600">Common questions about our printing services</p>
           </Link>
         </div>
       </div>

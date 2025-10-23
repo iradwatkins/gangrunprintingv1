@@ -397,8 +397,9 @@ export default function LocationsPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">
-                      We partner with Southwest Airlines Cargo to offer affordable air cargo pickup at all {airCargoLocations.length} locations
-                      nationwide. Ship for as little as $1 per pound with same-day or next-day availability!
+                      We partner with Southwest Airlines Cargo to offer affordable air cargo pickup
+                      at all {airCargoLocations.length} locations nationwide. Ship for as little as
+                      $1 per pound with same-day or next-day availability!
                     </p>
                     <div className="flex gap-3">
                       <Button asChild>

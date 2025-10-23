@@ -36,8 +36,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     try {
       idToken = tokens.idToken()
-    } catch (e) {
-    }
+    } catch (e) {}
 
     try {
       refreshToken = tokens.refreshToken()

@@ -33,10 +33,7 @@ export function CollapsibleSection({
   return (
     <Card className={cn('overflow-hidden', className)}>
       <CardHeader
-        className={cn(
-          'cursor-pointer hover:bg-accent/50 transition-colors',
-          headerClassName
-        )}
+        className={cn('cursor-pointer hover:bg-accent/50 transition-colors', headerClassName)}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center justify-between">
@@ -61,10 +58,7 @@ export function CollapsibleSection({
       </CardHeader>
       {isOpen && (
         <CardContent
-          className={cn(
-            'animate-in slide-in-from-top-2 duration-200',
-            contentClassName
-          )}
+          className={cn('animate-in slide-in-from-top-2 duration-200', contentClassName)}
         >
           {children}
         </CardContent>

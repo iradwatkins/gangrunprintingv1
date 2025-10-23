@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -8,70 +8,70 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Upload, Loader2 } from 'lucide-react';
+} from '@/components/ui/select'
+import { Upload, Loader2 } from 'lucide-react'
 
 interface Props {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  orderId: string;
-  onSuccess: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  orderId: string
+  onSuccess: () => void
 }
 
 export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Props) {
-  const [uploading, setUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileType, setFileType] = useState<string>('ADMIN_PROOF');
-  const [label, setLabel] = useState('');
-  const [message, setMessage] = useState('');
-  const [approvalStatus, setApprovalStatus] = useState<string>('WAITING');
+  const [uploading, setUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [fileType, setFileType] = useState<string>('ADMIN_PROOF')
+  const [label, setLabel] = useState('')
+  const [message, setMessage] = useState('')
+  const [approvalStatus, setApprovalStatus] = useState<string>('WAITING')
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      setSelectedFile(file);
+      setSelectedFile(file)
       if (!label) {
-        setLabel(file.name);
+        setLabel(file.name)
       }
     }
-  };
+  }
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) return
 
-    setUploading(true);
+    setUploading(true)
 
     try {
       // Upload file to temporary storage first, then create order file record
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+
       const uploadResponse = await fetch('/api/upload/temporary', {
         method: 'POST',
         body: formData,
-      });
-      
+      })
+
       if (!uploadResponse.ok) {
-        throw new Error('File upload failed');
+        throw new Error('File upload failed')
       }
-      
-      const uploadData = await uploadResponse.json();
-      const uploadedFile = uploadData.files[0];
-      
+
+      const uploadData = await uploadResponse.json()
+      const uploadedFile = uploadData.files[0]
+
       // Use the file URL from the upload response
-      const fileUrl = `/api/upload/temporary/${uploadedFile.fileId}`;
-      const thumbnailUrl = uploadedFile.thumbnailUrl;
+      const fileUrl = `/api/upload/temporary/${uploadedFile.fileId}`
+      const thumbnailUrl = uploadedFile.thumbnailUrl
 
       const response = await fetch(`/api/orders/${orderId}/files`, {
         method: 'POST',
@@ -89,27 +89,27 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
           approvalStatus: fileType === 'ADMIN_PROOF' ? approvalStatus : 'NOT_REQUIRED',
           message: message || undefined,
         }),
-      });
+      })
 
       if (response.ok) {
-        onSuccess();
+        onSuccess()
         // Reset form
-        setSelectedFile(null);
-        setFileType('ADMIN_PROOF');
-        setLabel('');
-        setMessage('');
-        setApprovalStatus('WAITING');
+        setSelectedFile(null)
+        setFileType('ADMIN_PROOF')
+        setLabel('')
+        setMessage('')
+        setApprovalStatus('WAITING')
       } else {
-        const error = await response.json();
-        alert(`Upload failed: ${error.error}`);
+        const error = await response.json()
+        alert(`Upload failed: ${error.error}`)
       }
     } catch (error) {
-      console.error('Error uploading file:', error);
-      alert('Upload failed');
+      console.error('Error uploading file:', error)
+      alert('Upload failed')
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -157,11 +157,7 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
           {fileType === 'ADMIN_PROOF' && (
             <div className="space-y-2">
               <Label htmlFor="approvalStatus">Approval Status</Label>
-              <Select
-                disabled={uploading}
-                value={approvalStatus}
-                onValueChange={setApprovalStatus}
-              >
+              <Select disabled={uploading} value={approvalStatus} onValueChange={setApprovalStatus}>
                 <SelectTrigger id="approvalStatus">
                   <SelectValue />
                 </SelectTrigger>
@@ -217,5 +213,5 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

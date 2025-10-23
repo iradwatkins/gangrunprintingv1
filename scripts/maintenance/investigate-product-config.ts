@@ -13,19 +13,19 @@ async function investigateProduct() {
         include: {
           QuantityGroup: {
             include: {
-              QuantityGroupValue: true
-            }
-          }
-        }
+              QuantityGroupValue: true,
+            },
+          },
+        },
       },
       ProductSizeGroup: {
         include: {
           SizeGroup: {
             include: {
-              SizeGroupValue: true
-            }
-          }
-        }
+              SizeGroupValue: true,
+            },
+          },
+        },
       },
       ProductPaperStockGroup: {
         include: {
@@ -34,32 +34,32 @@ async function investigateProduct() {
               PaperStock: {
                 include: {
                   PaperStockCoating: true,
-                  PaperStockSides: true
-                }
-              }
-            }
-          }
-        }
+                  PaperStockSides: true,
+                },
+              },
+            },
+          },
+        },
       },
       ProductAddonSet: {
         include: {
           AddonSet: {
             include: {
-              Addon: true
-            }
-          }
-        }
+              Addon: true,
+            },
+          },
+        },
       },
       ProductDesignOptionSet: {
         include: {
           DesignOptionSet: {
             include: {
-              DesignOption: true
-            }
-          }
-        }
-      }
-    }
+              DesignOption: true,
+            },
+          },
+        },
+      },
+    },
   })
 
   if (!product) {
@@ -80,7 +80,7 @@ async function investigateProduct() {
       console.log(`  ${index + 1}. ${pqg.QuantityGroup.name}`)
       console.log(`     Values: ${pqg.QuantityGroup.QuantityGroupValue.length} options`)
       if (pqg.QuantityGroup.QuantityGroupValue.length > 0) {
-        const values = pqg.QuantityGroup.QuantityGroupValue.map(v => v.value).join(', ')
+        const values = pqg.QuantityGroup.QuantityGroupValue.map((v) => v.value).join(', ')
         console.log(`     Options: ${values}`)
       }
     })

@@ -112,7 +112,8 @@ export function generateProductMetadata(
 ): Metadata {
   const title = `${productName}${categoryName ? ` - ${categoryName}` : ''}`
   const desc =
-    description || `Order custom ${productName.toLowerCase()} online. High quality printing, fast delivery.`
+    description ||
+    `Order custom ${productName.toLowerCase()} online. High quality printing, fast delivery.`
 
   return generateMetadata({
     title,
@@ -148,10 +149,7 @@ export function truncateText(text: string, maxLength: number = 160): string {
 /**
  * Generate keywords array from category and product data
  */
-export function generateKeywords(
-  mainKeyword: string,
-  additionalKeywords: string[] = []
-): string[] {
+export function generateKeywords(mainKeyword: string, additionalKeywords: string[] = []): string[] {
   const base = [
     mainKeyword,
     `${mainKeyword} printing`,

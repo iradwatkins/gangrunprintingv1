@@ -11,6 +11,7 @@
 **User Report:** "edit product is not saving. https://gangrunprinting.com/admin/products/8cbdfd22-ab44-42b7-b5ff-883422f05457/edit updates can not be made"
 
 **Browser Errors:**
+
 - `PUT https://gangrunprinting.com/api/products/[id] 500 (Internal Server Error)`
 - `Failed to load resource: the server responded with a status of 404 ()`
 - `Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist.`
@@ -20,6 +21,7 @@
 ## 🔍 Root Causes Identified
 
 ### Issue #1: Configuration Not Loading (Data Transformer)
+
 **Problem:** Edit page couldn't load product configuration fields (paper stock sets, quantity groups, size groups, turnaround time sets, addon sets).
 
 **Root Cause:** The data transformer (`/src/lib/data-transformers.ts`) only checked for camelCase property names, but Prisma returns PascalCase relation names.
@@ -27,6 +29,7 @@
 **Impact:** All group-based configuration fields returned `undefined`, preventing the edit form from populating.
 
 ### Issue #2: Product Update Failing (API Route)
+
 **Problem:** PUT request failed with Prisma error: "Unknown argument `categoryId`. Available options are marked with ?."
 
 **Root Cause:** The API route was using spread operator `...productData` which included invalid/extra fields not in the Product model. The frontend was sending fields that don't exist on the Product table.
@@ -43,6 +46,7 @@
 **Lines:** 73-77
 
 **Before:**
+
 ```typescript
 // Only checked camelCase
 productSizeGroups: product.productSizeGroups,
@@ -53,6 +57,7 @@ productAddOnSets: product.productAddOnSets,
 ```
 
 **After:**
+
 ```typescript
 // Now checks both camelCase AND PascalCase
 productSizeGroups: product.productSizeGroups || (product as any).ProductSizeGroup,
@@ -63,6 +68,7 @@ productAddOnSets: product.productAddOnSets || (product as any).ProductAddOnSet,
 ```
 
 **Why This Works:**
+
 - Prisma returns relation names in PascalCase: `ProductSizeGroup`, `ProductQuantityGroup`, etc.
 - Frontend expects camelCase: `productSizeGroups`, `productQuantityGroups`, etc.
 - The transformer now checks both formats, ensuring compatibility
@@ -73,6 +79,7 @@ productAddOnSets: product.productAddOnSets || (product as any).ProductAddOnSet,
 **Lines:** 128-158
 
 **Before:**
+
 ```typescript
 const {
   images,
@@ -83,11 +90,12 @@ const {
   addOnSetId,
   options,
   pricingTiers,
-  ...productData  // ❌ Includes ALL other fields, even invalid ones
+  ...productData // ❌ Includes ALL other fields, even invalid ones
 } = data
 ```
 
 **After:**
+
 ```typescript
 const {
   images,
@@ -123,6 +131,7 @@ const productData = {
 ```
 
 **Why This Works:**
+
 - Explicitly whitelists only valid fields from the Product model
 - Prevents Prisma validation errors from unknown fields
 - Ensures type safety and data integrity
@@ -146,10 +155,13 @@ const productData = {
 ### Test Scripts Created
 
 1. **`test-product-edit.js`** - Tests configuration loading
+
    ```bash
    node test-product-edit.js
    ```
+
    **Output:**
+
    ```
    ✅ Product fetched: Test Product 1760623817062
    ✅ All required fields present!
@@ -170,6 +182,7 @@ const productData = {
 ### Manual Testing Steps
 
 ✅ **Completed Verification:**
+
 1. ✅ Configuration loads correctly from API
 2. ✅ All required IDs present (paper stock set, quantity group, size group, turnaround set)
 3. ✅ Edit page loads without errors
@@ -177,6 +190,7 @@ const productData = {
 5. ✅ Application ready in 279ms
 
 📋 **User Testing Required:**
+
 1. Go to: `https://gangrunprinting.com/admin/products`
 2. Click "Edit" on product: "Test Product 1760623817062"
 3. Verify dropdowns show current selections
@@ -198,6 +212,7 @@ const productData = {
    - Implemented field whitelisting
 
 3. **Rebuilt Docker Image:**
+
    ```bash
    docker-compose up -d --build --force-recreate app
    ```
@@ -212,6 +227,7 @@ const productData = {
 ## 📊 Impact Analysis
 
 ### Before Fixes
+
 - ❌ Edit page couldn't load product configuration
 - ❌ Dropdowns appeared empty
 - ❌ PUT requests failed with 500 error
@@ -219,6 +235,7 @@ const productData = {
 - ❌ Complete blocker for admin workflow
 
 ### After Fixes
+
 - ✅ Configuration loads correctly
 - ✅ All dropdowns show current selections
 - ✅ Valid field whitelisting prevents Prisma errors
@@ -230,7 +247,9 @@ const productData = {
 ## 💡 Key Learnings
 
 ### 1. Prisma Relation Naming Consistency
+
 Prisma **always** uses PascalCase for relation names in query results:
+
 - `ProductPaperStockSet` (not `productPaperStockSet`)
 - `ProductQuantityGroup` (not `productQuantityGroup`)
 - `ProductSizeGroup` (not `productSizeGroup`)
@@ -238,17 +257,21 @@ Prisma **always** uses PascalCase for relation names in query results:
 **Solution:** Always check both camelCase and PascalCase when transforming Prisma results.
 
 ### 2. Spread Operator Dangers
+
 Using `...rest` or `...productData` with Prisma can cause validation errors if extra fields are present.
 
 **Solution:** Explicitly whitelist only valid model fields.
 
 ### 3. Consistent Transformer Patterns
+
 When fixing one relation (like `ProductImage`), apply the same pattern to **all** relations.
 
 **Solution:** Audit all transformers when making naming convention fixes.
 
 ### 4. Two-Phase Debugging
+
 When a feature isn't working:
+
 1. **Phase 1:** Check if data loads correctly (GET request)
 2. **Phase 2:** Check if data saves correctly (PUT request)
 
@@ -259,6 +282,7 @@ When a feature isn't working:
 ## 🔗 Related Documentation
 
 ### Previous Session Fixes
+
 1. **Commit `20c175c7`** - Image upload persistence fix
    - Fixed race conditions in multi-image uploads
    - Document: `IMAGE-UPLOAD-TESTING-GUIDE.md`
@@ -273,6 +297,7 @@ When a feature isn't working:
    - Document: `PRODUCT-EDIT-COMPLETE-FIX-2025-10-16.md` (this file)
 
 ### Complete Timeline
+
 ```
 Session 1 (Oct 16) → Image Upload Persistence
 Session 2 (Oct 16) → Image Display on Listing
@@ -286,12 +311,14 @@ Session 3 (Oct 16) → Product Edit Configuration + Update
 ## 🚀 Next Steps
 
 ### Immediate (User Testing)
+
 1. Test product edit in browser
 2. Verify save functionality works
 3. Check that changes persist
 4. Report any remaining issues
 
 ### Future Improvements
+
 1. Add TypeScript type safety for transformer functions
 2. Create comprehensive E2E test suite for product CRUD
 3. Add validation for required configuration fields
@@ -318,6 +345,7 @@ Session 3 (Oct 16) → Product Edit Configuration + Update
 ## 📝 Command Reference
 
 ### Run Tests
+
 ```bash
 # Test configuration loading
 node test-product-edit.js
@@ -327,6 +355,7 @@ node test-product-update.js
 ```
 
 ### Check Application
+
 ```bash
 # View container status
 docker ps | grep gangrunprinting_app
@@ -339,6 +368,7 @@ docker-compose restart app
 ```
 
 ### Rebuild (if needed)
+
 ```bash
 # Full rebuild
 docker-compose up -d --build --force-recreate app

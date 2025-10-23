@@ -293,14 +293,12 @@ function EditProductClient({ id }: { id: string }) {
         })),
       }
 
-
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(apiData),
         credentials: 'include', // CRITICAL: Send auth cookies with request
       })
-
 
       if (response.ok) {
         toast.success('Product updated successfully')

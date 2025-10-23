@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const { toAddress, items, fromAddress } = validation.data
 
     // PERFORMANCE: Batch fetch all product metadata in parallel (was sequential per-item)
-    const productIds = items.map(item => item.productId).filter((id): id is string => !!id)
+    const productIds = items.map((item) => item.productId).filter((id): id is string => !!id)
 
     let hasFreeShipping = false
 
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       })
 
       // Check for free shipping
-      hasFreeShipping = productsData.some(product => {
+      hasFreeShipping = productsData.some((product) => {
         if (product?.metadata && typeof product.metadata === 'object') {
           const metadata = product.metadata as { freeShipping?: boolean }
           return metadata.freeShipping === true
@@ -112,19 +112,19 @@ export async function POST(request: NextRequest) {
       isResidential: false,
     }
 
-
     // PERFORMANCE: Batch fetch all paper stocks in parallel (was sequential per-item)
-    const paperStockIds = items.map(item => item.paperStockId).filter((id): id is string => !!id)
+    const paperStockIds = items.map((item) => item.paperStockId).filter((id): id is string => !!id)
 
-    const paperStocksData = paperStockIds.length > 0
-      ? await prisma.paperStock.findMany({
-          where: { id: { in: paperStockIds } },
-          select: { id: true, weight: true },
-        })
-      : []
+    const paperStocksData =
+      paperStockIds.length > 0
+        ? await prisma.paperStock.findMany({
+            where: { id: { in: paperStockIds } },
+            select: { id: true, weight: true },
+          })
+        : []
 
     // Create a lookup map for O(1) access
-    const paperStockMap = new Map(paperStocksData.map(ps => [ps.id, ps.weight]))
+    const paperStockMap = new Map(paperStocksData.map((ps) => [ps.id, ps.weight]))
 
     // Calculate weight for each item
     const packages: ShippingPackage[] = []
@@ -164,7 +164,6 @@ export async function POST(request: NextRequest) {
       totalWeight += weight
     }
 
-
     // Split into boxes using standard box dimensions and 36lb max weight
     const boxes = splitIntoBoxes(totalWeight)
     const boxSummary = getBoxSplitSummary(boxes)
@@ -198,18 +197,19 @@ export async function POST(request: NextRequest) {
     try {
       // Get enabled modules and filter by supported carriers
       const enabledModules = registry.getEnabledModules()
-      const modulesToUse = enabledModules.filter(module => {
+      const modulesToUse = enabledModules.filter((module) => {
         const carrierName = module.carrier.toUpperCase().replace(/\s+/g, '_')
         return supportedCarriers.has(carrierName) || supportedCarriers.has(module.carrier)
       })
 
       // Fetch rates from each module with error handling
-      const ratePromises = modulesToUse.map(module =>
-        module.provider.getRates(shipFrom, toAddress, packages)
-          .then(moduleRates => {
+      const ratePromises = modulesToUse.map((module) =>
+        module.provider
+          .getRates(shipFrom, toAddress, packages)
+          .then((moduleRates) => {
             return moduleRates
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(`[Shipping API] ❌ ${module.name} error:`, err.message || err)
             return []
           })

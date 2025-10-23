@@ -107,7 +107,9 @@ test.describe.serial('Cash App Pay Payment - 3 Iterations', () => {
 
           if (pageContent?.includes('Cash App Pay not available')) {
             console.log('ℹ️ Cash App Pay is not available for this merchant (Square restriction)')
-            console.log('ℹ️ Skipping test - this is expected in sandbox without full Cash App setup')
+            console.log(
+              'ℹ️ Skipping test - this is expected in sandbox without full Cash App setup'
+            )
 
             // Record as skipped
             const duration = Date.now() - iterationStartTime
@@ -125,7 +127,11 @@ test.describe.serial('Cash App Pay Payment - 3 Iterations', () => {
             return // Exit this test iteration
           }
 
-          const errorScreenshot = await takeScreenshot(page, '06-cashapp-button-NOT-FOUND', iteration)
+          const errorScreenshot = await takeScreenshot(
+            page,
+            '06-cashapp-button-NOT-FOUND',
+            iteration
+          )
           screenshots.push(errorScreenshot)
           throw new Error('Cash App Pay button not found and no unavailability message')
         }
@@ -143,7 +149,6 @@ test.describe.serial('Cash App Pay Payment - 3 Iterations', () => {
 
           const clickedScreenshot = await takeScreenshot(page, '07-cashapp-clicked', iteration)
           screenshots.push(clickedScreenshot)
-
         } catch (error) {
           console.error('❌ Failed to click Cash App Pay button:', error)
           const errorScreenshot = await takeScreenshot(page, '07-cashapp-click-ERROR', iteration)
@@ -171,7 +176,9 @@ test.describe.serial('Cash App Pay Payment - 3 Iterations', () => {
 
         // STEP 8: Submit payment (if Pay button still exists)
         try {
-          const payButton = page.locator('button:has-text("Pay"), button:has-text("Place Order")').first()
+          const payButton = page
+            .locator('button:has-text("Pay"), button:has-text("Place Order")')
+            .first()
           const payButtonCount = await payButton.count()
 
           if (payButtonCount > 0) {
@@ -258,7 +265,6 @@ test.describe.serial('Cash App Pay Payment - 3 Iterations', () => {
         })
 
         console.log(`\n✅ Iteration ${iteration} PASSED (${(duration / 1000).toFixed(1)}s)\n`)
-
       } catch (error: any) {
         const duration = Date.now() - iterationStartTime
 

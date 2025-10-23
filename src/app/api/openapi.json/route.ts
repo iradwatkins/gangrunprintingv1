@@ -15,9 +15,6 @@ export async function GET() {
       },
     })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to load API specification' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to load API specification' }, { status: 500 })
   }
 }

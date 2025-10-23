@@ -6,51 +6,54 @@
  */
 
 interface RateLimitEntry {
-  count: number;
-  resetTime: number;
-  blocked: boolean;
-  blockExpiry?: number;
+  count: number
+  resetTime: number
+  blocked: boolean
+  blockExpiry?: number
 }
 
 // In-memory store for rate limit tracking
-const rateLimitStore = new Map<string, RateLimitEntry>();
+const rateLimitStore = new Map<string, RateLimitEntry>()
 
 // Cleanup old entries every 10 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (entry.resetTime < now && (!entry.blocked || (entry.blockExpiry && entry.blockExpiry < now))) {
-      rateLimitStore.delete(key);
+setInterval(
+  () => {
+    const now = Date.now()
+    for (const [key, entry] of rateLimitStore.entries()) {
+      if (
+        entry.resetTime < now &&
+        (!entry.blocked || (entry.blockExpiry && entry.blockExpiry < now))
+      ) {
+        rateLimitStore.delete(key)
+      }
     }
-  }
-}, 10 * 60 * 1000);
+  },
+  10 * 60 * 1000
+)
 
 interface RateLimitConfig {
-  maxRequests: number; // Maximum requests allowed
-  windowMs: number; // Time window in milliseconds
-  blockDurationMs?: number; // How long to block after exceeding limit (optional)
-  keyPrefix?: string; // Prefix for the rate limit key
+  maxRequests: number // Maximum requests allowed
+  windowMs: number // Time window in milliseconds
+  blockDurationMs?: number // How long to block after exceeding limit (optional)
+  keyPrefix?: string // Prefix for the rate limit key
 }
 
 interface RateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetTime: number;
-  blocked?: boolean;
-  blockExpiry?: number;
+  allowed: boolean
+  remaining: number
+  resetTime: number
+  blocked?: boolean
+  blockExpiry?: number
 }
 
 /**
  * Check rate limit for a given identifier
  */
-export function checkRateLimit(
-  identifier: string,
-  config: RateLimitConfig
-): RateLimitResult {
-  const key = config.keyPrefix ? `${config.keyPrefix}:${identifier}` : identifier;
-  const now = Date.now();
+export function checkRateLimit(identifier: string, config: RateLimitConfig): RateLimitResult {
+  const key = config.keyPrefix ? `${config.keyPrefix}:${identifier}` : identifier
+  const now = Date.now()
 
-  let entry = rateLimitStore.get(key);
+  let entry = rateLimitStore.get(key)
 
   // Check if currently blocked
   if (entry?.blocked && entry.blockExpiry && entry.blockExpiry > now) {
@@ -60,7 +63,7 @@ export function checkRateLimit(
       resetTime: entry.blockExpiry,
       blocked: true,
       blockExpiry: entry.blockExpiry,
-    };
+    }
   }
 
   // Initialize or reset if window expired
@@ -69,20 +72,20 @@ export function checkRateLimit(
       count: 0,
       resetTime: now + config.windowMs,
       blocked: false,
-    };
-    rateLimitStore.set(key, entry);
+    }
+    rateLimitStore.set(key, entry)
   }
 
   // Increment request count
-  entry.count++;
+  entry.count++
 
   // Check if limit exceeded
   if (entry.count > config.maxRequests) {
     // Block if blockDurationMs specified
     if (config.blockDurationMs) {
-      entry.blocked = true;
-      entry.blockExpiry = now + config.blockDurationMs;
-      rateLimitStore.set(key, entry);
+      entry.blocked = true
+      entry.blockExpiry = now + config.blockDurationMs
+      rateLimitStore.set(key, entry)
 
       return {
         allowed: false,
@@ -90,21 +93,21 @@ export function checkRateLimit(
         resetTime: entry.blockExpiry,
         blocked: true,
         blockExpiry: entry.blockExpiry,
-      };
+      }
     }
 
     return {
       allowed: false,
       remaining: 0,
       resetTime: entry.resetTime,
-    };
+    }
   }
 
   return {
     allowed: true,
     remaining: config.maxRequests - entry.count,
     resetTime: entry.resetTime,
-  };
+  }
 }
 
 /**
@@ -148,7 +151,7 @@ export const RATE_LIMITS = {
     blockDurationMs: 5 * 60 * 1000, // block for 5 minutes if exceeded
     keyPrefix: 'associate',
   },
-} as const;
+} as const
 
 /**
  * Get rate limit identifier from request
@@ -160,16 +163,16 @@ export function getRateLimitIdentifier(
   sessionId?: string
 ): string {
   // Prefer user ID for authenticated users
-  if (userId) return `user:${userId}`;
+  if (userId) return `user:${userId}`
 
   // Fall back to session ID
-  if (sessionId) return `session:${sessionId}`;
+  if (sessionId) return `session:${sessionId}`
 
   // Fall back to IP address
-  if (ipAddress) return `ip:${ipAddress}`;
+  if (ipAddress) return `ip:${ipAddress}`
 
   // Fallback identifier
-  return 'anonymous';
+  return 'anonymous'
 }
 
 /**
@@ -177,22 +180,22 @@ export function getRateLimitIdentifier(
  */
 export function getClientIp(headers: Headers): string | undefined {
   // Check common proxy headers
-  const xForwardedFor = headers.get('x-forwarded-for');
+  const xForwardedFor = headers.get('x-forwarded-for')
   if (xForwardedFor) {
-    return xForwardedFor.split(',')[0].trim();
+    return xForwardedFor.split(',')[0].trim()
   }
 
-  const xRealIp = headers.get('x-real-ip');
+  const xRealIp = headers.get('x-real-ip')
   if (xRealIp) {
-    return xRealIp;
+    return xRealIp
   }
 
-  const cfConnectingIp = headers.get('cf-connecting-ip'); // Cloudflare
+  const cfConnectingIp = headers.get('cf-connecting-ip') // Cloudflare
   if (cfConnectingIp) {
-    return cfConnectingIp;
+    return cfConnectingIp
   }
 
-  return undefined;
+  return undefined
 }
 
 /**
@@ -200,23 +203,23 @@ export function getClientIp(headers: Headers): string | undefined {
  */
 export function formatRateLimitError(result: RateLimitResult): string {
   if (result.blocked) {
-    const minutesUntilReset = Math.ceil((result.blockExpiry! - Date.now()) / (60 * 1000));
-    return `Too many requests. You have been temporarily blocked. Please try again in ${minutesUntilReset} minute${minutesUntilReset !== 1 ? 's' : ''}.`;
+    const minutesUntilReset = Math.ceil((result.blockExpiry! - Date.now()) / (60 * 1000))
+    return `Too many requests. You have been temporarily blocked. Please try again in ${minutesUntilReset} minute${minutesUntilReset !== 1 ? 's' : ''}.`
   }
 
-  const secondsUntilReset = Math.ceil((result.resetTime - Date.now()) / 1000);
-  return `Rate limit exceeded. Please try again in ${secondsUntilReset} second${secondsUntilReset !== 1 ? 's' : ''}.`;
+  const secondsUntilReset = Math.ceil((result.resetTime - Date.now()) / 1000)
+  return `Rate limit exceeded. Please try again in ${secondsUntilReset} second${secondsUntilReset !== 1 ? 's' : ''}.`
 }
 
 /**
  * Add rate limit headers to response
  */
 export function addRateLimitHeaders(headers: Headers, result: RateLimitResult): void {
-  headers.set('X-RateLimit-Remaining', result.remaining.toString());
-  headers.set('X-RateLimit-Reset', new Date(result.resetTime).toISOString());
+  headers.set('X-RateLimit-Remaining', result.remaining.toString())
+  headers.set('X-RateLimit-Reset', new Date(result.resetTime).toISOString())
 
   if (!result.allowed) {
-    headers.set('Retry-After', Math.ceil((result.resetTime - Date.now()) / 1000).toString());
+    headers.set('Retry-After', Math.ceil((result.resetTime - Date.now()) / 1000).toString())
   }
 }
 
@@ -224,21 +227,21 @@ export function addRateLimitHeaders(headers: Headers, result: RateLimitResult): 
  * Clear rate limit for identifier (admin override)
  */
 export function clearRateLimit(identifier: string, keyPrefix?: string): void {
-  const key = keyPrefix ? `${keyPrefix}:${identifier}` : identifier;
-  rateLimitStore.delete(key);
+  const key = keyPrefix ? `${keyPrefix}:${identifier}` : identifier
+  rateLimitStore.delete(key)
 }
 
 /**
  * Get rate limit status for identifier
  */
 export function getRateLimitStatus(identifier: string, keyPrefix?: string): RateLimitEntry | null {
-  const key = keyPrefix ? `${keyPrefix}:${identifier}` : identifier;
-  return rateLimitStore.get(key) || null;
+  const key = keyPrefix ? `${keyPrefix}:${identifier}` : identifier
+  return rateLimitStore.get(key) || null
 }
 
 /**
  * Reset all rate limits (use with caution)
  */
 export function resetAllRateLimits(): void {
-  rateLimitStore.clear();
+  rateLimitStore.clear()
 }

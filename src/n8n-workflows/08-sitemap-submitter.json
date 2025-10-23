@@ -59,18 +59,20 @@
   ],
   "connections": {
     "Schedule: Weekly": {
-      "main": [[
-        {"node": "Ping Google", "type": "main", "index": 0},
-        {"node": "Ping Bing", "type": "main", "index": 0}
-      ]]
+      "main": [
+        [
+          { "node": "Ping Google", "type": "main", "index": 0 },
+          { "node": "Ping Bing", "type": "main", "index": 0 }
+        ]
+      ]
     },
     "Ping Google": {
-      "main": [[{"node": "Notify Complete", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Notify Complete", "type": "main", "index": 0 }]]
     },
     "Ping Bing": {
-      "main": [[{"node": "Notify Complete", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Notify Complete", "type": "main", "index": 0 }]]
     }
   },
   "active": true,
-  "tags": [{"name": "SEO Brain"}]
+  "tags": [{ "name": "SEO Brain" }]
 }

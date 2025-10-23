@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import {
   Upload,
   FileText,
@@ -22,11 +22,11 @@ import {
   FileArchive,
   Mail,
   Send,
-} from 'lucide-react';
-import { FileUploadDialog } from './file-upload-dialog';
-import { SimpleFileUpload } from './simple-file-upload';
-import { FileMessageDialog } from './file-message-dialog';
-import toast from '@/lib/toast';
+} from 'lucide-react'
+import { FileUploadDialog } from './file-upload-dialog'
+import { SimpleFileUpload } from './simple-file-upload'
+import { FileMessageDialog } from './file-message-dialog'
+import toast from '@/lib/toast'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,34 +36,34 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import Image from 'next/image';
+} from '@/components/ui/alert-dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 
 interface OrderFile {
-  id: string;
-  filename: string;
-  fileUrl: string;
-  fileSize?: number;
-  mimeType?: string;
-  thumbnailUrl?: string;
-  fileType: 'CUSTOMER_ARTWORK' | 'ADMIN_PROOF' | 'PRODUCTION_FILE' | 'REFERENCE' | 'ATTACHMENT';
-  label?: string;
-  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED';
-  uploadedByRole: 'CUSTOMER' | 'ADMIN' | 'VENDOR' | 'SYSTEM';
-  createdAt: string;
+  id: string
+  filename: string
+  fileUrl: string
+  fileSize?: number
+  mimeType?: string
+  thumbnailUrl?: string
+  fileType: 'CUSTOMER_ARTWORK' | 'ADMIN_PROOF' | 'PRODUCTION_FILE' | 'REFERENCE' | 'ATTACHMENT'
+  label?: string
+  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED'
+  uploadedByRole: 'CUSTOMER' | 'ADMIN' | 'VENDOR' | 'SYSTEM'
+  createdAt: string
   FileMessage: Array<{
-    id: string;
-    message: string;
-    authorRole: string;
-    authorName: string;
-    createdAt: string;
-  }>;
+    id: string
+    message: string
+    authorRole: string
+    authorName: string
+    createdAt: string
+  }>
 }
 
 interface Props {
-  orderId: string;
+  orderId: string
 }
 
 const fileTypeLabels = {
@@ -72,7 +72,7 @@ const fileTypeLabels = {
   PRODUCTION_FILE: 'Production File',
   REFERENCE: 'Reference',
   ATTACHMENT: 'Attachment',
-};
+}
 
 const approvalStatusConfig = {
   WAITING: {
@@ -95,79 +95,79 @@ const approvalStatusConfig = {
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
     icon: FileText,
   },
-};
+}
 
 export function OrderFilesManager({ orderId }: Props) {
   // This component is admin-only, so always show admin features
-  const isAdmin = true;
+  const isAdmin = true
 
-  const [files, setFiles] = useState<OrderFile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<OrderFile | null>(null);
+  const [files, setFiles] = useState<OrderFile[]>([])
+  const [loading, setLoading] = useState(true)
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<OrderFile | null>(null)
 
   // Approval dialog state
-  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
-  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED');
-  const [approvalMessage, setApprovalMessage] = useState('');
-  const [fileToApprove, setFileToApprove] = useState<OrderFile | null>(null);
-  const [isApproving, setIsApproving] = useState(false);
+  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false)
+  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED')
+  const [approvalMessage, setApprovalMessage] = useState('')
+  const [fileToApprove, setFileToApprove] = useState<OrderFile | null>(null)
+  const [isApproving, setIsApproving] = useState(false)
 
   // Email proof dialog state
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [emailMessage, setEmailMessage] = useState('');
-  const [fileToEmail, setFileToEmail] = useState<OrderFile | null>(null);
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false)
+  const [emailMessage, setEmailMessage] = useState('')
+  const [fileToEmail, setFileToEmail] = useState<OrderFile | null>(null)
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
 
   const fetchFiles = async () => {
     try {
-      const response = await fetch(`/api/orders/${orderId}/files`);
+      const response = await fetch(`/api/orders/${orderId}/files`)
       if (response.ok) {
-        const data = await response.json();
-        setFiles(data.files || []);
+        const data = await response.json()
+        setFiles(data.files || [])
       }
     } catch (error) {
-      console.error('Error fetching files:', error);
+      console.error('Error fetching files:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchFiles();
-  }, [orderId]);
+    fetchFiles()
+  }, [orderId])
 
   const handleDelete = async (fileId: string) => {
-    if (!confirm('Are you sure you want to delete this file?')) return;
+    if (!confirm('Are you sure you want to delete this file?')) return
 
     try {
       const response = await fetch(`/api/orders/${orderId}/files/${fileId}`, {
         method: 'DELETE',
-      });
+      })
 
       if (response.ok) {
-        setFiles(files.filter((f) => f.id !== fileId));
+        setFiles(files.filter((f) => f.id !== fileId))
       } else {
-        alert('Failed to delete file');
+        alert('Failed to delete file')
       }
     } catch (error) {
-      console.error('Error deleting file:', error);
-      alert('Failed to delete file');
+      console.error('Error deleting file:', error)
+      alert('Failed to delete file')
     }
-  };
+  }
 
   const handleApprovalClick = (file: OrderFile, action: 'APPROVED' | 'REJECTED') => {
-    setFileToApprove(file);
-    setApprovalAction(action);
-    setApprovalMessage('');
-    setApprovalDialogOpen(true);
-  };
+    setFileToApprove(file)
+    setApprovalAction(action)
+    setApprovalMessage('')
+    setApprovalDialogOpen(true)
+  }
 
   const handleApprovalConfirm = async () => {
-    if (!fileToApprove) return;
+    if (!fileToApprove) return
 
-    setIsApproving(true);
+    setIsApproving(true)
     try {
       const response = await fetch(`/api/orders/${orderId}/files/${fileToApprove.id}/approve`, {
         method: 'POST',
@@ -178,41 +178,41 @@ export function OrderFilesManager({ orderId }: Props) {
           status: approvalAction,
           message: approvalMessage || undefined,
         }),
-      });
+      })
 
       if (response.ok) {
         toast.success(
           approvalAction === 'APPROVED'
             ? 'File approved successfully'
             : 'File rejected successfully'
-        );
+        )
         // Refresh files list
-        await fetchFiles();
-        setApprovalDialogOpen(false);
-        setFileToApprove(null);
-        setApprovalMessage('');
+        await fetchFiles()
+        setApprovalDialogOpen(false)
+        setFileToApprove(null)
+        setApprovalMessage('')
       } else {
-        const data = await response.json();
-        toast.error(data.error || 'Failed to process approval');
+        const data = await response.json()
+        toast.error(data.error || 'Failed to process approval')
       }
     } catch (error) {
-      console.error('Error processing approval:', error);
-      toast.error('Failed to process approval');
+      console.error('Error processing approval:', error)
+      toast.error('Failed to process approval')
     } finally {
-      setIsApproving(false);
+      setIsApproving(false)
     }
-  };
+  }
 
   const handleEmailProof = (file: OrderFile) => {
-    setFileToEmail(file);
-    setEmailMessage('');
-    setEmailDialogOpen(true);
-  };
+    setFileToEmail(file)
+    setEmailMessage('')
+    setEmailDialogOpen(true)
+  }
 
   const handleSendEmail = async () => {
-    if (!fileToEmail) return;
+    if (!fileToEmail) return
 
-    setIsSendingEmail(true);
+    setIsSendingEmail(true)
     try {
       const response = await fetch(`/api/orders/${orderId}/files/${fileToEmail.id}/send-proof`, {
         method: 'POST',
@@ -222,42 +222,40 @@ export function OrderFilesManager({ orderId }: Props) {
         body: JSON.stringify({
           message: emailMessage || undefined,
         }),
-      });
+      })
 
       if (response.ok) {
-        toast.success('Proof email sent successfully! Customer will be notified.');
-        setEmailDialogOpen(false);
-        setFileToEmail(null);
-        setEmailMessage('');
+        toast.success('Proof email sent successfully! Customer will be notified.')
+        setEmailDialogOpen(false)
+        setFileToEmail(null)
+        setEmailMessage('')
       } else {
-        const data = await response.json();
-        toast.error(data.error || 'Failed to send proof email');
+        const data = await response.json()
+        toast.error(data.error || 'Failed to send proof email')
       }
     } catch (error) {
-      console.error('Error sending proof email:', error);
-      toast.error('Failed to send proof email');
+      console.error('Error sending proof email:', error)
+      toast.error('Failed to send proof email')
     } finally {
-      setIsSendingEmail(false);
+      setIsSendingEmail(false)
     }
-  };
+  }
 
   const formatFileSize = (bytes?: number) => {
-    if (!bytes) return 'Unknown size';
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(2)} MB`;
-  };
+    if (!bytes) return 'Unknown size'
+    const mb = bytes / (1024 * 1024)
+    return `${mb.toFixed(2)} MB`
+  }
 
   const getFileIcon = (mimeType?: string) => {
-    if (!mimeType) return FileText;
-    if (mimeType.startsWith('image/')) return ImageIcon;
-    return FileText;
-  };
+    if (!mimeType) return FileText
+    if (mimeType.startsWith('image/')) return ImageIcon
+    return FileText
+  }
 
-  const customerArtwork = files.filter((f) => f.fileType === 'CUSTOMER_ARTWORK');
-  const adminProofs = files.filter((f) => f.fileType === 'ADMIN_PROOF');
-  const otherFiles = files.filter(
-    (f) => !['CUSTOMER_ARTWORK', 'ADMIN_PROOF'].includes(f.fileType)
-  );
+  const customerArtwork = files.filter((f) => f.fileType === 'CUSTOMER_ARTWORK')
+  const adminProofs = files.filter((f) => f.fileType === 'ADMIN_PROOF')
+  const otherFiles = files.filter((f) => !['CUSTOMER_ARTWORK', 'ADMIN_PROOF'].includes(f.fileType))
 
   if (loading) {
     return (
@@ -267,7 +265,7 @@ export function OrderFilesManager({ orderId }: Props) {
           <CardDescription>Loading files...</CardDescription>
         </CardHeader>
       </Card>
-    );
+    )
   }
 
   return (
@@ -336,8 +334,8 @@ export function OrderFilesManager({ orderId }: Props) {
                         }
                         onSendEmail={isAdmin ? handleEmailProof : undefined}
                         onViewMessages={(file) => {
-                          setSelectedFile(file);
-                          setMessageDialogOpen(true);
+                          setSelectedFile(file)
+                          setMessageDialogOpen(true)
                         }}
                       />
                     ))}
@@ -373,8 +371,8 @@ export function OrderFilesManager({ orderId }: Props) {
                             : undefined
                         }
                         onViewMessages={(file) => {
-                          setSelectedFile(file);
-                          setMessageDialogOpen(true);
+                          setSelectedFile(file)
+                          setMessageDialogOpen(true)
                         }}
                       />
                     ))}
@@ -413,8 +411,8 @@ export function OrderFilesManager({ orderId }: Props) {
                         }
                         onSendEmail={isAdmin ? handleEmailProof : undefined}
                         onViewMessages={(file) => {
-                          setSelectedFile(file);
-                          setMessageDialogOpen(true);
+                          setSelectedFile(file)
+                          setMessageDialogOpen(true)
                         }}
                       />
                     ))}
@@ -431,8 +429,8 @@ export function OrderFilesManager({ orderId }: Props) {
         orderId={orderId}
         onOpenChange={setUploadDialogOpen}
         onSuccess={() => {
-          fetchFiles();
-          setUploadDialogOpen(false);
+          fetchFiles()
+          setUploadDialogOpen(false)
         }}
       />
 
@@ -464,9 +462,7 @@ export function OrderFilesManager({ orderId }: Props) {
             {fileToApprove && (
               <div className="text-sm">
                 <p className="font-medium">{fileToApprove.label || fileToApprove.filename}</p>
-                <p className="text-muted-foreground">
-                  {fileTypeLabels[fileToApprove.fileType]}
-                </p>
+                <p className="text-muted-foreground">{fileTypeLabels[fileToApprove.fileType]}</p>
               </div>
             )}
 
@@ -498,8 +494,8 @@ export function OrderFilesManager({ orderId }: Props) {
               }
               disabled={isApproving}
               onClick={(e) => {
-                e.preventDefault();
-                handleApprovalConfirm();
+                e.preventDefault()
+                handleApprovalConfirm()
               }}
             >
               {isApproving
@@ -526,9 +522,7 @@ export function OrderFilesManager({ orderId }: Props) {
             {fileToEmail && (
               <div className="text-sm">
                 <p className="font-medium">{fileToEmail.label || fileToEmail.filename}</p>
-                <p className="text-muted-foreground">
-                  {fileTypeLabels[fileToEmail.fileType]}
-                </p>
+                <p className="text-muted-foreground">{fileTypeLabels[fileToEmail.fileType]}</p>
               </div>
             )}
 
@@ -553,8 +547,8 @@ export function OrderFilesManager({ orderId }: Props) {
               className="bg-blue-600 text-white hover:bg-blue-700"
               disabled={isSendingEmail}
               onClick={(e) => {
-                e.preventDefault();
-                handleSendEmail();
+                e.preventDefault()
+                handleSendEmail()
               }}
             >
               {isSendingEmail ? (
@@ -573,7 +567,7 @@ export function OrderFilesManager({ orderId }: Props) {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  );
+  )
 }
 
 function FileListItem({
@@ -586,25 +580,28 @@ function FileListItem({
   formatFileSize,
   getFileIcon,
 }: {
-  file: OrderFile;
-  onDelete: (id: string) => void;
-  onViewMessages: (file: OrderFile) => void;
-  onApprove?: (file: OrderFile) => void;
-  onReject?: (file: OrderFile) => void;
-  onSendEmail?: (file: OrderFile) => void;
-  formatFileSize: (bytes?: number) => string;
-  getFileIcon: (mimeType?: string) => any;
+  file: OrderFile
+  onDelete: (id: string) => void
+  onViewMessages: (file: OrderFile) => void
+  onApprove?: (file: OrderFile) => void
+  onReject?: (file: OrderFile) => void
+  onSendEmail?: (file: OrderFile) => void
+  formatFileSize: (bytes?: number) => string
+  getFileIcon: (mimeType?: string) => any
 }) {
-  const FileIcon = getFileIcon(file.mimeType);
-  const statusConfig = approvalStatusConfig[file.approvalStatus];
-  const StatusIcon = statusConfig.icon;
+  const FileIcon = getFileIcon(file.mimeType)
+  const statusConfig = approvalStatusConfig[file.approvalStatus]
+  const StatusIcon = statusConfig.icon
 
   const isImage = file.mimeType?.startsWith('image/')
   const thumbnailUrl = file.thumbnailUrl || (isImage ? file.fileUrl : null)
 
   return (
     <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
-      <div className="rounded-md bg-muted overflow-hidden flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+      <div
+        className="rounded-md bg-muted overflow-hidden flex-shrink-0"
+        style={{ width: '80px', height: '80px' }}
+      >
         {thumbnailUrl ? (
           <div className="relative w-full h-full">
             <Image
@@ -695,5 +692,5 @@ function FileListItem({
         </Button>
       </div>
     </div>
-  );
+  )
 }

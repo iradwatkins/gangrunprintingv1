@@ -81,7 +81,8 @@ export async function analyzePerformance(campaignId: string): Promise<Performanc
     const totalConversions = pageMetrics.reduce((sum, m) => sum + m.conversions, 0)
     const totalRevenue = pageMetrics.reduce((sum, m) => sum + m.revenue, 0)
     const avgConversionRate = totalViews > 0 ? totalConversions / totalViews : 0
-    const avgScore = pageMetrics.reduce((sum, m) => sum + m.performanceScore, 0) / pageMetrics.length
+    const avgScore =
+      pageMetrics.reduce((sum, m) => sum + m.performanceScore, 0) / pageMetrics.length
 
     // Identify winners (top 20%) and losers (bottom 20%)
     const winnerCount = Math.max(10, Math.ceil(pageMetrics.length * 0.2))
@@ -155,7 +156,6 @@ export async function createPerformanceSnapshot(analysis: PerformanceAnalysis): 
     await prisma.cityPerformanceSnapshot.createMany({
       data: snapshots,
     })
-
   } catch (error) {
     console.error('[Performance Analyzer] Snapshot error:', error)
     // Don't throw - snapshots are optional

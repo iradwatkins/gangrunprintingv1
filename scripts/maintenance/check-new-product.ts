@@ -11,13 +11,13 @@ async function checkProduct() {
     include: {
       ProductQuantityGroup: {
         include: {
-          QuantityGroup: true
-        }
+          QuantityGroup: true,
+        },
       },
       ProductSizeGroup: {
         include: {
-          SizeGroup: true
-        }
+          SizeGroup: true,
+        },
       },
       ProductPaperStockSet: {
         include: {
@@ -25,19 +25,19 @@ async function checkProduct() {
             include: {
               PaperStockSetItem: {
                 include: {
-                  PaperStock: true
-                }
-              }
-            }
-          }
-        }
+                  PaperStock: true,
+                },
+              },
+            },
+          },
+        },
       },
       ProductTurnaroundTimeGroup: {
         include: {
-          TurnaroundTimeGroup: true
-        }
-      }
-    }
+          TurnaroundTimeGroup: true,
+        },
+      },
+    },
   })
 
   if (!product) {
@@ -56,7 +56,7 @@ async function checkProduct() {
           name: true,
           slug: true,
           createdAt: true,
-        }
+        },
       })
       recentProducts.forEach((p, idx) => {
         console.log(`  ${idx + 1}. ${p.name}`)
@@ -114,7 +114,9 @@ async function checkProduct() {
   } else {
     console.log(`   ✅ ${product.ProductPaperStockSet.length} paper stock set(s)`)
     product.ProductPaperStockSet.forEach((ppss) => {
-      console.log(`      - ${ppss.PaperStockSet.name} (${ppss.PaperStockSet.PaperStockSetItem.length} stocks)`)
+      console.log(
+        `      - ${ppss.PaperStockSet.name} (${ppss.PaperStockSet.PaperStockSetItem.length} stocks)`
+      )
     })
   }
   console.log('')
@@ -140,9 +142,10 @@ async function checkProduct() {
 
     return group.values.split(',').map((value: string) => ({
       id: `${group.id}_${value.trim()}`,
-      label: value.trim() === 'custom'
-        ? `Custom (${group.customMin || 1}-${group.customMax || 100000})`
-        : value.trim(),
+      label:
+        value.trim() === 'custom'
+          ? `Custom (${group.customMin || 1}-${group.customMax || 100000})`
+          : value.trim(),
       value: value.trim(),
     }))
   })

@@ -13,7 +13,10 @@ import { z } from 'zod'
 import { StatusChangeEmailService } from '@/lib/email/status-change-email-service'
 
 const bulkStatusUpdateSchema = z.object({
-  orderIds: z.array(z.string()).min(1, 'At least one order ID is required').max(100, 'Maximum 100 orders at once'),
+  orderIds: z
+    .array(z.string())
+    .min(1, 'At least one order ID is required')
+    .max(100, 'Maximum 100 orders at once'),
   toStatus: z.string().min(1, 'Target status is required'),
   notes: z.string().optional(),
   sendEmail: z.boolean().default(false),
@@ -187,9 +190,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to process bulk status update' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process bulk status update' }, { status: 500 })
   }
 }

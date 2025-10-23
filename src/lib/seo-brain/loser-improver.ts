@@ -240,7 +240,6 @@ export async function executeImprovement(params: {
         break
     }
 
-
     return {
       success: true,
       changes,

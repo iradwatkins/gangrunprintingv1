@@ -41,10 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Check if PageSpeed is configured
     if (!isPageSpeedConfigured()) {
-      return NextResponse.json(
-        { error: 'PageSpeed Insights API not configured' },
-        { status: 503 }
-      )
+      return NextResponse.json({ error: 'PageSpeed Insights API not configured' }, { status: 503 })
     }
 
     const searchParams = request.nextUrl.searchParams
@@ -54,10 +51,7 @@ export async function GET(request: NextRequest) {
 
     // Validate URL parameter
     if (!url) {
-      return NextResponse.json(
-        { error: 'Missing required parameter: url' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required parameter: url' }, { status: 400 })
     }
 
     // Check rate limit
@@ -116,9 +110,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data, cached: false })
   } catch (error) {
     console.error('PageSpeed API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

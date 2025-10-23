@@ -55,13 +55,34 @@ const COLOR_OPTIONS = [
 
 // Badge color presets
 const BADGE_COLOR_OPTIONS = [
-  { label: 'Gray (Default)', value: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400' },
-  { label: 'Red (Error/Cancel)', value: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' },
-  { label: 'Orange (Warning)', value: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400' },
-  { label: 'Yellow (Pending)', value: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' },
-  { label: 'Green (Success)', value: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' },
-  { label: 'Blue (Info)', value: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' },
-  { label: 'Purple (Process)', value: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' },
+  {
+    label: 'Gray (Default)',
+    value: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
+  },
+  {
+    label: 'Red (Error/Cancel)',
+    value: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+  },
+  {
+    label: 'Orange (Warning)',
+    value: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
+  },
+  {
+    label: 'Yellow (Pending)',
+    value: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+  },
+  {
+    label: 'Green (Success)',
+    value: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+  },
+  {
+    label: 'Blue (Info)',
+    value: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+  },
+  {
+    label: 'Purple (Process)',
+    value: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+  },
 ]
 
 export default function NewOrderStatusPage() {
@@ -133,9 +154,7 @@ export default function NewOrderStatusPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold">Create Custom Status</h1>
-            <p className="text-muted-foreground">
-              Add a new custom order status to your workflow
-            </p>
+            <p className="text-muted-foreground">Add a new custom order status to your workflow</p>
           </div>
         </div>
         <Button disabled={saving} form="create-status-form" type="submit">
@@ -176,7 +195,9 @@ export default function NewOrderStatusPage() {
                     pattern="^[A-Z0-9_]+$"
                     placeholder="e.g., QUALITY_CHECK"
                     value={formData.slug}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value.toUpperCase() }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, slug: e.target.value.toUpperCase() }))
+                    }
                   />
                   <p className="text-xs text-muted-foreground">
                     Uppercase letters, numbers, and underscores only
@@ -191,7 +212,9 @@ export default function NewOrderStatusPage() {
                   placeholder="Brief description of what this status means..."
                   rows={3}
                   value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
                 />
               </div>
             </CardContent>
@@ -207,7 +230,10 @@ export default function NewOrderStatusPage() {
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="icon">Icon</Label>
-                  <Select value={formData.icon} onValueChange={(value) => setFormData((prev) => ({ ...prev, icon: value }))}>
+                  <Select
+                    value={formData.icon}
+                    onValueChange={(value) => setFormData((prev) => ({ ...prev, icon: value }))}
+                  >
                     <SelectTrigger id="icon">
                       <SelectValue />
                     </SelectTrigger>
@@ -223,7 +249,10 @@ export default function NewOrderStatusPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="color">Color</Label>
-                  <Select value={formData.color} onValueChange={(value) => setFormData((prev) => ({ ...prev, color: value }))}>
+                  <Select
+                    value={formData.color}
+                    onValueChange={(value) => setFormData((prev) => ({ ...prev, color: value }))}
+                  >
                     <SelectTrigger id="color">
                       <SelectValue />
                     </SelectTrigger>
@@ -245,7 +274,9 @@ export default function NewOrderStatusPage() {
                     min={0}
                     type="number"
                     value={formData.sortOrder}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, sortOrder: parseInt(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, sortOrder: parseInt(e.target.value) }))
+                    }
                   />
                 </div>
               </div>
@@ -288,7 +319,9 @@ export default function NewOrderStatusPage() {
                 <Switch
                   checked={formData.isPaid}
                   id="isPaid"
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isPaid: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isPaid: checked }))
+                  }
                 />
               </div>
 
@@ -302,7 +335,9 @@ export default function NewOrderStatusPage() {
                 <Switch
                   checked={formData.includeInReports}
                   id="includeInReports"
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, includeInReports: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, includeInReports: checked }))
+                  }
                 />
               </div>
 
@@ -316,7 +351,9 @@ export default function NewOrderStatusPage() {
                 <Switch
                   checked={formData.allowDownloads}
                   id="allowDownloads"
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, allowDownloads: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, allowDownloads: checked }))
+                  }
                 />
               </div>
 
@@ -330,7 +367,9 @@ export default function NewOrderStatusPage() {
                 <Switch
                   checked={formData.sendEmailOnEnter}
                   id="sendEmailOnEnter"
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, sendEmailOnEnter: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, sendEmailOnEnter: checked }))
+                  }
                 />
               </div>
             </CardContent>

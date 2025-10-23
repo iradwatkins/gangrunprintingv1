@@ -27,7 +27,11 @@ interface AirportSelectorProps {
   selectedAirportId?: string | null
 }
 
-export function AirportSelector({ state, onAirportSelected, selectedAirportId }: AirportSelectorProps) {
+export function AirportSelector({
+  state,
+  onAirportSelected,
+  selectedAirportId,
+}: AirportSelectorProps) {
   const [airports, setAirports] = useState<Airport[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

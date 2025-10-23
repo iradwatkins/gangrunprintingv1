@@ -235,10 +235,12 @@ export async function POST(request: NextRequest) {
     } = data
 
     // Auto-generate SKU from product name if not provided
-    const baseSku = sku || name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
+    const baseSku =
+      sku ||
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
 
     // Check for duplicate SKU and generate unique one if needed
     let uniqueSku = baseSku
@@ -468,7 +470,6 @@ export async function POST(request: NextRequest) {
               // Image already exists, just use its ID
               imageId = img.imageId
             } else {
-
               // Create new Image record with required ID and updatedAt
               const newImageId = randomUUID()
               const image = await tx.image.create({
@@ -547,7 +548,7 @@ export async function POST(request: NextRequest) {
       },
       {
         timeout: 45000, // FIX BUG #3: Increased from 15s to 45s for image processing
-        maxWait: 5000,  // Increased from 3s to 5s
+        maxWait: 5000, // Increased from 3s to 5s
       }
     )
 

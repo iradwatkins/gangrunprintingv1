@@ -46,9 +46,10 @@ async function main() {
       where: { slug: '4x6-flyers-9pt-card-stock' },
       update: {
         name: '4x6 Flyers - 9pt Card Stock',
-        description: 'High-quality 4x6 flyers printed on 9pt card stock. Perfect for promotions, events, and marketing campaigns.',
+        description:
+          'High-quality 4x6 flyers printed on 9pt card stock. Perfect for promotions, events, and marketing campaigns.',
         shortDescription: '4x6 flyers on premium 9pt card stock with UV coating options',
-        basePrice: 0.10, // Will be calculated based on configuration
+        basePrice: 0.1, // Will be calculated based on configuration
         setupFee: 0,
         productionTime: 3,
         isActive: true,
@@ -60,9 +61,10 @@ async function main() {
         slug: '4x6-flyers-9pt-card-stock',
         sku: 'FLY-4X6-9PT',
         name: '4x6 Flyers - 9pt Card Stock',
-        description: 'High-quality 4x6 flyers printed on 9pt card stock. Perfect for promotions, events, and marketing campaigns.',
+        description:
+          'High-quality 4x6 flyers printed on 9pt card stock. Perfect for promotions, events, and marketing campaigns.',
         shortDescription: '4x6 flyers on premium 9pt card stock with UV coating options',
-        basePrice: 0.10,
+        basePrice: 0.1,
         setupFee: 0,
         productionTime: 3,
         isActive: true,

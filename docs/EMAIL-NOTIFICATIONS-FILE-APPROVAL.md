@@ -9,6 +9,7 @@ The file approval system sends automated email notifications to customers and ad
 ## Email Templates
 
 All templates extend `EmailLayout` for consistent branding and include:
+
 - GangRun Printing header with logo
 - Clear call-to-action buttons
 - Order number and context
@@ -21,6 +22,7 @@ All templates extend `EmailLayout` for consistent branding and include:
 **Purpose:** Notify customer that their proof is ready for approval
 
 **Content:**
+
 - Hero banner: "Your Proof is Ready!"
 - Order number
 - Proof file name/label
@@ -32,6 +34,7 @@ All templates extend `EmailLayout` for consistent branding and include:
 **Email Subject:** `Your Proof is Ready for Review - Order {orderNumber} 📄`
 
 **Example:**
+
 ```
 📄 Your Proof is Ready!
 Order #GRP-12345
@@ -63,6 +66,7 @@ Please review your proof carefully and check for:
 **Purpose:** Notify production team to proceed or wait for remaining approvals
 
 **Content:**
+
 - Hero banner: "✓ Proof Approved" or "✅ All Proofs Approved!" (if all approved)
 - Order number and customer details
 - Proof file name/label
@@ -72,10 +76,12 @@ Please review your proof carefully and check for:
 - Next steps checklist
 
 **Email Subject:**
+
 - Single proof: `Proof Approved - Order {orderNumber} ✓`
 - All approved: `🎉 All Proofs Approved - Ready for Production - {orderNumber}`
 
 **Example (All Approved):**
+
 ```
 ✅ All Proofs Approved!
 Order #GRP-12345
@@ -108,6 +114,7 @@ Next Steps:
 **Purpose:** Notify design team to make revisions
 
 **Content:**
+
 - Hero banner: "🔄 Changes Requested"
 - Order number and customer details
 - Proof file name/label
@@ -119,6 +126,7 @@ Next Steps:
 **Email Subject:** `Changes Requested - Order {orderNumber} 🔄`
 
 **Example:**
+
 ```
 🔄 Changes Requested
 Order #GRP-12345
@@ -156,6 +164,7 @@ the customer can easily verify their requests were addressed.
 **Purpose:** Notify production team to review files and create proof
 
 **Content:**
+
 - Hero banner: "🎨 New Artwork Uploaded"
 - Order number and customer details
 - Count of files uploaded
@@ -167,6 +176,7 @@ the customer can easily verify their requests were addressed.
 **Email Subject:** `New Artwork Uploaded - Order {orderNumber} 🎨`
 
 **Example:**
+
 ```
 🎨 New Artwork Uploaded
 Order #GRP-12345
@@ -224,7 +234,7 @@ await FileApprovalEmailService.sendProofReadyNotification(
     filename: 'proof-v1.pdf',
   },
   'We adjusted the logo size as requested.' // Optional admin message
-);
+)
 ```
 
 #### `sendProofApprovedNotification()`
@@ -246,7 +256,7 @@ await FileApprovalEmailService.sendProofApprovedNotification(
   },
   'Looks perfect, please proceed!', // Optional customer message
   true // allProofsApproved flag
-);
+)
 ```
 
 #### `sendProofRejectedNotification()`
@@ -267,7 +277,7 @@ await FileApprovalEmailService.sendProofRejectedNotification(
     filename: 'proof-v1.pdf',
   },
   'Please make the logo 20% larger...' // Required: customer's change request
-);
+)
 ```
 
 #### `sendArtworkUploadedNotification()`
@@ -286,7 +296,7 @@ await FileApprovalEmailService.sendArtworkUploadedNotification(
     { filename: 'BusinessCard_Front.pdf', label: 'Front Design' },
     { filename: 'BusinessCard_Back.pdf', label: 'Back Design' },
   ]
-);
+)
 ```
 
 ---
@@ -302,13 +312,13 @@ await FileApprovalEmailService.sendArtworkUploadedNotification(
 ```typescript
 // After creating OrderFile records
 try {
-  const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service');
+  const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service')
   await FileApprovalEmailService.sendArtworkUploadedNotification(
     orderData,
-    files.map(f => ({ filename: f.filename, label: f.label }))
-  );
+    files.map((f) => ({ filename: f.filename, label: f.label }))
+  )
 } catch (emailError) {
-  console.error('Failed to send artwork uploaded email:', emailError);
+  console.error('Failed to send artwork uploaded email:', emailError)
   // Don't fail the request if email fails
 }
 ```
@@ -323,14 +333,14 @@ try {
 // After creating OrderFile record
 if (uploadedByRole === 'ADMIN' && fileType === 'ADMIN_PROOF' && approvalStatus === 'WAITING') {
   try {
-    const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service');
+    const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service')
     await FileApprovalEmailService.sendProofReadyNotification(
       orderData,
       fileInfo,
       message // Optional admin message
-    );
+    )
   } catch (emailError) {
-    console.error('Failed to send proof ready email:', emailError);
+    console.error('Failed to send proof ready email:', emailError)
   }
 }
 ```
@@ -344,7 +354,7 @@ if (uploadedByRole === 'ADMIN' && fileType === 'ADMIN_PROOF' && approvalStatus =
 ```typescript
 // After updating file approval status
 try {
-  const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service');
+  const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service')
 
   if (status === 'APPROVED') {
     await FileApprovalEmailService.sendProofApprovedNotification(
@@ -352,16 +362,16 @@ try {
       fileInfo,
       customerMessage,
       allProofsApproved // Boolean flag
-    );
+    )
   } else {
     await FileApprovalEmailService.sendProofRejectedNotification(
       orderData,
       fileInfo,
       customerMessage // Required for rejection
-    );
+    )
   }
 } catch (emailError) {
-  console.error('Failed to send approval email:', emailError);
+  console.error('Failed to send approval email:', emailError)
 }
 ```
 
@@ -392,9 +402,9 @@ NEXT_PUBLIC_APP_URL=https://gangrunprinting.com
 
 ```typescript
 class FileApprovalEmailService {
-  private static readonly FROM_EMAIL = 'orders@gangrunprinting.com';
-  private static readonly FROM_NAME = 'GangRun Printing';
-  private static readonly ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iradwatkins@gmail.com';
+  private static readonly FROM_EMAIL = 'orders@gangrunprinting.com'
+  private static readonly FROM_NAME = 'GangRun Printing'
+  private static readonly ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iradwatkins@gmail.com'
 }
 ```
 
@@ -414,11 +424,13 @@ try {
 ```
 
 **Rationale:**
+
 - Order operations should not fail due to email delivery issues
 - Failed emails are logged for monitoring
 - Core functionality (file upload, approval) remains reliable
 
 **Monitoring:**
+
 - Check server logs for email errors
 - Use Resend dashboard to monitor delivery rates
 - Set up alerts for high failure rates
@@ -444,7 +456,7 @@ Send test emails from API routes:
 
 ```typescript
 // Test proof ready email
-const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service');
+const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service')
 
 await FileApprovalEmailService.sendProofReadyNotification(
   {
@@ -459,7 +471,7 @@ await FileApprovalEmailService.sendProofReadyNotification(
     filename: 'test.pdf',
   },
   'This is a test proof.'
-);
+)
 ```
 
 ### Production Testing Checklist
@@ -481,25 +493,29 @@ await FileApprovalEmailService.sendProofReadyNotification(
 ### Emails Not Sending
 
 1. **Check Resend API Key**
+
    ```bash
    echo $RESEND_API_KEY
    ```
+
    Verify key is set and valid in `.env` file
 
 2. **Check Server Logs**
+
    ```bash
    pm2 logs gangrunprinting | grep "Email"
    ```
+
    Look for error messages
 
 3. **Test Resend Connection**
    ```typescript
-   const { sendEmail } = await import('@/lib/resend');
+   const { sendEmail } = await import('@/lib/resend')
    await sendEmail({
      to: 'test@example.com',
      subject: 'Test',
      html: '<p>Test email</p>',
-   });
+   })
    ```
 
 ### Emails in Spam Folder
@@ -533,6 +549,7 @@ await FileApprovalEmailService.sendProofReadyNotification(
 ### Localization
 
 Support for multiple languages:
+
 - Detect user language preference
 - Load appropriate template strings
 - Support RTL languages

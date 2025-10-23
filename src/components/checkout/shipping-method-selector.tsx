@@ -217,10 +217,7 @@ export function ShippingMethodSelector({
         <CardContent>
           <div className="text-center py-8">
             <p className="text-destructive mb-4">{error}</p>
-            <button
-              className="text-sm text-primary hover:underline"
-              onClick={fetchShippingRates}
-            >
+            <button className="text-sm text-primary hover:underline" onClick={fetchShippingRates}>
               Try again
             </button>
           </div>
@@ -254,9 +251,7 @@ export function ShippingMethodSelector({
           <Truck className="h-5 w-5" />
           Shipping Method
         </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Choose your preferred shipping method
-        </p>
+        <p className="text-sm text-muted-foreground">Choose your preferred shipping method</p>
       </CardHeader>
       <CardContent>
         <RadioGroup
@@ -312,7 +307,9 @@ export function ShippingMethodSelector({
                               </div>
                               <div className="flex items-center gap-2">
                                 <p className="text-sm text-muted-foreground">
-                                  {needsAirport ? 'Please select an airport for price' : rate.delivery.text}
+                                  {needsAirport
+                                    ? 'Please select an airport for price'
+                                    : rate.delivery.text}
                                 </p>
                                 {!needsAirport && getCarrierBadge(rate)}
                               </div>

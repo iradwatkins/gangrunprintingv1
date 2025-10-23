@@ -1,11 +1,11 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import {
   Sheet,
   SheetContent,
@@ -13,14 +13,14 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from '@/components/ui/sheet'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   CheckCircle,
   XCircle,
@@ -33,81 +33,81 @@ import {
   ChevronRight,
   ThumbsUp,
   ThumbsDown,
-} from 'lucide-react';
-import { EnhancedFilePreview } from '@/components/ui/enhanced-file-preview';
-import { cn } from '@/lib/utils';
+} from 'lucide-react'
+import { EnhancedFilePreview } from '@/components/ui/enhanced-file-preview'
+import { cn } from '@/lib/utils'
 
 interface ProofFile {
-  id: string;
-  filename: string;
-  fileUrl: string;
-  thumbnailUrl?: string;
-  label?: string;
-  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED';
-  createdAt: string;
-  mimeType?: string;
-  fileSize?: number;
+  id: string
+  filename: string
+  fileUrl: string
+  thumbnailUrl?: string
+  label?: string
+  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED'
+  createdAt: string
+  mimeType?: string
+  fileSize?: number
   FileMessage: Array<{
-    id: string;
-    message: string;
-    authorRole: string;
-    authorName: string;
-    createdAt: string;
-  }>;
+    id: string
+    message: string
+    authorRole: string
+    authorName: string
+    createdAt: string
+  }>
 }
 
 interface Props {
-  orderId: string;
-  proof: ProofFile;
-  onApprovalChange: () => void;
+  orderId: string
+  proof: ProofFile
+  onApprovalChange: () => void
 }
 
 const statusConfig = {
-  WAITING: { 
-    label: 'Needs Your Review', 
-    color: 'bg-amber-100 text-amber-800 border-amber-300', 
+  WAITING: {
+    label: 'Needs Your Review',
+    color: 'bg-amber-100 text-amber-800 border-amber-300',
     icon: Clock,
-    priority: 'high'
+    priority: 'high',
   },
-  APPROVED: { 
-    label: 'Approved', 
-    color: 'bg-emerald-100 text-emerald-800 border-emerald-300', 
+  APPROVED: {
+    label: 'Approved',
+    color: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     icon: CheckCircle,
-    priority: 'low'
+    priority: 'low',
   },
-  REJECTED: { 
-    label: 'Changes Requested', 
-    color: 'bg-red-100 text-red-800 border-red-300', 
+  REJECTED: {
+    label: 'Changes Requested',
+    color: 'bg-red-100 text-red-800 border-red-300',
     icon: XCircle,
-    priority: 'medium'
+    priority: 'medium',
   },
-  NOT_REQUIRED: { 
-    label: 'No Review Needed', 
-    color: 'bg-slate-100 text-slate-800 border-slate-300', 
+  NOT_REQUIRED: {
+    label: 'No Review Needed',
+    color: 'bg-slate-100 text-slate-800 border-slate-300',
     icon: FileText,
-    priority: 'low'
+    priority: 'low',
   },
-};
+}
 
 export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
-  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false)
+  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED')
+  const [message, setMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const statusInfo = statusConfig[proof.approvalStatus];
-  const StatusIcon = statusInfo.icon;
-  const isWaiting = proof.approvalStatus === 'WAITING';
-  const unreadMessages = proof.FileMessage.length;
+  const statusInfo = statusConfig[proof.approvalStatus]
+  const StatusIcon = statusInfo.icon
+  const isWaiting = proof.approvalStatus === 'WAITING'
+  const unreadMessages = proof.FileMessage.length
 
   const handleApproval = async () => {
     if (!message.trim() && approvalAction === 'REJECTED') {
-      alert('Please provide a reason for rejection');
-      return;
+      alert('Please provide a reason for rejection')
+      return
     }
 
-    setSubmitting(true);
+    setSubmitting(true)
     try {
       const response = await fetch(`/api/orders/${orderId}/files/${proof.id}/approve`, {
         method: 'POST',
@@ -118,35 +118,35 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
           status: approvalAction,
           message: message || (approvalAction === 'APPROVED' ? 'Approved!' : ''),
         }),
-      });
+      })
 
       if (response.ok) {
-        setApprovalDialogOpen(false);
-        setDetailsOpen(false);
-        setMessage('');
-        onApprovalChange();
+        setApprovalDialogOpen(false)
+        setDetailsOpen(false)
+        setMessage('')
+        onApprovalChange()
       } else {
-        const error = await response.json();
-        alert(`Failed to submit approval: ${error.error || 'Unknown error'}`);
+        const error = await response.json()
+        alert(`Failed to submit approval: ${error.error || 'Unknown error'}`)
       }
     } catch (error) {
-      console.error('Error submitting approval:', error);
-      alert('Failed to submit approval');
+      console.error('Error submitting approval:', error)
+      alert('Failed to submit approval')
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   const openApprovalDialog = (action: 'APPROVED' | 'REJECTED') => {
-    setApprovalAction(action);
-    setMessage('');
-    setApprovalDialogOpen(true);
-  };
+    setApprovalAction(action)
+    setMessage('')
+    setApprovalDialogOpen(true)
+  }
 
   return (
     <>
       {/* Mobile-optimized card */}
-      <Card 
+      <Card
         className={cn(
           'relative overflow-hidden transition-all duration-200',
           isWaiting && 'border-amber-300 border-2 shadow-md',
@@ -169,20 +169,17 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                   month: 'short',
                   day: 'numeric',
                   hour: '2-digit',
-                  minute: '2-digit'
+                  minute: '2-digit',
                 })}
               </CardDescription>
             </div>
-            
+
             <div className="flex flex-col items-end gap-2">
-              <Badge 
-                variant="outline" 
-                className={cn(statusInfo.color, 'text-xs font-medium')}
-              >
+              <Badge variant="outline" className={cn(statusInfo.color, 'text-xs font-medium')}>
                 <StatusIcon className="h-3 w-3 mr-1" />
                 {statusInfo.label}
               </Badge>
-              
+
               {unreadMessages > 0 && (
                 <Badge variant="secondary" className="text-xs">
                   <MessageSquare className="h-3 w-3 mr-1" />
@@ -242,7 +239,7 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            
+
             <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
               <SheetHeader className="text-left mb-4">
                 <SheetTitle>{proof.label || proof.filename}</SheetTitle>
@@ -288,10 +285,10 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                   <Button
                     variant="outline"
                     onClick={() => {
-                      const a = document.createElement('a');
-                      a.href = proof.fileUrl;
-                      a.download = proof.filename;
-                      a.click();
+                      const a = document.createElement('a')
+                      a.href = proof.fileUrl
+                      a.download = proof.filename
+                      a.click()
                     }}
                     className="w-full"
                   >
@@ -311,7 +308,7 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                         Check spelling, colors, layout, and contact information before approving
                       </p>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 gap-3">
                       <Button
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3"
@@ -377,11 +374,13 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                 : 'Tell us what changes you need.'}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="message" className="text-sm font-medium">
-                {approvalAction === 'APPROVED' ? 'Add a comment (optional)' : 'What changes do you need? *'}
+                {approvalAction === 'APPROVED'
+                  ? 'Add a comment (optional)'
+                  : 'What changes do you need? *'}
               </Label>
               <Textarea
                 id="message"
@@ -403,7 +402,7 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
               )}
             </div>
           </div>
-          
+
           <div className="flex flex-col gap-2">
             <Button
               className={cn(
@@ -432,7 +431,7 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                 </>
               )}
             </Button>
-            
+
             <Button
               variant="outline"
               disabled={submitting}
@@ -444,5 +443,5 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

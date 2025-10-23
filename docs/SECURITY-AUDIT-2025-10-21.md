@@ -21,22 +21,26 @@ This document records the security vulnerabilities found during the comprehensiv
 **Issue:** Database password `GangRun2024Secure` hardcoded in 6 locations
 
 **Fix Applied:**
+
 - Removed all hardcoded passwords
 - Replaced with environment variable `$DB_PASSWORD`
 - Added validation to require environment variable be set
 - Script now exits with error if credentials not provided
 
 **Before:**
+
 ```bash
 PGPASSWORD='GangRun2024Secure' psql -h 172.22.0.1 -U gangrun_user -d gangrun_db
 ```
 
 **After:**
+
 ```bash
 PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME"
 ```
 
 **Action Required:**
+
 - ⚠️ **MUST ROTATE** database password immediately
 - Set new password in environment: `export DB_PASSWORD='new_secure_password'`
 
@@ -49,12 +53,14 @@ PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB
 **Issue:** Admin email and password hardcoded in source
 
 **Fix Applied:**
+
 - Removed hardcoded credentials
 - Replaced with `process.env.ADMIN_EMAIL` and `process.env.ADMIN_PASSWORD`
 - Added validation to require environment variables
 - Script exits with error if not set
 
 **Before:**
+
 ```javascript
 const ADMIN_CREDENTIALS = {
   email: 'iradwatkins@gmail.com',
@@ -63,6 +69,7 @@ const ADMIN_CREDENTIALS = {
 ```
 
 **After:**
+
 ```javascript
 const ADMIN_CREDENTIALS = {
   email: process.env.ADMIN_EMAIL || '',
@@ -72,6 +79,7 @@ const ADMIN_CREDENTIALS = {
 ```
 
 **Action Required:**
+
 - ⚠️ **MUST ROTATE** admin password immediately
 - Update password in admin dashboard
 - Set new credentials in environment when running script
@@ -85,6 +93,7 @@ const ADMIN_CREDENTIALS = {
 **Issue:** ALL production credentials exposed in git repository
 
 **Credentials Exposed:**
+
 - Database password: `GangRun2024Secure`
 - Auth secret: `gangrun_super_secret_auth_key_2024_production_ready`
 - Google OAuth secret: `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`
@@ -98,12 +107,14 @@ const ADMIN_CREDENTIALS = {
 - Multiple development API keys
 
 **Fix Applied:**
+
 - ✅ Updated `.gitignore` to exclude all `.env` files
 - ✅ Added comprehensive patterns to prevent future commits
 
 **Action Required (URGENT):**
 
 1. **Remove .env from git history:**
+
    ```bash
    # Install git-filter-repo if not already installed
    # pip install git-filter-repo
@@ -141,6 +152,7 @@ const ADMIN_CREDENTIALS = {
 ### 4. Enhanced .gitignore ✅ FIXED
 
 **Fix Applied:**
+
 - Added comprehensive `.env` file exclusions
 - Prevented all variations: `.env.development`, `.env.test`, `.env.production`, etc.
 - Allowed `.env.example` files (safe templates without real secrets)
@@ -155,17 +167,20 @@ const ADMIN_CREDENTIALS = {
 **Issue:** Using `Math.random()` for order IDs (predictable)
 
 **Current Code:**
+
 ```javascript
 const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(7)}`
 ```
 
 **Should Be:**
+
 ```javascript
 import { randomUUID } from 'crypto'
 const orderId = `order_${randomUUID()}`
 ```
 
 **Action Required:**
+
 - Replace all `Math.random()` with `crypto.randomUUID()`
 - Affected files: `create-payment/route.ts`, `google/callback/route.ts`
 
@@ -177,6 +192,7 @@ const orderId = `order_${randomUUID()}`
 **Issue:** No Zod schema validation before processing payments
 
 **Action Required:**
+
 - Add Zod schemas to all payment endpoints
 - Validate email formats, numeric values, required fields
 - Prevent negative totals or malformed data
@@ -189,6 +205,7 @@ const orderId = `order_${randomUUID()}`
 **Issue:** Client ID hardcoded in source code (should be environment variable)
 
 **Action Required:**
+
 - Move to `NEXT_PUBLIC_PAYPAL_CLIENT_ID` environment variable
 - Update component to read from `process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID`
 
@@ -201,6 +218,7 @@ const orderId = `order_${randomUUID()}`
 **Credentials:** Client ID, Client Secret, Refresh Token exposed
 
 **Action Required:**
+
 - Rotate Google Search Console refresh token
 - These should also be in secrets manager, not .env
 
@@ -212,6 +230,7 @@ const orderId = `order_${randomUUID()}`
 **Value:** `ADMIN_EMAIL=iradwatkins@gmail.com`
 
 **Action Required:**
+
 - Remove from .env
 - This enables admin account enumeration
 
@@ -222,6 +241,7 @@ const orderId = `order_${randomUUID()}`
 **Keys:** Semgrep, Exa, Context7, Firecrawl API keys in .env
 
 **Action Required:**
+
 - Rotate if they have associated costs
 - Move to developer-specific .env.local files
 
@@ -232,6 +252,7 @@ const orderId = `order_${randomUUID()}`
 Use this checklist to track credential rotation progress:
 
 ### Critical (Rotate Within 24 Hours)
+
 - [ ] Database password (`GangRun2024Secure`)
 - [ ] Admin password (`Iw2006js!`)
 - [ ] AUTH_SECRET
@@ -240,6 +261,7 @@ Use this checklist to track credential rotation progress:
 - [ ] PayPal Client Secret
 
 ### High Priority (Rotate Within 1 Week)
+
 - [ ] Resend API Key
 - [ ] MinIO credentials
 - [ ] FedEx API credentials
@@ -247,6 +269,7 @@ Use this checklist to track credential rotation progress:
 - [ ] PayPal Client ID (regenerate)
 
 ### Medium Priority (Rotate Within 2 Weeks)
+
 - [ ] Google Search Console Refresh Token
 - [ ] Development API keys (Semgrep, Exa, etc.)
 
@@ -302,6 +325,7 @@ docker-compose restart app
 ### 1. Set Up Secrets Manager
 
 **Options:**
+
 - Docker Secrets (for Docker Compose deployments)
 - HashiCorp Vault (enterprise-grade)
 - AWS Secrets Manager (if using AWS)
@@ -343,6 +367,7 @@ fi
 After rotating credentials, verify:
 
 1. **Database Connection:**
+
    ```bash
    npm run prisma:studio
    # Should connect successfully
@@ -369,8 +394,8 @@ After rotating credentials, verify:
 
 ## AUDIT HISTORY
 
-| Date | Auditor | Findings | Status |
-|------|---------|----------|--------|
+| Date       | Auditor     | Findings                            | Status                                     |
+| ---------- | ----------- | ----------------------------------- | ------------------------------------------ |
 | 2025-10-21 | Claude Code | 4 CRITICAL, 3 HIGH, 3 MEDIUM, 2 LOW | Scripts fixed, credential rotation pending |
 
 ---
@@ -380,6 +405,7 @@ After rotating credentials, verify:
 **Scheduled:** 2026-01-21 (3 months from this audit)
 
 **Focus Areas:**
+
 - Verify all credentials rotated
 - Check for new hardcoded secrets
 - Review API endpoint security

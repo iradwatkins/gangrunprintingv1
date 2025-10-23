@@ -27,6 +27,7 @@
 ### Step 2: Get Your DSN
 
 After creating the project, Sentry will show you a DSN like:
+
 ```
 https://abc123def456@o1234567.ingest.sentry.io/9876543
 ```
@@ -92,10 +93,13 @@ pm2 restart gangrunprinting
 ## 🎯 Already Integrated Features
 
 ### 1. Global Error Boundary
+
 All React errors are automatically caught and sent to Sentry.
 
 ### 2. API Error Tracking
+
 API routes automatically track errors with full context:
+
 ```typescript
 // Already done in your API routes
 try {
@@ -107,24 +111,30 @@ try {
 ```
 
 ### 3. User Context
+
 When users sign in, Sentry tracks:
+
 - User ID
 - Email
 - Role (CUSTOMER, ADMIN, etc.)
 
 ### 4. Custom Business Events
+
 Track important business metrics:
+
 ```typescript
 // Already integrated
 reportBusinessError('Payment failed', 'error', {
-  amount: 100.50,
+  amount: 100.5,
   paymentMethod: 'square',
-  customerId: 'cust_123'
+  customerId: 'cust_123',
 })
 ```
 
 ### 5. Performance Tracking
+
 Monitor slow operations:
+
 ```typescript
 // Already in your code
 recordPerformance('checkout_flow', duration, success)
@@ -142,6 +152,7 @@ Once enabled, you'll see:
 ## 💰 Pricing
 
 Sentry Free Tier includes:
+
 - 5,000 errors/month
 - 10,000 performance units/month
 - 1,000 replay sessions/month
@@ -174,6 +185,7 @@ Create these alerts in Sentry:
 ### Ignore Rules
 
 Already configured in code to filter:
+
 - ✅ ResizeObserver errors (browser quirk)
 - ✅ Hydration warnings (non-critical)
 - ✅ ChunkLoadError (retry handles it)
@@ -200,6 +212,7 @@ Record user sessions when errors occur:
 ### Custom Dashboards
 
 Create dashboards for:
+
 - Payment success rate
 - Order completion rate
 - API endpoint health
@@ -225,6 +238,7 @@ After enabling, track:
 ### Too Many Events
 
 If you hit limits:
+
 1. Reduce `tracesSampleRate` in `src/lib/sentry.ts` (currently 10%)
 2. Add more filters in `beforeSend` function
 3. Upgrade to paid plan
@@ -255,6 +269,7 @@ After setup, verify:
 ## 🎉 You're Done!
 
 Once configured, Sentry will:
+
 - ✅ Catch all production errors
 - ✅ Track performance issues
 - ✅ Monitor release health

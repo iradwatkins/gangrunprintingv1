@@ -33,7 +33,7 @@ function question(query: string): Promise<string> {
 
 async function main() {
   console.log('🤖 SEO Brain - Start Product Campaign\n')
-  console.log('=' .repeat(70))
+  console.log('='.repeat(70))
   console.log('\nThis will generate 200 city landing pages for your product.')
   console.log('Each page includes:')
   console.log('  • Unique 500-word content (Ollama AI)')
@@ -43,7 +43,7 @@ async function main() {
   console.log('  • City hero image (Google AI)')
   console.log('  • Complete schema markup')
   console.log('\nEstimated time: 6-7 hours')
-  console.log('=' .repeat(70))
+  console.log('='.repeat(70))
 
   // Get product details
   console.log('\n📦 PRODUCT DETAILS\n')
@@ -55,7 +55,9 @@ async function main() {
   const turnaround = await question('Turnaround time (e.g., "3-4 days"): ')
   const price = parseFloat(await question('Price (e.g., 179): '))
 
-  const keywordsInput = await question('Keywords (comma-separated, e.g., "flyer printing, club flyers"): ')
+  const keywordsInput = await question(
+    'Keywords (comma-separated, e.g., "flyer printing, club flyers"): '
+  )
   const keywords = keywordsInput.split(',').map((k) => k.trim())
 
   rl.close()
@@ -121,16 +123,20 @@ async function main() {
 
   const startTime = Date.now()
 
-  const result = await generate200CityPages(campaign.id, {
-    productName,
-    quantity,
-    size,
-    material,
-    turnaround,
-    price,
-    onlineOnly: true,
-    keywords,
-  }, ollamaClient)
+  const result = await generate200CityPages(
+    campaign.id,
+    {
+      productName,
+      quantity,
+      size,
+      material,
+      turnaround,
+      price,
+      onlineOnly: true,
+      keywords,
+    },
+    ollamaClient
+  )
 
   const endTime = Date.now()
   const duration = ((endTime - startTime) / 1000 / 60).toFixed(1) // minutes

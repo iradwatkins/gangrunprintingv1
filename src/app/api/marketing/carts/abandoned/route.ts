@@ -106,10 +106,7 @@ export async function GET(req: NextRequest) {
     })
   } catch (error) {
     console.error('[API] Fetch abandoned carts error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch abandoned carts' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch abandoned carts' }, { status: 500 })
   }
 }
 
@@ -123,10 +120,7 @@ export async function POST(req: NextRequest) {
     const { sessionId } = await req.json()
 
     if (!sessionId) {
-      return NextResponse.json(
-        { error: 'Missing sessionId' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing sessionId' }, { status: 400 })
     }
 
     const cart = await prisma.cartSession.update({
@@ -143,9 +137,6 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     console.error('[API] Mark cart recovered error:', error)
-    return NextResponse.json(
-      { error: 'Failed to mark cart as recovered' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to mark cart as recovered' }, { status: 500 })
   }
 }

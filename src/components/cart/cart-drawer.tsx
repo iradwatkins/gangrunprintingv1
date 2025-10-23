@@ -195,9 +195,7 @@ export function CartDrawer() {
 
               {/* Trust Badge */}
               <div className="text-center">
-                <p className="text-xs text-muted-foreground">
-                  Secure checkout powered by Square
-                </p>
+                <p className="text-xs text-muted-foreground">Secure checkout powered by Square</p>
               </div>
             </div>
           </>

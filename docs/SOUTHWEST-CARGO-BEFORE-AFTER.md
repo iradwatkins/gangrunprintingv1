@@ -55,24 +55,24 @@ DASH pricing was already correct ✅
 
 ### Pickup Service Comparison
 
-| Weight | Before Fix | After Fix | Savings | Status |
-|--------|-----------|-----------|---------|--------|
-| 10 lbs | $80.00 | $80.00 | $0.00 | No change |
-| 50 lbs | $80.00 | $80.00 | $0.00 | No change |
-| 51 lbs | $191.25 | $191.25 | $0.00 | No change |
-| 75 lbs | $233.25 | $233.25 | $0.00 | No change |
-| 100 lbs | $277.00 | $277.00 | $0.00 | No change |
+| Weight      | Before Fix  | After Fix   | Savings     | Status       |
+| ----------- | ----------- | ----------- | ----------- | ------------ |
+| 10 lbs      | $80.00      | $80.00      | $0.00       | No change    |
+| 50 lbs      | $80.00      | $80.00      | $0.00       | No change    |
+| 51 lbs      | $191.25     | $191.25     | $0.00       | No change    |
+| 75 lbs      | $233.25     | $233.25     | $0.00       | No change    |
+| 100 lbs     | $277.00     | $277.00     | $0.00       | No change    |
 | **101 lbs** | **$319.75** | **$278.75** | **-$41.00** | **FIXED** ✅ |
 | **150 lbs** | **$405.50** | **$364.50** | **-$41.00** | **FIXED** ✅ |
 | **200 lbs** | **$493.00** | **$452.00** | **-$41.00** | **FIXED** ✅ |
 
 ### Customer Price Impact (with 5% markup)
 
-| Weight | Before Fix (Customer Paid) | After Fix (Customer Pays) | Overcharge Amount |
-|--------|---------------------------|---------------------------|-------------------|
-| 101 lbs | $335.74 | $292.69 | **-$43.05** |
-| 150 lbs | $425.78 | $382.73 | **-$43.05** |
-| 200 lbs | $517.65 | $474.60 | **-$43.05** |
+| Weight  | Before Fix (Customer Paid) | After Fix (Customer Pays) | Overcharge Amount |
+| ------- | -------------------------- | ------------------------- | ----------------- |
+| 101 lbs | $335.74                    | $292.69                   | **-$43.05**       |
+| 150 lbs | $425.78                    | $382.73                   | **-$43.05**       |
+| 200 lbs | $517.65                    | $474.60                   | **-$43.05**       |
 
 **Customers were being overcharged $43.05 for packages 101+ lbs!**
 
@@ -138,12 +138,14 @@ pickup: {
 ### What WooCommerce Actually Had (from screenshots)
 
 **Image 5: Southwest Cargo Pickup (0-50 lbs)**
+
 - Condition: Weight ≤ 50
 - Shipping cost: $80
 - Cost per weight: $0
 - Formula: **$80 flat**
 
 **Image 4: Southwest Cargo Pickup (51+ lbs)**
+
 - Condition: Weight ≥ 51
 - Shipping cost: $102
 - Cost per weight: $1.75/lb
@@ -156,6 +158,7 @@ The third tier (101+ lbs with $133 base + $10 handling) was added incorrectly du
 ## Test Results
 
 ### Before Fix
+
 ```
 Weight: 150 lbs
   Pickup: $405.50  ❌ WRONG
@@ -163,6 +166,7 @@ Weight: 150 lbs
 ```
 
 ### After Fix
+
 ```
 Weight: 150 lbs
   Pickup: $364.50  ✅ CORRECT (matches WooCommerce)
@@ -172,15 +176,18 @@ Weight: 150 lbs
 ## Summary
 
 ### What Was Wrong
+
 - Pickup service had an **extra third tier** (101+ lbs) that didn't exist in WooCommerce
 - This caused packages over 100 lbs to be **overcharged by $41.00** (base) or **$43.05** (with markup)
 
 ### What Was Fixed
+
 - Removed the incorrect third tier
 - Simplified Pickup to match WooCommerce exactly (2 tiers only)
 - Now: 0-50 lbs = $80 flat, 51+ lbs = $102 + ($1.75/lb)
 
 ### Result
+
 - ✅ Pricing now matches WooCommerce exactly
 - ✅ Customers are no longer overcharged
 - ✅ All automated tests passing (7/7)

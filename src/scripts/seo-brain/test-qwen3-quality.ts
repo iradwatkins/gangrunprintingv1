@@ -32,7 +32,8 @@ OUTPUT ONLY THE FINAL TEXT - NO explanations or reasoning.`
   console.log('Generating...')
 
   const response = await ollamaClient.generate({
-    system: 'You are a professional copywriter. Output ONLY the final content. You MUST write at least 140 words. Count your words carefully.',
+    system:
+      'You are a professional copywriter. Output ONLY the final content. You MUST write at least 140 words. Count your words carefully.',
     prompt,
     temperature: 0.7,
     maxTokens: 600, // Ensure enough space for full response
@@ -43,7 +44,8 @@ OUTPUT ONLY THE FINAL TEXT - NO explanations or reasoning.`
   console.log('===========')
   console.log(response)
   const wordCount = response.trim().split(/\s+/).length
-  const hasReasoning = response.includes('Hmm') || response.includes('I need') || response.includes('user wants')
+  const hasReasoning =
+    response.includes('Hmm') || response.includes('I need') || response.includes('user wants')
 
   console.log('')
   console.log('ANALYSIS:')
@@ -51,7 +53,9 @@ OUTPUT ONLY THE FINAL TEXT - NO explanations or reasoning.`
   console.log(`Word count: ${wordCount} (target: 150)`)
   console.log(`Character length: ${response.length} chars`)
   console.log(`Contains reasoning: ${hasReasoning ? 'YES (❌)' : 'NO (✅)'}`)
-  console.log(`Quality: ${!hasReasoning && wordCount >= 120 ? '✅ EXCELLENT' : wordCount >= 100 ? '⚠️ GOOD (too short)' : '❌ POOR'}`)
+  console.log(
+    `Quality: ${!hasReasoning && wordCount >= 120 ? '✅ EXCELLENT' : wordCount >= 100 ? '⚠️ GOOD (too short)' : '❌ POOR'}`
+  )
   console.log('')
   console.log('RECOMMENDATION:')
   console.log('===============')

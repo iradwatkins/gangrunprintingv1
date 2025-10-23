@@ -1,4 +1,5 @@
 # Shipping Rates Testing Summary
+
 **Date:** October 19, 2025 (Evening)
 **Tested By:** Claude Code
 **Status:** ✅ FULLY FUNCTIONAL
@@ -22,6 +23,7 @@ The user reported seeing "Failed to fetch shipping rates" errors in the browser.
 ## 📊 Test Results
 
 ### Test 1: Direct API Test (Port 3020)
+
 ```bash
 curl -X POST http://localhost:3020/api/shipping/rates \
   -H "Content-Type: application/json" \
@@ -31,6 +33,7 @@ curl -X POST http://localhost:3020/api/shipping/rates \
 **Result:** ✅ SUCCESS
 
 **Response:**
+
 - **Status:** 200 OK
 - **FedEx Rates:** 3 options
   1. FedEx Standard Overnight - $155.61 (1 day, guaranteed)
@@ -44,12 +47,13 @@ curl -X POST http://localhost:3020/api/shipping/rates \
 **Total Options:** 7 shipping methods (including duplicate Ground Economy entries)
 
 **Metadata:**
+
 ```json
 {
   "modulesUsed": ["fedex", "southwest-cargo"],
   "moduleStatus": {
-    "fedex": {"enabled": true, "priority": 1, "testMode": true},
-    "southwest-cargo": {"enabled": true, "priority": 2, "testMode": false}
+    "fedex": { "enabled": true, "priority": 1, "testMode": true },
+    "southwest-cargo": { "enabled": true, "priority": 2, "testMode": false }
   }
 }
 ```
@@ -57,6 +61,7 @@ curl -X POST http://localhost:3020/api/shipping/rates \
 ---
 
 ### Test 2: Browser Context (Playwright via gangrunprinting.com)
+
 ```javascript
 // Test via public domain
 await page.request.post('http://gangrunprinting.com/api/shipping/rates', ...)
@@ -67,6 +72,7 @@ await page.request.post('http://gangrunprinting.com/api/shipping/rates', ...)
 **Error:** `405 Method Not Allowed`
 
 **Root Cause:** Nginx redirect issue
+
 - HTTPS redirect converts POST to GET
 - API only accepts POST requests
 - Domain: gangrunprinting.com → HTTPS → Redirect → Method changed
@@ -78,6 +84,7 @@ await page.request.post('http://gangrunprinting.com/api/shipping/rates', ...)
 ## 🔍 Technical Analysis
 
 ### API Endpoint Status
+
 - **File:** `/src/app/api/shipping/rates/route.ts`
 - **Method:** POST only
 - **Validation:** Zod schema (package field is optional as of commit 68dc9043)
@@ -87,6 +94,7 @@ await page.request.post('http://gangrunprinting.com/api/shipping/rates', ...)
 ### Shipping Providers
 
 **1. FedEx Provider**
+
 - **Status:** ✅ Working
 - **Mode:** Test mode (testMode: true)
 - **API Keys:** Using test rates (no real API credentials needed)
@@ -94,6 +102,7 @@ await page.request.post('http://gangrunprinting.com/api/shipping/rates', ...)
 - **File:** `/src/lib/shipping/providers/fedex-enhanced.ts`
 
 **2. Southwest Cargo Provider**
+
 - **Status:** ✅ Working
 - **Mode:** Production (testMode: false)
 - **Database:** 82 airports loaded from database
@@ -120,18 +129,22 @@ git diff 68dc9043 HEAD -- src/lib/shipping/
 ## 🐛 Likely Browser Issue Root Causes
 
 ### 1. Hard Refresh Needed
+
 Browser may have cached the 400 error from earlier.
 **Fix:** Hard refresh (Ctrl+Shift+R) or clear browser cache
 
 ### 2. HTTPS Redirect Problem
+
 Nginx redirecting HTTP→HTTPS changes POST to GET.
 **Fix:** Ensure API calls use relative paths (`/api/shipping/rates`) not absolute (`http://gangrunprinting.com/api/shipping/rates`)
 
 ### 3. Service Worker Cache
+
 PWA service worker may be caching old responses.
 **Fix:** Unregister service workers in DevTools
 
 ### 4. Session/Cookie Issue
+
 Cart context may not be passing correct data to shipping component.
 **Fix:** Check cart data in shipping form component
 
@@ -177,15 +190,18 @@ Cart context may not be passing correct data to shipping component.
 ## 📝 Historical Context
 
 ### Commit 68dc9043 (Oct 19, 2025)
+
 **Title:** "FIX: Shipping Rates API Validation - Make package field optional"
 
 **What Was Fixed:**
+
 - Frontend sends `packages` array
 - API required `package` (singular)
 - Added `.optional()` to Zod schema
 - Fixed validation error
 
 **Testing at that time:**
+
 - ✅ FedEx returned 3 rates
 - ✅ Southwest Cargo returned 2 rates
 - ✅ 82 airports verified
@@ -198,6 +214,7 @@ Cart context may not be passing correct data to shipping component.
 ## 🔧 For Developers
 
 ### Test API Directly
+
 ```bash
 # From server
 curl -X POST http://localhost:3020/api/shipping/rates \
@@ -215,12 +232,14 @@ curl -X POST http://localhost:3020/api/shipping/rates \
 ```
 
 ### Check Airports
+
 ```bash
 docker exec gangrunprinting-postgres psql -U gangrunprinting -d gangrunprinting \
   -c "SELECT COUNT(*) FROM \"Airport\" WHERE carrier='SOUTHWEST_CARGO' AND \"isActive\"=true"
 ```
 
 ### View Logs
+
 ```bash
 docker logs --tail=100 gangrunprinting_app | grep -i shipping
 ```
@@ -240,6 +259,7 @@ docker logs --tail=100 gangrunprinting_app | grep -i shipping
 **The shipping system is working perfectly at the API level.**
 
 Both FedEx and Southwest Cargo are returning rates correctly. The issue the user is experiencing is likely:
+
 1. Browser cache showing old error
 2. HTTPS redirect issue (if using absolute URLs)
 3. Frontend component not fetching correctly

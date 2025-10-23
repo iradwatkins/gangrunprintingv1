@@ -50,9 +50,9 @@ interface PaymentMethodManagerProps {
   addresses: Address[]
 }
 
-export function PaymentMethodManager({ 
-  paymentMethods: initialPaymentMethods, 
-  addresses 
+export function PaymentMethodManager({
+  paymentMethods: initialPaymentMethods,
+  addresses,
 }: PaymentMethodManagerProps) {
   const router = useRouter()
   const [paymentMethods, setPaymentMethods] = useState<SavedPaymentMethod[]>(initialPaymentMethods)
@@ -182,7 +182,9 @@ export function PaymentMethodManager({
         if (!response.ok) throw new Error('Failed to update payment method')
 
         const { paymentMethod } = await response.json()
-        setPaymentMethods(paymentMethods.map((pm) => (pm.id === paymentMethod.id ? paymentMethod : pm)))
+        setPaymentMethods(
+          paymentMethods.map((pm) => (pm.id === paymentMethod.id ? paymentMethod : pm))
+        )
         toast.success('Payment method updated successfully')
       }
 
@@ -225,7 +227,9 @@ export function PaymentMethodManager({
       if (!response.ok) throw new Error('Failed to set default payment method')
 
       const { paymentMethod } = await response.json()
-      setPaymentMethods(paymentMethods.map((pm) => ({ ...pm, isDefault: pm.id === paymentMethod.id })))
+      setPaymentMethods(
+        paymentMethods.map((pm) => ({ ...pm, isDefault: pm.id === paymentMethod.id }))
+      )
       toast.success('Default payment method updated')
       router.refresh()
     } catch (error) {
@@ -291,7 +295,9 @@ export function PaymentMethodManager({
                     Expires {paymentMethod.expiryMonth.toString().padStart(2, '0')}/
                     {paymentMethod.expiryYear.toString().slice(-2)}
                   </p>
-                  <p className="capitalize">{paymentMethod.cardBrand.replace('_', ' ').toLowerCase()}</p>
+                  <p className="capitalize">
+                    {paymentMethod.cardBrand.replace('_', ' ').toLowerCase()}
+                  </p>
                   {paymentMethod.BillingAddress && (
                     <div className="flex items-center gap-1 text-xs">
                       <MapPin className="h-3 w-3" />
@@ -301,7 +307,11 @@ export function PaymentMethodManager({
                 </div>
 
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleOpenDialog(paymentMethod)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleOpenDialog(paymentMethod)}
+                  >
                     <Edit className="h-3 w-3 mr-1" />
                     Edit
                   </Button>
@@ -334,9 +344,7 @@ export function PaymentMethodManager({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {isAddingNew ? 'Add Payment Method' : 'Edit Payment Method'}
-            </DialogTitle>
+            <DialogTitle>{isAddingNew ? 'Add Payment Method' : 'Edit Payment Method'}</DialogTitle>
             <DialogDescription>
               {isAddingNew
                 ? 'Add a new payment method for faster checkout'
@@ -363,7 +371,8 @@ export function PaymentMethodManager({
                   className="border rounded-md p-3 min-h-[60px] bg-background"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Your card information is securely processed by Square and never stored on our servers.
+                  Your card information is securely processed by Square and never stored on our
+                  servers.
                 </p>
               </div>
             )}
@@ -394,7 +403,11 @@ export function PaymentMethodManager({
               Cancel
             </Button>
             <Button onClick={handleSavePaymentMethod} disabled={isLoading}>
-              {isLoading ? 'Saving...' : isAddingNew ? 'Add Payment Method' : 'Update Payment Method'}
+              {isLoading
+                ? 'Saving...'
+                : isAddingNew
+                  ? 'Add Payment Method'
+                  : 'Update Payment Method'}
             </Button>
           </DialogFooter>
         </DialogContent>

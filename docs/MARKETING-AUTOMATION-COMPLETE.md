@@ -17,15 +17,18 @@ Successfully implemented a complete **Hybrid Marketing Automation System** for G
 ### Phase 1: Database Schema (✅ Complete)
 
 **New Models:**
+
 1. **CartSession** - Track abandoned carts with customer info, items, cart value
 2. **Coupon** - Generate and validate discount codes (7-day expiration)
 
 **Optimizations:**
+
 - Added composite indexes on `Order (userId, createdAt)` for anniversary queries
 - Added composite indexes on `Order (createdAt, status)` for win-back queries
 - All cart session queries optimized with indexes on `lastActivity`, `abandoned`, `email`
 
 **Migration:**
+
 - `npx prisma db push` ✅ Successfully applied
 
 ---
@@ -37,11 +40,13 @@ All endpoints located in `/src/app/api/marketing/`
 #### Cart Tracking
 
 **POST `/api/marketing/carts/track`**
+
 - Track cart sessions (called on cart update)
 - Handles logged-in users + guest users
 - Auto-marks recovered carts when customer returns
 
 **GET `/api/marketing/carts/abandoned`**
+
 - Fetch carts abandoned for specified hours (default: 3-72 hours)
 - Supports tiered filtering by cart value ($50/$200/$500 thresholds)
 - Auto-marks carts as abandoned to prevent duplicate emails
@@ -49,11 +54,13 @@ All endpoints located in `/src/app/api/marketing/`
 #### Customer Data
 
 **GET `/api/marketing/customers/anniversaries`**
+
 - Fetch customers with order anniversaries (1 year, 2 years, etc.)
 - Supports `type=first_purchase` or `type=any_purchase`
 - Daily cron queries for exact date matches
 
 **GET `/api/marketing/customers/inactive`**
+
 - Fetch customers who haven't ordered in 60-365 days
 - Returns last order info for personalization
 - Daily cron queries for win-back campaigns
@@ -61,12 +68,14 @@ All endpoints located in `/src/app/api/marketing/`
 #### Coupons
 
 **POST `/api/marketing/coupons/generate`**
+
 - Generate unique coupon codes (CART, BACK, YEAR prefixes)
 - Supports percentage or fixed-amount discounts
 - Auto-expires in 7 days
 - Campaign tracking via metadata field
 
 **GET `/api/marketing/coupons/validate?code=XXX`**
+
 - Validate coupon at checkout
 - Checks: active status, expiration, usage limit
 - Returns discount details for cart calculation
@@ -74,6 +83,7 @@ All endpoints located in `/src/app/api/marketing/`
 #### Email Rendering
 
 **POST `/api/marketing/emails/render`**
+
 - Render React Email templates
 - Send via Resend
 - Supports 5 templates: `abandoned_cart`, `winback`, `anniversary`, `review_request`, `thank_you`
@@ -117,6 +127,7 @@ All templates located in `/src/lib/email/templates/marketing/`
    - Pro tips section
 
 **Design:**
+
 - Consistent GangRun Printing branding (#f97316 orange)
 - Mobile-responsive HTML
 - Professional typography
@@ -168,6 +179,7 @@ All templates located in `/src/lib/email/templates/marketing/`
    - Review request email
 
 **Each workflow includes:**
+
 - Complete node-by-node setup
 - API URLs and request bodies
 - JSON data mappings
@@ -180,17 +192,20 @@ All templates located in `/src/lib/email/templates/marketing/`
 **Service:** `/src/lib/services/webhook-service.ts`
 
 **Features:**
+
 - Centralized webhook triggering
 - Automatic webhook logging (success/failure)
 - Parallel webhook execution
 - Non-blocking (failures don't break main flow)
 
 **Methods:**
+
 - `triggerOrderCreated(orderId)` - Triggers `order.created` event
 - `triggerOrderDelivered(orderId)` - Triggers `order.delivered` event
 - `triggerOrderStatusChanged(orderId, oldStatus, newStatus)` - Triggers status change events
 
 **Usage Example:**
+
 ```typescript
 import { WebhookService } from '@/lib/services/webhook-service'
 
@@ -259,6 +274,7 @@ await WebhookService.triggerOrderStatusChanged(order.id, 'PRODUCTION', 'SHIPPED'
 ## Configuration Summary
 
 **Timing:**
+
 - First abandoned cart email: 3 hours after abandonment
 - Second abandoned cart email: 24 hours
 - Third abandoned cart email: 72 hours
@@ -267,12 +283,14 @@ await WebhookService.triggerOrderStatusChanged(order.id, 'PRODUCTION', 'SHIPPED'
 - Anniversaries: Exact 365-day intervals
 
 **Discounts:**
+
 - Standard abandoned cart: 10% OFF
 - Tiered abandoned cart: 5% / 10% / 15% (by cart value)
 - Win-back: 20% OFF
 - All coupons expire in 7 days
 
 **Email Delivery:**
+
 - Provider: Resend
 - From: GangRun Printing <orders@gangrunprinting.com>
 - Templates: React Email (professional, mobile-responsive)
@@ -294,6 +312,7 @@ docker-compose up -d --build app
 Follow the detailed guide: `/docs/N8N-MARKETING-AUTOMATION-SETUP.md`
 
 **Quick Setup:**
+
 1. Log in to n8n.agistaffers.com
 2. Create 7 workflows (copy from documentation)
 3. Set up cron schedules
@@ -317,11 +336,7 @@ await WebhookService.triggerOrderCreated(order.id)
 import { WebhookService } from '@/lib/services/webhook-service'
 
 // When updating order status
-await WebhookService.triggerOrderStatusChanged(
-  order.id,
-  oldStatus,
-  newStatus
-)
+await WebhookService.triggerOrderStatusChanged(order.id, oldStatus, newStatus)
 ```
 
 ### 4. Seed Initial Webhooks
@@ -358,6 +373,7 @@ VALUES
 ### 6. Monitoring
 
 **N8N Dashboard:**
+
 - Check execution success rates
 - View error logs
 - Monitor webhook trigger counts
@@ -393,9 +409,11 @@ ORDER BY "triggerCount" DESC;
 ### New Files Created:
 
 **Database:**
+
 - `prisma/schema.prisma` (updated with CartSession, Coupon models)
 
 **API Routes:**
+
 - `/src/app/api/marketing/carts/track/route.ts`
 - `/src/app/api/marketing/carts/abandoned/route.ts`
 - `/src/app/api/marketing/customers/anniversaries/route.ts`
@@ -404,6 +422,7 @@ ORDER BY "triggerCount" DESC;
 - `/src/app/api/marketing/emails/render/route.ts`
 
 **Email Templates:**
+
 - `/src/lib/email/templates/marketing/abandoned-cart.tsx`
 - `/src/lib/email/templates/marketing/winback.tsx`
 - `/src/lib/email/templates/marketing/anniversary.tsx`
@@ -411,9 +430,11 @@ ORDER BY "triggerCount" DESC;
 - `/src/lib/email/templates/marketing/thank-you.tsx`
 
 **Services:**
+
 - `/src/lib/services/webhook-service.ts`
 
 **Documentation:**
+
 - `/docs/N8N-MARKETING-AUTOMATION-SETUP.md`
 - `/docs/MARKETING-AUTOMATION-COMPLETE.md` (this file)
 
@@ -449,15 +470,18 @@ ORDER BY "triggerCount" DESC;
 ## Support & Maintenance
 
 **Documentation:**
+
 - Full N8N setup guide: `/docs/N8N-MARKETING-AUTOMATION-SETUP.md`
 - This completion report: `/docs/MARKETING-AUTOMATION-COMPLETE.md`
 
 **Troubleshooting:**
+
 - Check N8N execution logs for workflow failures
 - Check `N8NWebhookLog` table for webhook errors
 - Check Resend dashboard for email delivery status
 
 **Future Enhancements:**
+
 - A/B test email copy and discounts
 - Add SMS notifications (via Twilio)
 - Product-specific abandoned cart emails

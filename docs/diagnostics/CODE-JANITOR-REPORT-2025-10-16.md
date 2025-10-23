@@ -1,4 +1,5 @@
 # CODE JANITOR REPORT
+
 **Date:** October 16, 2025
 **Project:** GangRun Printing
 **Codebase Health Score:** 78/100 (Good)
@@ -10,6 +11,7 @@
 Comprehensive code quality audit completed. The codebase is **production-ready** with good architectural patterns, but requires attention to TypeScript errors and outdated dependencies.
 
 ### Key Findings:
+
 - ✅ **Product CRUD:** 100% correct and production-ready
 - ✅ **Product Options:** All 19 addons verified intact
 - ⚠️ **TypeScript Errors:** 45 type errors requiring fixes
@@ -27,6 +29,7 @@ Comprehensive code quality audit completed. The codebase is **production-ready**
 **Summary:** All ESLint errors are in vendor/external files only (`/.aaaaaa/Programs/`).
 
 **Errors Found:**
+
 - **Vendor files only:**
   - `woocommerce-order-status-manager/assets/js/admin/*.min.js` (35+ warnings)
   - `jquery.fonticonpicker.min.js` (35+ warnings)
@@ -45,17 +48,21 @@ Comprehensive code quality audit completed. The codebase is **production-ready**
 **Critical Errors by Category:**
 
 ### A. Property Name Inconsistencies (20 errors)
+
 **Files:**
+
 - `src/app/(customer)/products/[slug]/page.tsx`
 - `src/app/admin/orders/[id]/page.tsx`
 - `src/app/admin/products/new/page.tsx`
 - `src/app/admin/products/[id]/edit/page.tsx`
 
 **Issue:** Inconsistent PascalCase vs camelCase property names
+
 - ❌ `productCategory` vs ✅ `ProductCategory`
 - ❌ `productImages` vs ✅ `ProductImage`
 
 **Example:**
+
 ```typescript
 // Line 208: src/app/(customer)/products/[slug]/page.tsx
 error TS2551: Property 'productCategory' does not exist on type '...'
@@ -67,34 +74,42 @@ Did you mean 'ProductCategory'?
 ---
 
 ### B. Missing Properties (10 errors)
+
 **Files:**
+
 - `src/app/(customer)/checkout/page.tsx` (7 errors)
 - `src/app/admin/products/new/page.tsx` (3 errors)
 
 **Issue:** Properties not defined in TypeScript interfaces
+
 - `item.configuration.turnaround` (not in CartItem type)
 - `item.addons` (not in CartItem type)
 - `group.description` (API returns minimal `{id, name}` type)
 
 **Example:**
+
 ```typescript
 // Line 674: src/app/(customer)/checkout/page.tsx
 error TS2339: Property 'turnaround' does not exist on type '...'
 ```
 
 **Fix:**
+
 1. Update CartItem interface to include `configuration.turnaround`
 2. Update API response types to include full data (description, valuesList, etc.)
 
 ---
 
 ### C. Type Incompatibilities (10 errors)
+
 **Files:**
+
 - `src/app/admin/landing-pages/[id]/page.tsx` (6 errors - Expected 1 arg, got 2)
 - `src/app/admin/emails/email-preview-client.tsx` (1 error - Promise vs string)
 - `src/app/admin/products/new/page.tsx` (3 errors - `isPrimary` optional vs required)
 
 **Example:**
+
 ```typescript
 // Line 329: src/app/admin/products/new/page.tsx
 error TS2322: Type 'ProductImage[]' with 'isPrimary?: boolean'
@@ -106,7 +121,9 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ---
 
 ### D. Missing Type Definitions (5 errors)
+
 **Files:**
+
 - `src/app/(customer)/products/[slug]/page.tsx` (Request vs NextRequest)
 - `src/app/admin/products/[id]/edit/page.tsx` (imageId missing from ProductImage)
 
@@ -119,9 +136,11 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ### Status: ✅ MINIMAL ISSUES
 
 **Backup Files Found:**
+
 - `src/lib/shipping/providers/fedex-legacy-backup.ts`
 
 **Recommendation:**
+
 - ✅ Move to `/docs/archive/` or delete if no longer needed
 - All other code appears to be in active use
 
@@ -132,16 +151,19 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ### Status: ⚠️ **681 console statements** across 190 files
 
 **Breakdown:**
+
 - **Debug logging:** ~85% (intentional, can remain for now)
 - **Error logging:** ~10% (appropriate)
 - **Info logging:** ~5% (appropriate)
 
 **High-Usage Files:**
+
 - `src/app/admin/products/[id]/edit/page.tsx` (15+ logs)
 - `src/app/api/products/route.ts` (6+ logs)
 - `src/components/admin/product-image-upload.tsx` (multiple logs)
 
 **Recommendation:**
+
 - ✅ Keep debug logs for now (helpful for production debugging)
 - Consider implementing structured logging library in future
 - Remove console.logs from production builds via build config
@@ -153,12 +175,14 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ### Status: ✅ **52 instances** (Normal for active development)
 
 **Distribution:**
+
 - TODO comments: ~40
 - FIXME comments: ~8
 - HACK comments: ~3
 - BUG comments: ~1
 
 **Notable Locations:**
+
 - `src/app/admin/landing-pages/[id]/page.tsx`
 - `src/components/product/ModularProductConfigurationForm.tsx`
 - `src/lib/order-management.ts`
@@ -173,21 +197,23 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 
 **Critical Updates Needed:**
 
-| Package | Current | Latest | Priority |
-|---------|---------|--------|----------|
-| `@sentry/nextjs` | 10.15.0 | 10.20.0 | High |
-| `eslint` | 8.57.1 | 9.37.0 | High (major) |
-| `@types/node` | 20.19.17 | 24.7.2 | Medium (major) |
-| `vitest` | 2.1.9 | 3.2.4 | Medium (major) |
-| `argon2` | 0.31.2 | 0.44.0 | Medium (major) |
+| Package          | Current  | Latest  | Priority       |
+| ---------------- | -------- | ------- | -------------- |
+| `@sentry/nextjs` | 10.15.0  | 10.20.0 | High           |
+| `eslint`         | 8.57.1   | 9.37.0  | High (major)   |
+| `@types/node`    | 20.19.17 | 24.7.2  | Medium (major) |
+| `vitest`         | 2.1.9    | 3.2.4   | Medium (major) |
+| `argon2`         | 0.31.2   | 0.44.0  | Medium (major) |
 
 **Minor Updates (Safe):**
+
 - `@aws-sdk/client-s3`: 3.906.0 → 3.911.0
 - `@google/genai`: 1.22.0 → 1.25.0
 - `@playwright/test`: 1.55.0 → 1.56.0
 - `@tanstack/react-query`: 5.87.4 → 5.90.3
 
 **Recommendation:**
+
 - ⚠️ Update minor versions immediately (safe, no breaking changes)
 - ⚠️ Schedule major version updates (eslint 9, vitest 3) with testing
 - ✅ Keep monitoring Sentry updates
@@ -197,6 +223,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ### Security Status: ⚠️ **1 MODERATE** vulnerability
 
 **Vulnerability Details:**
+
 ```
 @vitest/mocker: moderate severity
 - Range: <=3.0.0-beta.4
@@ -205,6 +232,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ```
 
 **Recommendation:**
+
 - ⚠️ Schedule vitest major version upgrade
 - ✅ Not a production security risk (dev dependency only)
 
@@ -219,6 +247,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ### Status: ✅ EXCELLENT
 
 **Strengths:**
+
 - ✅ Clean separation of concerns (API routes, components, lib)
 - ✅ Consistent file structure
 - ✅ Proper use of TypeScript
@@ -235,11 +264,13 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ### Status: ✅ MINOR IMPROVEMENTS ONLY
 
 **Long Functions Identified (15 files):**
+
 - `src/app/admin/products/[id]/edit/page.tsx` (fetchProduct function)
 - `src/lib/shipping/fedex/*.ts` (multiple calculation functions)
 - `src/components/customer/proofs/proof-approval-card.tsx`
 
 **Recommendation:**
+
 - ✅ Current complexity is acceptable
 - Consider extracting utility functions in future refactor
 - No urgent action needed
@@ -262,6 +293,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 ✅ **Environment Variables:** Secrets in .env (not committed)
 
 **Potential Hardcoded Secrets Check:**
+
 - Checked 5 files with keyword matches
 - ✅ All instances are either:
   - Config validation checks (`if (!process.env.FEDEX_API_KEY)`)
@@ -312,6 +344,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
    npm update @aws-sdk/client-s3 @google/genai @playwright/test \
      @react-email/components @tanstack/react-query @sentry/nextjs
    ```
+
    - **Estimate:** 30 minutes + testing
 
 ### 🟡 MEDIUM PRIORITY (Next 2 Weeks)
@@ -326,6 +359,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
    ```bash
    mv src/lib/shipping/providers/fedex-legacy-backup.ts docs/archive/
    ```
+
    - **Estimate:** 5 minutes
 
 ### 🟢 LOW PRIORITY (Future Sprint)
@@ -344,16 +378,16 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
 
 ## CODEBASE HEALTH METRICS
 
-| Metric | Score | Status |
-|--------|-------|--------|
-| **Code Style** | 95/100 | ✅ Excellent |
-| **Type Safety** | 60/100 | ⚠️ Needs Attention |
-| **Security** | 95/100 | ✅ Excellent |
-| **Architecture** | 90/100 | ✅ Excellent |
-| **Dependencies** | 70/100 | ⚠️ Needs Updates |
-| **Documentation** | 85/100 | ✅ Good |
-| **Test Coverage** | 65/100 | ⚠️ Could Improve |
-| **Performance** | 85/100 | ✅ Good |
+| Metric            | Score  | Status             |
+| ----------------- | ------ | ------------------ |
+| **Code Style**    | 95/100 | ✅ Excellent       |
+| **Type Safety**   | 60/100 | ⚠️ Needs Attention |
+| **Security**      | 95/100 | ✅ Excellent       |
+| **Architecture**  | 90/100 | ✅ Excellent       |
+| **Dependencies**  | 70/100 | ⚠️ Needs Updates   |
+| **Documentation** | 85/100 | ✅ Good            |
+| **Test Coverage** | 65/100 | ⚠️ Could Improve   |
+| **Performance**   | 85/100 | ✅ Good            |
 
 **Overall Score:** 78/100 (Good)
 
@@ -378,6 +412,7 @@ The technical debt is manageable and mostly cosmetic (console logs, minor type e
 ### 🔒 ABSOLUTELY FORBIDDEN TO CHANGE:
 
 **Product Configuration System:**
+
 - `/prisma/schema.prisma` - AddOn models (lines 30-93)
 - `/src/lib/pricing/` - Pricing engine
 - `/docs/PRODUCT-OPTIONS-SAFE-LIST.md` - Reference documentation

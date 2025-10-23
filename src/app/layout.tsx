@@ -45,18 +45,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Use environment-specific Square SDK URL
-  const squareSdkUrl = process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === 'production'
-    ? 'https://web.squarecdn.com/v1/square.js'
-    : 'https://sandbox.web.squarecdn.com/v1/square.js'
+  const squareSdkUrl =
+    process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === 'production'
+      ? 'https://web.squarecdn.com/v1/square.js'
+      : 'https://sandbox.web.squarecdn.com/v1/square.js'
 
   return (
     <html suppressHydrationWarning lang="en">
       <head>
         {/* Square Web Payments SDK - Load early for checkout performance */}
-        <Script
-          src={squareSdkUrl}
-          strategy="beforeInteractive"
-        />
+        <Script src={squareSdkUrl} strategy="beforeInteractive" />
 
         {/* Ahrefs Web Analytics - Track backlinks, LLM traffic, and referrers */}
         <Script

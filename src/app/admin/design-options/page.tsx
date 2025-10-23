@@ -128,7 +128,9 @@ export default function DesignOptionsPage() {
 
       if (response.ok) {
         toast.success(
-          editingOption ? 'Design option updated successfully' : 'Design option created successfully'
+          editingOption
+            ? 'Design option updated successfully'
+            : 'Design option created successfully'
         )
         setDialogOpen(false)
         resetForm()
@@ -314,7 +316,9 @@ export default function DesignOptionsPage() {
                       <TableCell>
                         <Badge variant="secondary">{pricingTypeLabels[option.pricingType]}</Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-sm">{formatPriceDisplay(option)}</TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {formatPriceDisplay(option)}
+                      </TableCell>
                       <TableCell>
                         <span className="text-sm text-muted-foreground">{option.sortOrder}</span>
                       </TableCell>
@@ -325,7 +329,11 @@ export default function DesignOptionsPage() {
                             checked={option.isActive}
                             onCheckedChange={() => handleToggleActive(option)}
                           />
-                          <Button size="sm" variant="outline" onClick={() => openEditDialog(option)}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openEditDialog(option)}
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
@@ -564,8 +572,8 @@ export default function DesignOptionsPage() {
           <DialogHeader>
             <DialogTitle>Delete Design Option</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{optionToDelete?.name}&quot;? This action
-              cannot be undone.
+              Are you sure you want to delete &quot;{optionToDelete?.name}&quot;? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

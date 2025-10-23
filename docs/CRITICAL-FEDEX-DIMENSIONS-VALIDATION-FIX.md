@@ -12,6 +12,7 @@
 ## Git Search Terms
 
 Use these terms to find this issue in git history:
+
 - `FEDEX-DIMENSIONS-VALIDATION`
 - `FEDEX-400-ERROR`
 - `FEDEX-INVALID-REQUEST`
@@ -21,13 +22,16 @@ Use these terms to find this issue in git history:
 ## The Problem
 
 ### User-Facing Symptoms
+
 - Checkout page shows "Invalid request" error
 - Shipping rates never load on `/checkout/shipping`
 - Browser console: `POST /api/shipping/rates 400 (Bad Request)`
 - Users cannot proceed to payment step
 
 ### Root Cause
+
 Cart items contain a `dimensions` property with **undefined values**:
+
 ```javascript
 // What cart items looked like:
 {
@@ -41,30 +45,35 @@ Cart items contain a `dimensions` property with **undefined values**:
 ```
 
 The frontend was blindly passing these undefined dimensions to the backend:
+
 ```javascript
 // OLD CODE (BROKEN):
 const packages = items.map((item) => ({
   weight: item.paperStockWeight || 1,
-  dimensions: item.dimensions  // ❌ Sends { length: undefined }
+  dimensions: item.dimensions, // ❌ Sends { length: undefined }
 }))
 ```
 
 Backend Zod validation schema requires dimensions properties to be **numbers** if the object exists:
+
 ```typescript
 // Backend validation schema:
 z.object({
   weight: z.number().min(0.1),
-  dimensions: z.object({
-    length: z.number(),  // Must be number, NOT undefined
-    width: z.number(),
-    height: z.number(),
-  }).optional()
+  dimensions: z
+    .object({
+      length: z.number(), // Must be number, NOT undefined
+      width: z.number(),
+      height: z.number(),
+    })
+    .optional(),
 })
 ```
 
 **Result**: Validation fails because `undefined` is not a number.
 
 ### Error Message in Logs
+
 ```
 [Shipping API] Validation failed: [
   {
@@ -79,9 +88,11 @@ z.object({
 ## The Solution (MANDATORY - DO NOT CHANGE)
 
 ### File Modified
+
 `/root/websites/gangrunprinting/src/app/(customer)/checkout/shipping/page.tsx`
 
 ### Fixed Code (Lines 60-85)
+
 ```typescript
 const packages = items.map((item) => {
   const pkg: { weight: number; dimensions?: { length: number; width: number; height: number } } = {
@@ -121,6 +132,7 @@ const packages = items.map((item) => {
 ### Validation Rules (MANDATORY)
 
 The dimensions object must meet ALL these criteria to be included:
+
 1. ✅ `item.dimensions.length` is defined AND is a number
 2. ✅ `item.dimensions.width` is defined AND is a number
 3. ✅ `item.dimensions.height` is defined AND is a number
@@ -130,6 +142,7 @@ If **ANY** of these fail, the entire `dimensions` property is **OMITTED**.
 ## Testing Evidence
 
 ### Before Fix
+
 ```bash
 curl -X POST https://gangrunprinting.com/api/shipping/rates \
   -H "Content-Type: application/json" \
@@ -140,6 +153,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/rates \
 ```
 
 ### After Fix
+
 ```bash
 curl -X POST https://gangrunprinting.com/api/shipping/rates \
   -H "Content-Type: application/json" \
@@ -150,6 +164,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/rates \
 ```
 
 ### Test Results (test-fedex-api-direct.js)
+
 ```
 ✅ ALL TESTS PASSED - 4/4 scenarios
 ✅ Residential addresses get GROUND_HOME_DELIVERY
@@ -160,17 +175,20 @@ curl -X POST https://gangrunprinting.com/api/shipping/rates \
 ## Prevention Measures
 
 ### 1. In-Code Protection
+
 - **Critical comment block** with 🚨 warning in source file
 - **Git search terms** embedded in comments
 - **Link to this documentation** in comments
 - **DO NOT MODIFY** warnings throughout
 
 ### 2. Documentation Protection
+
 - This file: `/docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md` (PERMANENT)
 - Memory reference in `/CLAUDE.md` (AI assistant instructions)
 - Git commit with searchable keywords
 
 ### 3. Testing Protection
+
 - Direct API test script: `test-fedex-api-direct.js`
 - Validates all 4 FedEx services working correctly
 - Run before any checkout changes: `node test-fedex-api-direct.js`
@@ -178,25 +196,31 @@ curl -X POST https://gangrunprinting.com/api/shipping/rates \
 ## Related Files
 
 ### Primary Fix Location
+
 - `/src/app/(customer)/checkout/shipping/page.tsx` (lines 41-85)
 
 ### Backend Validation
+
 - `/src/app/api/shipping/rates/route.ts` (Zod schema)
 
 ### Shipping Component
+
 - `/src/components/checkout/shipping-method-selector.tsx` (makes API call)
 
 ### Testing
+
 - `/test-fedex-api-direct.js` (automated verification)
 - `/fedex-api-test-report.json` (latest test results)
 
 ### Documentation
+
 - `/docs/FEDEX-DUPLICATE-RATES-FIX-2025-10-21.md` (related fix)
 - `/CLAUDE.md` (permanent AI memory reference)
 
 ## If This Breaks Again
 
 ### Step 1: Verify the Fix Is Still There
+
 ```bash
 # Check if critical validation code exists
 grep -A 20 "CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION" \
@@ -206,6 +230,7 @@ grep -A 20 "CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION" \
 ```
 
 ### Step 2: Check Docker Logs
+
 ```bash
 docker logs gangrunprinting_app --tail=50 | grep "Validation failed"
 
@@ -213,6 +238,7 @@ docker logs gangrunprinting_app --tail=50 | grep "Validation failed"
 ```
 
 ### Step 3: Run Test Script
+
 ```bash
 node test-fedex-api-direct.js
 
@@ -221,7 +247,9 @@ node test-fedex-api-direct.js
 ```
 
 ### Step 4: Restore the Fix
+
 If someone accidentally removed the validation:
+
 ```bash
 # Restore from git
 git checkout HEAD -- src/app/\(customer\)/checkout/shipping/page.tsx
@@ -230,6 +258,7 @@ git checkout HEAD -- src/app/\(customer\)/checkout/shipping/page.tsx
 ```
 
 ### Step 5: Verify API Response
+
 ```bash
 curl -X POST https://gangrunprinting.com/api/shipping/rates \
   -H "Content-Type: application/json" \
@@ -241,12 +270,14 @@ curl -X POST https://gangrunprinting.com/api/shipping/rates \
 ## Key Takeaways
 
 ### What We Learned
+
 1. **Never blindly pass optional objects** without validating their properties
 2. **Undefined ≠ Omitted** - Backend treats these differently
 3. **Type validation matters** - Check typeof, not just truthiness
 4. **Test in real browser** - curl working ≠ frontend working
 
 ### Best Practices Applied
+
 1. ✅ Conditional property inclusion based on runtime checks
 2. ✅ Explicit type checking with typeof
 3. ✅ Comprehensive in-code documentation
@@ -257,6 +288,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/rates \
 ## Deployment Checklist
 
 Before deploying ANY changes to checkout flow:
+
 - [ ] Run `node test-fedex-api-direct.js` - must pass 4/4
 - [ ] Verify critical validation still in `checkout/shipping/page.tsx`
 - [ ] Test actual checkout page in browser

@@ -30,9 +30,7 @@ export interface ProductSEOResult {
  * Generate SEO content for a product
  * Checks cache first, generates new content if needed
  */
-export async function generateProductSEO(
-  options: ProductSEOOptions
-): Promise<ProductSEOResult> {
+export async function generateProductSEO(options: ProductSEOOptions): Promise<ProductSEOResult> {
   const {
     productId,
     productName,
@@ -100,7 +98,6 @@ IMPORTANT: Output ONLY the final content. No reasoning, no explanations, just th
 
   const generationTime = Date.now() - startTime
   const actualWordCount = content.trim().split(/\s+/).length
-
 
   // Save to database
   const saved = await prisma.productSEOContent.create({
@@ -181,8 +178,7 @@ IMPORTANT: Output ONLY valid JSON, no markdown formatting, no explanations.`
       description:
         metaTags.description ||
         `Order premium ${productName}${locationContext}. Fast turnaround, professional quality.`,
-      ogDescription:
-        metaTags.ogDescription || metaTags.description || metaTags.title,
+      ogDescription: metaTags.ogDescription || metaTags.description || metaTags.title,
     }
   } catch (error) {
     console.error('[SEO Brain] Failed to parse meta tags:', error)

@@ -38,7 +38,7 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 export function ArtworkUpload({
   onFilesChange,
   maxFiles = 10,
-  maxSizeMB = 50
+  maxSizeMB = 50,
 }: ArtworkUploadProps) {
   const [files, setFiles] = useState<UploadedFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -78,91 +78,97 @@ export function ArtworkUpload({
     }
   }
 
-  const handleFiles = useCallback(async (fileList: FileList | File[]) => {
-    const newFiles = Array.from(fileList)
+  const handleFiles = useCallback(
+    async (fileList: FileList | File[]) => {
+      const newFiles = Array.from(fileList)
 
-    // Validate file count
-    if (files.length + newFiles.length > maxFiles) {
-      toast.error(`Maximum ${maxFiles} files allowed`)
-      return
-    }
-
-    // Validate file sizes and types
-    const validFiles = newFiles.filter(file => {
-      if (file.size > maxSizeMB * 1024 * 1024) {
-        toast.error(`${file.name} is too large (max ${maxSizeMB}MB)`)
-        return false
+      // Validate file count
+      if (files.length + newFiles.length > maxFiles) {
+        toast.error(`Maximum ${maxFiles} files allowed`)
+        return
       }
 
-      const isValidType = Object.keys(ACCEPTED_FILE_TYPES).some(type =>
-        file.type === type || file.name.toLowerCase().endsWith(type.split('/')[1])
+      // Validate file sizes and types
+      const validFiles = newFiles.filter((file) => {
+        if (file.size > maxSizeMB * 1024 * 1024) {
+          toast.error(`${file.name} is too large (max ${maxSizeMB}MB)`)
+          return false
+        }
+
+        const isValidType = Object.keys(ACCEPTED_FILE_TYPES).some(
+          (type) => file.type === type || file.name.toLowerCase().endsWith(type.split('/')[1])
+        )
+
+        if (!isValidType) {
+          toast.error(`${file.name} is not a supported file type`)
+          return false
+        }
+
+        return true
+      })
+
+      if (validFiles.length === 0) return
+
+      // Create file objects with preview
+      const uploadedFiles: UploadedFile[] = await Promise.all(
+        validFiles.map(async (file) => {
+          const preview = await createPreview(file)
+          return {
+            id: Math.random().toString(36).substr(2, 9),
+            file,
+            preview,
+            status: 'uploading' as const,
+            progress: 0,
+          }
+        })
       )
 
-      if (!isValidType) {
-        toast.error(`${file.name} is not a supported file type`)
-        return false
-      }
+      // Add to state immediately
+      const updatedFiles = [...files, ...uploadedFiles]
+      setFiles(updatedFiles)
 
-      return true
-    })
+      // Upload files
+      uploadedFiles.forEach(async (uploadedFile, index) => {
+        const result = await uploadFile(uploadedFile.file)
 
-    if (validFiles.length === 0) return
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.id === uploadedFile.id
+              ? {
+                  ...f,
+                  status: result.success ? 'success' : 'error',
+                  url: result.url,
+                  progress: 100,
+                }
+              : f
+          )
+        )
 
-    // Create file objects with preview
-    const uploadedFiles: UploadedFile[] = await Promise.all(
-      validFiles.map(async (file) => {
-        const preview = await createPreview(file)
-        return {
-          id: Math.random().toString(36).substr(2, 9),
-          file,
-          preview,
-          status: 'uploading' as const,
-          progress: 0,
+        // Notify parent component
+        if (result.success) {
+          const finalFiles = updatedFiles.map((f) =>
+            f.id === uploadedFile.id ? { ...f, status: 'success' as const, url: result.url } : f
+          )
+          onFilesChange(finalFiles)
         }
       })
-    )
 
-    // Add to state immediately
-    const updatedFiles = [...files, ...uploadedFiles]
-    setFiles(updatedFiles)
+      toast.success(`${validFiles.length} file(s) uploaded successfully`)
+    },
+    [files, maxFiles, maxSizeMB, onFilesChange]
+  )
 
-    // Upload files
-    uploadedFiles.forEach(async (uploadedFile, index) => {
-      const result = await uploadFile(uploadedFile.file)
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      setIsDragging(false)
 
-      setFiles(prev =>
-        prev.map(f =>
-          f.id === uploadedFile.id
-            ? {
-                ...f,
-                status: result.success ? 'success' : 'error',
-                url: result.url,
-                progress: 100
-              }
-            : f
-        )
-      )
-
-      // Notify parent component
-      if (result.success) {
-        const finalFiles = updatedFiles.map(f =>
-          f.id === uploadedFile.id ? { ...f, status: 'success' as const, url: result.url } : f
-        )
-        onFilesChange(finalFiles)
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFiles(e.dataTransfer.files)
       }
-    })
-
-    toast.success(`${validFiles.length} file(s) uploaded successfully`)
-  }, [files, maxFiles, maxSizeMB, onFilesChange])
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFiles(e.dataTransfer.files)
-    }
-  }, [handleFiles])
+    },
+    [handleFiles]
+  )
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -174,15 +180,18 @@ export function ArtworkUpload({
     setIsDragging(false)
   }, [])
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files)
-      e.target.value = '' // Reset input
-    }
-  }, [handleFiles])
+  const handleFileInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFiles(e.target.files)
+        e.target.value = '' // Reset input
+      }
+    },
+    [handleFiles]
+  )
 
   const removeFile = (id: string) => {
-    const updatedFiles = files.filter(f => f.id !== id)
+    const updatedFiles = files.filter((f) => f.id !== id)
     setFiles(updatedFiles)
     onFilesChange(updatedFiles)
     toast.success('File removed')
@@ -234,7 +243,9 @@ export function ArtworkUpload({
         ) : (
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-semibold">Uploaded Files ({files.length}/{maxFiles})</h4>
+              <h4 className="font-semibold">
+                Uploaded Files ({files.length}/{maxFiles})
+              </h4>
               <label className="cursor-pointer" htmlFor="artwork-upload">
                 <span className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
                   <Upload className="w-4 h-4" />
@@ -308,7 +319,8 @@ export function ArtworkUpload({
       {files.length > 0 && (
         <p className="text-sm text-muted-foreground">
           <CheckCircle2 className="w-4 h-4 inline mr-1 text-green-500" />
-          {files.filter(f => f.status === 'success').length} of {files.length} files uploaded successfully
+          {files.filter((f) => f.status === 'success').length} of {files.length} files uploaded
+          successfully
         </p>
       )}
     </div>

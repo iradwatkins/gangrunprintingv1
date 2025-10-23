@@ -1,4 +1,5 @@
 # ✅ UPLOAD PAGE FIX - File Association
+
 ## Date: October 19, 2025
 
 ---
@@ -8,6 +9,7 @@
 **Issue:** Upload page not showing files in checkout process
 
 **Root Cause:** SessionStorage key mismatch
+
 - **Upload page** was storing files with key: `uploaded_artwork_files`
 - **Checkout page** was looking for files with key: `uploaded_images_${productId}`
 - Result: Checkout page couldn't find uploaded files
@@ -19,6 +21,7 @@
 ### 1. Updated Upload Artwork Page (`/upload-artwork/page.tsx`)
 
 **Added Product ID Detection:**
+
 ```typescript
 const [productId, setProductId] = useState<string | null>(null)
 
@@ -39,6 +42,7 @@ useEffect(() => {
 ```
 
 **Updated File Storage to Use BOTH Keys:**
+
 ```typescript
 const handleFilesUploaded = (files: UploadedFile[]) => {
   setUploadedFiles(files)
@@ -62,6 +66,7 @@ const handleFilesUploaded = (files: UploadedFile[]) => {
 ### 2. Updated Checkout Page (`/checkout/page.tsx`)
 
 **Added Fallback for Generic Key:**
+
 ```typescript
 // Fetch uploaded images for the current item
 useEffect(() => {
@@ -135,18 +140,21 @@ useEffect(() => {
 ## 📦 SESSION STORAGE KEYS
 
 ### Primary Keys (Product-Specific):
+
 ```javascript
 sessionStorage.setItem(`uploaded_images_${productId}`, JSON.stringify(files))
 sessionStorage.getItem(`uploaded_images_${productId}`)
 ```
 
 ### Fallback Keys (Generic):
+
 ```javascript
 sessionStorage.setItem('uploaded_artwork_files', JSON.stringify(files))
 sessionStorage.getItem('uploaded_artwork_files')
 ```
 
 ### Cart Data:
+
 ```javascript
 sessionStorage.setItem('cart', JSON.stringify({ items: [...] }))
 sessionStorage.getItem('cart')
@@ -238,6 +246,7 @@ sessionStorage.getItem('cart')
 **Port:** 3020 (external) / 3002 (internal)
 
 **Deployment Command:**
+
 ```bash
 docker-compose build app && docker-compose up -d app
 ```
@@ -263,6 +272,7 @@ docker-compose build app && docker-compose up -d app
 ### If Files Still Don't Show in Checkout:
 
 1. **Check SessionStorage in DevTools:**
+
    ```javascript
    // Open Console on upload page after upload
    console.log('Generic:', sessionStorage.getItem('uploaded_artwork_files'))
@@ -271,6 +281,7 @@ docker-compose build app && docker-compose up -d app
    ```
 
 2. **Check Product ID Extraction:**
+
    ```javascript
    // On upload page, check if product ID is detected
    const cart = JSON.parse(sessionStorage.getItem('cart'))

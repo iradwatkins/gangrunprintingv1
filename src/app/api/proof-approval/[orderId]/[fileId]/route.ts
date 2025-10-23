@@ -1,22 +1,22 @@
-import { type NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
-import { withApiHandler, ApiError, createSuccessResponse } from '@/lib/api/error-handler';
-import { FileApprovalEmailService } from '@/lib/email/file-approval-email-service';
-import { logger } from '@/lib/logger-safe';
+import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+import { withApiHandler, ApiError, createSuccessResponse } from '@/lib/api/error-handler'
+import { FileApprovalEmailService } from '@/lib/email/file-approval-email-service'
+import { logger } from '@/lib/logger-safe'
 
 const proofApprovalSchema = z.object({
   action: z.enum(['approve', 'reject']),
   message: z.string().optional(),
-});
+})
 
 export const POST = withApiHandler(
   async (request: NextRequest, context, params: { orderId: string; fileId: string }) => {
-    const { orderId, fileId } = params;
+    const { orderId, fileId } = params
 
     // Parse and validate request body
-    const body = await request.json();
-    const data = proofApprovalSchema.parse(body);
+    const body = await request.json()
+    const data = proofApprovalSchema.parse(body)
 
     // Get the order and file
     const order = await prisma.order.findUnique({
@@ -26,37 +26,37 @@ export const POST = withApiHandler(
           select: { name: true },
         },
       },
-    });
+    })
 
     if (!order) {
-      throw ApiError.notFound('Order');
+      throw ApiError.notFound('Order')
     }
 
     const orderFile = await prisma.orderFile.findUnique({
-      where: { 
+      where: {
         id: fileId,
         orderId: orderId, // Ensure file belongs to this order
       },
-    });
+    })
 
     if (!orderFile) {
-      throw ApiError.notFound('File');
+      throw ApiError.notFound('File')
     }
 
     // Verify this is a proof file that can be approved
     if (orderFile.fileType !== 'ADMIN_PROOF') {
-      throw ApiError.validation('Only proof files can be approved or rejected');
+      throw ApiError.validation('Only proof files can be approved or rejected')
     }
 
     // Verify the file is in a state that can be approved/rejected
     if (orderFile.approvalStatus !== 'WAITING') {
       throw ApiError.validation(
         `This proof has already been ${orderFile.approvalStatus.toLowerCase()}. No further action is needed.`
-      );
+      )
     }
 
-    const newStatus = data.action === 'approve' ? 'APPROVED' : 'REJECTED';
-    const actionLabel = data.action === 'approve' ? 'approved' : 'rejected';
+    const newStatus = data.action === 'approve' ? 'APPROVED' : 'REJECTED'
+    const actionLabel = data.action === 'approve' ? 'approved' : 'rejected'
 
     logger.info('Processing proof approval', {
       orderId,
@@ -65,7 +65,7 @@ export const POST = withApiHandler(
       newStatus,
       customerEmail: order.email,
       requestId: context.requestId,
-    });
+    })
 
     try {
       // Update the file status
@@ -75,11 +75,11 @@ export const POST = withApiHandler(
           approvalStatus: newStatus,
           notifyAdmin: true, // Notify admin of the decision
         },
-      });
+      })
 
       // Add a message to track the approval/rejection
-      const customerMessage = data.message?.trim();
-      const systemMessage = `Customer ${actionLabel} this proof${customerMessage ? `: ${customerMessage}` : ''}`;
+      const customerMessage = data.message?.trim()
+      const systemMessage = `Customer ${actionLabel} this proof${customerMessage ? `: ${customerMessage}` : ''}`
 
       await prisma.fileMessage.create({
         data: {
@@ -90,7 +90,7 @@ export const POST = withApiHandler(
           authorName: order.User?.name || 'Customer',
           isInternal: false,
         },
-      });
+      })
 
       // Send email notification to admin
       if (data.action === 'approve') {
@@ -101,9 +101,9 @@ export const POST = withApiHandler(
             fileType: 'ADMIN_PROOF',
             approvalStatus: 'WAITING',
           },
-        });
+        })
 
-        const allProofsApproved = remainingProofs === 0;
+        const allProofsApproved = remainingProofs === 0
 
         await FileApprovalEmailService.sendProofApprovedNotification(
           {
@@ -119,7 +119,7 @@ export const POST = withApiHandler(
           },
           customerMessage,
           allProofsApproved
-        );
+        )
 
         logger.info('Proof approved by customer', {
           orderId,
@@ -127,7 +127,7 @@ export const POST = withApiHandler(
           allProofsApproved,
           customerEmail: order.email,
           requestId: context.requestId,
-        });
+        })
       } else {
         // Proof rejected - send change request notification
         await FileApprovalEmailService.sendProofRejectedNotification(
@@ -143,7 +143,7 @@ export const POST = withApiHandler(
             filename: orderFile.filename,
           },
           customerMessage || 'Customer requested changes to the proof'
-        );
+        )
 
         logger.info('Proof rejected by customer', {
           orderId,
@@ -151,7 +151,7 @@ export const POST = withApiHandler(
           changeRequested: customerMessage || 'No specific changes mentioned',
           customerEmail: order.email,
           requestId: context.requestId,
-        });
+        })
       }
 
       return createSuccessResponse(
@@ -164,8 +164,7 @@ export const POST = withApiHandler(
         },
         200,
         `Proof ${actionLabel} successfully`
-      );
-
+      )
     } catch (error) {
       logger.error('Failed to process proof approval', {
         orderId,
@@ -173,9 +172,9 @@ export const POST = withApiHandler(
         action: data.action,
         error: error instanceof Error ? error.message : String(error),
         requestId: context.requestId,
-      });
+      })
 
-      throw ApiError.internal(`Failed to ${data.action} proof. Please try again.`);
+      throw ApiError.internal(`Failed to ${data.action} proof. Please try again.`)
     }
   },
   {
@@ -186,4 +185,4 @@ export const POST = withApiHandler(
       windowMs: 60 * 1000, // 1 minute
     },
   }
-);
+)

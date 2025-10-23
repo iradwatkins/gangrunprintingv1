@@ -70,21 +70,14 @@ export function FAQDisplay({ faqs, showCategory = false, className = '' }: FAQDi
   return (
     <div className={`space-y-6 ${className}`}>
       {faqs.map((faq, index) => (
-        <div
-          key={index}
-          className="border-b border-gray-200 pb-6 last:border-0"
-        >
+        <div key={index} className="border-b border-gray-200 pb-6 last:border-0">
           {showCategory && faq.category && (
             <span className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">
               {faq.category}
             </span>
           )}
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            {faq.question}
-          </h3>
-          <div className="text-gray-600 prose prose-sm max-w-none">
-            {faq.answer}
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">{faq.question}</h3>
+          <div className="text-gray-600 prose prose-sm max-w-none">{faq.answer}</div>
         </div>
       ))}
     </div>
@@ -113,28 +106,15 @@ interface FAQPageProps {
 export function FAQPage({ title, description, faqs, showCategory }: FAQPageProps) {
   return (
     <>
-      <FAQSchema
-        faqs={faqs}
-        pageDescription={description}
-        pageTitle={title}
-      />
+      <FAQSchema faqs={faqs} pageDescription={description} pageTitle={title} />
 
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            {title}
-          </h1>
-          {description && (
-            <p className="text-xl text-gray-600">
-              {description}
-            </p>
-          )}
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{title}</h1>
+          {description && <p className="text-xl text-gray-600">{description}</p>}
         </div>
 
-        <FAQDisplay
-          faqs={faqs}
-          showCategory={showCategory}
-        />
+        <FAQDisplay faqs={faqs} showCategory={showCategory} />
       </div>
     </>
   )

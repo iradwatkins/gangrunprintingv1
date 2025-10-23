@@ -50,8 +50,8 @@ export default function APIDocsPage() {
       <div className="border-t bg-muted/30 mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
           <p>
-            💡 <strong>Tip:</strong> Use the "Try it out" button to test API endpoints
-            directly from this page
+            💡 <strong>Tip:</strong> Use the "Try it out" button to test API endpoints directly from
+            this page
           </p>
           <p className="mt-2">
             📚 For more information, visit{' '}

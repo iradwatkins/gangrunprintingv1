@@ -366,11 +366,7 @@ export function SEOGenerationDashboard() {
                       </Badge>
                     </div>
                   </div>
-                  <Textarea
-                    readOnly
-                    className="min-h-[200px]"
-                    value={previewContent.content}
-                  />
+                  <Textarea readOnly className="min-h-[200px]" value={previewContent.content} />
                   {!previewContent.approved && (
                     <Button onClick={() => approveContent(previewContent.id)}>
                       <CheckCircle2 className="mr-2 h-4 w-4" />
@@ -396,10 +392,17 @@ export function SEOGenerationDashboard() {
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  This will generate content for {productsWithoutSEO.length + productsWithUnapprovedSEO.length}{' '}
-                  products. Each generation takes 1-2 minutes.
+                  This will generate content for{' '}
+                  {productsWithoutSEO.length + productsWithUnapprovedSEO.length} products. Each
+                  generation takes 1-2 minutes.
                   <br />
-                  <strong>Estimated time: {Math.round(((productsWithoutSEO.length + productsWithUnapprovedSEO.length) * 1.5) / 60)} hours</strong>
+                  <strong>
+                    Estimated time:{' '}
+                    {Math.round(
+                      ((productsWithoutSEO.length + productsWithUnapprovedSEO.length) * 1.5) / 60
+                    )}{' '}
+                    hours
+                  </strong>
                 </AlertDescription>
               </Alert>
 
@@ -446,10 +449,7 @@ export function SEOGenerationDashboard() {
               ) : (
                 <div className="space-y-2">
                   {generationResults.map((result, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between border-b pb-2"
-                    >
+                    <div key={i} className="flex items-center justify-between border-b pb-2">
                       <div className="flex-1">
                         <p className="font-medium">{result.productName}</p>
                         {result.success && (

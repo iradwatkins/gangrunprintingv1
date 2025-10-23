@@ -199,7 +199,6 @@ export async function trackAllProductsSEO() {
     select: { id: true, name: true, slug: true },
   })
 
-
   const results = []
 
   for (const product of products) {

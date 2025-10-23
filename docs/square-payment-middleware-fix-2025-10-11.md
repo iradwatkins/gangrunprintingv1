@@ -107,25 +107,25 @@ if (process.env.NODE_ENV === 'production') {
   response.headers.set(
     'content-security-policy',
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com; " +
-    "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://pci-connect.squareup.com https://*.square.com https://*.squareup.com https://www.paypal.com https://*.paypal.com; " +
-    "img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com https://fonts.gstatic.com https://*.gstatic.com https://web.squarecdn.com https://*.squarecdn.com https://www.paypalobjects.com https://*.paypalobjects.com; " +
-    "style-src 'self' 'unsafe-inline' https://*.squarecdn.com; " +
-    "font-src 'self' data: https://*.squarecdn.com https://d1g145x70srn7h.cloudfront.net; " +
-    "object-src 'none'; base-uri 'self'; form-action 'self' https://www.paypal.com; frame-ancestors 'none'; " +
-    "frame-src https://web.squarecdn.com https://*.squarecdn.com https://www.paypal.com https://*.paypal.com; " +
-    "upgrade-insecure-requests;"
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://web.squarecdn.com https://*.squarecdn.com https://kit.cash.app https://www.paypal.com https://*.paypal.com; " +
+      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://region1.google-analytics.com https://region1.analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://pci-connect.squareup.com https://*.square.com https://*.squareup.com https://www.paypal.com https://*.paypal.com; " +
+      "img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com https://*.google-analytics.com https://gangrunprinting.com https://*.gangrunprinting.com https://lh3.googleusercontent.com https://fonts.gstatic.com https://*.gstatic.com https://web.squarecdn.com https://*.squarecdn.com https://www.paypalobjects.com https://*.paypalobjects.com; " +
+      "style-src 'self' 'unsafe-inline' https://*.squarecdn.com; " +
+      "font-src 'self' data: https://*.squarecdn.com https://d1g145x70srn7h.cloudfront.net; " +
+      "object-src 'none'; base-uri 'self'; form-action 'self' https://www.paypal.com; frame-ancestors 'none'; " +
+      'frame-src https://web.squarecdn.com https://*.squarecdn.com https://www.paypal.com https://*.paypal.com; ' +
+      'upgrade-insecure-requests;'
   )
 }
 ```
 
 ### Key CSP Changes
 
-| Directive | Added Sources | Purpose |
-|-----------|---------------|---------|
-| `script-src` | `https://kit.cash.app` | Cash App Pay script loading |
-| `font-src` | `https://d1g145x70srn7h.cloudfront.net` | Square custom fonts |
-| `img-src` | `https://web.squarecdn.com`, `https://*.squarecdn.com` | Square UI images and icons |
+| Directive    | Added Sources                                          | Purpose                     |
+| ------------ | ------------------------------------------------------ | --------------------------- |
+| `script-src` | `https://kit.cash.app`                                 | Cash App Pay script loading |
+| `font-src`   | `https://d1g145x70srn7h.cloudfront.net`                | Square custom fonts         |
+| `img-src`    | `https://web.squarecdn.com`, `https://*.squarecdn.com` | Square UI images and icons  |
 
 ### 3. Fixed Square Card Styling (Previously Completed)
 
@@ -139,9 +139,9 @@ const cardInstance = await paymentsInstance.card({
   style: {
     input: {
       fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-      '::placeholder': { color: '#9CA3AF' }  // Nested object ❌
-    }
-  }
+      '::placeholder': { color: '#9CA3AF' }, // Nested object ❌
+    },
+  },
 })
 
 // ✅ AFTER (Valid)
@@ -162,7 +162,8 @@ const cardInstance = await paymentsInstance.card({
       fontSize: '14px',
       color: '#374151',
     },
-    'input::placeholder': {  // Flat structure ✅
+    'input::placeholder': {
+      // Flat structure ✅
       color: '#9CA3AF',
     },
   },
@@ -214,11 +215,13 @@ Go to https://gangrunprinting.com/checkout with at least one item in cart.
 ### 4. Verify No CSP Errors
 
 **Should NOT see these errors anymore**:
+
 - ❌ "Refused to load the font 'https://d1g145x70srn7h.cloudfront.net/...'"
 - ❌ "Refused to load the script 'https://kit.cash.app/v1/pay.js'"
 - ❌ "Refused to load the image 'https://web.squarecdn.com/...'"
 
 **Should see**:
+
 - ✅ "[Square] Square SDK ready after XXX ms"
 - ✅ "[Square] Card attached successfully"
 - ✅ Card input form visible and functional
@@ -226,6 +229,7 @@ Go to https://gangrunprinting.com/checkout with at least one item in cart.
 ### 5. Test Payment Methods
 
 **Credit Card**:
+
 1. Enter test card number: `4111 1111 1111 1111`
 2. Enter any future expiration date
 3. Enter any CVV (e.g., 111)
@@ -233,10 +237,12 @@ Go to https://gangrunprinting.com/checkout with at least one item in cart.
 5. Should process without CSP errors
 
 **Cash App Pay** (if available):
+
 1. Look for Cash App Pay button
 2. Button should load without CSP errors
 
 **Apple Pay** (Safari only):
+
 1. Look for Apple Pay button on Safari
 2. Button should load without CSP errors
 
@@ -276,6 +282,7 @@ curl -I https://gangrunprinting.com | grep "content-security"
 **Problem**: Having both `src/middleware.ts` and root `middleware.ts` causes confusion.
 
 **Solution Options**:
+
 - **Option A**: Delete root `middleware.ts`, keep only `src/middleware.ts`
 - **Option B**: Delete `src/middleware.ts`, keep only root `middleware.ts`
 - **Current State**: Both exist, but `src/middleware.ts` is the active one
@@ -285,6 +292,7 @@ curl -I https://gangrunprinting.com | grep "content-security"
 **Don't trust**: "I edited the file, so it should work"
 
 **Always verify**:
+
 1. Source file has changes ✅
 2. Compiled output has changes ✅
 3. Live server serves changes ✅
@@ -292,6 +300,7 @@ curl -I https://gangrunprinting.com | grep "content-security"
 ### 3. Hard Refresh Required After Middleware Changes
 
 Even with server restart, browsers cache:
+
 - JavaScript bundles
 - CSP headers
 - Service workers
@@ -303,6 +312,7 @@ Even with server restart, browsers cache:
 ### Problem
 
 After fixing CSP, encountered a new error:
+
 ```
 Card container element not found after 3 seconds
 ```
@@ -331,10 +341,11 @@ const initTimer = setTimeout(() => {
 ```
 
 Also updated cleanup to clear both timers:
+
 ```typescript
 return () => {
   clearTimeout(timeout)
-  clearTimeout(initTimer)  // Clear the init delay timer
+  clearTimeout(initTimer) // Clear the init delay timer
   if (card) card.destroy()
   if (applePay) applePay.destroy()
 }
@@ -385,9 +396,11 @@ return () => {
 ## Git Commit Reference
 
 **Files Changed**:
+
 - `/root/websites/gangrunprinting/src/middleware.ts` - Updated CSP and added upload handling
 
 **Compiled Files Updated**:
+
 - `.next/server/src/middleware.js` - Now includes cloudfront and kit.cash sources
 
 **Build ID**: `build-20251011-1221`

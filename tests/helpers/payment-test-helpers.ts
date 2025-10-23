@@ -92,7 +92,7 @@ export async function wait(ms: number, reason?: string) {
   if (reason) {
     console.log(`⏳ Waiting ${ms}ms: ${reason}`)
   }
-  await new Promise(resolve => setTimeout(resolve, ms))
+  await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**
@@ -231,7 +231,9 @@ export async function fillShippingInfo(page: Page, iteration?: number) {
   }
 
   // Click Continue or Calculate Shipping if button exists
-  const continueBtn = page.locator('button:has-text("Continue"), button:has-text("Calculate")').first()
+  const continueBtn = page
+    .locator('button:has-text("Continue"), button:has-text("Calculate")')
+    .first()
   const btnCount = await continueBtn.count()
 
   if (btnCount > 0) {
@@ -248,17 +250,21 @@ export async function fillShippingInfo(page: Page, iteration?: number) {
 /**
  * Select payment method
  */
-export async function selectPaymentMethod(page: Page, method: 'card' | 'cashapp', iteration?: number) {
+export async function selectPaymentMethod(
+  page: Page,
+  method: 'card' | 'cashapp',
+  iteration?: number
+) {
   logStep(4, `Select Payment Method: ${method === 'card' ? 'Credit Card' : 'Cash App Pay'}`)
 
   await wait(2000, 'Payment methods to load')
 
   // Find and click the payment method radio button
-  const paymentLabel = method === 'card'
-    ? /Credit.*Card|Debit.*Card|Card/i
-    : /Cash.*App/i
+  const paymentLabel = method === 'card' ? /Credit.*Card|Debit.*Card|Card/i : /Cash.*App/i
 
-  const radioButton = page.locator(`label:has-text("${paymentLabel.source}") input[type="radio"]`).first()
+  const radioButton = page
+    .locator(`label:has-text("${paymentLabel.source}") input[type="radio"]`)
+    .first()
   await radioButton.waitFor({ state: 'visible', timeout: 10000 })
   await radioButton.click()
   console.log(`✅ Selected: ${method === 'card' ? 'Credit/Debit Card' : 'Cash App Pay'}`)
@@ -341,7 +347,9 @@ export async function submitPayment(page: Page, iteration?: number) {
   logStep(6, 'Submit Payment')
 
   // Find Pay button
-  const payButton = page.locator('button:has-text("Pay"), button:has-text("Place Order"), button[type="submit"]').first()
+  const payButton = page
+    .locator('button:has-text("Pay"), button:has-text("Place Order"), button[type="submit"]')
+    .first()
   await payButton.waitFor({ state: 'visible', timeout: 10000 })
 
   console.log('Clicking Pay button...')
@@ -376,7 +384,7 @@ export async function verifyOrderConfirmation(page: Page, iteration?: number) {
     'confirmation',
   ]
 
-  const hasSuccess = successIndicators.some(indicator =>
+  const hasSuccess = successIndicators.some((indicator) =>
     pageContent?.toLowerCase().includes(indicator)
   )
 
@@ -547,7 +555,7 @@ export class TestResultTracker {
 
   getSummary() {
     const total = this.results.length
-    const passed = this.results.filter(r => r.success).length
+    const passed = this.results.filter((r) => r.success).length
     const failed = total - passed
     const totalDuration = Date.now() - this.startTime
 
@@ -555,7 +563,7 @@ export class TestResultTracker {
       total,
       passed,
       failed,
-      successRate: total > 0 ? (passed / total * 100).toFixed(1) : '0',
+      successRate: total > 0 ? ((passed / total) * 100).toFixed(1) : '0',
       totalDuration,
       results: this.results,
     }
@@ -578,7 +586,9 @@ export class TestResultTracker {
     console.log('Individual Test Results:')
     this.results.forEach((result, index) => {
       const status = result.success ? '✅ PASS' : '❌ FAIL'
-      console.log(`\n${index + 1}. ${status} - ${result.paymentMethod} (${result.testFramework}) - Iteration ${result.iteration}`)
+      console.log(
+        `\n${index + 1}. ${status} - ${result.paymentMethod} (${result.testFramework}) - Iteration ${result.iteration}`
+      )
       if (result.orderNumber) console.log(`   Order: ${result.orderNumber}`)
       if (result.paymentId) console.log(`   Payment ID: ${result.paymentId}`)
       console.log(`   Duration: ${(result.duration / 1000).toFixed(1)}s`)

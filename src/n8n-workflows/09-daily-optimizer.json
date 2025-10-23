@@ -83,18 +83,18 @@
   ],
   "connections": {
     "Schedule: 3 AM Daily": {
-      "main": [[{"node": "Get Recent Campaigns", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Get Recent Campaigns", "type": "main", "index": 0 }]]
     },
     "Get Recent Campaigns": {
-      "main": [[{"node": "Analyze Winners", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Analyze Winners", "type": "main", "index": 0 }]]
     },
     "Analyze Winners": {
-      "main": [[{"node": "Wait 5s", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Wait 5s", "type": "main", "index": 0 }]]
     },
     "Wait 5s": {
-      "main": [[{"node": "Improve Losers", "type": "main", "index": 0}]]
+      "main": [[{ "node": "Improve Losers", "type": "main", "index": 0 }]]
     }
   },
   "active": true,
-  "tags": [{"name": "SEO Brain"}]
+  "tags": [{ "name": "SEO Brain" }]
 }

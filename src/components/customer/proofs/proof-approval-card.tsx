@@ -1,18 +1,18 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   CheckCircle,
   XCircle,
@@ -22,55 +22,59 @@ import {
   MessageSquare,
   FileText,
   Loader2,
-} from 'lucide-react';
+} from 'lucide-react'
 
 interface ProofFile {
-  id: string;
-  filename: string;
-  fileUrl: string;
-  label?: string;
-  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED';
-  createdAt: string;
+  id: string
+  filename: string
+  fileUrl: string
+  label?: string
+  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED'
+  createdAt: string
   FileMessage: Array<{
-    id: string;
-    message: string;
-    authorRole: string;
-    authorName: string;
-    createdAt: string;
-  }>;
+    id: string
+    message: string
+    authorRole: string
+    authorName: string
+    createdAt: string
+  }>
 }
 
 interface Props {
-  orderId: string;
-  proof: ProofFile;
-  onApprovalChange: () => void;
+  orderId: string
+  proof: ProofFile
+  onApprovalChange: () => void
 }
 
 const statusConfig = {
   WAITING: { label: 'Awaiting Your Approval', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
   APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  REJECTED: { label: 'Rejected - Revisions Requested', color: 'bg-red-100 text-red-800', icon: XCircle },
+  REJECTED: {
+    label: 'Rejected - Revisions Requested',
+    color: 'bg-red-100 text-red-800',
+    icon: XCircle,
+  },
   NOT_REQUIRED: { label: 'No Approval Needed', color: 'bg-gray-100 text-gray-800', icon: FileText },
-};
+}
 
 export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
-  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false)
+  const [approvalAction, setApprovalAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED')
+  const [message, setMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const statusInfo = statusConfig[proof.approvalStatus];
-  const StatusIcon = statusInfo.icon;
-  const isWaiting = proof.approvalStatus === 'WAITING';
+  const statusInfo = statusConfig[proof.approvalStatus]
+  const StatusIcon = statusInfo.icon
+  const isWaiting = proof.approvalStatus === 'WAITING'
 
   const handleApproval = async () => {
     if (!message.trim() && approvalAction === 'REJECTED') {
-      alert('Please provide a reason for rejection');
-      return;
+      alert('Please provide a reason for rejection')
+      return
     }
 
-    setSubmitting(true);
+    setSubmitting(true)
     try {
       const response = await fetch(`/api/orders/${orderId}/files/${proof.id}/approve`, {
         method: 'POST',
@@ -81,29 +85,29 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
           status: approvalAction,
           message: message || (approvalAction === 'APPROVED' ? 'Approved!' : ''),
         }),
-      });
+      })
 
       if (response.ok) {
-        setApprovalDialogOpen(false);
-        setMessage('');
-        onApprovalChange();
+        setApprovalDialogOpen(false)
+        setMessage('')
+        onApprovalChange()
       } else {
-        const error = await response.json();
-        alert(`Failed to submit approval: ${error.error || 'Unknown error'}`);
+        const error = await response.json()
+        alert(`Failed to submit approval: ${error.error || 'Unknown error'}`)
       }
     } catch (error) {
-      console.error('Error submitting approval:', error);
-      alert('Failed to submit approval');
+      console.error('Error submitting approval:', error)
+      alert('Failed to submit approval')
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   const openApprovalDialog = (action: 'APPROVED' | 'REJECTED') => {
-    setApprovalAction(action);
-    setMessage('');
-    setApprovalDialogOpen(true);
-  };
+    setApprovalAction(action)
+    setMessage('')
+    setApprovalDialogOpen(true)
+  }
 
   return (
     <>
@@ -296,9 +300,7 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
             </Button>
             <Button
               className={
-                approvalAction === 'APPROVED'
-                  ? 'flex-1 bg-green-600 hover:bg-green-700'
-                  : 'flex-1'
+                approvalAction === 'APPROVED' ? 'flex-1 bg-green-600 hover:bg-green-700' : 'flex-1'
               }
               disabled={submitting || (approvalAction === 'REJECTED' && !message.trim())}
               variant={approvalAction === 'REJECTED' ? 'destructive' : 'default'}
@@ -325,5 +327,5 @@ export function ProofApprovalCard({ orderId, proof, onApprovalChange }: Props) {
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

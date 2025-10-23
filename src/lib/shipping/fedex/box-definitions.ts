@@ -447,7 +447,5 @@ export function recommendBoxForProduct(productType: string, weight: number): Fed
   }
 
   const boxIds = productMapping[productType] || []
-  return boxIds
-    .map((id) => FEDEX_BOXES[id])
-    .filter((box) => box && box.maxWeight >= weight)
+  return boxIds.map((id) => FEDEX_BOXES[id]).filter((box) => box && box.maxWeight >= weight)
 }

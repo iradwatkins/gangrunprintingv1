@@ -14,11 +14,13 @@
 Redesign the checkout flow from a **4-step process** to a **simplified 3-step process** based on proven UX patterns from high-converting print e-commerce sites. The current checkout hides critical payment information until the final step, creating friction and reducing conversion rates.
 
 **Current Flow (4 Steps):**
+
 ```
 Information → Shipping → Payment Method Selection → Review & Pay
 ```
 
 **New Flow (3 Steps):**
+
 ```
 Order Summary → Shipping Method → Payment
 ```
@@ -28,12 +30,14 @@ Order Summary → Shipping Method → Payment
 ## 🎯 Goals
 
 ### Primary Goals
+
 1. **Reduce checkout friction** - 4 steps → 3 steps = 25% fewer clicks
 2. **Show payment forms immediately** - No hiding card inputs until review step
 3. **Improve price transparency** - Clear shipping cost comparison
 4. **Add missing features** - Order notes, coupon codes, collapsible summary
 
 ### Success Metrics
+
 - [ ] Checkout completion time reduced by 30%
 - [ ] Cart abandonment rate decreased
 - [ ] Customer satisfaction increased (fewer "where's payment?" support tickets)
@@ -46,30 +50,35 @@ Order Summary → Shipping Method → Payment
 ### Current Issues
 
 **❌ Problem 1: Too Many Steps (4 Steps)**
+
 - Users must click through 4 separate screens
 - Information and shipping address are separate steps
 - Payment method selection and actual payment are separate steps
 - Creates unnecessary friction
 
 **❌ Problem 2: Payment Form Hidden**
+
 - User selects "Credit Card" on step 3
 - Form doesn't appear until step 4 (Review)
 - Creates confusion and mistrust
 - Users can't see what information they'll need to provide
 
 **❌ Problem 3: Order Summary Takes Up Space**
+
 - Sticky sidebar always visible on right
 - Takes up valuable screen space
 - Not collapsible
 - Poor mobile experience
 
 **❌ Problem 4: Missing Features**
+
 - No order notes field (customers can't add special instructions)
 - Coupon code field may not be prominent
 - No "Change" links on final step to quickly edit info
 - Shipping prices not aligned for easy comparison
 
 **❌ Problem 5: Unclear Shipping Costs**
+
 - Users may not easily compare shipping prices
 - Need right-aligned prices for quick scanning
 
@@ -80,9 +89,11 @@ Order Summary → Shipping Method → Payment
 ### New 3-Step Checkout Flow
 
 #### **Step 1: Order Summary**
+
 **Purpose:** Quick overview of what's being ordered
 
 **Components:**
+
 - Progress indicator showing "Step 1 of 3"
 - Collapsible product details card
   - Product thumbnail/icon
@@ -101,6 +112,7 @@ Order Summary → Shipping Method → Payment
 - "« Back to Cart" link
 
 **Visual Reference:**
+
 - Collapsible card similar to UVCoatedClubFlyers Step 2
 - Clean, minimal design
 - Order summary can collapse/expand with toggle
@@ -108,28 +120,31 @@ Order Summary → Shipping Method → Payment
 ---
 
 #### **Step 2: Shipping Method**
+
 **Purpose:** Collect shipping info and select shipping method in ONE step
 
 **Components:**
 
 1. **Collapsible Order Summary (Top)**
+
    ```
    [▼ Show Order Summary]               $222.01
    ```
+
    When expanded, shows full product details + price breakdown
 
 2. **Contact Information Section**
-   - 📧 Email address *
-   - 📱 Phone number *
-   - 👤 First name *
-   - 👤 Last name *
+   - 📧 Email address \*
+   - 📱 Phone number \*
+   - 👤 First name \*
+   - 👤 Last name \*
    - 🏢 Company (optional)
 
 3. **Shipping Address Section**
-   - 📍 Street address *
-   - 🏙️ City *
-   - 🏛️ State * (2-letter, e.g., TX)
-   - 🏤 ZIP code *
+   - 📍 Street address \*
+   - 🏙️ City \*
+   - 🏛️ State \* (2-letter, e.g., TX)
+   - 🏤 ZIP code \*
    - 🌍 Country (default: US)
 
 4. **Shipping Options Section**
@@ -156,6 +171,7 @@ Order Summary → Shipping Method → Payment
    - Big red "NEXT PAYMENT OPTIONS →" button (right)
 
 **Visual Reference:**
+
 - See UVCoatedClubFlyers Step 2 (Image 2 & 3)
 - Shipping prices aligned right
 - Clean form layout
@@ -164,19 +180,23 @@ Order Summary → Shipping Method → Payment
 ---
 
 #### **Step 3: Payment**
+
 **Purpose:** Review order and complete payment in ONE step
 
 **Components:**
 
 1. **Collapsible Order Summary (Top)**
+
    ```
    [▼ Hide Order Summary ▲]             $222.01
    ```
+
    - Expanded by default on page load
    - Shows full product details + price breakdown
    - User can collapse to save space
 
 2. **Review Section (Editable)**
+
    ```
    ┌──────────────────────────────────────┐
    │ Email:  iradwatkins@gmail.com [Change] │
@@ -185,9 +205,11 @@ Order Summary → Shipping Method → Payment
    │ Method: FedEx Ground Delivery [Change] │
    └──────────────────────────────────────┘
    ```
+
    - Clicking "Change" links takes user back to Step 2
 
 3. **Order Notes Display (if provided)**
+
    ```
    ┌──────────────────────────────────────┐
    │ Order Notes                          │
@@ -197,6 +219,7 @@ Order Summary → Shipping Method → Payment
    ```
 
 4. **Complete Payment Section**
+
    ```
    Complete Payment
 
@@ -204,6 +227,7 @@ Order Summary → Shipping Method → Payment
    ```
 
 5. **Payment Information Section**
+
    ```
    Payment Information
    All transactions are secure and encrypted.
@@ -212,6 +236,7 @@ Order Summary → Shipping Method → Payment
    **Payment Method Tabs/Radio Buttons:**
 
    **● Credit Card (Default Selected)**
+
    ```
    [💳 Card icons: Visa MC Amex Discover UnionPay]
 
@@ -220,28 +245,36 @@ Order Summary → Shipping Method → Payment
    [💳 Card number input field              ]
    [📅 MM/YY]  [🔒 CVV]
    ```
+
    - **IMPORTANT:** Card form VISIBLE immediately when Credit Card is selected
    - Uses Square card form (already implemented in SquareCardPayment component)
 
    **○ PayPal**
+
    ```
    [PayPal checkout button]
    ```
+
    - Shows PayPal button when selected
 
    **○ Cash App Pay**
+
    ```
    [Cash App Pay button]
    ```
+
    - Shows Cash App Pay button when selected
 
    **○ Test Gateway (DEV ONLY)**
+
    ```
    [Test Payment button]
    ```
+
    - Shows test payment button when selected
 
 6. **Privacy & Terms**
+
    ```
    Your personal data will be used to process your order,
    support your experience throughout this website, and for
@@ -251,15 +284,18 @@ Order Summary → Shipping Method → Payment
    ```
 
 7. **Action Buttons**
+
    ```
    [« Return to Shipping Options]
 
    [🔒 PLACE ORDER NOW $222.01]
    ```
+
    - Big red button, full width
    - Shows lock icon + total price
 
 8. **Trust Badges (Bottom)**
+
    ```
    [🔒 McAfee Secure]  [✓ Norton Secured]
 
@@ -268,6 +304,7 @@ Order Summary → Shipping Method → Payment
    ```
 
 **Visual Reference:**
+
 - See UVCoatedClubFlyers Step 3 (Image 4)
 - Payment form visible immediately
 - Clear review section with Change links
@@ -284,6 +321,7 @@ Order Summary → Shipping Method → Payment
 **Changes:**
 
 1. **Update STEPS array** (lines 56-65):
+
 ```typescript
 const STEPS: {
   id: CheckoutStep
@@ -297,11 +335,13 @@ const STEPS: {
 ```
 
 2. **Update CheckoutStep type** (line 54):
+
 ```typescript
 type CheckoutStep = 'order-summary' | 'shipping' | 'payment'
 ```
 
 3. **Set initial step to 'order-summary'** (line 72):
+
 ```typescript
 const [currentStep, setCurrentStep] = useState<CheckoutStep>('order-summary')
 ```
@@ -472,11 +512,13 @@ const [currentStep, setCurrentStep] = useState<CheckoutStep>('order-summary')
 4. **Update button text to "NEXT PAYMENT OPTIONS →"**
 
 **New order notes state** (add near line 99):
+
 ```typescript
 const [orderNotes, setOrderNotes] = useState<string>('')
 ```
 
 **Updated shipping step:**
+
 ```typescript
 {/* Step 2: Shipping */}
 {currentStep === 'shipping' && (
@@ -979,6 +1021,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 **File:** `/src/components/checkout/shipping-rates.tsx`
 
 **Ensure shipping prices are aligned right:**
+
 ```typescript
 <div className="flex justify-between items-center">
   <div className="flex items-center gap-2">
@@ -1009,6 +1052,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 ## 📝 Acceptance Criteria
 
 ### Step 1: Order Summary
+
 - [ ] Shows collapsible product details card
 - [ ] Displays all selected options
 - [ ] Shows price breakdown (Subtotal, Shipping TBD, Tax, Total)
@@ -1017,6 +1061,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 - [ ] "Back to Cart" link works
 
 ### Step 2: Shipping Method
+
 - [ ] Contact information fields visible
 - [ ] Shipping address fields visible
 - [ ] Shipping rates displayed with prices aligned right
@@ -1026,6 +1071,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 - [ ] Form validation works correctly
 
 ### Step 3: Payment
+
 - [ ] Collapsible order summary at top (default open)
 - [ ] Review section shows Email, Phone, Name, Method with "Change" links
 - [ ] "Change" links navigate back to Step 2
@@ -1040,6 +1086,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 - [ ] All payment methods work correctly
 
 ### General
+
 - [ ] Progress indicator shows 3 steps (not 4)
 - [ ] Mobile responsive design
 - [ ] No console errors
@@ -1052,6 +1099,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 ## 🧪 Testing Checklist
 
 ### Desktop Testing
+
 - [ ] Complete checkout with Credit Card (Square)
 - [ ] Complete checkout with PayPal
 - [ ] Complete checkout with Test Cash
@@ -1063,6 +1111,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 - [ ] Verify all form validations work
 
 ### Mobile Testing
+
 - [ ] Test complete flow on mobile (320px width)
 - [ ] Verify collapsible summary works on mobile
 - [ ] Verify form fields are easy to tap
@@ -1070,6 +1119,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 - [ ] Test keyboard interactions
 
 ### Edge Cases
+
 - [ ] Test with no uploaded files
 - [ ] Test with multiple uploaded files
 - [ ] Test with very long order notes
@@ -1082,6 +1132,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 ## 📊 Success Metrics
 
 **Before (Baseline):**
+
 - Steps: 4
 - Payment form: Hidden until step 4
 - Order summary: Always visible sidebar
@@ -1090,6 +1141,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 - Coupon field: May not be prominent
 
 **After (Target):**
+
 - Steps: 3 (✅ 25% reduction)
 - Payment form: Visible on step 3 (✅ immediate trust)
 - Order summary: Collapsible (✅ cleaner UI)
@@ -1098,6 +1150,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 - Coupon field: Prominent (✅ increased usage)
 
 **Expected Improvements:**
+
 - 🎯 **30% reduction** in checkout completion time
 - 🎯 **15-20% decrease** in cart abandonment
 - 🎯 **Fewer support tickets** about payment confusion
@@ -1108,6 +1161,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 ## 🚀 Deployment Plan
 
 ### Pre-Deployment
+
 1. **Code Review**
    - Review all changes in `/src/app/(customer)/checkout/page.tsx`
    - Review ShippingRates component updates
@@ -1125,13 +1179,16 @@ const [orderNotes, setOrderNotes] = useState<string>('')
    - Update API documentation if needed
 
 ### Deployment
+
 1. **Build & Test**
+
    ```bash
    npm run build
    npm run test:e2e:checkout
    ```
 
 2. **Deploy to Staging**
+
    ```bash
    pm2 stop gangrunprinting
    git pull origin main
@@ -1152,6 +1209,7 @@ const [orderNotes, setOrderNotes] = useState<string>('')
    - Watch for any issues
 
 ### Post-Deployment
+
 1. **Monitoring**
    - Monitor checkout completion rates
    - Track cart abandonment rates
@@ -1175,24 +1233,28 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 ### Potential Risks
 
 **Risk 1: Payment Integration Breakage**
+
 - **Impact:** HIGH
 - **Probability:** LOW
 - **Mitigation:** Thorough testing of all payment methods before deployment
 - **Rollback:** Keep old checkout flow in feature flag if needed
 
 **Risk 2: Mobile UX Issues**
+
 - **Impact:** MEDIUM
 - **Probability:** MEDIUM
 - **Mitigation:** Extensive mobile testing, responsive design review
 - **Rollback:** Quick CSS fixes can resolve most mobile issues
 
 **Risk 3: Form Validation Errors**
+
 - **Impact:** MEDIUM
 - **Probability:** LOW
 - **Mitigation:** Test all validation scenarios, maintain existing validation logic
 - **Rollback:** Restore old validation patterns if issues arise
 
 **Risk 4: User Confusion During Transition**
+
 - **Impact:** LOW
 - **Probability:** MEDIUM
 - **Mitigation:** Add subtle UI hints if needed, monitor support tickets
@@ -1203,15 +1265,18 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 ## 📚 References
 
 ### Design References
+
 - UVCoatedClubFlyers.com checkout (reference images in `.aaaaaa/checkout flow/`)
 - [Checkout UX Analysis](/docs/checkout-ux-analysis-2025-10-11.md)
 
 ### Related Stories
+
 - Story 3.3: Address Management Enhancement
 - Story 3.4: Shipping Provider Selection
 - Story 3.5: Payment Processing Integration
 
 ### Related Documentation
+
 - [Checkout API Documentation](/docs/api/checkout.md)
 - [Payment Integration Guide](/docs/payment-integration.md)
 - [E-commerce Best Practices](/docs/ecommerce-ux-best-practices.md)
@@ -1223,9 +1288,11 @@ const [orderNotes, setOrderNotes] = useState<string>('')
 _QA testing to be completed after implementation._
 
 ### Test Date: TBD
+
 ### Tested By: TBD
 
 **Test Results:**
+
 - [ ] All acceptance criteria passed
 - [ ] Desktop testing complete
 - [ ] Mobile testing complete
@@ -1233,9 +1300,11 @@ _QA testing to be completed after implementation._
 - [ ] Payment integrations verified
 
 **Issues Found:**
+
 - None yet
 
 **Gate Status:**
+
 - _To be determined after QA_
 
 ---

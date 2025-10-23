@@ -1,7 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, GitBranch, List, CheckCircle, XCircle, AlertCircle, BarChart3 } from 'lucide-react'
+import {
+  Plus,
+  Edit,
+  Trash2,
+  GitBranch,
+  List,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  BarChart3,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -275,9 +285,7 @@ export default function OrderStatusesPage() {
 
                     {/* Slug */}
                     <TableCell>
-                      <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                        {status.slug}
-                      </code>
+                      <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{status.slug}</code>
                     </TableCell>
 
                     {/* Type */}
@@ -289,7 +297,9 @@ export default function OrderStatusesPage() {
 
                     {/* Order Count */}
                     <TableCell>
-                      <span className={status.orderCount > 0 ? 'font-medium' : 'text-muted-foreground'}>
+                      <span
+                        className={status.orderCount > 0 ? 'font-medium' : 'text-muted-foreground'}
+                      >
                         {status.orderCount}
                       </span>
                     </TableCell>
@@ -332,7 +342,11 @@ export default function OrderStatusesPage() {
                         variant={status.isActive ? 'default' : 'secondary'}
                         onClick={() => !status.isCore && toggleActive(status)}
                       >
-                        {status.isActive ? <CheckCircle className="mr-1 h-3 w-3" /> : <XCircle className="mr-1 h-3 w-3" />}
+                        {status.isActive ? (
+                          <CheckCircle className="mr-1 h-3 w-3" />
+                        ) : (
+                          <XCircle className="mr-1 h-3 w-3" />
+                        )}
                         {status.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
@@ -357,8 +371,8 @@ export default function OrderStatusesPage() {
                             status.isCore
                               ? 'Core statuses cannot be deleted'
                               : status.orderCount > 0
-                              ? 'Reassign orders before deleting'
-                              : 'Delete Status'
+                                ? 'Reassign orders before deleting'
+                                : 'Delete Status'
                           }
                           variant="ghost"
                           onClick={() => handleDelete(status)}
@@ -385,16 +399,16 @@ export default function OrderStatusesPage() {
         </CardHeader>
         <CardContent className="text-sm space-y-2">
           <p>
-            <strong>Core Statuses:</strong> System-managed statuses that cannot be deleted. You can configure email
-            templates and sort order, but cannot change names or slugs.
+            <strong>Core Statuses:</strong> System-managed statuses that cannot be deleted. You can
+            configure email templates and sort order, but cannot change names or slugs.
           </p>
           <p>
-            <strong>Custom Statuses:</strong> User-created statuses that can be fully customized and deleted (if no
-            orders are using them).
+            <strong>Custom Statuses:</strong> User-created statuses that can be fully customized and
+            deleted (if no orders are using them).
           </p>
           <p>
-            <strong>Transitions:</strong> Click the transition count to configure which status changes are allowed.
-            This creates a workflow engine that validates all status updates.
+            <strong>Transitions:</strong> Click the transition count to configure which status
+            changes are allowed. This creates a workflow engine that validates all status updates.
           </p>
         </CardContent>
       </Card>

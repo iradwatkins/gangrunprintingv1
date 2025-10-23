@@ -249,7 +249,8 @@ const emailTemplates: EmailTemplate[] = [
         },
       ],
       paymentUrl: 'https://gangrunprinting.com/pay/INV-2025-789',
-      notes: 'Bulk discount applied for large order volume. Rush production available upon request.',
+      notes:
+        'Bulk discount applied for large order volume. Rush production available upon request.',
       paymentTerms: 'Net 14 days. Late payments subject to 1.5% monthly interest.',
     },
   },
@@ -312,9 +313,7 @@ export default function EmailPreviewClient() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Email Templates</h1>
-        <p className="text-gray-600">
-          Preview all transactional email templates with sample data
-        </p>
+        <p className="text-gray-600">Preview all transactional email templates with sample data</p>
       </div>
 
       {/* Category Tabs */}
@@ -376,9 +375,7 @@ export default function EmailPreviewClient() {
         <h3 className="text-lg font-semibold mb-4">Email Template Stats</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <div className="text-3xl font-bold text-blue-600">
-              {emailTemplates.length}
-            </div>
+            <div className="text-3xl font-bold text-blue-600">{emailTemplates.length}</div>
             <div className="text-sm text-gray-600">Total Templates</div>
           </div>
           <div>

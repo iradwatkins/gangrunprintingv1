@@ -14,7 +14,8 @@ export async function seedDesignOptions() {
       name: 'Upload Your Own Artwork',
       code: 'upload_own',
       description: 'Upload your own design files - no charge',
-      tooltipText: 'Upload your artwork now or email it to us later. Accepted formats: JPG, PNG, PDF, AI, EPS',
+      tooltipText:
+        'Upload your artwork now or email it to us later. Accepted formats: JPG, PNG, PDF, AI, EPS',
       pricingType: DesignPricingType.FREE,
       requiresSideSelection: false,
       sideOnePrice: null,
@@ -29,7 +30,8 @@ export async function seedDesignOptions() {
       name: 'Standard Custom Design',
       code: 'standard_design',
       description: 'Professional design service by our team',
-      tooltipText: 'Our design team will create a custom design for your project (2-3 business days)',
+      tooltipText:
+        'Our design team will create a custom design for your project (2-3 business days)',
       pricingType: DesignPricingType.SIDE_BASED,
       requiresSideSelection: true,
       sideOnePrice: 75.0,

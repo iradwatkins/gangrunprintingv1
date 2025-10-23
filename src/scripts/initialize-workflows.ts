@@ -26,7 +26,7 @@ async function main() {
       console.log(`⚠️  Found ${existingWorkflows} existing workflows.`)
       console.log('Do you want to continue? This will create additional workflows.')
       console.log('Press Ctrl+C to cancel or wait 5 seconds to continue...\n')
-      await new Promise(resolve => setTimeout(resolve, 5000))
+      await new Promise((resolve) => setTimeout(resolve, 5000))
     }
 
     // Create predefined workflows
@@ -60,8 +60,8 @@ async function main() {
 
     console.log('\n' + '─'.repeat(80))
     console.log(`\n✅ Total Workflows: ${workflows.length}`)
-    console.log(`✓ Active: ${workflows.filter(w => w.isActive).length}`)
-    console.log(`○ Inactive: ${workflows.filter(w => !w.isActive).length}`)
+    console.log(`✓ Active: ${workflows.filter((w) => w.isActive).length}`)
+    console.log(`○ Inactive: ${workflows.filter((w) => !w.isActive).length}`)
 
     console.log('\n📝 Next Steps:')
     console.log('1. Activate workflows using the Admin UI or activate_all_workflows.ts script')
@@ -69,7 +69,6 @@ async function main() {
     console.log('3. Monitor workflow executions in the database')
 
     console.log('\n✨ Marketing Workflows initialized successfully!\n')
-
   } catch (error) {
     console.error('❌ Error initializing workflows:', error)
     process.exit(1)

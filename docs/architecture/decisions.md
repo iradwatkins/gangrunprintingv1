@@ -794,6 +794,7 @@ Reorder the cart drawer layout to display the **Shipping Preview** component imm
 ### Layout Flow
 
 **Before:**
+
 ```
 Items
 ---
@@ -808,6 +809,7 @@ Shipping Preview (below button) ❌
 ```
 
 **After:**
+
 ```
 Items
 ---
@@ -824,6 +826,7 @@ Shipping Preview (above button) ✅
 ### Consequences
 
 ✅ **Positive**:
+
 - Users see shipping costs before checkout decision
 - Reduced surprise at checkout page
 - Better mobile experience
@@ -831,6 +834,7 @@ Shipping Preview (above button) ✅
 - More transparent pricing
 
 ⚠️ **Negative**:
+
 - Checkout button pushed slightly lower (requires minimal scroll)
 - Slightly more vertical space used
 
@@ -861,12 +865,14 @@ Users needed a way to upload artwork files for their print orders. The cart draw
 ### Decision
 
 Create a **dedicated `/cart` page** that includes:
+
 1. Full cart review with item details and quantity controls
 2. Drag-and-drop artwork upload section
 3. Shipping preview and selection
 4. Order summary before checkout
 
 **Customer Flow:**
+
 ```
 Product Page → Add to Cart → /cart Page → Upload Artwork → Checkout
 ```
@@ -882,6 +888,7 @@ Product Page → Add to Cart → /cart Page → Upload Artwork → Checkout
 ### Implementation
 
 **Files Created:**
+
 ```typescript
 // /src/app/(customer)/cart/page.tsx
 export default function CartPage() {
@@ -897,6 +904,7 @@ export default function CartPage() {
 **Files Modified:**
 
 1. **AddToCartSection.tsx** - Changed behavior on add to cart:
+
 ```typescript
 // Before:
 addItem(cartItem)
@@ -908,6 +916,7 @@ router.push('/cart') // Redirect to cart page
 ```
 
 2. **cart-context.tsx** - Removed auto-open drawer:
+
 ```typescript
 // Before:
 case 'ADD_ITEM':
@@ -942,12 +951,14 @@ case 'ADD_ITEM':
 ### File Upload Integration
 
 **Storage Strategy:**
+
 - Files uploaded to temporary storage via `/api/upload/temporary`
 - File metadata stored in `sessionStorage` with key `cart_artwork_files`
 - Files associated with order after payment completion in checkout
 - Temporary files cleaned up after 24 hours if not associated
 
 **Supported Formats:**
+
 - PDF, JPG, JPEG, PNG, GIF
 - AI, EPS, SVG (design files)
 - Max 10 files per order
@@ -956,12 +967,14 @@ case 'ADD_ITEM':
 ### Cart Drawer vs. Cart Page
 
 **Cart Drawer** (still available):
+
 - Quick view from header cart icon
 - Limited to displaying items and quick actions
 - No longer auto-opens on "Add to Cart"
 - Optional "View Cart" button to navigate to full page
 
 **Cart Page** (new primary):
+
 - Full order review before checkout
 - Artwork upload capability
 - Shipping method selection
@@ -970,6 +983,7 @@ case 'ADD_ITEM':
 ### Consequences
 
 ✅ **Positive**:
+
 - Professional file upload experience
 - Standard e-commerce cart page pattern
 - Better mobile and desktop UX
@@ -977,11 +991,13 @@ case 'ADD_ITEM':
 - Clearer customer journey: Product → Cart → Checkout
 
 ⚠️ **Negative**:
+
 - One extra page in checkout flow (but expected by users)
 - Cart drawer less prominent (now secondary feature)
 - Slightly more complex routing logic
 
 ⚠️ **Trade-offs**:
+
 - Users must navigate to separate page (not instant drawer)
 - However, file upload requires full page anyway
 

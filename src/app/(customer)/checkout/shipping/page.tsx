@@ -149,10 +149,7 @@ export default function ShippingPage() {
     }
 
     // Check if Southwest Cargo selected but no airport chosen
-    if (
-      selectedShippingMethod.carrier === 'SOUTHWEST_CARGO' &&
-      !selectedAirportId
-    ) {
+    if (selectedShippingMethod.carrier === 'SOUTHWEST_CARGO' && !selectedAirportId) {
       toast.error('Please select a pickup airport for Southwest Cargo')
       return
     }
@@ -206,7 +203,7 @@ export default function ShippingPage() {
   }
 
   const shippingCost = selectedShippingMethod?.rate.amount || 0
-  const tax = subtotal * 0.10 // 10% tax rate
+  const tax = subtotal * 0.1 // 10% tax rate
   const total = subtotal + shippingCost + tax
 
   return (
@@ -214,7 +211,10 @@ export default function ShippingPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Link className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4" href="/checkout">
+          <Link
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
+            href="/checkout"
+          >
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to Cart
           </Link>
@@ -290,9 +290,7 @@ export default function ShippingPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span>
-                      {selectedShippingMethod ? `$${shippingCost.toFixed(2)}` : 'TBD'}
-                    </span>
+                    <span>{selectedShippingMethod ? `$${shippingCost.toFixed(2)}` : 'TBD'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tax (estimated)</span>

@@ -12,7 +12,7 @@ $(docker ps | grep gangrun)
 ## Service Health Check
 
 - **Main Site:** https://gangrunprinting.com ✅ HTTP 200
-- **Products Page:** https://gangrunprinting.com/products ✅ HTTP 200  
+- **Products Page:** https://gangrunprinting.com/products ✅ HTTP 200
 - **Admin Panel:** https://gangrunprinting.com/admin/products ✅ HTTP 200
 
 ## Port Configuration

@@ -5,11 +5,13 @@
 ### ✅ API Tests (3/3 PASSED)
 
 **Test #1: Chicago, IL (Origin City)**
+
 - **Expected**: No Southwest (same city as warehouse)
 - **Result**: ✅ Correctly excluded Southwest Cargo
 - **Reason**: Chicago is the shipping origin, not a destination
 
 **Test #2: Los Angeles, CA (Destination)**
+
 - **Expected**: Southwest PICKUP + DASH
 - **Result**: ✅ BOTH services returned
 - **Rates**:
@@ -17,6 +19,7 @@
   - Southwest Cargo Dash: $105 (1 day, Next Flight Guaranteed)
 
 **Test #3: API Response Structure**
+
 ```json
 {
   "carrier": "SOUTHWEST_CARGO",
@@ -33,13 +36,13 @@
 
 ## 📊 Production Status
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| **Database** | ✅ Ready | 82 airports seeded successfully |
-| **API Endpoint** | ✅ Working | `/api/shipping/calculate` returns Southwest rates |
-| **Rate Calculation** | ✅ Correct | $80 base + 5% markup = $84 |
-| **Geographic Coverage** | ✅ Complete | 36 US states + Puerto Rico |
-| **Services Available** | ✅ Both | PICKUP (Standard) + DASH (Next Flight) |
+| Component               | Status      | Details                                           |
+| ----------------------- | ----------- | ------------------------------------------------- |
+| **Database**            | ✅ Ready    | 82 airports seeded successfully                   |
+| **API Endpoint**        | ✅ Working  | `/api/shipping/calculate` returns Southwest rates |
+| **Rate Calculation**    | ✅ Correct  | $80 base + 5% markup = $84                        |
+| **Geographic Coverage** | ✅ Complete | 36 US states + Puerto Rico                        |
+| **Services Available**  | ✅ Both     | PICKUP (Standard) + DASH (Next Flight)            |
 
 ---
 
@@ -49,6 +52,7 @@
 AL, AR, AZ, CA, CO, CT, DC, FL, GA, HI, IN, KY, LA, MA, MD, MI, MO, NC, NE, NH, NM, NV, NY, OH, OK, OR, PA, PR, RI, SC, TN, TX, UT, VA, WA, WI
 
 **NOT Supported:**
+
 - IL (Chicago - origin city, warehouse location)
 - States without Southwest Cargo airports
 
@@ -57,10 +61,12 @@ AL, AR, AZ, CA, CO, CT, DC, FL, GA, HI, IN, KY, LA, MA, MD, MI, MO, NC, NE, NH, 
 ## 🧪 How to Test on Website
 
 ### Step 1: Navigate to Checkout
+
 1. Go to https://gangrunprinting.com/checkout/shipping
 2. (Note: Cart must have items - checkout redirects if empty)
 
 ### Step 2: Enter California Address
+
 ```
 First Name: John
 Last Name: Doe
@@ -73,7 +79,9 @@ ZIP: 90001
 ```
 
 ### Step 3: Verify Shipping Options Appear
+
 You should see:
+
 - ✅ FedEx Ground Home Delivery (~$13)
 - ✅ FedEx 2Day (~$27)
 - ✅ FedEx Standard Overnight (~$48)
@@ -85,6 +93,7 @@ You should see:
 ## 💡 Why Chicago Doesn't Show Southwest
 
 **This is correct behavior:**
+
 - Chicago (IL) = Your warehouse/origin
 - Southwest Cargo = Airport pickup at DESTINATION
 - Shipping from Chicago → Chicago for airport pickup makes no sense
@@ -99,6 +108,7 @@ You should see:
 **Date**: October 22, 2025
 **Time**: ~12:00 PM CST
 **Components Deployed**:
+
 1. ✅ 82 Southwest Cargo airports seeded
 2. ✅ Database schema updated (latitude/longitude fields)
 3. ✅ Both PICKUP and DASH services active
@@ -107,10 +117,12 @@ You should see:
 6. ✅ Airport availability cache system active
 
 **API Endpoints**:
+
 - `POST /api/shipping/calculate` - Get shipping rates
 - `GET /api/airports` - List available airports (82 locations)
 
 **Pricing**:
+
 - PICKUP: $80 base (0-50 lbs) + $0.42/lb (51+ lbs) + 5% markup
 - DASH: $100 (0-25 lbs), $117 (26-50 lbs), $148 (51-100 lbs) + 5% markup
 
@@ -119,12 +131,14 @@ You should see:
 ## 🔍 Troubleshooting
 
 **If Southwest doesn't appear:**
+
 1. ✅ Check state is supported (not IL)
 2. ✅ Verify cart has items
 3. ✅ Ensure address filled completely
 4. ✅ Test with API directly (see commands below)
 
 **API Test Commands**:
+
 ```bash
 # Test California (should show Southwest)
 curl -X POST https://gangrunprinting.com/api/shipping/calculate \

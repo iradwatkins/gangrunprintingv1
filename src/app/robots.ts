@@ -23,50 +23,22 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: 'GPTBot', // OpenAI ChatGPT crawler
         allow: '/',
-        disallow: [
-          '/admin/*',
-          '/api/*',
-          '/cart',
-          '/checkout/*',
-          '/account/*',
-          '/orders/*',
-        ],
+        disallow: ['/admin/*', '/api/*', '/cart', '/checkout/*', '/account/*', '/orders/*'],
       },
       {
         userAgent: 'ChatGPT-User', // ChatGPT user agent
         allow: '/',
-        disallow: [
-          '/admin/*',
-          '/api/*',
-          '/cart',
-          '/checkout/*',
-          '/account/*',
-          '/orders/*',
-        ],
+        disallow: ['/admin/*', '/api/*', '/cart', '/checkout/*', '/account/*', '/orders/*'],
       },
       {
         userAgent: 'anthropic-ai', // Claude crawler
         allow: '/',
-        disallow: [
-          '/admin/*',
-          '/api/*',
-          '/cart',
-          '/checkout/*',
-          '/account/*',
-          '/orders/*',
-        ],
+        disallow: ['/admin/*', '/api/*', '/cart', '/checkout/*', '/account/*', '/orders/*'],
       },
       {
         userAgent: 'Google-Extended', // Google Bard/Gemini
         allow: '/',
-        disallow: [
-          '/admin/*',
-          '/api/*',
-          '/cart',
-          '/checkout/*',
-          '/account/*',
-          '/orders/*',
-        ],
+        disallow: ['/admin/*', '/api/*', '/cart', '/checkout/*', '/account/*', '/orders/*'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

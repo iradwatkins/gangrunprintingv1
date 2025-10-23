@@ -1,4 +1,5 @@
 # Southwest Cargo Fix Report
+
 **Date:** 2025-10-12
 **Issue:** Southwest Cargo not showing on checkout page
 **Status:** ✅ BACKEND FIXED - Frontend Testing Required
@@ -10,12 +11,15 @@ Southwest Cargo shipping **IS WORKING** on the backend API. The issue was lack o
 ## What Was Fixed
 
 ### 1. Database Verification ✅
+
 - Confirmed `CarrierSettings` table has Southwest Cargo enabled
 - Service area configured for all 50 states + DC + PR
 - Markup: 5%
 
 ### 2. Enhanced Logging ✅
+
 Added comprehensive logging to:
+
 - **Southwest Cargo Provider** (`src/lib/shipping/providers/southwest-cargo.ts`)
   - Logs when service is/isn't available for a state
   - Logs weight calculations
@@ -31,11 +35,13 @@ Added comprehensive logging to:
 ### 3. Backend Test Results ✅
 
 Test with Dallas, TX (guaranteed service area):
+
 - **Product:** 250x 4x6 Postcards on 9pt paper
 - **Weight:** 5.40 lbs
 - **Result:** SUCCESS
 
 **Rates Returned:**
+
 - FedEx Standard Overnight: $197.04 (1 day)
 - FedEx 2Day: $97.03 (2 days)
 - FedEx Ground: $21.49 (3 days)
@@ -47,6 +53,7 @@ Test with Dallas, TX (guaranteed service area):
 ### Option 1: Browser Testing (Recommended)
 
 1. **Open the checkout page:**
+
    ```
    https://gangrunprinting.com/checkout
    ```
@@ -83,11 +90,13 @@ Test with Dallas, TX (guaranteed service area):
 ### Option 2: API Testing (Verified Working)
 
 Run the test script:
+
 ```bash
 node /root/websites/gangrunprinting/test-southwest-shipping.js
 ```
 
 Expected output:
+
 ```
 ✅ SUCCESS: Southwest Cargo is working!
 ✈️  Southwest Cargo Options: 2
@@ -100,12 +109,15 @@ Expected output:
 ### If Southwest Cargo Still Not Showing on Frontend
 
 #### Check 1: Verify Address State
+
 - Southwest Cargo only serves **certain states**
 - Most US states are covered, but verify your test address is in TX, CA, FL, etc.
 - **Full service area:** AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, PR, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY
 
 #### Check 2: Browser Console Logs
+
 The frontend should show detailed logs:
+
 ```
 🛫 [Southwest Cargo] getRates called
    - Destination state: TX
@@ -120,17 +132,21 @@ The frontend should show detailed logs:
 ```
 
 #### Check 3: PM2 Logs
+
 Check server logs in real-time:
+
 ```bash
 pm2 logs gangrunprinting --lines 50
 ```
 
 Look for:
+
 - `[Shipping API] 📍 Fetching rates for destination:`
 - `[Southwest Cargo] getRates called`
 - `✅ Southwest Cargo rates received: 2 rates`
 
 #### Check 4: Network Tab
+
 1. Open DevTools > Network tab
 2. Fill in shipping address
 3. Look for `/api/shipping/calculate` request
@@ -154,6 +170,7 @@ Look for:
 ## Support
 
 If Southwest Cargo still doesn't appear after these steps:
+
 1. Capture browser console logs (F12 > Console)
 2. Capture network request/response (F12 > Network > /api/shipping/calculate)
 3. Check PM2 logs: `pm2 logs gangrunprinting --lines 100 | grep Southwest`

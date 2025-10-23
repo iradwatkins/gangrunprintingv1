@@ -57,7 +57,9 @@ test.describe('Southwest Cargo Shipping - Airport Pickup', () => {
 
     // Step 4: Enter Phoenix zip code
     console.log(`🔢 Step 4: Entering Phoenix zip code (${SOUTHWEST_HUBS.phoenix})...`)
-    const zipInput = page.locator('input[placeholder*="zip"], input[id*="zip"], input[name*="zip"]').first()
+    const zipInput = page
+      .locator('input[placeholder*="zip"], input[id*="zip"], input[name*="zip"]')
+      .first()
     await expect(zipInput).toBeVisible({ timeout: 5000 })
 
     await zipInput.fill(SOUTHWEST_HUBS.phoenix)
@@ -65,7 +67,9 @@ test.describe('Southwest Cargo Shipping - Airport Pickup', () => {
 
     // Step 5: Calculate shipping rates
     console.log('🧮 Step 5: Calculating shipping rates...')
-    const calculateButton = page.locator('button:has-text("Calculate"), button:has-text("Get Rates")').first()
+    const calculateButton = page
+      .locator('button:has-text("Calculate"), button:has-text("Get Rates")')
+      .first()
     await expect(calculateButton).toBeVisible({ timeout: 3000 })
     await calculateButton.click()
     console.log('✓ Calculate button clicked')
@@ -87,16 +91,21 @@ test.describe('Southwest Cargo Shipping - Airport Pickup', () => {
       console.log('☑️  Step 7: Selecting Southwest Cargo...')
 
       // Find the radio button or clickable area for Southwest Cargo
-      const southwestRadio = page.locator('input[type="radio"]').filter({
-        has: page.locator('text=/Southwest/i')
-      }).first()
+      const southwestRadio = page
+        .locator('input[type="radio"]')
+        .filter({
+          has: page.locator('text=/Southwest/i'),
+        })
+        .first()
 
       if (await southwestRadio.isVisible({ timeout: 2000 })) {
         await southwestRadio.click()
         console.log('✓ Southwest Cargo selected via radio button')
       } else {
         // Try clicking the label/container
-        const southwestLabel = page.locator('label:has-text("Southwest"), div:has-text("Southwest")').first()
+        const southwestLabel = page
+          .locator('label:has-text("Southwest"), div:has-text("Southwest")')
+          .first()
         if (await southwestLabel.isVisible({ timeout: 2000 })) {
           await southwestLabel.click()
           console.log('✓ Southwest Cargo selected via label')
@@ -123,7 +132,6 @@ test.describe('Southwest Cargo Shipping - Airport Pickup', () => {
       }
 
       console.log('🎉 Southwest Cargo shipping test completed successfully!')
-
     } catch (error) {
       console.log('⚠️  Southwest Cargo option not found')
       console.log('Available shipping options:')

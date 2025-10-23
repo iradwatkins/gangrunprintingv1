@@ -1,4 +1,5 @@
 # ✅ Ahrefs Web Analytics + Bing Webmaster Tools Setup
+
 **Date:** October 19, 2025
 **Status:** 🔄 IN PROGRESS
 
@@ -7,15 +8,19 @@
 ## ✅ **STEP 1: Ahrefs Web Analytics - INSTALLED**
 
 ### **What Was Added:**
+
 ```html
-<script src="https://analytics.ahrefs.com/analytics.js" 
-        data-key="xmoVXl4/lDVkojG39HWDvQ" 
-        async></script>
+<script
+  src="https://analytics.ahrefs.com/analytics.js"
+  data-key="xmoVXl4/lDVkojG39HWDvQ"
+  async
+></script>
 ```
 
 **Location:** `/src/app/layout.tsx` (added to `<head>`)
 
 **What Ahrefs Tracks:**
+
 - ✅ Backlink referral traffic
 - ✅ LLM (ChatGPT, Claude, etc.) traffic
 - ✅ Search engine traffic
@@ -45,7 +50,7 @@
    - Click "Add"
 
 4. **Choose Verification Method:**
-   
+
    **Option A: XML File (Easiest)**
    - Download the `BingSiteAuth.xml` file
    - Upload to `/public/BingSiteAuth.xml` in your project
@@ -102,6 +107,7 @@ docker logs --tail=20 gangrunprinting_app
 
 **Or check in Ahrefs dashboard:**
 👉 https://analytics.ahrefs.com/
+
 - Should show "Installation detected" after a few minutes
 
 ---
@@ -111,6 +117,7 @@ docker logs --tail=20 gangrunprinting_app
 ### **Ahrefs Web Analytics Dashboard:**
 
 **Traffic Sources:**
+
 - Direct traffic
 - Organic search (Google, Bing, etc.)
 - Referral traffic (backlinks)
@@ -118,18 +125,21 @@ docker logs --tail=20 gangrunprinting_app
 - **LLM traffic** (ChatGPT, Claude, Perplexity, etc.) 🤖
 
 **Page Analytics:**
+
 - Top pages by views
 - Entry pages
 - Exit pages
 - Page performance
 
 **Visitor Analytics:**
+
 - New vs returning visitors
 - Geographic data
 - Device types
 - Browser data
 
 **Unique Ahrefs Features:**
+
 - LLM/AI bot traffic tracking
 - Backlink referral sources
 - Search engine breakdown
@@ -138,18 +148,21 @@ docker logs --tail=20 gangrunprinting_app
 ### **Bing Webmaster Tools Dashboard:**
 
 **Search Performance:**
+
 - Bing search impressions
 - Bing search clicks
 - Average position in Bing
 - Click-through rate (CTR)
 
 **SEO Reports:**
+
 - Crawl errors
 - Index coverage
 - Mobile-friendliness
 - Page speed (Bing's version)
 
 **Backlinks:**
+
 - Inbound links from Bing's index
 - Link quality analysis
 - Anchor text data
@@ -160,14 +173,14 @@ docker logs --tail=20 gangrunprinting_app
 
 Based on typical US traffic distribution:
 
-| Source | % of Traffic | Tool to Track |
-|--------|-------------|---------------|
-| Google Search | 85-90% | Google Search Console ✅ |
-| Bing Search | 3-5% | Bing Webmaster Tools 🔄 |
-| Direct | 5-8% | GA4 + Ahrefs ✅ |
-| Referral/Backlinks | 2-4% | Ahrefs ✅ |
-| Social Media | 1-2% | GA4 + Ahrefs ✅ |
-| LLM/AI Bots | <1% | Ahrefs only ✅ |
+| Source             | % of Traffic | Tool to Track            |
+| ------------------ | ------------ | ------------------------ |
+| Google Search      | 85-90%       | Google Search Console ✅ |
+| Bing Search        | 3-5%         | Bing Webmaster Tools 🔄  |
+| Direct             | 5-8%         | GA4 + Ahrefs ✅          |
+| Referral/Backlinks | 2-4%         | Ahrefs ✅                |
+| Social Media       | 1-2%         | GA4 + Ahrefs ✅          |
+| LLM/AI Bots        | <1%          | Ahrefs only ✅           |
 
 ---
 
@@ -176,9 +189,11 @@ Based on typical US traffic distribution:
 ### **Ahrefs Not Showing Data:**
 
 1. **Check installation:**
+
    ```bash
    curl -s https://gangrunprinting.com | grep "analytics.ahrefs.com"
    ```
+
    Should return the script tag.
 
 2. **Wait 15-30 minutes:**
@@ -233,6 +248,7 @@ Based on typical US traffic distribution:
 ## ✅ **Final Checklist**
 
 **Immediate Actions:**
+
 - [x] Ahrefs tracking code added to `layout.tsx`
 - [ ] Deploy changes to production (`git pull && npm run build && docker-compose restart app`)
 - [ ] Verify Ahrefs installation (check browser DevTools)
@@ -240,11 +256,13 @@ Based on typical US traffic distribution:
 - [ ] Submit sitemap to Bing: `https://gangrunprinting.com/sitemap.xml`
 
 **Wait 24-48 Hours:**
+
 - [ ] Check Ahrefs dashboard for first data
 - [ ] Check Bing Webmaster Tools for crawl status
 - [ ] Verify LLM traffic appears in Ahrefs
 
 **Weekly Monitoring:**
+
 - [ ] Review Ahrefs for backlink traffic sources
 - [ ] Check Bing search performance (if traffic exists)
 - [ ] Monitor LLM bot traffic trends
@@ -254,12 +272,14 @@ Based on typical US traffic distribution:
 ## 🎉 **What You'll Gain:**
 
 **From Ahrefs:**
+
 - 📊 See which backlinks drive actual traffic
 - 🤖 Track ChatGPT and AI bot visits
 - 🔍 Identify high-value referral sources
 - 📈 Monitor traffic quality by source
 
 **From Bing:**
+
 - 🔎 Capture 3-5% additional search traffic visibility
 - 📊 Diversify SEO data (not just Google)
 - 🛠️ Get Bing-specific optimization insights
@@ -270,6 +290,7 @@ Based on typical US traffic distribution:
 ## 💰 **Cost: Still $0.00**
 
 Both services are 100% free:
+
 - ✅ Ahrefs Web Analytics: Free forever
 - ✅ Bing Webmaster Tools: Free forever
 
@@ -278,6 +299,7 @@ No credit card required, no hidden fees!
 ---
 
 **Next Steps:**
+
 1. Deploy the code changes (Ahrefs is already in code)
 2. Verify Bing Webmaster Tools domain
 3. Wait 24-48 hours for data to populate

@@ -4,14 +4,7 @@ import { RecentOrdersTable } from '@/components/admin/recent-orders-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
-import {
-  DollarSign,
-  Package,
-  CheckCircle,
-  AlertCircle,
-  ShoppingCart,
-  Clock,
-} from 'lucide-react'
+import { DollarSign, Package, CheckCircle, AlertCircle, ShoppingCart, Clock } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0

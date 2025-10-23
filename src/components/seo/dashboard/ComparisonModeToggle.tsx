@@ -17,13 +17,14 @@ export interface ComparisonModeToggleProps {
 
 export function ComparisonModeToggle({ enabled, onChange }: ComparisonModeToggleProps) {
   return (
-    <Button
-      variant={enabled ? 'default' : 'outline'}
-      onClick={() => onChange(!enabled)}
-    >
+    <Button variant={enabled ? 'default' : 'outline'} onClick={() => onChange(!enabled)}>
       <TrendingUp className="mr-2 h-4 w-4" />
       Compare Periods
-      {enabled && <Badge className="ml-2" variant="secondary">Active</Badge>}
+      {enabled && (
+        <Badge className="ml-2" variant="secondary">
+          Active
+        </Badge>
+      )}
     </Button>
   )
 }

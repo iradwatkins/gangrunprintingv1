@@ -123,9 +123,7 @@ export function ShippingAddressForm({
               value={address.firstName || ''}
               onChange={(e) => handleChange('firstName', e.target.value)}
             />
-            {errors.firstName && (
-              <p className="text-sm text-destructive">{errors.firstName}</p>
-            )}
+            {errors.firstName && <p className="text-sm text-destructive">{errors.firstName}</p>}
           </div>
 
           <div className="space-y-2">
@@ -139,9 +137,7 @@ export function ShippingAddressForm({
               value={address.lastName || ''}
               onChange={(e) => handleChange('lastName', e.target.value)}
             />
-            {errors.lastName && (
-              <p className="text-sm text-destructive">{errors.lastName}</p>
-            )}
+            {errors.lastName && <p className="text-sm text-destructive">{errors.lastName}</p>}
           </div>
         </div>
 
@@ -221,11 +217,11 @@ export function ShippingAddressForm({
             <Label htmlFor="state">
               State <span className="text-destructive">*</span>
             </Label>
-            <Select value={address.state || ''} onValueChange={(value) => handleChange('state', value)}>
-              <SelectTrigger
-                className={errors.state ? 'border-destructive' : ''}
-                id="state"
-              >
+            <Select
+              value={address.state || ''}
+              onValueChange={(value) => handleChange('state', value)}
+            >
+              <SelectTrigger className={errors.state ? 'border-destructive' : ''} id="state">
                 <SelectValue placeholder="Select state" />
               </SelectTrigger>
               <SelectContent>

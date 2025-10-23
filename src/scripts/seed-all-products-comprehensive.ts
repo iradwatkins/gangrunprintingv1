@@ -858,7 +858,13 @@ async function seedProducts() {
 
   for (const productData of products) {
     try {
-      const { paperStocks: paperStockNames, addOns: addOnNames, sizeGroupId, quantityGroupId, ...productInfo } = productData
+      const {
+        paperStocks: paperStockNames,
+        addOns: addOnNames,
+        sizeGroupId,
+        quantityGroupId,
+        ...productInfo
+      } = productData
 
       // Create the product
       const product = await prisma.product.upsert({
@@ -1039,7 +1045,7 @@ async function seedProducts() {
 async function main(): Promise<SeedResult> {
   try {
     console.log('🌱 COMPREHENSIVE PRODUCT SEED SCRIPT')
-    console.log('=' .repeat(80))
+    console.log('='.repeat(80))
     console.log('')
 
     const categoryCount = await seedCategories()
@@ -1070,9 +1076,9 @@ async function main(): Promise<SeedResult> {
     } = await seedProducts()
     console.log('')
 
-    console.log('=' .repeat(80))
+    console.log('='.repeat(80))
     console.log('✅ SEED COMPLETE - SUMMARY')
-    console.log('=' .repeat(80))
+    console.log('='.repeat(80))
     console.log(`   Categories:              ${categoryCount}`)
     console.log(`   Paper Stocks:            ${paperStockCount}`)
     console.log(`   Size Groups:             ${sizeGroupCount}`)
@@ -1086,7 +1092,7 @@ async function main(): Promise<SeedResult> {
     console.log(`   Product-Quantity Group:  ${quantityGroupLinkCount}`)
     console.log(`   Product-Add-On:          ${addOnLinkCount}`)
     console.log(`   Pricing Tiers:           ${pricingTierCount}`)
-    console.log('=' .repeat(80))
+    console.log('='.repeat(80))
 
     return {
       success: true,

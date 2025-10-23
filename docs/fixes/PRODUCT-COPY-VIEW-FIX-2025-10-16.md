@@ -10,6 +10,7 @@
 When copying a product, the copied product is set to `isActive: false` by design (for review before publishing). However, clicking the "View Product" button (eye icon) in the admin panel tried to show the product on the customer-facing page, resulting in "Product Not Found" error.
 
 **User Report:** "WHEN I COPY THE PRODUCT i get these errors"
+
 - URL attempted: `https://gangrunprinting.com/products/test-product-1760623817062-copy-qkf8z4-copy-ix1nw2`
 - Error: "Product Not Found"
 - Console warning about Square.js preload
@@ -19,11 +20,13 @@ When copying a product, the copied product is set to `isActive: false` by design
 ## 🔍 Root Cause
 
 ### Expected Behavior (Working Correctly)
+
 1. ✅ Product duplicate API creates copy with `isActive: false`
 2. ✅ Copied product appears in admin product list
 3. ✅ Copied product has all configuration (images, paper stocks, etc.)
 
 ### The Problem
+
 4. ❌ "View Product" button (eye icon) was always enabled
 5. ❌ Clicking it on inactive product navigates to `/products/{slug}`
 6. ❌ Customer-facing product page only shows active products
@@ -40,6 +43,7 @@ When copying a product, the copied product is set to `isActive: false` by design
 **Lines: 365-404**
 
 **Before:**
+
 ```tsx
 <Link href={`/products/${product.Slug}`} target="_blank">
   <Button size="sm" title="View Product" variant="ghost">
@@ -49,24 +53,27 @@ When copying a product, the copied product is set to `isActive: false` by design
 ```
 
 **After:**
+
 ```tsx
-{product.IsActive ? (
-  <Link href={`/products/${product.Slug}`} target="_blank">
-    <Button size="sm" title="View Product" variant="ghost">
+{
+  product.IsActive ? (
+    <Link href={`/products/${product.Slug}`} target="_blank">
+      <Button size="sm" title="View Product" variant="ghost">
+        <Eye className="h-4 w-4" />
+      </Button>
+    </Link>
+  ) : (
+    <Button
+      size="sm"
+      title="Product is inactive - activate it first to view publicly"
+      variant="ghost"
+      disabled
+      className="opacity-50 cursor-not-allowed"
+    >
       <Eye className="h-4 w-4" />
     </Button>
-  </Link>
-) : (
-  <Button
-    size="sm"
-    title="Product is inactive - activate it first to view publicly"
-    variant="ghost"
-    disabled
-    className="opacity-50 cursor-not-allowed"
-  >
-    <Eye className="h-4 w-4" />
-  </Button>
-)}
+  )
+}
 ```
 
 ### Why This Works
@@ -153,14 +160,17 @@ This is **intentional design** for safety and quality control:
 ## 🔗 Related Files
 
 ### Product Duplication
+
 - **`/src/app/api/products/[id]/duplicate/route.ts`** - Creates product copy
 - **Line 89:** `isActive: false` - Sets copied products as inactive
 
 ### Admin Product List
+
 - **`/src/app/admin/products/page.tsx`** - Admin product management
 - **Lines 365-404:** View Product button with active/inactive check
 
 ### Customer Product Page
+
 - **`/src/app/(customer)/products/[slug]/page.tsx`** - Public product display
 - Only shows products where `isActive: true`
 
@@ -175,6 +185,7 @@ PGPASSWORD='GangRun2024Secure' psql -U gangrun_user -d gangrun_db -h localhost -
 ```
 
 Example output:
+
 ```
 id                                  | name                                  | slug                                        | isActive
 ------------------------------------+---------------------------------------+---------------------------------------------+----------
@@ -189,7 +200,8 @@ id                                  | name                                  | sl
 
 **Fix:** Disable "View Product" button for inactive products with helpful tooltip
 
-**Benefit:** 
+**Benefit:**
+
 - ✅ No more confusing errors
 - ✅ Clear guidance for users
 - ✅ Maintains security (inactive products stay private)

@@ -61,7 +61,9 @@ export function CustomerSelector({
   const searchCustomers = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/admin/customers/search?q=${encodeURIComponent(searchTerm)}`)
+      const response = await fetch(
+        `/api/admin/customers/search?q=${encodeURIComponent(searchTerm)}`
+      )
       if (response.ok) {
         const data = await response.json()
         setCustomers(data.customers || [])
@@ -136,7 +138,8 @@ export function CustomerSelector({
                     )}
                     {selectedCustomer.isBroker && selectedCustomer.brokerDiscounts && (
                       <div className="mt-2 text-xs text-muted-foreground">
-                        Broker discounts: {Object.keys(selectedCustomer.brokerDiscounts).length} categories
+                        Broker discounts: {Object.keys(selectedCustomer.brokerDiscounts).length}{' '}
+                        categories
                       </div>
                     )}
                   </div>
@@ -162,9 +165,7 @@ export function CustomerSelector({
                 </div>
 
                 {loading && (
-                  <div className="text-center py-4 text-sm text-muted-foreground">
-                    Searching...
-                  </div>
+                  <div className="text-center py-4 text-sm text-muted-foreground">Searching...</div>
                 )}
 
                 {searchTerm.length >= 2 && !loading && filteredCustomers.length === 0 && (
@@ -234,9 +235,7 @@ export function CustomerSelector({
                   id="new-customer-name"
                   placeholder="John Smith"
                   value={newCustomerForm.name}
-                  onChange={(e) =>
-                    setNewCustomerForm({ ...newCustomerForm, name: e.target.value })
-                  }
+                  onChange={(e) => setNewCustomerForm({ ...newCustomerForm, name: e.target.value })}
                 />
               </div>
 
@@ -254,8 +253,8 @@ export function CustomerSelector({
               </div>
 
               <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-                A new customer account will be created when you submit this order. The customer
-                will be able to log in and view their order history.
+                A new customer account will be created when you submit this order. The customer will
+                be able to log in and view their order history.
               </div>
 
               <Button

@@ -26,12 +26,15 @@ The complete 200-City Landing Page System is now live with:
 ## 🎯 Your Next Steps (5 Minutes to First Campaign)
 
 ### Step 1: Access Admin Interface
+
 Visit: `https://gangrunprinting.com/admin/landing-pages`
 
 ### Step 2: Create Your First Landing Page Set
+
 Click **"Create New Landing Page Set"**
 
 **Example Configuration:**
+
 ```
 Name: Postcards 4x6 Landing Pages
 Product Configuration:
@@ -59,12 +62,15 @@ SEO Settings:
 ```
 
 ### Step 3: Publish & Generate 200 Pages
+
 1. Click **"Publish & Generate Cities"** button
 2. Wait ~5-10 minutes (AI generates unique content for each city)
 3. System creates 200 unique landing pages automatically
 
 ### Step 4: View Your Generated Pages
+
 Pages are accessible at:
+
 ```
 https://gangrunprinting.com/print/postcards-4x6-landing-pages/new-york-ny
 https://gangrunprinting.com/print/postcards-4x6-landing-pages/los-angeles-ca
@@ -73,6 +79,7 @@ https://gangrunprinting.com/print/postcards-4x6-landing-pages/chicago-il
 ```
 
 ### Step 5: Submit to Google
+
 1. Visit Google Search Console
 2. Submit sitemap: `https://gangrunprinting.com/sitemap.xml`
 3. Request indexing for top cities manually (optional boost)
@@ -84,6 +91,7 @@ https://gangrunprinting.com/print/postcards-4x6-landing-pages/chicago-il
 **Admin Dashboard:** `https://gangrunprinting.com/admin/landing-pages`
 
 **Metrics Tracked:**
+
 - Organic Views (tracked on page load)
 - Orders (tracked via 30-day cookie)
 - Revenue (calculated from order totals)
@@ -151,15 +159,18 @@ Every city page has:
 ## 🛠️ Management Features
 
 ### Edit Landing Page Set
+
 - Update templates (affects future generations only)
 - Modify product configuration
 - Change AI generation settings
 
 ### Delete Landing Page Set
+
 - **Cascade delete** removes all 200 city pages automatically
 - One click to remove entire campaign
 
 ### Regenerate Pages
+
 - Delete existing set
 - Create new set with updated templates
 - Publish again (generates fresh AI content)
@@ -169,6 +180,7 @@ Every city page has:
 ## 📈 SEO Features Included
 
 ### On-Page SEO
+
 - ✅ Unique titles per city
 - ✅ Unique meta descriptions
 - ✅ Proper H1 tags
@@ -177,6 +189,7 @@ Every city page has:
 - ✅ Fast page load (<2s)
 
 ### Schema Markup
+
 - ✅ 7 schema types per page
 - ✅ City-specific coordinates
 - ✅ Local business markup
@@ -184,6 +197,7 @@ Every city page has:
 - ✅ Breadcrumb navigation
 
 ### Technical SEO
+
 - ✅ ISR (Incremental Static Regeneration)
 - ✅ Top 50 cities pre-rendered at build
 - ✅ 24-hour revalidation
@@ -192,6 +206,7 @@ Every city page has:
 - ✅ Sitemap integration
 
 ### E-E-A-T Signals
+
 - ✅ Local expertise demonstrated
 - ✅ Professional tone
 - ✅ Real business information
@@ -220,21 +235,25 @@ Before launching your first campaign:
 ## 🔍 Troubleshooting
 
 ### Pages Not Showing
+
 - **Check status:** Must be "published" in admin dashboard
 - **Check URL:** Format is `/print/[slug]/[city-state]`
 - **Check database:** Query `CityLandingPage` table
 
 ### Metrics Not Updating
+
 - **Check cookie:** Browser dev tools → Application → Cookies
 - **Check order status:** Metrics only update on `CONFIRMATION` status
 - **Check landing page ID:** Must match cookie value
 
 ### AI Generation Fails
+
 - **Check API key:** Ensure `GOOGLE_AI_STUDIO_API_KEY` is set
 - **Check rate limits:** Google Gemini has usage limits
 - **Check logs:** PM2 logs show detailed errors
 
 ### SEO Not Working
+
 - **Wait 2-4 weeks:** Google needs time to crawl and index
 - **Submit to Search Console:** Manual submission speeds up indexing
 - **Check robots.txt:** Ensure not blocking Googlebot

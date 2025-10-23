@@ -5,13 +5,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { TrendingDown, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, Activity } from 'lucide-react'
+import {
+  TrendingDown,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle2,
+  BarChart3,
+  Activity,
+} from 'lucide-react'
 import { subDays } from 'date-fns'
 
 // Import new SEO dashboard components
-import { SEOMetricsChart, type SEOMetricsDataPoint } from '@/components/seo/dashboard/SEOMetricsChart'
+import {
+  SEOMetricsChart,
+  type SEOMetricsDataPoint,
+} from '@/components/seo/dashboard/SEOMetricsChart'
 import { TrafficChart, type TrafficDataPoint } from '@/components/seo/dashboard/TrafficChart'
-import { CoreWebVitalsCard, type CoreWebVitalsData } from '@/components/seo/dashboard/CoreWebVitalsCard'
+import {
+  CoreWebVitalsCard,
+  type CoreWebVitalsData,
+} from '@/components/seo/dashboard/CoreWebVitalsCard'
 import { DateRangePicker, type DateRange } from '@/components/seo/dashboard/DateRangePicker'
 import { ExportButton } from '@/components/seo/dashboard/ExportButton'
 import { DataRefreshIndicator } from '@/components/seo/dashboard/DataRefreshIndicator'
@@ -134,7 +147,8 @@ export default function SEOPerformancePage() {
       // Aggregate data from all products
       const totalClicks = products.reduce((sum, p) => sum + p.summary.totalClicks, 0)
       const totalImpressions = products.reduce((sum, p) => sum + p.summary.totalImpressions, 0)
-      const avgPosition = products.reduce((sum, p) => sum + p.summary.avgPosition, 0) / (products.length || 1)
+      const avgPosition =
+        products.reduce((sum, p) => sum + p.summary.avgPosition, 0) / (products.length || 1)
 
       metricsData.push({
         date: dateStr,
@@ -147,7 +161,7 @@ export default function SEOPerformancePage() {
         date: dateStr,
         clicks: Math.floor(totalClicks / days + (Math.random() - 0.5) * 10),
         impressions: Math.floor(totalImpressions / days + (Math.random() - 0.5) * 100),
-        ctr: totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100) : 0,
+        ctr: totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0,
       })
     }
 
@@ -246,14 +260,15 @@ export default function SEOPerformancePage() {
       start: dateRange.start.toISOString().split('T')[0],
       end: dateRange.end.toISOString().split('T')[0],
     },
-    rankings: products.flatMap(p => p.rankings || []),
+    rankings: products.flatMap((p) => p.rankings || []),
     summary: {
       totalClicks: products.reduce((sum, p) => sum + p.summary.totalClicks, 0),
       totalImpressions: products.reduce((sum, p) => sum + p.summary.totalImpressions, 0),
-      avgPosition: products.reduce((sum, p) => sum + p.summary.avgPosition, 0) / (products.length || 1),
+      avgPosition:
+        products.reduce((sum, p) => sum + p.summary.avgPosition, 0) / (products.length || 1),
       totalKeywords: products.reduce((sum, p) => sum + p.summary.totalKeywords, 0),
     },
-    alerts: products.flatMap(p => p.alerts),
+    alerts: products.flatMap((p) => p.alerts),
   }
 
   return (
@@ -417,7 +432,9 @@ export default function SEOPerformancePage() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <span className="text-sm font-medium">Accessibility</span>
-                      <span className="text-sm font-bold">{pageSpeedData.scores.accessibility}</span>
+                      <span className="text-sm font-bold">
+                        {pageSpeedData.scores.accessibility}
+                      </span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
@@ -429,7 +446,9 @@ export default function SEOPerformancePage() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <span className="text-sm font-medium">Best Practices</span>
-                      <span className="text-sm font-bold">{pageSpeedData.scores.bestPractices}</span>
+                      <span className="text-sm font-bold">
+                        {pageSpeedData.scores.bestPractices}
+                      </span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
@@ -488,9 +507,7 @@ export default function SEOPerformancePage() {
                     <CardDescription>/products/{product.slug}</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Badge variant="outline">
-                      {product.summary.totalKeywords} keywords
-                    </Badge>
+                    <Badge variant="outline">{product.summary.totalKeywords} keywords</Badge>
                     <Badge variant="outline">
                       Avg pos: #{product.summary.avgPosition.toFixed(1)}
                     </Badge>
@@ -504,10 +521,7 @@ export default function SEOPerformancePage() {
                   </p>
                 ) : (
                   product.alerts.map((alert, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-start gap-3 p-3 rounded-lg border bg-card"
-                    >
+                    <div key={idx} className="flex items-start gap-3 p-3 rounded-lg border bg-card">
                       {getSeverityIcon(alert.severity)}
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -521,7 +535,10 @@ export default function SEOPerformancePage() {
                           <span>Was: #{alert.oldValue}</span>
                           <span>→</span>
                           <span>Now: #{alert.newValue}</span>
-                          <span className="text-red-600">({alert.change >= 0 ? '+' : ''}{alert.change} positions)</span>
+                          <span className="text-red-600">
+                            ({alert.change >= 0 ? '+' : ''}
+                            {alert.change} positions)
+                          </span>
                         </div>
                       </div>
                     </div>

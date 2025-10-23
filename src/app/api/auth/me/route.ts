@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
     const userAgent = request.headers.get('User-Agent') || 'unknown'
     const referer = request.headers.get('Referer') || 'unknown'
 
-
     // Get all cookies for debugging
     const cookieHeader = request.headers.get('Cookie') || ''
     const cookies = cookieHeader
@@ -54,7 +53,6 @@ export async function GET(request: NextRequest) {
         }
       )
     }
-
 
     return NextResponse.json(
       {

@@ -152,7 +152,8 @@ export function TemplateLibrary({ onSelectTemplate }: TemplateLibraryProps) {
                   <img
                     alt={template.name}
                     className="w-full h-full object-cover"
-                    loading="lazy" src={template.thumbnail}
+                    loading="lazy"
+                    src={template.thumbnail}
                   />
                 ) : (
                   <div className="text-4xl text-blue-300">

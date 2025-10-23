@@ -122,7 +122,8 @@ export function ImagePreview({
               <img
                 alt={image.name}
                 className="h-10 w-10 object-cover rounded"
-                loading="lazy" src={image.thumbnailUrl}
+                loading="lazy"
+                src={image.thumbnailUrl}
               />
             ) : (
               getFileTypeIcon(image.type)

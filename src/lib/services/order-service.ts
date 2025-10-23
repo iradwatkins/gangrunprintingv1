@@ -107,24 +107,23 @@ export class OrderService {
           where: { id: order.sourceLandingPageId },
           data: {
             orders: { increment: 1 },
-            revenue: { increment: order.total }
-          }
+            revenue: { increment: order.total },
+          },
         })
 
         // Recalculate conversion rate
         const landingPage = await prisma.cityLandingPage.findUnique({
           where: { id: order.sourceLandingPageId },
-          select: { organicViews: true, orders: true }
+          select: { organicViews: true, orders: true },
         })
 
         if (landingPage && landingPage.organicViews > 0) {
           const conversionRate = (landingPage.orders / landingPage.organicViews) * 100
           await prisma.cityLandingPage.update({
             where: { id: order.sourceLandingPageId },
-            data: { conversionRate }
+            data: { conversionRate },
           })
         }
-
       } catch (metricsError) {
         // Don't fail payment processing if metrics update fails
         console.error('[OrderService] Failed to update landing page metrics:', metricsError)
@@ -143,7 +142,6 @@ export class OrderService {
       paidAt: new Date().toISOString(),
       items: order.OrderItem,
     })
-
   }
 
   /**
@@ -225,7 +223,6 @@ export class OrderService {
       changedBy: changedBy || 'System',
       timestamp: new Date().toISOString(),
     })
-
   }
 
   /**
@@ -289,7 +286,6 @@ export class OrderService {
         customerEmail: order.email,
       },
     })
-
   }
 
   /**
@@ -402,7 +398,6 @@ export class OrderService {
       pickedUpBy,
       customerEmail: order.email,
     })
-
   }
 
   /**
@@ -442,7 +437,6 @@ export class OrderService {
 
     // Send on-hold notification
     await this.sendOnHoldNotification(order, reason)
-
   }
 
   /**
@@ -481,7 +475,6 @@ export class OrderService {
         },
       },
     })
-
   }
 
   /**

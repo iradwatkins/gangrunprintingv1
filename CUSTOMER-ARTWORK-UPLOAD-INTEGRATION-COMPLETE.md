@@ -20,6 +20,7 @@ Successfully implemented a complete customer artwork upload workflow that separa
 **Fix:** Clarified the import comment to indicate multi-image component usage.
 
 **File Modified:**
+
 - `/src/app/admin/products/new/page.tsx` (Line 20)
 
 **Result:** Admin can now upload multiple product images with drag-drop, reordering, and primary image selection.
@@ -31,9 +32,11 @@ Successfully implemented a complete customer artwork upload workflow that separa
 **Change:** Removed the `ImageUploadSection` from the product configuration page (Design Services section).
 
 **File Modified:**
+
 - `/src/components/product/addons/AddonAccordion.tsx`
 
 **Changes:**
+
 - Commented out `ImageUploadSection` import (Line 24)
 - Commented out image upload state management (Lines 69-84)
 - Commented out component render (Lines 142-143)
@@ -47,6 +50,7 @@ Successfully implemented a complete customer artwork upload workflow that separa
 **New Page:** `/src/app/(customer)/cart/upload-artwork/page.tsx`
 
 **Features:**
+
 - Multi-item support with progress tracking
 - Progress bar showing "Item X of Y"
 - Uses existing `FileUploadZone` component
@@ -56,12 +60,14 @@ Successfully implemented a complete customer artwork upload workflow that separa
 - Alert about temporary storage until payment completion
 
 **File Upload Limits:**
+
 - Max 10 files per product
 - Max 25MB per file
 - Max 100MB total per product
 - Accepted formats: PDF, JPG, PNG, AI, PSD, EPS, SVG
 
 **User Flow:**
+
 1. Customer configures product → Clicks "Add to Cart"
 2. Redirected to `/cart/upload-artwork`
 3. Upload files for each cart item (or skip)
@@ -72,9 +78,11 @@ Successfully implemented a complete customer artwork upload workflow that separa
 ### 4. ✅ Updated Add to Cart Button
 
 **File Modified:**
+
 - `/src/components/product/AddToCartSection.tsx`
 
 **Changes:**
+
 1. Added `useRouter` import
 2. Removed file upload validation requirement
 3. Changed redirect from `openCart()` to `router.push('/cart/upload-artwork')`
@@ -88,9 +96,11 @@ Successfully implemented a complete customer artwork upload workflow that separa
 ### 5. ✅ Integrated Checkout with File Approval System
 
 **File Modified:**
+
 - `/src/app/(customer)/checkout/page.tsx`
 
 **New Function Added:**
+
 ```typescript
 const associateFilesWithOrder = async (orderId: string) => {
   // Get all uploaded files from sessionStorage
@@ -100,11 +110,13 @@ const associateFilesWithOrder = async (orderId: string) => {
 ```
 
 **Updated Handlers:**
+
 1. `processTestCashPayment()` - Calls `associateFilesWithOrder()` after order creation
 2. `handleCardPaymentSuccess()` - Calls `associateFilesWithOrder()` after Square payment
 3. `handlePayPalSuccess()` - Calls `associateFilesWithOrder()` after PayPal payment
 
 **Integration Points:**
+
 - Uses `getUploadedFilesFromSession(productId)` to retrieve files
 - Calls `/api/orders/[id]/files/associate-temp` via service layer
 - Converts temporary files to `OrderFile` records with type `CUSTOMER_ARTWORK`
@@ -112,6 +124,7 @@ const associateFilesWithOrder = async (orderId: string) => {
 - Clears sessionStorage after successful association
 
 **Result:** After payment completion, uploaded files are permanently associated with the order and appear in:
+
 - Customer order dashboard
 - Admin order management dashboard
 - File approval workflow
@@ -121,23 +134,27 @@ const associateFilesWithOrder = async (orderId: string) => {
 ## Complete Customer Journey
 
 ### 1. Product Configuration
+
 - Customer selects product options (size, paper, quantity, etc.)
 - **NO file upload required** at this stage
 - Clicks "Add to Cart - $XX.XX"
 
 ### 2. Artwork Upload (NEW)
+
 - Redirected to `/cart/upload-artwork`
 - Sees progress: "Item 1 of 2"
 - Uploads files or clicks "Skip & Continue to Checkout"
 - Files stored temporarily in sessionStorage and MinIO temp bucket
 
 ### 3. Checkout
+
 - Reviews order summary
 - Enters shipping information
 - Selects payment method
 - Completes payment
 
 ### 4. Post-Payment (Automatic)
+
 - System associates uploaded files with order
 - Converts temp files to permanent `OrderFile` records
 - Admin receives email notification
@@ -149,11 +166,13 @@ const associateFilesWithOrder = async (orderId: string) => {
 ## Technical Architecture
 
 ### SessionStorage Keys
+
 ```
 uploaded_images_{productId} → Array<UploadedFile>
 ```
 
 ### File Upload Flow
+
 ```
 1. Customer uploads → FileUploadZone
 2. FileUploadZone → POST /api/upload/temporary
@@ -170,6 +189,7 @@ uploaded_images_{productId} → Array<UploadedFile>
 ### Integration with Existing Systems
 
 **File Approval System:**
+
 - ✅ Uses existing `OrderFile` model
 - ✅ Uses existing `OrderFileType.CUSTOMER_ARTWORK` enum
 - ✅ Uses existing approval workflow
@@ -177,6 +197,7 @@ uploaded_images_{productId} → Array<UploadedFile>
 - ✅ Uses existing customer/admin dashboards
 
 **MinIO Storage:**
+
 - ✅ Uses existing temporary upload endpoint
 - ✅ Uses existing file association endpoint
 - ✅ Files automatically moved from temp to permanent buckets
@@ -196,6 +217,7 @@ uploaded_images_{productId} → Array<UploadedFile>
 ## Testing Checklist
 
 ### ✅ Admin Product Creation
+
 - [ ] Upload multiple product images
 - [ ] Reorder images
 - [ ] Set primary image
@@ -203,12 +225,14 @@ uploaded_images_{productId} → Array<UploadedFile>
 - [ ] Verify images persist in database
 
 ### ✅ Customer Product Configuration
+
 - [ ] Configure product (size, paper, quantity, etc.)
 - [ ] Verify NO file upload field appears
 - [ ] Click "Add to Cart"
 - [ ] Verify redirect to `/cart/upload-artwork`
 
 ### ✅ Artwork Upload Page
+
 - [ ] See cart items list
 - [ ] Upload files for first item
 - [ ] Click "Next Item" to upload for second item
@@ -217,12 +241,14 @@ uploaded_images_{productId} → Array<UploadedFile>
 - [ ] Verify files stored in sessionStorage
 
 ### ✅ Checkout Flow
+
 - [ ] Complete checkout with uploaded files
 - [ ] Verify files appear in order summary
 - [ ] Complete payment (test mode)
 - [ ] Check browser console for file association logs
 
 ### ✅ File Association (Post-Payment)
+
 - [ ] Verify console logs show file association
 - [ ] Check order in admin dashboard
 - [ ] Verify files appear under order
@@ -230,12 +256,14 @@ uploaded_images_{productId} → Array<UploadedFile>
 - [ ] Verify admin email notification sent
 
 ### ✅ Customer Dashboard
+
 - [ ] Log in as customer
 - [ ] View order details
 - [ ] Verify uploaded files appear
 - [ ] Verify file approval status
 
 ### ✅ Admin Dashboard
+
 - [ ] View order in admin
 - [ ] Verify files appear
 - [ ] Test approve/reject workflow
@@ -246,16 +274,19 @@ uploaded_images_{productId} → Array<UploadedFile>
 ## Known Behavior
 
 ### File Upload is Optional
+
 - Customers can skip file upload during cart flow
 - They can upload files later through their order dashboard
 - Admin will be notified if files are missing
 
 ### Temporary Storage
+
 - Files are stored temporarily until payment completion
 - After payment, files are permanently associated with order
 - SessionStorage is cleared after successful association
 
 ### Error Handling
+
 - File association errors don't block order completion
 - Files remain in temporary storage if association fails
 - Admin can manually associate files if needed
@@ -297,6 +328,7 @@ If you encounter any issues:
 ✅ **All integration tasks completed successfully!**
 
 The customer artwork upload flow is now fully integrated with:
+
 - Product configuration (files removed)
 - Cart workflow (upload page added)
 - Checkout process (file association on payment)

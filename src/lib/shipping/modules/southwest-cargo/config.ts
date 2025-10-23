@@ -70,7 +70,7 @@ export const SOUTHWEST_CARGO_RATES: SouthwestCargoRates = {
         // Example: 150 lbs = $148 + (50 × $1.90) = $148 + $95 = $243
         maxWeight: Infinity,
         baseRate: 148.0,
-        additionalPerPound: 1.90,
+        additionalPerPound: 1.9,
         handlingFee: 0,
       },
     ],

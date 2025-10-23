@@ -15,7 +15,17 @@ export async function POST(request: NextRequest) {
     const { user, session } = await validateRequest()
     const data = await request.json()
 
-    const { items, email, name, phone, shippingAddress, billingAddress, shippingMethod, funnelId, funnelStepId } = data
+    const {
+      items,
+      email,
+      name,
+      phone,
+      shippingAddress,
+      billingAddress,
+      shippingMethod,
+      funnelId,
+      funnelStepId,
+    } = data
 
     // Get landing page source from cookie for attribution tracking
     const landingPageSource = request.cookies.get('landing_page_source')?.value || null
@@ -214,12 +224,13 @@ export async function POST(request: NextRequest) {
         orderNumber: order.orderNumber,
         customerName: name,
         customerEmail: email,
-        items: orderWithItems?.OrderItem.map((item: Record<string, unknown>) => ({
-          name: item.productName,
-          quantity: item.quantity,
-          price: item.price,
-          options: item.options,
-        })) || [],
+        items:
+          orderWithItems?.OrderItem.map((item: Record<string, unknown>) => ({
+            name: item.productName,
+            quantity: item.quantity,
+            price: item.price,
+            options: item.options,
+          })) || [],
         subtotal,
         tax,
         shipping,
@@ -238,12 +249,13 @@ export async function POST(request: NextRequest) {
         customerName: name,
         customerEmail: email,
         customerPhone: phone,
-        items: orderWithItems?.OrderItem.map((item: Record<string, unknown>) => ({
-          name: item.productName,
-          quantity: item.quantity,
-          price: item.price,
-          options: item.options,
-        })) || [],
+        items:
+          orderWithItems?.OrderItem.map((item: Record<string, unknown>) => ({
+            name: item.productName,
+            quantity: item.quantity,
+            price: item.price,
+            options: item.options,
+          })) || [],
         subtotal,
         tax,
         shipping,

@@ -21,7 +21,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Eye, Mail, Search, Filter, Download, Percent, Phone, Edit } from 'lucide-react'
+import {
+  MoreHorizontal,
+  Eye,
+  Mail,
+  Search,
+  Filter,
+  Download,
+  Percent,
+  Phone,
+  Edit,
+} from 'lucide-react'
 import { BrokerDiscountButton } from './broker-discount-button'
 import { EditCustomerModal } from './edit-customer-modal'
 
@@ -225,7 +235,9 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                       >
                         {customer.name}
                       </Link>
-                      <div className="text-xs text-muted-foreground mt-0.5">ID: {customer.id.substring(0, 8)}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        ID: {customer.id.substring(0, 8)}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -255,11 +267,12 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                           <Percent className="h-3 w-3" />
                           Broker
                         </Badge>
-                        {customer.brokerDiscounts && Object.keys(customer.brokerDiscounts).length > 0 && (
-                          <span className="text-xs text-muted-foreground">
-                            {Object.keys(customer.brokerDiscounts).length} categories
-                          </span>
-                        )}
+                        {customer.brokerDiscounts &&
+                          Object.keys(customer.brokerDiscounts).length > 0 && (
+                            <span className="text-xs text-muted-foreground">
+                              {Object.keys(customer.brokerDiscounts).length} categories
+                            </span>
+                          )}
                       </div>
                     ) : (
                       <Badge variant="outline">Regular</Badge>

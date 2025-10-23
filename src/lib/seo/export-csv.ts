@@ -38,7 +38,7 @@ export interface TrafficDataCSV {
  * @returns CSV string
  */
 export function exportKeywordRankingsCSV(data: KeywordRankingCSV[]): string {
-  const csvData = data.map(row => ({
+  const csvData = data.map((row) => ({
     Keyword: row.keyword,
     Position: row.position,
     Clicks: row.clicks,
@@ -61,7 +61,7 @@ export function exportKeywordRankingsCSV(data: KeywordRankingCSV[]): string {
  * @returns CSV string
  */
 export function exportTrafficDataCSV(data: TrafficDataCSV[]): string {
-  const csvData = data.map(row => ({
+  const csvData = data.map((row) => ({
     Date: row.date,
     Sessions: row.sessions,
     Users: row.users,

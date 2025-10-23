@@ -4,12 +4,12 @@
  */
 
 interface TempFile {
-  fileId: string;
-  originalName: string;
-  size: number;
-  mimeType: string;
-  thumbnailUrl?: string;
-  isImage: boolean;
+  fileId: string
+  originalName: string
+  size: number
+  mimeType: string
+  thumbnailUrl?: string
+  isImage: boolean
 }
 
 /**
@@ -26,7 +26,7 @@ export async function associateTemporaryFilesWithOrder(
 ): Promise<{ success: boolean; files?: any[]; error?: string }> {
   try {
     if (!tempFiles || tempFiles.length === 0) {
-      return { success: true, files: [] };
+      return { success: true, files: [] }
     }
 
     const response = await fetch(`/api/orders/${orderId}/files/associate-temp`, {
@@ -35,24 +35,24 @@ export async function associateTemporaryFilesWithOrder(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ tempFiles }),
-    });
+    })
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to associate files');
+      const error = await response.json()
+      throw new Error(error.error || 'Failed to associate files')
     }
 
-    const result = await response.json();
+    const result = await response.json()
     return {
       success: true,
       files: result.files,
-    };
+    }
   } catch (error) {
-    console.error('Error associating temporary files with order:', error);
+    console.error('Error associating temporary files with order:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
-    };
+    }
   }
 }
 
@@ -64,17 +64,17 @@ export async function associateTemporaryFilesWithOrder(
  * @returns Array of temporary file metadata or empty array
  */
 export function getUploadedFilesFromSession(productId: string): TempFile[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return []
 
   try {
-    const stored = sessionStorage.getItem(`uploaded_images_${productId}`);
-    if (!stored) return [];
+    const stored = sessionStorage.getItem(`uploaded_images_${productId}`)
+    if (!stored) return []
 
-    const files = JSON.parse(stored);
-    return Array.isArray(files) ? files : [];
+    const files = JSON.parse(stored)
+    return Array.isArray(files) ? files : []
   } catch (error) {
-    console.error('Error reading uploaded files from session:', error);
-    return [];
+    console.error('Error reading uploaded files from session:', error)
+    return []
   }
 }
 
@@ -84,11 +84,11 @@ export function getUploadedFilesFromSession(productId: string): TempFile[] {
  * @param productId - The product ID to clear uploads for
  */
 export function clearUploadedFilesFromSession(productId: string): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') return
 
   try {
-    sessionStorage.removeItem(`uploaded_images_${productId}`);
+    sessionStorage.removeItem(`uploaded_images_${productId}`)
   } catch (error) {
-    console.error('Error clearing uploaded files from session:', error);
+    console.error('Error clearing uploaded files from session:', error)
   }
 }

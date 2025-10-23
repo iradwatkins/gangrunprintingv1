@@ -112,9 +112,7 @@ export default function SEOPage() {
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-blue-600" />
             SEO Performance Dashboard
-            <span className="ml-auto text-xs bg-blue-500 text-white px-2 py-1 rounded">
-              NEW
-            </span>
+            <span className="ml-auto text-xs bg-blue-500 text-white px-2 py-1 rounded">NEW</span>
           </CardTitle>
           <CardDescription>
             Monitor Google rankings, traffic changes, and receive automated SEO alerts
@@ -124,9 +122,7 @@ export default function SEOPage() {
           <div className="bg-white rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-green-500" />
-              <span className="font-medium">
-                Real-time SEO Monitoring & Alerts
-              </span>
+              <span className="font-medium">Real-time SEO Monitoring & Alerts</span>
             </div>
             <div className="text-sm text-gray-600 space-y-1">
               <p>✅ Daily Google Search Console ranking checks</p>

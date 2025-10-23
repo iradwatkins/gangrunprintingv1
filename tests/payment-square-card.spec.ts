@@ -158,7 +158,6 @@ test.describe.serial('Square Credit Card Payment - 3 Iterations', () => {
         })
 
         console.log(`\n✅ Iteration ${iteration} PASSED (${(duration / 1000).toFixed(1)}s)\n`)
-
       } catch (error: any) {
         const duration = Date.now() - iterationStartTime
 

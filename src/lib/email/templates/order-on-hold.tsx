@@ -48,7 +48,9 @@ export const OrderOnHoldEmail = ({
   return (
     <EmailLayout preview={`Action Required - Order ${orderNumber} On Hold`}>
       {/* Alert Message */}
-      <Section style={{ ...alertBox, backgroundColor: colors.bg, border: `2px solid ${colors.border}` }}>
+      <Section
+        style={{ ...alertBox, backgroundColor: colors.bg, border: `2px solid ${colors.border}` }}
+      >
         <Heading style={{ ...heading, color: colors.heading }}>
           {urgencyLabel} Action Required: Order On Hold
         </Heading>

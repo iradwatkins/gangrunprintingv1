@@ -7,18 +7,12 @@ import { prisma } from '@/lib/prisma'
  * Returns the vendor's shipping address for a product
  * This address is used as the "ship from" address for FedEx rate calculations
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: productId } = await params
 
     if (!productId) {
-      return NextResponse.json(
-        { error: 'Product ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 })
     }
 
     // Find the preferred vendor for this product
@@ -42,25 +36,27 @@ export async function GET(
     })
 
     // If no preferred vendor, try to find any active vendor for this product
-    const vendor = vendorProduct?.Vendor || (
-      await prisma.vendorProduct.findFirst({
-        where: {
-          productId,
-          Vendor: {
-            isActive: true,
-          },
-        },
-        include: {
-          Vendor: {
-            select: {
-              id: true,
-              name: true,
-              address: true,
+    const vendor =
+      vendorProduct?.Vendor ||
+      (
+        await prisma.vendorProduct.findFirst({
+          where: {
+            productId,
+            Vendor: {
+              isActive: true,
             },
           },
-        },
-      })
-    )?.Vendor
+          include: {
+            Vendor: {
+              select: {
+                id: true,
+                name: true,
+                address: true,
+              },
+            },
+          },
+        })
+      )?.Vendor
 
     if (!vendor || !vendor.address) {
       // No vendor found or vendor has no address - return null so default is used
@@ -80,9 +76,6 @@ export async function GET(
     })
   } catch (error) {
     console.error('Error fetching vendor address:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch vendor address' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch vendor address' }, { status: 500 })
   }
 }

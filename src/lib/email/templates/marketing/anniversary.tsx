@@ -27,8 +27,23 @@ export const AnniversaryEmail = ({
         <meta charSet="utf-8" />
         <title>Happy Anniversary!</title>
       </head>
-      <body style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-        <div style={{ background: '#f97316', padding: '24px', borderRadius: '8px', textAlign: 'center', marginBottom: '24px' }}>
+      <body
+        style={{
+          fontFamily: 'Arial, sans-serif',
+          maxWidth: '600px',
+          margin: '0 auto',
+          padding: '20px',
+        }}
+      >
+        <div
+          style={{
+            background: '#f97316',
+            padding: '24px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            marginBottom: '24px',
+          }}
+        >
           <h1 style={{ fontSize: '32px', margin: '0 0 16px', color: 'white' }}>
             🎉 Happy {yearsAgo}-Year Anniversary!
           </h1>
@@ -39,17 +54,31 @@ export const AnniversaryEmail = ({
 
         <div style={{ marginBottom: '24px' }}>
           <p style={{ fontSize: '16px', lineHeight: '1.6' }}>
-            {yearsAgo === 1 ? 'One year ago today' : `${yearsAgo} years ago today`}, on {formatDate(orderDate)}, you placed your {yearsAgo === 1 ? 'first' : ''} order with GangRun Printing (Order #{orderNumber}).
+            {yearsAgo === 1 ? 'One year ago today' : `${yearsAgo} years ago today`}, on{' '}
+            {formatDate(orderDate)}, you placed your {yearsAgo === 1 ? 'first' : ''} order with
+            GangRun Printing (Order #{orderNumber}).
           </p>
           <p style={{ fontSize: '16px', lineHeight: '1.6' }}>
-            We're incredibly grateful for your continued trust and business. Thank you for being an amazing customer!
+            We're incredibly grateful for your continued trust and business. Thank you for being an
+            amazing customer!
           </p>
         </div>
 
-        <div style={{ background: '#eff6ff', padding: '24px', borderRadius: '8px', textAlign: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '24px', margin: '0 0 12px' }}>💙 Thank You for {yearsAgo} Amazing {yearsAgo === 1 ? 'Year' : 'Years'}!</h2>
+        <div
+          style={{
+            background: '#eff6ff',
+            padding: '24px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            marginBottom: '24px',
+          }}
+        >
+          <h2 style={{ fontSize: '24px', margin: '0 0 12px' }}>
+            💙 Thank You for {yearsAgo} Amazing {yearsAgo === 1 ? 'Year' : 'Years'}!
+          </h2>
           <p style={{ fontSize: '16px', margin: 0, lineHeight: '1.6' }}>
-            Your support means the world to us. We look forward to many more years of helping you bring your printing projects to life!
+            Your support means the world to us. We look forward to many more years of helping you
+            bring your printing projects to life!
           </p>
         </div>
 
@@ -71,7 +100,15 @@ export const AnniversaryEmail = ({
           </a>
         </div>
 
-        <div style={{ textAlign: 'center', color: '#737373', fontSize: '14px', borderTop: '1px solid #e5e7eb', paddingTop: '20px' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            color: '#737373',
+            fontSize: '14px',
+            borderTop: '1px solid #e5e7eb',
+            paddingTop: '20px',
+          }}
+        >
           <p style={{ margin: '0 0 8px' }}>GangRun Printing • Professional Printing Services</p>
         </div>
       </body>

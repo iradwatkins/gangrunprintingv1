@@ -79,7 +79,10 @@ test.describe('Chrome DevTools Diagnostics - Problem Detection', () => {
 
     // Console Warnings
     console.log(`\n⚠️  Console Warnings: ${diagnosticsReport.consoleWarnings.length}`)
-    if (diagnosticsReport.consoleWarnings.length > 0 && diagnosticsReport.consoleWarnings.length <= 10) {
+    if (
+      diagnosticsReport.consoleWarnings.length > 0 &&
+      diagnosticsReport.consoleWarnings.length <= 10
+    ) {
       diagnosticsReport.consoleWarnings.forEach((warning, index) => {
         console.log(`\n  ${index + 1}. ${warning.text}`)
       })
@@ -104,7 +107,9 @@ test.describe('Chrome DevTools Diagnostics - Problem Detection', () => {
     if (diagnosticsReport.slowRequests.length > 0) {
       diagnosticsReport.slowRequests.forEach((request, index) => {
         console.log(`\n  ${index + 1}. ${request.url}`)
-        console.log(`     Time: ${request.responseTime}ms | Size: ${(request.size / 1024).toFixed(2)}KB`)
+        console.log(
+          `     Time: ${request.responseTime}ms | Size: ${(request.size / 1024).toFixed(2)}KB`
+        )
       })
     }
 
@@ -138,7 +143,8 @@ test.describe('Chrome DevTools Diagnostics - Problem Detection', () => {
       diagnosticsReport.consoleErrors.length +
       diagnosticsReport.failedRequests.length +
       diagnosticsReport.hydrationErrors.length
-    const warnings = diagnosticsReport.consoleWarnings.length + diagnosticsReport.slowRequests.length
+    const warnings =
+      diagnosticsReport.consoleWarnings.length + diagnosticsReport.slowRequests.length
 
     console.log(`  Critical Issues: ${criticalIssues}`)
     console.log(`  Warnings: ${warnings}`)

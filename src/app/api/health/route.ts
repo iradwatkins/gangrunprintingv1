@@ -106,7 +106,9 @@ export async function GET(): Promise<unknown> {
         business: {
           revenue24h: revenueToday._sum.total || 0,
           avgOrderValue24h:
-            recentOrders > 0 ? Math.round(((revenueToday._sum.total || 0) / recentOrders) * 100) / 100 : 0,
+            recentOrders > 0
+              ? Math.round(((revenueToday._sum.total || 0) / recentOrders) * 100) / 100
+              : 0,
           activeUsers: activeSessions,
         },
         memory: memoryMB,

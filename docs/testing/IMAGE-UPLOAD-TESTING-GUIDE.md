@@ -8,32 +8,38 @@
 ## 🎯 What Was Fixed
 
 ### Issue #1: Images Not Saving (CRUD Operations)
+
 **Problem:** Images uploaded but didn't save to database when creating/editing products
 
 **Root Cause:** Missing required database fields (`id` and `updatedAt`) in Image.create()
 
 **Fix Applied:**
+
 - File: `/src/app/api/products/[id]/route.ts`
 - Added `id: randomUUID()` and `updatedAt: new Date()` to Image.create()
 - ✅ Database constraints now satisfied
 
 ### Issue #2: Images Disappearing with 404 Errors
+
 **Problem:** Images uploaded, appeared briefly, then disappeared with 404 errors
 
 **Root Cause:** Wrong public URL format - missing `/minio/` path prefix
 
 **Fix Applied:**
+
 - File: `docker-compose.yml` line 127
 - Changed: `MINIO_PUBLIC_ENDPOINT=https://gangrunprinting.com/minio`
 - Container recreated with: `docker-compose up -d --force-recreate app`
 - ✅ URLs now correctly formatted
 
 ### Issue #3: Multi-Image Upload Race Conditions
+
 **Problem:** Uploading multiple images caused wrong images to update or disappear
 
 **Root Cause:** React state updates using stale props in async operations
 
 **Fix Applied:**
+
 - File: `/src/components/admin/product-image-upload.tsx`
 - Added `uploadId` tracking for each file
 - Changed to callback form: `onImagesChange((prevImages) => ...)`
@@ -44,6 +50,7 @@
 ## ✅ Verification Status
 
 ### Environment Configuration
+
 ```bash
 ✅ MINIO_PUBLIC_ENDPOINT=https://gangrunprinting.com/minio (CORRECT)
 ✅ Container recreated and running
@@ -52,6 +59,7 @@
 ```
 
 ### URLs Now Generated As:
+
 ```
 ✅ CORRECT: https://gangrunprinting.com/minio/gangrun-products/products/optimized/123.jpg
 ❌ WRONG (before): https://gangrunprinting.com/gangrun-products/products/optimized/123.jpg
@@ -197,6 +205,7 @@
 ## 🔍 What to Look For
 
 ### ✅ Success Indicators:
+
 - Images appear immediately after upload
 - Images stay visible (don't disappear)
 - No 404 errors in console
@@ -206,6 +215,7 @@
 - Can edit products with images without issues
 
 ### ❌ Failure Indicators:
+
 - Images disappear after appearing briefly
 - 404 errors in console
 - Image URLs missing `/minio/` prefix
@@ -219,6 +229,7 @@
 ## 🐛 If Issues Occur
 
 ### Images Still Disappearing:
+
 ```bash
 # Check environment variable in container
 docker exec gangrunprinting_app env | grep MINIO_PUBLIC
@@ -232,6 +243,7 @@ docker-compose up -d --force-recreate app
 ```
 
 ### 404 Errors on Image URLs:
+
 ```bash
 # Check MinIO container is running
 docker ps | grep minio
@@ -246,7 +258,9 @@ curl -I https://gangrunprinting.com/minio/
 ```
 
 ### Images Not Saving to Database:
+
 Check browser console for detailed error messages. Common issues:
+
 - Missing required product fields (not related to images)
 - Network timeouts (file too large)
 - Server errors (check docker logs)
@@ -328,6 +342,7 @@ Copy this and fill in your results:
 ## 🎉 Expected Outcome
 
 After completing all tests, you should be able to:
+
 - ✅ Upload product images reliably
 - ✅ Upload multiple images without conflicts
 - ✅ Create products with images that save to database
@@ -343,6 +358,7 @@ After completing all tests, you should be able to:
 ## 📝 Technical Summary
 
 **Files Modified:**
+
 1. `/src/app/api/products/[id]/route.ts` - Added missing database fields
 2. `/src/components/admin/product-image-upload.tsx` - Fixed race conditions
 3. `/src/hooks/use-product-form.ts` - Added callback form support
@@ -350,6 +366,7 @@ After completing all tests, you should be able to:
 5. `/src/app/admin/components/app-sidebar.tsx` - Removed broken menu item
 
 **Infrastructure Changes:**
+
 - Docker container recreated with correct environment variables
 - MinIO public endpoint now correctly points to `/minio/` path
 - All services healthy and running

@@ -44,6 +44,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ```
 
 Follow prompts:
+
 - Product: "5000 4x6 Flyers"
 - Size: "4x6"
 - Material: "9pt Cardstock"
@@ -54,12 +55,14 @@ Follow prompts:
 ### 3. Monitor Progress
 
 Check Telegram for:
+
 - 🚀 "Campaign Started" (immediate)
 - 🎉 "200 cities complete!" (6-7 hours later)
 
 ### 4. Optimize
 
 Receives daily at 3 AM:
+
 - 🏆 "Winner pattern detected!"
 - 🔧 "Decision needed: A, B, or C?"
 
@@ -69,16 +72,16 @@ Reply with your choice: `A`, `B`, or `C`
 
 ## Documentation Index
 
-| Document | Purpose | Time |
-|----------|---------|------|
-| **[00-SETUP-GUIDE-QUICK-START.md](./00-SETUP-GUIDE-QUICK-START.md)** | 15-minute setup tutorial | 15 min |
-| **[01-ARCHITECTURE-OVERVIEW.md](./01-ARCHITECTURE-OVERVIEW.md)** | System architecture and data flow | 10 min |
-| **[02-INSTALLATION-GUIDE.md](./02-INSTALLATION-GUIDE.md)** | Complete installation steps | 30 min |
-| **[03-USAGE-GUIDE.md](./03-USAGE-GUIDE.md)** | Daily operation and workflows | 15 min |
-| **[04-API-REFERENCE.md](./04-API-REFERENCE.md)** | All API endpoints | 10 min |
-| **[05-N8N-SETUP.md](./05-N8N-SETUP.md)** | n8n workflow configuration | 20 min |
-| **[06-TROUBLESHOOTING.md](./06-TROUBLESHOOTING.md)** | Common issues and fixes | 10 min |
-| **[07-BEST-PRACTICES.md](./07-BEST-PRACTICES.md)** | Optimization tips | 10 min |
+| Document                                                             | Purpose                           | Time   |
+| -------------------------------------------------------------------- | --------------------------------- | ------ |
+| **[00-SETUP-GUIDE-QUICK-START.md](./00-SETUP-GUIDE-QUICK-START.md)** | 15-minute setup tutorial          | 15 min |
+| **[01-ARCHITECTURE-OVERVIEW.md](./01-ARCHITECTURE-OVERVIEW.md)**     | System architecture and data flow | 10 min |
+| **[02-INSTALLATION-GUIDE.md](./02-INSTALLATION-GUIDE.md)**           | Complete installation steps       | 30 min |
+| **[03-USAGE-GUIDE.md](./03-USAGE-GUIDE.md)**                         | Daily operation and workflows     | 15 min |
+| **[04-API-REFERENCE.md](./04-API-REFERENCE.md)**                     | All API endpoints                 | 10 min |
+| **[05-N8N-SETUP.md](./05-N8N-SETUP.md)**                             | n8n workflow configuration        | 20 min |
+| **[06-TROUBLESHOOTING.md](./06-TROUBLESHOOTING.md)**                 | Common issues and fixes           | 10 min |
+| **[07-BEST-PRACTICES.md](./07-BEST-PRACTICES.md)**                   | Optimization tips                 | 10 min |
 
 **Total Reading Time:** ~2 hours
 **Recommended:** Read in order 00 → 07
@@ -170,11 +173,13 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ```
 
 **You enter:**
+
 - Product: "5000 4x6 Flyers"
 - Price: "$179"
 - Turnaround: "3-4 days"
 
 **SEO Brain:**
+
 - Generates 1 main product image (Google AI)
 - Generates 200 city pages in batches of 10
 - Each city gets: 500-word intro, 10 benefits, 15 FAQs, hero image
@@ -187,6 +192,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ### 2. Campaign Complete (Day 1, 4 PM)
 
 **Telegram:**
+
 ```
 🎉 Campaign Complete!
 
@@ -198,6 +204,7 @@ Ready for optimization analysis.
 ```
 
 **URLs Created:**
+
 - `/cities/new-york-ny` (New York)
 - `/cities/los-angeles-ca` (Los Angeles)
 - `/cities/chicago-il` (Chicago)
@@ -208,12 +215,14 @@ Ready for optimization analysis.
 ### 3. Daily Optimization (Day 2, 3 AM)
 
 **SEO Brain (Automatic):**
+
 - Analyzes all 200 pages
 - Identifies top 20% winners (40 pages)
 - Identifies bottom 20% losers (40 pages)
 - Extracts winner pattern via AI
 
 **Telegram:**
+
 ```
 🏆 Winner Pattern Detected
 
@@ -235,6 +244,7 @@ Ready to apply to underperformers?
 ### 4. Improvement Decision (Day 2, 3:05 AM)
 
 **Telegram:**
+
 ```
 🔧 Decision Needed: Improve miami-fl
 
@@ -271,12 +281,14 @@ Reply: A, B, or C
 **You reply:** `B`
 
 **SEO Brain:**
+
 - Applies Option B to `miami-fl`
 - Regenerates intro using winner pattern
 - Regenerates benefits section
 - Adds CTA placements
 
 **Telegram:**
+
 ```
 ✅ Decision Executed!
 
@@ -336,6 +348,7 @@ npx tsx src/scripts/seo-brain/test-seo-brain-system.ts
 ```
 
 **Tests:**
+
 - ✅ Environment variables
 - ✅ Database connection
 - ✅ Database tables (6 tables)
@@ -348,6 +361,7 @@ npx tsx src/scripts/seo-brain/test-seo-brain-system.ts
 - ✅ Performance calculation
 
 **Expected Output:**
+
 ```
 ✅ Passed: 10
 ❌ Failed: 0
@@ -363,12 +377,14 @@ npx tsx src/scripts/seo-brain/test-seo-brain-system.ts
 ### Common Issues
 
 **1. Ollama not responding**
+
 ```bash
 curl http://localhost:11434/api/tags
 systemctl restart ollama
 ```
 
 **2. Telegram not sending**
+
 ```bash
 # Test bot
 curl https://api.telegram.org/bot7510262123:AAFiInboeGKrhovu8hcmDvZsDgEpS3W1yWs/getMe
@@ -378,6 +394,7 @@ npx tsx src/scripts/seo-brain/setup-telegram.ts
 ```
 
 **3. Database errors**
+
 ```bash
 # Verify tables exist
 psql $DATABASE_URL -c "SELECT COUNT(*) FROM \"ProductCampaignQueue\""
@@ -387,6 +404,7 @@ npx prisma migrate deploy
 ```
 
 **4. n8n workflows not running**
+
 - Check workflow is **Active** (not Inactive)
 - Verify credentials are saved
 - Check webhook URLs match API routes
@@ -396,6 +414,7 @@ npx prisma migrate deploy
 ## Performance
 
 **200-City Campaign:**
+
 - Total Time: 6-7 hours
 - Batch Size: 10 cities
 - Batch Delay: 2 seconds
@@ -403,6 +422,7 @@ npx prisma migrate deploy
 - Google AI Calls: 201 (1 product + 200 cities)
 
 **Daily Optimization:**
+
 - Analysis Time: 5-10 minutes
 - Winner Detection: ~30 seconds
 - Decision Generation: ~60 seconds per loser
@@ -431,6 +451,7 @@ Proprietary - GangRun Printing
 ## Credits
 
 **Built with:**
+
 - Next.js 15 (App Router)
 - Ollama (DeepSeek R1 32B)
 - Google Imagen 4
@@ -439,6 +460,7 @@ Proprietary - GangRun Printing
 - Telegram Bot API
 
 **Development:**
+
 - ULTRATHINK methodology (DRY + SoC)
 - Conservative decision-making approach
 - User approval for all changes

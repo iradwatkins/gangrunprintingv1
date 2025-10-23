@@ -15,7 +15,7 @@ import {
   Eye,
   ShoppingCart,
   DollarSign,
-  MapPin
+  MapPin,
 } from 'lucide-react'
 import toast from '@/lib/toast'
 
@@ -94,15 +94,17 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
   const handlePublish = async () => {
     if (!landingPageSet) return
 
-    if (!confirm(
-      `Publish "${landingPageSet.name}" and generate 200 city landing pages?\n\n` +
-      `This will:\n` +
-      `✓ Generate unique AI content for each city\n` +
-      `✓ Create 200 city-specific landing pages\n` +
-      `✓ Optimize for Google SEO standards\n` +
-      `✓ Make pages live for search engines\n\n` +
-      `This process may take 5-10 minutes.`
-    )) {
+    if (
+      !confirm(
+        `Publish "${landingPageSet.name}" and generate 200 city landing pages?\n\n` +
+          `This will:\n` +
+          `✓ Generate unique AI content for each city\n` +
+          `✓ Create 200 city-specific landing pages\n` +
+          `✓ Optimize for Google SEO standards\n` +
+          `✓ Make pages live for search engines\n\n` +
+          `This process may take 5-10 minutes.`
+      )
+    ) {
       return
     }
 
@@ -111,7 +113,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
       toast.loading('Publishing landing page set...', { id: 'publish' })
 
       const response = await fetch(`/api/landing-page-sets/${params.id}/publish`, {
-        method: 'POST'
+        method: 'POST',
       })
 
       if (!response.ok) {
@@ -121,19 +123,18 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
 
       const result = await response.json()
 
-      toast.success(
-        `Successfully generated ${result.citiesGenerated} city landing pages!`,
-        { id: 'publish', duration: 5000 }
-      )
+      toast.success(`Successfully generated ${result.citiesGenerated} city landing pages!`, {
+        id: 'publish',
+        duration: 5000,
+      })
 
       // Refresh data
       await fetchLandingPageSet()
     } catch (error) {
       console.error('Error publishing landing page set:', error)
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to publish landing page set',
-        { id: 'publish' }
-      )
+      toast.error(error instanceof Error ? error.message : 'Failed to publish landing page set', {
+        id: 'publish',
+      })
     } finally {
       setPublishing(false)
     }
@@ -142,15 +143,17 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
   const handleDelete = async () => {
     if (!landingPageSet) return
 
-    if (!confirm(
-      `Delete "${landingPageSet.name}" and all ${landingPageSet.metrics.citiesGenerated} city pages?\n\n` +
-      `⚠️ This action cannot be undone!\n\n` +
-      `This will permanently delete:\n` +
-      `• The landing page set template\n` +
-      `• All ${landingPageSet.metrics.citiesGenerated} city landing pages\n` +
-      `• All analytics data (${landingPageSet.metrics.totalViews} views, ${landingPageSet.metrics.totalOrders} orders)\n\n` +
-      `Type "DELETE" to confirm`
-    )) {
+    if (
+      !confirm(
+        `Delete "${landingPageSet.name}" and all ${landingPageSet.metrics.citiesGenerated} city pages?\n\n` +
+          `⚠️ This action cannot be undone!\n\n` +
+          `This will permanently delete:\n` +
+          `• The landing page set template\n` +
+          `• All ${landingPageSet.metrics.citiesGenerated} city landing pages\n` +
+          `• All analytics data (${landingPageSet.metrics.totalViews} views, ${landingPageSet.metrics.totalOrders} orders)\n\n` +
+          `Type "DELETE" to confirm`
+      )
+    ) {
       return
     }
 
@@ -165,7 +168,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
       toast.loading('Deleting landing page set...', { id: 'delete' })
 
       const response = await fetch(`/api/landing-page-sets/${params.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (!response.ok) {
@@ -177,10 +180,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
       router.push('/admin/landing-pages')
     } catch (error) {
       console.error('Error deleting landing page set:', error)
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to delete landing page set',
-        { id: 'delete' }
-      )
+      toast.error(error instanceof Error ? error.message : 'Failed to delete landing page set', {
+        id: 'delete',
+      })
       setDeleting(false)
     }
   }
@@ -190,7 +192,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
       draft: 'secondary',
       generating: 'outline',
       published: 'default',
-      archived: 'destructive'
+      archived: 'destructive',
     }
     return <Badge variant={variants[status] || 'default'}>{status.toUpperCase()}</Badge>
   }
@@ -202,7 +204,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount)
   }
 
@@ -234,11 +236,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => router.push('/admin/landing-pages')}
-          >
+          <Button size="sm" variant="ghost" onClick={() => router.push('/admin/landing-pages')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
@@ -252,11 +250,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
         </div>
         <div className="flex items-center gap-2">
           {landingPageSet.status === 'draft' && (
-            <Button
-              disabled={publishing}
-              size="lg"
-              onClick={handlePublish}
-            >
+            <Button disabled={publishing} size="lg" onClick={handlePublish}>
               {publishing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -278,11 +272,7 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
             <Edit className="h-4 w-4 mr-2" />
             Edit
           </Button>
-          <Button
-            disabled={deleting}
-            variant="destructive"
-            onClick={handleDelete}
-          >
+          <Button disabled={deleting} variant="destructive" onClick={handleDelete}>
             {deleting ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : (
@@ -302,7 +292,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
               <MapPin className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatNumber(landingPageSet.metrics.citiesGenerated)}</div>
+              <div className="text-2xl font-bold">
+                {formatNumber(landingPageSet.metrics.citiesGenerated)}
+              </div>
               <p className="text-xs text-gray-500 mt-1">Live landing pages</p>
             </CardContent>
           </Card>
@@ -313,7 +305,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
               <Eye className="h-4 w-4 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatNumber(landingPageSet.metrics.totalViews)}</div>
+              <div className="text-2xl font-bold">
+                {formatNumber(landingPageSet.metrics.totalViews)}
+              </div>
               <p className="text-xs text-gray-500 mt-1">Organic search traffic</p>
             </CardContent>
           </Card>
@@ -324,7 +318,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
               <ShoppingCart className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatNumber(landingPageSet.metrics.totalOrders)}</div>
+              <div className="text-2xl font-bold">
+                {formatNumber(landingPageSet.metrics.totalOrders)}
+              </div>
               <p className="text-xs text-gray-500 mt-1">
                 {landingPageSet.metrics.avgConversionRate.toFixed(2)}% conversion rate
               </p>
@@ -337,7 +333,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
               <DollarSign className="h-4 w-4 text-yellow-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(landingPageSet.metrics.totalRevenue)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(landingPageSet.metrics.totalRevenue)}
+              </div>
               <p className="text-xs text-gray-500 mt-1">From landing pages</p>
             </CardContent>
           </Card>
@@ -349,8 +347,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
         <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-6">
           <p className="font-medium">Draft Mode - Ready to Publish</p>
           <p className="text-sm mt-1">
-            Click "Publish & Generate 200 Cities" to create unique landing pages for the top 200 US cities.
-            AI will generate unique content for each city following Google SEO best practices.
+            Click "Publish & Generate 200 Cities" to create unique landing pages for the top 200 US
+            cities. AI will generate unique content for each city following Google SEO best
+            practices.
           </p>
         </div>
       )}
@@ -400,7 +399,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
           </div>
           <div>
             <p className="text-sm font-medium text-gray-600 mb-1">Meta Description Template</p>
-            <p className="text-sm bg-gray-50 p-2 rounded border">{landingPageSet.metaDescTemplate}</p>
+            <p className="text-sm bg-gray-50 p-2 rounded border">
+              {landingPageSet.metaDescTemplate}
+            </p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-600 mb-1">H1 Heading Template</p>
@@ -408,7 +409,9 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
           </div>
           <div>
             <p className="text-sm font-medium text-gray-600 mb-1">Content Template</p>
-            <p className="text-sm bg-gray-50 p-2 rounded border whitespace-pre-wrap">{landingPageSet.contentTemplate}</p>
+            <p className="text-sm bg-gray-50 p-2 rounded border whitespace-pre-wrap">
+              {landingPageSet.contentTemplate}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -422,26 +425,36 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
         <CardContent>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${landingPageSet.generateIntro ? 'bg-green-500' : 'bg-gray-300'}`} />
+              <div
+                className={`w-2 h-2 rounded-full ${landingPageSet.generateIntro ? 'bg-green-500' : 'bg-gray-300'}`}
+              />
               <span className={landingPageSet.generateIntro ? 'text-gray-900' : 'text-gray-400'}>
                 Generate unique introduction (200 words per city)
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${landingPageSet.generateBenefits ? 'bg-green-500' : 'bg-gray-300'}`} />
+              <div
+                className={`w-2 h-2 rounded-full ${landingPageSet.generateBenefits ? 'bg-green-500' : 'bg-gray-300'}`}
+              />
               <span className={landingPageSet.generateBenefits ? 'text-gray-900' : 'text-gray-400'}>
                 Generate benefits section
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${landingPageSet.generateFAQs ? 'bg-green-500' : 'bg-gray-300'}`} />
+              <div
+                className={`w-2 h-2 rounded-full ${landingPageSet.generateFAQs ? 'bg-green-500' : 'bg-gray-300'}`}
+              />
               <span className={landingPageSet.generateFAQs ? 'text-gray-900' : 'text-gray-400'}>
                 Generate city-specific FAQs (5 questions)
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${landingPageSet.generateCaseStudy ? 'bg-green-500' : 'bg-gray-300'}`} />
-              <span className={landingPageSet.generateCaseStudy ? 'text-gray-900' : 'text-gray-400'}>
+              <div
+                className={`w-2 h-2 rounded-full ${landingPageSet.generateCaseStudy ? 'bg-green-500' : 'bg-gray-300'}`}
+              />
+              <span
+                className={landingPageSet.generateCaseStudy ? 'text-gray-900' : 'text-gray-400'}
+              >
                 Generate case studies
               </span>
             </div>
@@ -458,11 +471,15 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
         <CardContent>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${landingPageSet.robotsIndex ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div
+                className={`w-2 h-2 rounded-full ${landingPageSet.robotsIndex ? 'bg-green-500' : 'bg-red-500'}`}
+              />
               <span>Robots: {landingPageSet.robotsIndex ? 'Index' : 'NoIndex'}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${landingPageSet.robotsFollow ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div
+                className={`w-2 h-2 rounded-full ${landingPageSet.robotsFollow ? 'bg-green-500' : 'bg-red-500'}`}
+              />
               <span>Robots: {landingPageSet.robotsFollow ? 'Follow' : 'NoFollow'}</span>
             </div>
           </div>
@@ -478,11 +495,15 @@ export default function LandingPageSetDetailPage({ params }: { params: { id: str
           <div className="space-y-2 text-sm">
             <div>
               <span className="text-gray-600">Created:</span>{' '}
-              <span className="font-medium">{new Date(landingPageSet.createdAt).toLocaleString()}</span>
+              <span className="font-medium">
+                {new Date(landingPageSet.createdAt).toLocaleString()}
+              </span>
             </div>
             <div>
               <span className="text-gray-600">Last Updated:</span>{' '}
-              <span className="font-medium">{new Date(landingPageSet.updatedAt).toLocaleString()}</span>
+              <span className="font-medium">
+                {new Date(landingPageSet.updatedAt).toLocaleString()}
+              </span>
             </div>
           </div>
         </CardContent>

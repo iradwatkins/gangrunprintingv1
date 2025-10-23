@@ -71,8 +71,7 @@ export async function POST(request: NextRequest) {
     console.error('[API] Error generating SEO content:', error)
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : 'Failed to generate SEO content',
+        error: error instanceof Error ? error.message : 'Failed to generate SEO content',
       },
       { status: 500 }
     )

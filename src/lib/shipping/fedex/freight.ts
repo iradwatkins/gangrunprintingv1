@@ -145,7 +145,12 @@ export const FREIGHT_CLASSES: Record<string, FreightClass> = {
 /**
  * Calculate density (lbs per cubic foot)
  */
-export function calculateDensity(weightLbs: number, lengthIn: number, widthIn: number, heightIn: number): number {
+export function calculateDensity(
+  weightLbs: number,
+  lengthIn: number,
+  widthIn: number,
+  heightIn: number
+): number {
   const cubicInches = lengthIn * widthIn * heightIn
   const cubicFeet = cubicInches / 1728 // 1 cubic foot = 1728 cubic inches
   return weightLbs / cubicFeet
@@ -327,7 +332,9 @@ export function estimateFreightCost(
 /**
  * Get recommended freight services based on urgency
  */
-export function getRecommendedFreightServices(urgency: 'economy' | 'standard' | 'priority' | 'expedited') {
+export function getRecommendedFreightServices(
+  urgency: 'economy' | 'standard' | 'priority' | 'expedited'
+) {
   const serviceMap = {
     economy: ['FEDEX_FREIGHT_ECONOMY'],
     standard: ['FEDEX_FREIGHT_PRIORITY', 'FEDEX_FREIGHT_ECONOMY'],
@@ -342,7 +349,10 @@ export function getRecommendedFreightServices(urgency: 'economy' | 'standard' | 
  * Freight-specific product categorization
  * For printing company: large banners, bulk orders, trade show materials
  */
-export function getFreightClassForPrintProduct(productType: string, totalWeight: number): FreightClass {
+export function getFreightClassForPrintProduct(
+  productType: string,
+  totalWeight: number
+): FreightClass {
   const productClassMap: Record<string, string> = {
     'banners-large': 'CLASS_100', // Canvas/vinyl banners
     'trade-show-displays': 'CLASS_125', // Lightweight frames

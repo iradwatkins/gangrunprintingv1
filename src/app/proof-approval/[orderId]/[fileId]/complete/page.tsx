@@ -1,27 +1,19 @@
-import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  CheckCircle,
-  XCircle,
-  Clock,
-  ArrowRight,
-  Mail,
-  Phone,
-  MessageSquare,
-} from 'lucide-react';
-import Link from 'next/link';
+import { notFound } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { CheckCircle, XCircle, Clock, ArrowRight, Mail, Phone, MessageSquare } from 'lucide-react'
+import Link from 'next/link'
 
 interface PageProps {
   params: Promise<{
-    orderId: string;
-    fileId: string;
-  }>;
+    orderId: string
+    fileId: string
+  }>
   searchParams: Promise<{
-    status?: 'approved' | 'rejected';
-  }>;
+    status?: 'approved' | 'rejected'
+  }>
 }
 
 async function getCompletionData(orderId: string, fileId: string) {
@@ -33,21 +25,21 @@ async function getCompletionData(orderId: string, fileId: string) {
           select: { name: true },
         },
       },
-    });
+    })
 
     if (!order) {
-      return null;
+      return null
     }
 
     const file = await prisma.orderFile.findUnique({
-      where: { 
+      where: {
         id: fileId,
         orderId: orderId,
       },
-    });
+    })
 
     if (!file) {
-      return null;
+      return null
     }
 
     // Check if all proofs for this order are approved
@@ -56,7 +48,7 @@ async function getCompletionData(orderId: string, fileId: string) {
         orderId,
         fileType: 'ADMIN_PROOF',
       },
-    });
+    })
 
     const approvedProofs = await prisma.orderFile.count({
       where: {
@@ -64,9 +56,9 @@ async function getCompletionData(orderId: string, fileId: string) {
         fileType: 'ADMIN_PROOF',
         approvalStatus: 'APPROVED',
       },
-    });
+    })
 
-    const allProofsApproved = totalProofs > 0 && approvedProofs === totalProofs;
+    const allProofsApproved = totalProofs > 0 && approvedProofs === totalProofs
 
     return {
       order,
@@ -74,26 +66,26 @@ async function getCompletionData(orderId: string, fileId: string) {
       allProofsApproved,
       totalProofs,
       approvedProofs,
-    };
+    }
   } catch (error) {
-    console.error('Error fetching completion data:', error);
-    return null;
+    console.error('Error fetching completion data:', error)
+    return null
   }
 }
 
 export default async function ProofApprovalCompletePage({ params, searchParams }: PageProps) {
-  const { orderId, fileId } = await params;
-  const { status } = await searchParams;
+  const { orderId, fileId } = await params
+  const { status } = await searchParams
 
-  const data = await getCompletionData(orderId, fileId);
+  const data = await getCompletionData(orderId, fileId)
 
   if (!data) {
-    notFound();
+    notFound()
   }
 
-  const { order, file, allProofsApproved, totalProofs, approvedProofs } = data;
-  const isApproved = file.approvalStatus === 'APPROVED';
-  const isRejected = file.approvalStatus === 'REJECTED';
+  const { order, file, allProofsApproved, totalProofs, approvedProofs } = data
+  const isApproved = file.approvalStatus === 'APPROVED'
+  const isRejected = file.approvalStatus === 'REJECTED'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -119,21 +111,17 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
             <div>
               <Badge
                 className={`px-4 py-2 text-sm font-medium ${
-                  isApproved 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-orange-100 text-orange-800'
+                  isApproved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
                 }`}
               >
                 {isApproved ? '✅ Approved' : '🔄 Changes Requested'}
               </Badge>
             </div>
-            
+
             <p className="text-gray-600">
-              {isApproved ? (
-                'Thank you for approving the proof. We\'ll begin production right away!'
-              ) : (
-                'We\'ve received your change request and will create a revised proof for you.'
-              )}
+              {isApproved
+                ? "Thank you for approving the proof. We'll begin production right away!"
+                : "We've received your change request and will create a revised proof for you."}
             </p>
           </CardContent>
         </Card>
@@ -157,8 +145,8 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
                         All Proofs Approved - Production Starting!
                       </div>
                       <p className="text-green-700 text-sm">
-                        All {totalProofs} proof{totalProofs !== 1 ? 's' : ''} for this order have been approved. 
-                        Your order is now ready for production.
+                        All {totalProofs} proof{totalProofs !== 1 ? 's' : ''} for this order have
+                        been approved. Your order is now ready for production.
                       </p>
                     </div>
                     <ul className="space-y-2 text-sm">
@@ -184,8 +172,8 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
                         Waiting for Additional Approvals
                       </div>
                       <p className="text-blue-700 text-sm">
-                        {approvedProofs} of {totalProofs} proof{totalProofs !== 1 ? 's' : ''} approved. 
-                        Production will begin once all proofs are approved.
+                        {approvedProofs} of {totalProofs} proof{totalProofs !== 1 ? 's' : ''}{' '}
+                        approved. Production will begin once all proofs are approved.
                       </p>
                     </div>
                     <ul className="space-y-2 text-sm">
@@ -213,7 +201,8 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
                     Revision in Progress
                   </div>
                   <p className="text-orange-700 text-sm">
-                    Our design team has been notified of your requested changes and will create a revised proof.
+                    Our design team has been notified of your requested changes and will create a
+                    revised proof.
                   </p>
                 </div>
                 <ul className="space-y-2 text-sm">
@@ -251,12 +240,14 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
                     <Mail className="h-5 w-5" />
                     <div className="text-left">
                       <div className="font-medium">Email Support</div>
-                      <div className="text-xs text-muted-foreground">orders@gangrunprinting.com</div>
+                      <div className="text-xs text-muted-foreground">
+                        orders@gangrunprinting.com
+                      </div>
                     </div>
                   </div>
                 </a>
               </Button>
-              
+
               <Button variant="outline" className="h-auto py-3 px-4" asChild>
                 <a href="tel:1-800-PRINTING">
                   <div className="flex items-center gap-3">
@@ -272,30 +263,28 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
 
             <div className="mt-4 text-center">
               <Button asChild>
-                <Link href={`/track/${order.orderNumber}`}>
-                  Track Your Order
-                </Link>
+                <Link href={`/track/${order.orderNumber}`}>Track Your Order</Link>
               </Button>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  );
+  )
 }
 
 // Generate metadata
 export async function generateMetadata({ params }: { params: Promise<{ orderId: string }> }) {
-  const { orderId } = await params;
-  
+  const { orderId } = await params
+
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     select: { orderNumber: true },
-  });
+  })
 
   return {
     title: `Proof Response Received - Order ${order?.orderNumber || orderId} | GangRun Printing`,
-    description: 'Thank you for your proof response. We\'ll process your feedback right away.',
+    description: "Thank you for your proof response. We'll process your feedback right away.",
     robots: 'noindex, nofollow',
-  };
+  }
 }

@@ -591,15 +591,15 @@ export const FEDEX_SERVICES: Record<string, FedExService> = {
  */
 
 export function getDomesticServices(): FedExService[] {
-  return Object.values(FEDEX_SERVICES).filter(s => s.domestic)
+  return Object.values(FEDEX_SERVICES).filter((s) => s.domestic)
 }
 
 export function getInternationalServices(): FedExService[] {
-  return Object.values(FEDEX_SERVICES).filter(s => s.international)
+  return Object.values(FEDEX_SERVICES).filter((s) => s.international)
 }
 
 export function getServicesByCategory(category: FedExServiceCategory): FedExService[] {
-  return Object.values(FEDEX_SERVICES).filter(s => s.category === category)
+  return Object.values(FEDEX_SERVICES).filter((s) => s.category === category)
 }
 
 export function getExpressServices(): FedExService[] {
@@ -623,7 +623,7 @@ export function getServiceByCode(code: string): FedExService | undefined {
 }
 
 export function getServicesForWeight(weightLbs: number): FedExService[] {
-  return Object.values(FEDEX_SERVICES).filter(s => s.maxWeightLbs >= weightLbs)
+  return Object.values(FEDEX_SERVICES).filter((s) => s.maxWeightLbs >= weightLbs)
 }
 
 /**
@@ -642,28 +642,28 @@ export function recommendServices(requirements: ServiceRequirements): FedExServi
   let services = Object.values(FEDEX_SERVICES)
 
   // Filter by weight
-  services = services.filter(s => s.maxWeightLbs >= requirements.weightLbs)
+  services = services.filter((s) => s.maxWeightLbs >= requirements.weightLbs)
 
   // Filter by location
   if (requirements.isInternational) {
-    services = services.filter(s => s.international)
+    services = services.filter((s) => s.international)
   } else {
-    services = services.filter(s => s.domestic)
+    services = services.filter((s) => s.domestic)
   }
 
   // Filter by residential
   if (requirements.isResidential) {
-    services = services.filter(s => s.allowsResidential)
+    services = services.filter((s) => s.allowsResidential)
   }
 
   // Filter by guarantee
   if (requirements.needsGuarantee) {
-    services = services.filter(s => s.isGuaranteed)
+    services = services.filter((s) => s.isGuaranteed)
   }
 
   // Filter by max days
   if (requirements.maxDays) {
-    services = services.filter(s => s.estimatedDaysMax <= requirements.maxDays)
+    services = services.filter((s) => s.estimatedDaysMax <= requirements.maxDays)
   }
 
   // Sort by price (multiplier) if economy preferred

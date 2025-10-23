@@ -1,4 +1,5 @@
 # 🧠 BMAD-Method Code Cleaning Ultraplan
+
 ## Systematic, Risk-Assessed, Methodical Execution Strategy
 
 **Date:** October 11, 2025
@@ -14,6 +15,7 @@
 ### Current State Assessment
 
 **Validated Metrics (Fresh Scan):**
+
 - ✅ TypeScript Build: SUCCESS (0 errors)
 - ⚠️ Sentry Import Warnings: 6 (non-breaking)
 - ⚠️ ESLint Issues: 154 warnings across 23 files
@@ -23,6 +25,7 @@
 - 🟡 Unused Imports: 28+ instances
 
 **Code Health Breakdown:**
+
 ```
 Current: 74/100
 ├─ Type Safety: 82/100 ✅ (Phase 3 Zod schemas)
@@ -64,6 +67,7 @@ HIGH IMPACT ──────────────────────�
 ## 📊 PHASE-BASED EXECUTION STRATEGY
 
 ### PHASE 0: PRE-FLIGHT SAFETY CHECKS ✈️
+
 **Duration:** 5 minutes
 **Risk:** ZERO
 **Purpose:** Ensure safe execution environment
@@ -92,11 +96,13 @@ pm2 status gangrunprinting
 ---
 
 ### PHASE 1: ZERO-RISK CLEANUP 🧹
+
 **Duration:** 10 minutes
 **Risk:** ZERO
 **Impact:** HIGH (Bundle size, clarity)
 
 #### 1.1 Remove Backup Files (IMMEDIATE)
+
 ```bash
 # DELETE: 9 backup files polluting codebase
 rm -f /root/websites/gangrunprinting/src/app/api/orders/route.ts.bak
@@ -117,6 +123,7 @@ find .bmad-core -name "*.bak" -delete
 **Verification:** `find . -name "*.bak" | wc -l` should return 0
 
 #### 1.2 Update .gitignore
+
 ```bash
 # Add to .gitignore
 echo "*.bak" >> .gitignore
@@ -127,11 +134,13 @@ echo "*-backup.*" >> .gitignore
 ---
 
 ### PHASE 2: LOW-RISK AUTOMATED FIXES 🤖
+
 **Duration:** 15 minutes
 **Risk:** LOW (reversible with git)
 **Impact:** HIGH (code quality)
 
 #### 2.1 ESLint Auto-Fix
+
 ```bash
 # Run ESLint with auto-fix enabled
 npm run lint -- --fix
@@ -144,12 +153,14 @@ npm run lint -- --fix
 ```
 
 **Verification:**
+
 ```bash
 npm run lint 2>&1 | tee eslint-after-autofix.log
 # Compare before/after warning count
 ```
 
 #### 2.2 Prettier Auto-Format
+
 ```bash
 # Format all TypeScript/TSX files
 npx prettier --write "src/**/*.{ts,tsx}" "prisma/**/*.ts"
@@ -161,12 +172,14 @@ npx prettier --write "src/**/*.{ts,tsx}" "prisma/**/*.ts"
 ```
 
 #### 2.3 Remove Unused Imports (Automated)
+
 ```bash
 # Use npx to remove unused imports
 npx ts-unused-exports tsconfig.json --findCompletelyUnusedFiles
 ```
 
 **Commit Checkpoint:**
+
 ```bash
 git add -A
 git commit -m "Phase 2: Automated linting and formatting fixes
@@ -184,11 +197,13 @@ Risk: LOW (automated, reversible)
 ---
 
 ### PHASE 3: CONSOLE.LOG REMOVAL 🔇
+
 **Duration:** 30 minutes
 **Risk:** MEDIUM (must verify no critical logs)
 **Impact:** HIGH (production security, performance)
 
 #### 3.1 Inventory Console Statements
+
 ```bash
 # Generate report of all console statements
 grep -rn "console\." src/app --include="*.tsx" --include="*.ts" > console-inventory.txt
@@ -200,6 +215,7 @@ grep -rn "console\." src/app --include="*.tsx" --include="*.ts" > console-invent
 ```
 
 #### 3.2 Strategy: Conditional Logging
+
 **DON'T:** Delete all console.logs blindly
 **DO:** Wrap in development check
 
@@ -216,14 +232,17 @@ if (process.env.NODE_ENV === 'development') {
 #### 3.3 Critical Files to Clean (Manual Review Required)
 
 **Priority 1 - Customer-Facing:**
+
 - `src/app/(customer)/checkout/page.tsx` - 19 console statements
 - `src/app/(customer)/products/[slug]/page.tsx` - 5 console statements
 - `src/app/(customer)/cart/page.tsx`
 
 **Priority 2 - Admin Pages:**
+
 - Admin dashboard files (lower risk, keep for debugging)
 
 #### 3.4 Execution Script
+
 ```bash
 # Create automated script for low-risk files
 cat > scripts/remove-console-logs.sh <<'EOF'
@@ -251,6 +270,7 @@ chmod +x scripts/remove-console-logs.sh
 **Manual Review Required:** Each file must be reviewed to ensure no critical logs removed
 
 **Commit Checkpoint:**
+
 ```bash
 git add -A
 git commit -m "Phase 3: Remove console.log statements from production code
@@ -268,11 +288,13 @@ Risk: MEDIUM (manually reviewed each removal)
 ---
 
 ### PHASE 4: TYPESCRIPT TYPE SAFETY 🔒
+
 **Duration:** 45 minutes
 **Risk:** MEDIUM (requires testing)
 **Impact:** HIGH (prevents runtime errors)
 
 #### 4.1 Fix TSConfig Parsing Errors
+
 ```json
 // Update tsconfig.json
 {
@@ -281,8 +303,8 @@ Risk: MEDIUM (manually reviewed each removal)
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "get-real-data-ts.ts",      // ADD
-    "prisma/**/*.ts"              // ADD
+    "get-real-data-ts.ts", // ADD
+    "prisma/**/*.ts" // ADD
   ]
 }
 ```
@@ -312,11 +334,13 @@ import { z } from 'zod'
 ```
 
 **Files to Fix (12 instances):**
+
 - `src/app/(customer)/checkout/page.tsx:465`
 - `src/app/(customer)/track/[orderNumber]/page.tsx` (8 instances)
 - `src/app/(customer)/track/page.tsx:44`
 
 #### 4.3 Add Missing Alt Tags
+
 ```tsx
 // File: src/app/(customer)/upload/page.tsx:153
 // BEFORE
@@ -330,6 +354,7 @@ import { z } from 'zod'
 ```
 
 **Commit Checkpoint:**
+
 ```bash
 git add -A
 git commit -m "Phase 4: Improve TypeScript type safety
@@ -347,11 +372,13 @@ Risk: MEDIUM (requires testing)
 ---
 
 ### PHASE 5: VERIFICATION & TESTING 🧪
+
 **Duration:** 20 minutes
 **Risk:** ZERO
 **Impact:** CRITICAL (ensures nothing broke)
 
 #### 5.1 Build Verification
+
 ```bash
 # Full production build
 npm run build 2>&1 | tee build-log.txt
@@ -362,6 +389,7 @@ npm run build 2>&1 | tee build-log.txt
 ```
 
 #### 5.2 Runtime Testing
+
 ```bash
 # Restart PM2
 pm2 restart gangrunprinting
@@ -378,6 +406,7 @@ curl -I http://localhost:3002/checkout
 ```
 
 #### 5.3 Browser Testing Checklist
+
 - [ ] Homepage loads without console errors
 - [ ] Product page loads with proper configuration
 - [ ] Add to cart works
@@ -387,20 +416,24 @@ curl -I http://localhost:3002/checkout
 ---
 
 ### PHASE 6: SENTRY IMPORT FIX 🐛
+
 **Duration:** 15 minutes
 **Risk:** LOW
 **Impact:** MEDIUM (removes build warnings)
 
 #### Current Issue:
+
 ```
 Attempted import error: 'metrics' is not exported from '@sentry/nextjs'
 Attempted import error: 'startTransaction' is not exported from '@sentry/nextjs'
 ```
 
 #### Root Cause:
+
 Sentry SDK changed their API - `startTransaction` and `metrics` moved/renamed
 
 #### Fix Strategy:
+
 ```typescript
 // BEFORE (Deprecated)
 import * as Sentry from '@sentry/nextjs'
@@ -414,6 +447,7 @@ Sentry.startSpan({ name: 'checkout' }, () => {
 ```
 
 #### Files to Update:
+
 ```bash
 # Find all Sentry usage
 grep -rn "Sentry.startTransaction" src/
@@ -428,6 +462,7 @@ grep -rn "Sentry.metrics" src/
 ## 📈 EXPECTED OUTCOMES
 
 ### Before Cleanup:
+
 ```
 Code Health Score: 74/100
 ├─ ESLint Warnings: 154
@@ -439,6 +474,7 @@ Code Health Score: 74/100
 ```
 
 ### After Cleanup:
+
 ```
 Code Health Score: 92/100 🎯
 ├─ ESLint Warnings: <10 ✅
@@ -450,6 +486,7 @@ Code Health Score: 92/100 🎯
 ```
 
 ### Improvement Metrics:
+
 - ✅ **+18 points** in code health score
 - ✅ **-144 warnings** removed
 - ✅ **-221 console statements** secured
@@ -461,6 +498,7 @@ Code Health Score: 92/100 🎯
 ## 🛡️ SAFETY PROTOCOLS
 
 ### Rollback Strategy
+
 ```bash
 # If anything breaks, instant rollback:
 git reset --hard origin/main
@@ -472,11 +510,13 @@ tar -xzf gangrun-pre-cleanup-*.tar.gz
 ```
 
 ### Continuous Verification
+
 - ✅ After each phase: `npm run build`
 - ✅ After each phase: `pm2 restart && curl test`
 - ✅ Git commit after each phase (atomic changes)
 
 ### Production Safety Rules
+
 - ❌ NEVER edit files directly on production
 - ❌ NEVER skip build verification
 - ❌ NEVER commit without testing
@@ -489,18 +529,21 @@ tar -xzf gangrun-pre-cleanup-*.tar.gz
 ## ⚡ QUICK WINS (Execute First)
 
 ### 1. Delete Backup Files (2 minutes)
+
 ```bash
 find . -name "*.bak" -delete
 git add -A && git commit -m "Remove backup files"
 ```
 
 ### 2. ESLint Auto-Fix (3 minutes)
+
 ```bash
 npm run lint -- --fix
 git add -A && git commit -m "ESLint auto-fixes"
 ```
 
 ### 3. Fix TSConfig (2 minutes)
+
 ```bash
 # Add "prisma/**/*.ts" to tsconfig.json include array
 git add tsconfig.json && git commit -m "Fix TSConfig parsing errors"
@@ -514,18 +557,21 @@ git add tsconfig.json && git commit -m "Fix TSConfig parsing errors"
 ## 📋 EXECUTION CHECKLIST
 
 ### Pre-Flight:
+
 - [ ] Current build succeeds
 - [ ] Create backup
 - [ ] Create feature branch
 - [ ] Verify PM2 running
 
 ### Phase 1 - Zero Risk:
+
 - [ ] Delete backup files
 - [ ] Update .gitignore
 - [ ] Verify no .bak files remain
 - [ ] Commit changes
 
 ### Phase 2 - Automated:
+
 - [ ] Run ESLint --fix
 - [ ] Run Prettier
 - [ ] Remove unused imports
@@ -533,6 +579,7 @@ git add tsconfig.json && git commit -m "Fix TSConfig parsing errors"
 - [ ] Commit changes
 
 ### Phase 3 - Console Logs:
+
 - [ ] Inventory all console statements
 - [ ] Manual review each file
 - [ ] Comment/remove safely
@@ -540,6 +587,7 @@ git add tsconfig.json && git commit -m "Fix TSConfig parsing errors"
 - [ ] Commit changes
 
 ### Phase 4 - Type Safety:
+
 - [ ] Fix TSConfig
 - [ ] Replace `any` types
 - [ ] Add missing alt tags
@@ -547,6 +595,7 @@ git add tsconfig.json && git commit -m "Fix TSConfig parsing errors"
 - [ ] Commit changes
 
 ### Phase 5 - Verification:
+
 - [ ] Full build succeeds
 - [ ] PM2 restart works
 - [ ] All endpoints respond
@@ -554,12 +603,14 @@ git add tsconfig.json && git commit -m "Fix TSConfig parsing errors"
 - [ ] No console errors
 
 ### Phase 6 - Sentry Fix:
+
 - [ ] Update Sentry imports
 - [ ] Build succeeds
 - [ ] No import warnings
 - [ ] Commit changes
 
 ### Final:
+
 - [ ] Merge feature branch to main
 - [ ] Push to origin
 - [ ] Deploy to production
@@ -627,17 +678,20 @@ pm2 restart gangrunprinting
 ## 📊 SUCCESS CRITERIA
 
 ### Must Achieve:
+
 - ✅ Build succeeds with 0 errors
 - ✅ ESLint warnings < 10
 - ✅ No console.logs in production code
 - ✅ Health score 90+/100
 
 ### Nice to Have:
+
 - ✅ All TypeScript `any` replaced
 - ✅ JSDoc comments on critical functions
 - ✅ Test coverage increased
 
 ### Critical:
+
 - ✅ Website still works
 - ✅ No customer impact
 - ✅ Can rollback if needed
@@ -649,4 +703,4 @@ pm2 restart gangrunprinting
 **Estimated Total Time:** 2 hours 25 minutes
 **Expected Health Score:** 92/100
 
-*Generated by BMAD-Method Ultrathinking Process*
+_Generated by BMAD-Method Ultrathinking Process_

@@ -29,6 +29,7 @@ Successfully implemented comprehensive file security measures for the GangRun Pr
   - WebP: 25MB max
 
 - **Blocked Extensions:** Security blacklist
+
   ```
   .exe, .bat, .cmd, .com, .pif, .scr, .vbs, .js, .jar,
   .sh, .app, .deb, .rpm, .dmg, .pkg, .msi, .dll, .so,
@@ -140,6 +141,7 @@ addRateLimitHeaders(response.headers, rateLimitResult);
 ```
 
 **Security Checks:**
+
 - ✅ Authentication required
 - ✅ Order ownership verification
 - ✅ Rate limiting (10/min with 5-min block)
@@ -177,6 +179,7 @@ const filename = sanitized.valid ? sanitized.sanitizedFilename : tempFile.origin
 ```
 
 **Security Checks:**
+
 - ✅ Authentication required (validateRequest)
 - ✅ Order ownership verification
 - ✅ MIME type validation (all files)
@@ -203,6 +206,7 @@ addRateLimitHeaders(response.headers, rateLimitResult);
 ```
 
 **Security Checks:**
+
 - ✅ Authentication required
 - ✅ Order ownership verification
 - ✅ Rate limiting (30/min)
@@ -227,6 +231,7 @@ addRateLimitHeaders(response.headers, rateLimitResult);
 ```
 
 **Security Checks:**
+
 - ✅ Authentication required
 - ✅ Order ownership verification
 - ✅ Rate limiting (20/min with 2-min block)
@@ -239,40 +244,40 @@ addRateLimitHeaders(response.headers, rateLimitResult);
 
 ### File Type Security
 
-| Feature | Implementation | Status |
-|---------|---------------|--------|
-| MIME type whitelist | PDF, images, design files only | ✅ |
-| Dangerous extension blacklist | .exe, .php, .bat, etc. blocked | ✅ |
-| Extension/MIME matching | Validates extension matches type | ✅ |
-| Type-specific size limits | Different max sizes per type | ✅ |
+| Feature                       | Implementation                   | Status |
+| ----------------------------- | -------------------------------- | ------ |
+| MIME type whitelist           | PDF, images, design files only   | ✅     |
+| Dangerous extension blacklist | .exe, .php, .bat, etc. blocked   | ✅     |
+| Extension/MIME matching       | Validates extension matches type | ✅     |
+| Type-specific size limits     | Different max sizes per type     | ✅     |
 
 ### Filename Security
 
-| Feature | Implementation | Status |
-|---------|---------------|--------|
-| Directory traversal prevention | Removes `../` and `..\\` | ✅ |
-| Null byte injection prevention | Strips `\0` characters | ✅ |
-| Control character removal | Removes ASCII 0-31 and 127 | ✅ |
-| Dangerous character sanitization | Replaces with underscores | ✅ |
-| Path injection prevention | Removes `/` and `\\` | ✅ |
+| Feature                          | Implementation             | Status |
+| -------------------------------- | -------------------------- | ------ |
+| Directory traversal prevention   | Removes `../` and `..\\`   | ✅     |
+| Null byte injection prevention   | Strips `\0` characters     | ✅     |
+| Control character removal        | Removes ASCII 0-31 and 127 | ✅     |
+| Dangerous character sanitization | Replaces with underscores  | ✅     |
+| Path injection prevention        | Removes `/` and `\\`       | ✅     |
 
 ### Rate Limiting Security
 
-| Endpoint | Limit | Block Duration | Status |
-|----------|-------|----------------|--------|
-| File Upload | 10/min | 5 minutes | ✅ |
-| File Approval | 30/min | None | ✅ |
-| Message Post | 20/min | 2 minutes | ✅ |
-| File View | 100/min | None | ✅ |
-| File Association | 5/min | 5 minutes | ✅ |
+| Endpoint         | Limit   | Block Duration | Status |
+| ---------------- | ------- | -------------- | ------ |
+| File Upload      | 10/min  | 5 minutes      | ✅     |
+| File Approval    | 30/min  | None           | ✅     |
+| Message Post     | 20/min  | 2 minutes      | ✅     |
+| File View        | 100/min | None           | ✅     |
+| File Association | 5/min   | 5 minutes      | ✅     |
 
 ### Storage Security
 
-| Feature | Implementation | Status |
-|---------|---------------|--------|
-| Per-file size limits | Type-specific (10-100MB) | ✅ |
-| Total order size limit | 500MB maximum | ✅ |
-| Filename length validation | 255 characters max | ✅ |
+| Feature                    | Implementation           | Status |
+| -------------------------- | ------------------------ | ------ |
+| Per-file size limits       | Type-specific (10-100MB) | ✅     |
+| Total order size limit     | 500MB maximum            | ✅     |
+| Filename length validation | 255 characters max       | ✅     |
 
 ---
 
@@ -340,15 +345,15 @@ curl -v -X POST /api/orders/{id}/files -d '{...}'
 
 ### Filename Sanitization Tests
 
-| Input Filename | Expected Output | Reason |
-|----------------|----------------|--------|
-| `design.pdf` | `design.pdf` | Valid filename |
-| `../../../etc/passwd` | `etcpasswd` | Directory traversal removed |
-| `file\x00.pdf` | `file.pdf` | Null byte removed |
-| `my design (v2).pdf` | `my design v2 .pdf` | Special chars replaced |
-| `file  with   spaces.pdf` | `file with spaces.pdf` | Multiple spaces collapsed |
-| `UPPERCASE.PDF` | `UPPERCASE.PDF` | Preserves case |
-| `file<script>.pdf` | `file_script_.pdf` | Dangerous chars replaced |
+| Input Filename            | Expected Output        | Reason                      |
+| ------------------------- | ---------------------- | --------------------------- |
+| `design.pdf`              | `design.pdf`           | Valid filename              |
+| `../../../etc/passwd`     | `etcpasswd`            | Directory traversal removed |
+| `file\x00.pdf`            | `file.pdf`             | Null byte removed           |
+| `my design (v2).pdf`      | `my design v2 .pdf`    | Special chars replaced      |
+| `file  with   spaces.pdf` | `file with spaces.pdf` | Multiple spaces collapsed   |
+| `UPPERCASE.PDF`           | `UPPERCASE.PDF`        | Preserves case              |
+| `file<script>.pdf`        | `file_script_.pdf`     | Dangerous chars replaced    |
 
 ---
 
@@ -378,6 +383,7 @@ curl -v -X POST /api/orders/{id}/files -d '{...}'
 ### Monitoring
 
 Set up alerts for:
+
 - High rate limit block rate (>10% of requests)
 - Unusual file validation rejection patterns
 - Attempts to upload dangerous extensions
@@ -400,7 +406,7 @@ export const RATE_LIMITS = {
     blockDurationMs: 5 * 60 * 1000, // Adjust block time
   },
   // ...
-};
+}
 ```
 
 ### Adding Allowed File Types
@@ -412,16 +418,17 @@ const ALLOWED_MIME_TYPES = {
   // Add new type
   'application/zip': { extension: '.zip', maxSize: 100 * 1024 * 1024 },
   // ...
-};
+}
 ```
 
 ### Blocking Additional Extensions
 
 ```typescript
 const BLOCKED_EXTENSIONS = [
-  '.exe', '.bat', // ... existing
+  '.exe',
+  '.bat', // ... existing
   '.new-dangerous-ext', // Add new blocked extension
-];
+]
 ```
 
 ---
@@ -432,6 +439,7 @@ const BLOCKED_EXTENSIONS = [
 
 **Symptoms:** Customer reports "Too many requests" error
 **Solution:**
+
 1. Check rate limit status: `getRateLimitStatus(identifier, 'upload')`
 2. Clear rate limit: `clearRateLimit(identifier, 'upload')`
 3. Consider increasing `maxRequests` for FILE_UPLOAD
@@ -440,6 +448,7 @@ const BLOCKED_EXTENSIONS = [
 
 **Symptoms:** File upload fails with "File type not allowed"
 **Solution:**
+
 1. Verify MIME type is in `ALLOWED_MIME_TYPES`
 2. Check if file extension matches MIME type
 3. Ensure file size is within type-specific limits
@@ -449,6 +458,7 @@ const BLOCKED_EXTENSIONS = [
 
 **Symptoms:** Uploaded filenames look corrupted
 **Solution:**
+
 1. Review sanitization logic in `sanitizeFilename()`
 2. Check if regex is too aggressive
 3. Consider whitelist approach for allowed characters
@@ -458,6 +468,7 @@ const BLOCKED_EXTENSIONS = [
 
 **Symptoms:** Server memory usage increasing over time
 **Solution:**
+
 1. Verify cleanup interval is running (every 10 minutes)
 2. Check for expired entries not being deleted
 3. Consider Redis-based rate limiting for multi-server setups

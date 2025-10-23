@@ -6,6 +6,7 @@
 ## The Problem
 
 You are experiencing:
+
 1. ❌ Cannot create new products (stuck at 12 products)
 2. ❌ Cannot delete products
 3. ❌ Cannot edit products
@@ -21,19 +22,25 @@ All my fixes to add `credentials: 'include'` are NOT deployed yet because I neve
 ## The Fixes (Already in Source Code)
 
 ### 1. Product CRUD Operations - FIXED IN SOURCE
+
 **File:** `/src/app/admin/products/page.tsx`
+
 - Line 96: DELETE with `credentials: 'include'` ✅
 - Line 34: PATCH toggleActive with `credentials: 'include'` ✅
 - Line 54: PATCH toggleFeatured with `credentials: 'include'` ✅
 - Line 72: POST duplicate with `credentials: 'include'` ✅
 
 ### 2. Image Upload - FIXED IN SOURCE
+
 **File:** `/src/app/api/products/upload-image/route.ts`
+
 - Line 149: Fixed `product.ProductCategory.name` (was productCategory) ✅
 - Line 150: Fixed `product.ProductImage.length` (was productImages) ✅
 
 ### 3. Product Listing - ALREADY WORKING
+
 **File:** `/src/app/api/products/route.ts`
+
 - GET endpoint using correct PascalCase relation names ✅
 - Currently returning 12 products correctly ✅
 
@@ -63,15 +70,15 @@ The listing is working correctly. The CRUD operations (create/delete/edit) are f
 
 ## Timeline
 
-| Time | Event |
-|------|-------|
-| 01:50 | Identified missing `credentials: 'include'` |
-| 01:52 | Added credentials to all fetch calls |
-| 01:53 | Started Docker build (FAILED TO COMPLETE) |
+| Time  | Event                                              |
+| ----- | -------------------------------------------------- |
+| 01:50 | Identified missing `credentials: 'include'`        |
+| 01:52 | Added credentials to all fetch calls               |
+| 01:53 | Started Docker build (FAILED TO COMPLETE)          |
 | 02:06 | Discovered image upload bug (wrong property names) |
-| 02:06 | Fixed image upload bug |
-| 02:08 | Started FINAL build with ALL fixes |
-| 02:?? | Deploy and restart container |
+| 02:06 | Fixed image upload bug                             |
+| 02:08 | Started FINAL build with ALL fixes                 |
+| 02:?? | Deploy and restart container                       |
 
 ## Testing After Deployment
 

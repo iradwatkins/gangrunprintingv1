@@ -61,10 +61,7 @@ export async function POST(req: NextRequest) {
         break
 
       default:
-        return NextResponse.json(
-          { error: `Unknown template: ${template}` },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: `Unknown template: ${template}` }, { status: 400 })
     }
 
     // Send email via Resend
@@ -82,9 +79,6 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     console.error('[API] Email render error:', error)
-    return NextResponse.json(
-      { error: 'Failed to render and send email' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to render and send email' }, { status: 500 })
   }
 }

@@ -5,9 +5,9 @@
 **Module Name:** Image Add-on Options  
 **Priority Level:** 4 (Fourth Module)  
 **Status:** [ ] Not Started [ ] In Progress [ ] Complete  
-**BMAD Agent Assigned:** ******\_\_\_******  
-**Date Started:** ******\_\_\_******  
-**Date Completed:** ******\_\_\_******  
+**BMAD Agent Assigned:** **\*\***\_\_\_**\*\***  
+**Date Started:** **\*\***\_\_\_**\*\***  
+**Date Completed:** **\*\***\_\_\_**\*\***  
 **Prerequisites:** Previous 3 modules MUST be 100% complete
 
 ---
@@ -138,10 +138,10 @@ Document all image addon types:
 
 Test with real images:
 
-- [ ] JPG upload (< 1MB): ******\_\_\_******
-- [ ] JPG upload (5-10MB): ******\_\_\_******
-- [ ] PNG with transparency: ******\_\_\_******
-- [ ] Maximum file size: ******\_\_\_******
+- [ ] JPG upload (< 1MB): **\*\***\_\_\_**\*\***
+- [ ] JPG upload (5-10MB): **\*\***\_\_\_**\*\***
+- [ ] PNG with transparency: **\*\***\_\_\_**\*\***
+- [ ] Maximum file size: **\*\***\_\_\_**\*\***
 
 #### Multiple File Upload
 
@@ -446,8 +446,8 @@ All Issues Resolved: [ ] Yes [ ] No
 
 **Image Add-on Module Status:** [ ] COMPLETE  
 **Authorization to proceed to Paper Stock Module:** [ ] GRANTED  
-**Authorized By:** ******\_\_\_******  
-**Date:** ******\_\_\_******
+**Authorized By:** **\*\***\_\_\_**\*\***  
+**Date:** **\*\***\_\_\_**\*\***
 
 ---
 

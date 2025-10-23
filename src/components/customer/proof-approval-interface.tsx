@@ -1,12 +1,12 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import {
   CheckCircle,
   XCircle,
@@ -19,62 +19,62 @@ import {
   Image as ImageIcon,
   Send,
   AlertCircle,
-} from 'lucide-react';
-import Image from 'next/image';
-import toast from '@/lib/toast';
-import { useRouter } from 'next/navigation';
+} from 'lucide-react'
+import Image from 'next/image'
+import toast from '@/lib/toast'
+import { useRouter } from 'next/navigation'
 
 interface OrderData {
-  id: string;
-  orderNumber: string;
-  email: string;
-  customerName?: string;
+  id: string
+  orderNumber: string
+  email: string
+  customerName?: string
 }
 
 interface FileData {
-  id: string;
-  filename: string;
-  label?: string;
-  fileUrl: string;
-  thumbnailUrl?: string;
-  mimeType?: string;
-  fileSize?: number;
-  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED';
-  createdAt: string;
+  id: string
+  filename: string
+  label?: string
+  fileUrl: string
+  thumbnailUrl?: string
+  mimeType?: string
+  fileSize?: number
+  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED'
+  createdAt: string
   messages: Array<{
-    id: string;
-    message: string;
-    authorName: string;
-    authorRole: string;
-    createdAt: string;
-  }>;
+    id: string
+    message: string
+    authorName: string
+    authorRole: string
+    createdAt: string
+  }>
 }
 
 interface Props {
-  order: OrderData;
-  file: FileData;
-  defaultAction?: 'approve' | 'reject';
+  order: OrderData
+  file: FileData
+  defaultAction?: 'approve' | 'reject'
 }
 
 export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
-  const router = useRouter();
+  const router = useRouter()
   const [selectedAction, setSelectedAction] = useState<'approve' | 'reject' | null>(
     defaultAction || null
-  );
-  const [message, setMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  )
+  const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const isImage = file.mimeType?.startsWith('image/');
-  const fileIcon = isImage ? ImageIcon : FileText;
-  const FileIcon = fileIcon;
+  const isImage = file.mimeType?.startsWith('image/')
+  const fileIcon = isImage ? ImageIcon : FileText
+  const FileIcon = fileIcon
 
   const handleSubmit = async () => {
     if (!selectedAction) {
-      toast.error('Please select approve or reject');
-      return;
+      toast.error('Please select approve or reject')
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
       const response = await fetch(`/api/proof-approval/${order.id}/${file.id}`, {
         method: 'POST',
@@ -85,35 +85,35 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
           action: selectedAction,
           message: message.trim() || undefined,
         }),
-      });
+      })
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
         toast.success(
-          selectedAction === 'approve' 
-            ? 'Proof approved successfully!' 
+          selectedAction === 'approve'
+            ? 'Proof approved successfully!'
             : 'Changes requested successfully!'
-        );
-        
+        )
+
         // Redirect to completion page
-        router.push(`/proof-approval/${order.id}/${file.id}/complete?status=${selectedAction}d`);
+        router.push(`/proof-approval/${order.id}/${file.id}/complete?status=${selectedAction}d`)
       } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to submit approval');
+        const error = await response.json()
+        toast.error(error.error || 'Failed to submit approval')
       }
     } catch (error) {
-      console.error('Error submitting approval:', error);
-      toast.error('Failed to submit approval. Please try again.');
+      console.error('Error submitting approval:', error)
+      toast.error('Failed to submit approval. Please try again.')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const formatFileSize = (bytes?: number) => {
-    if (!bytes) return 'Unknown size';
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(2)} MB`;
-  };
+    if (!bytes) return 'Unknown size'
+    const mb = bytes / (1024 * 1024)
+    return `${mb.toFixed(2)} MB`
+  }
 
   return (
     <div className="space-y-6">
@@ -153,11 +153,10 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
             {/* File Details */}
             <div className="flex-1 space-y-4">
               <div>
-                <h3 className="font-semibold text-lg">
-                  {file.label || file.filename}
-                </h3>
+                <h3 className="font-semibold text-lg">{file.label || file.filename}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {formatFileSize(file.fileSize)} • Uploaded {new Date(file.createdAt).toLocaleDateString()}
+                  {formatFileSize(file.fileSize)} • Uploaded{' '}
+                  {new Date(file.createdAt).toLocaleDateString()}
                 </p>
               </div>
 
@@ -196,11 +195,13 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
               {file.messages.map((msg) => (
                 <div key={msg.id} className="flex gap-3 p-3 rounded-lg bg-muted/50">
                   <div className="flex-shrink-0">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      msg.authorRole === 'admin' 
-                        ? 'bg-blue-100 text-blue-800' 
-                        : 'bg-green-100 text-green-800'
-                    }`}>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        msg.authorRole === 'admin'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}
+                    >
                       {msg.authorName.charAt(0).toUpperCase()}
                     </div>
                   </div>
@@ -227,9 +228,7 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Your Decision</CardTitle>
-          <CardDescription>
-            Choose whether to approve this proof or request changes
-          </CardDescription>
+          <CardDescription>Choose whether to approve this proof or request changes</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Action Selection */}
@@ -238,8 +237,8 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
               size="lg"
               variant={selectedAction === 'approve' ? 'default' : 'outline'}
               className={`h-20 flex-col gap-2 ${
-                selectedAction === 'approve' 
-                  ? 'bg-green-600 hover:bg-green-700 text-white' 
+                selectedAction === 'approve'
+                  ? 'bg-green-600 hover:bg-green-700 text-white'
                   : 'border-green-200 hover:bg-green-50'
               }`}
               onClick={() => setSelectedAction('approve')}
@@ -253,8 +252,8 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
               size="lg"
               variant={selectedAction === 'reject' ? 'default' : 'outline'}
               className={`h-20 flex-col gap-2 ${
-                selectedAction === 'reject' 
-                  ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                selectedAction === 'reject'
+                  ? 'bg-orange-600 hover:bg-orange-700 text-white'
                   : 'border-orange-200 hover:bg-orange-50'
               }`}
               onClick={() => setSelectedAction('reject')}
@@ -268,12 +267,14 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
           {/* Message Input */}
           <div className="space-y-3">
             <Label htmlFor="customer-message">
-              {selectedAction === 'approve' ? 'Additional Comments (Optional)' : 'What changes would you like? (Optional)'}
+              {selectedAction === 'approve'
+                ? 'Additional Comments (Optional)'
+                : 'What changes would you like? (Optional)'}
             </Label>
             <Textarea
               id="customer-message"
               placeholder={
-                selectedAction === 'approve' 
+                selectedAction === 'approve'
                   ? 'Any additional comments about the proof...'
                   : 'Please describe what changes you would like to see...'
               }
@@ -292,8 +293,8 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
               <div className="text-sm">
                 <p className="font-medium text-amber-800 mb-1">Important Notice</p>
                 <p className="text-amber-700">
-                  Please review your proof carefully. We cannot be held responsible for errors 
-                  that are approved. If you approve this proof, production will begin immediately.
+                  Please review your proof carefully. We cannot be held responsible for errors that
+                  are approved. If you approve this proof, production will begin immediately.
                 </p>
               </div>
             </div>
@@ -325,5 +326,5 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

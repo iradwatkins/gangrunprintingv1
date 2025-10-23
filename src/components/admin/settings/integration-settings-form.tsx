@@ -34,7 +34,8 @@ export function IntegrationSettingsForm() {
           settingsMap[setting.key] = setting.value
         })
         setSettings({
-          googleAnalyticsId: settingsMap.google_analytics_id || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '',
+          googleAnalyticsId:
+            settingsMap.google_analytics_id || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '',
           resendApiKey: settingsMap.resend_api_key || process.env.RESEND_API_KEY || '',
           enableApiAccess: settingsMap.enable_api_access === 'true',
           webhookNotifications: settingsMap.webhook_notifications === 'true',

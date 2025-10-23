@@ -119,7 +119,9 @@ function getInvoiceEmailHTML(params: SendInvoiceEmailParams): string {
             </td>
           </tr>
 
-          ${customMessage ? `
+          ${
+            customMessage
+              ? `
           <!-- Custom Message -->
           <tr>
             <td style="padding: 0 30px 20px 30px;">
@@ -128,7 +130,9 @@ function getInvoiceEmailHTML(params: SendInvoiceEmailParams): string {
               </div>
             </td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
 
           <!-- Items Table -->
           <tr>
@@ -237,8 +241,7 @@ function getInvoiceEmailText(params: SendInvoiceEmailParams): string {
 
   const itemsText = items
     .map(
-      (item) =>
-        `${item.productName} - Qty: ${item.quantity} - $${(item.price / 100).toFixed(2)}`
+      (item) => `${item.productName} - Qty: ${item.quantity} - $${(item.price / 100).toFixed(2)}`
     )
     .join('\n')
 
@@ -288,9 +291,10 @@ export async function sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<
       text,
       replyTo: 'billing@gangrunprinting.com',
     })
-
   } catch (error) {
     console.error('❌ Failed to send invoice email:', error)
-    throw new Error(`Failed to send invoice email: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to send invoice email: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }

@@ -335,7 +335,6 @@ export async function compressWithRetry(
     // First attempt: Normal compression
     return await compressImageForAPI(input, options)
   } catch (error) {
-
     // Second attempt: Aggressive compression
     return await compressImageForAPI(input, {
       ...options,

@@ -65,9 +65,7 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
 
         if (!isMounted) return
 
-
         if (!response.ok) {
-
           // Be more lenient with retries for server errors and network issues
           if (
             attempt < maxRetries &&
@@ -97,7 +95,6 @@ export function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
 
         const userData = await response.json()
         if (!userData.user) {
-
           // Be more patient with user data - sometimes sessions need time to propagate
           if (attempt < maxRetries) {
             timeoutId = setTimeout(() => checkAdminAuth(attempt + 1), 2000)

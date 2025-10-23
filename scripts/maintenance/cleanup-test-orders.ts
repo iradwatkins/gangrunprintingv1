@@ -48,7 +48,9 @@ async function findTestOrders() {
 function displayOrders(orders: any[]) {
   console.log('Test Orders to Delete:')
   console.log('='.repeat(100))
-  console.log('Order Number         | Email                               | Status          | Total    | Created')
+  console.log(
+    'Order Number         | Email                               | Status          | Total    | Created'
+  )
   console.log('-'.repeat(100))
 
   orders.forEach((order) => {
@@ -168,7 +170,6 @@ async function main() {
       console.log(`⚠️  Cleanup completed with ${result.failed} errors.\n`)
       process.exit(1)
     }
-
   } catch (error: any) {
     console.error('\n❌ Cleanup failed:', error.message)
     console.error(error)

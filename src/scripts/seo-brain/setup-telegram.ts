@@ -11,12 +11,13 @@
 
 import { testTelegramConnection } from '@/lib/seo-brain/telegram-notifier'
 
-const BOT_TOKEN = process.env.SEO_BRAIN_TELEGRAM_BOT_TOKEN || '7510262123:AAFiInboeGKrhovu8hcmDvZsDgEpS3W1yWs'
+const BOT_TOKEN =
+  process.env.SEO_BRAIN_TELEGRAM_BOT_TOKEN || '7510262123:AAFiInboeGKrhovu8hcmDvZsDgEpS3W1yWs'
 const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`
 
 async function main() {
   console.log('🤖 SEO Brain Telegram Setup\n')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   // Step 1: Check if chat ID is configured
   const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID
@@ -31,7 +32,7 @@ async function main() {
     console.log('5. Bot will reply with your Chat ID (a number like: 123456789)')
     console.log('6. Add to .env file:')
     console.log('   TELEGRAM_ADMIN_CHAT_ID=your_chat_id_here\n')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
     console.log('\n💡 Alternative method: Get updates from your bot\n')
 
     await showRecentUpdates()
@@ -48,7 +49,7 @@ async function main() {
     console.log('✅ SUCCESS! Telegram bot is connected!\n')
     console.log('📬 Check your Telegram - you should have received a test message.')
     console.log('\n🎉 SEO Brain is ready to send you alerts!\n')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
   } else {
     console.log('❌ Connection failed\n')
     console.log(`Error: ${result.error}\n`)
@@ -57,7 +58,7 @@ async function main() {
     console.log('2. Make sure you started a conversation with the bot first')
     console.log('3. Search for "Micheal (SEO LLM Landing Page Master)" on Telegram')
     console.log('4. Click "Start" button to activate the bot\n')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
   }
 }
 

@@ -43,7 +43,8 @@ module.exports = {
         AUTH_GOOGLE_ID: '180548408438-40kht5tlgpiim2j4qhu0qs1mtonvnanq.apps.googleusercontent.com',
         AUTH_GOOGLE_SECRET: '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',
         // Add aliases for Google OAuth (required by lucia-auth)
-        GOOGLE_CLIENT_ID: '180548408438-40kht5tlgpiim2j4qhu0qs1mtonvnanq.apps.googleusercontent.com',
+        GOOGLE_CLIENT_ID:
+          '180548408438-40kht5tlgpiim2j4qhu0qs1mtonvnanq.apps.googleusercontent.com',
         GOOGLE_CLIENT_SECRET: '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',
         AUTH_TRUST_HOST: 'true',
 

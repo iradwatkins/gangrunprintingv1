@@ -57,7 +57,6 @@ export async function POST(request: NextRequest) {
     // Parse webhook event
     const event: SquareWebhookEvent = JSON.parse(rawBody)
 
-
     // Handle different event types
     switch (event.type) {
       case 'payment.created':
@@ -90,7 +89,6 @@ async function handlePaymentCreated(event: SquareWebhookEvent): Promise<void> {
   }
 
   const { id: paymentId, amount_money, status, reference_id } = payment
-
 
   // Only process completed payments
   if (status !== 'COMPLETED') {
@@ -144,7 +142,6 @@ async function handlePaymentUpdated(event: SquareWebhookEvent): Promise<void> {
   }
 
   const { id: paymentId, status, reference_id } = payment
-
 
   if (!reference_id) {
     return

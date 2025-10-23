@@ -16,7 +16,7 @@ export const flyerFAQs: FAQItem[] = [
   {
     question: 'What paper weight is best for flyers?',
     answer:
-      '100lb gloss text is our most popular option for standard flyers - it\'s lightweight for mailing, affordable, and has vibrant color reproduction. For premium flyers, choose 100lb gloss cover for extra durability. For high-end presentations, 14pt or 16pt cardstock provides a postcard-like feel.',
+      "100lb gloss text is our most popular option for standard flyers - it's lightweight for mailing, affordable, and has vibrant color reproduction. For premium flyers, choose 100lb gloss cover for extra durability. For high-end presentations, 14pt or 16pt cardstock provides a postcard-like feel.",
     category: 'Paper Options',
   },
   {

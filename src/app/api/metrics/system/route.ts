@@ -88,9 +88,7 @@ export async function GET() {
 
         // Get CPU and memory usage
         cpu = gangrunApp.monit?.cpu || 0
-        memory = gangrunApp.monit?.memory
-          ? (gangrunApp.monit.memory / 1024 / 1024 / 1024) * 100
-          : 0
+        memory = gangrunApp.monit?.memory ? (gangrunApp.monit.memory / 1024 / 1024 / 1024) * 100 : 0
       }
     } catch (error) {
       console.error('Failed to get PM2 metrics:', error)

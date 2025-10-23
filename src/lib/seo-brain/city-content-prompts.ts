@@ -175,12 +175,12 @@ export function generateCityHeroImagePrompt(params: {
   const productType = productName.toLowerCase().includes('flyer')
     ? 'flyers'
     : productName.toLowerCase().includes('business card')
-    ? 'business cards'
-    : productName.toLowerCase().includes('postcard')
-    ? 'postcards'
-    : productName.toLowerCase().includes('brochure')
-    ? 'brochures'
-    : 'printed materials'
+      ? 'business cards'
+      : productName.toLowerCase().includes('postcard')
+        ? 'postcards'
+        : productName.toLowerCase().includes('brochure')
+          ? 'brochures'
+          : 'printed materials'
 
   // Get city's most iconic landmark/characteristic
   const cityCharacteristic = getCityCharacteristic(city)
@@ -194,24 +194,26 @@ export function generateCityHeroImagePrompt(params: {
 function getCityCharacteristic(city: CityData): string {
   const cityImageStyles: Record<string, string> = {
     // Major cities with iconic visuals
-    'New York': 'displayed on modern marble desk with Manhattan skyline visible through window in background',
-    'Los Angeles': 'on sleek glass table with palm trees and golden California sunset in soft-focus background',
-    'Chicago': 'on industrial concrete surface with Chicago skyline reflected in window behind',
-    'Miami': 'on white marble surface with Art Deco architectural elements and tropical plants',
+    'New York':
+      'displayed on modern marble desk with Manhattan skyline visible through window in background',
+    'Los Angeles':
+      'on sleek glass table with palm trees and golden California sunset in soft-focus background',
+    Chicago: 'on industrial concrete surface with Chicago skyline reflected in window behind',
+    Miami: 'on white marble surface with Art Deco architectural elements and tropical plants',
     'San Francisco': 'on wooden desk with Golden Gate Bridge visible through office window',
     'Las Vegas': 'on black granite surface with neon lights softly glowing in background',
-    'Seattle': 'on rustic wooden table with Space Needle visible through rainy window',
-    'Boston': 'on classic mahogany desk with historic brownstone architecture in background',
-    'Austin': 'on reclaimed wood surface with Texas Hill Country landscape visible',
-    'Nashville': 'on vintage wooden surface with music city aesthetic and warm lighting',
-    'Denver': 'on modern desk with Rocky Mountains visible through large window',
-    'Portland': 'on sustainable bamboo surface with Pacific Northwest forest scene',
-    'Phoenix': 'on desert-inspired stone surface with Arizona sunset colors',
-    'Dallas': 'on sleek modern desk with Texas skyline in background',
-    'Houston': 'on contemporary surface with Space City modern architecture',
-    'Atlanta': 'on polished surface with Southern modern aesthetic',
-    'Philadelphia': 'on classic desk with historic architecture visible',
-    'Washington': 'on elegant marble surface with monuments in soft background',
+    Seattle: 'on rustic wooden table with Space Needle visible through rainy window',
+    Boston: 'on classic mahogany desk with historic brownstone architecture in background',
+    Austin: 'on reclaimed wood surface with Texas Hill Country landscape visible',
+    Nashville: 'on vintage wooden surface with music city aesthetic and warm lighting',
+    Denver: 'on modern desk with Rocky Mountains visible through large window',
+    Portland: 'on sustainable bamboo surface with Pacific Northwest forest scene',
+    Phoenix: 'on desert-inspired stone surface with Arizona sunset colors',
+    Dallas: 'on sleek modern desk with Texas skyline in background',
+    Houston: 'on contemporary surface with Space City modern architecture',
+    Atlanta: 'on polished surface with Southern modern aesthetic',
+    Philadelphia: 'on classic desk with historic architecture visible',
+    Washington: 'on elegant marble surface with monuments in soft background',
   }
 
   // Check if city has specific style
@@ -251,7 +253,6 @@ export async function generateCompleteCityContent(params: {
 }> {
   const { city, productName, productSpec, ollamaClient } = params
 
-
   // Generate introduction (500 words)
   const introPrompt = generateCityIntroPrompt({ city, productName, productSpec })
   const introResponse = await ollamaClient.generate(introPrompt)
@@ -271,7 +272,6 @@ export async function generateCompleteCityContent(params: {
 
   // Generate image prompt
   const imagePrompt = generateCityHeroImagePrompt({ city, productName, productSpec })
-
 
   return {
     introduction,

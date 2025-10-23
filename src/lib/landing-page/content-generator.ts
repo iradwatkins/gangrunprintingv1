@@ -45,7 +45,7 @@ export interface CityContext {
  */
 export async function enrichCityData(cityId: string): Promise<CityContext> {
   const city = await prisma.city.findUnique({
-    where: { id: cityId }
+    where: { id: cityId },
   })
 
   if (!city) {
@@ -68,7 +68,7 @@ export async function enrichCityData(cityId: string): Promise<CityContext> {
     latitude: city.latitude || undefined,
     longitude: city.longitude || undefined,
     timezone: city.timezone || undefined,
-    ...enrichment
+    ...enrichment,
   }
 }
 
@@ -83,12 +83,17 @@ function getCityEnrichment(city: string, state: string): Partial<CityContext> {
       neighborhoods: ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'],
       landmarks: ['Times Square', 'Central Park', 'Statue of Liberty', 'Empire State Building'],
       businessDistricts: ['Midtown', 'Financial District', 'Hudson Yards', 'Chelsea'],
-      localEvents: ['NYC Marathon', 'Times Square New Year', 'Tribeca Film Festival', 'NYC Fashion Week'],
+      localEvents: [
+        'NYC Marathon',
+        'Times Square New Year',
+        'Tribeca Film Festival',
+        'NYC Fashion Week',
+      ],
       economicData: 'Major financial hub with 200+ Fortune 500 companies',
       zipCodes: ['10001', '10002', '10003', '11201', '11211'],
       areaCodes: ['212', '646', '917', '332', '718'],
       avgBusinessCount: '240,000+',
-      localIndustries: ['Finance', 'Media', 'Technology', 'Fashion', 'Entertainment']
+      localIndustries: ['Finance', 'Media', 'Technology', 'Fashion', 'Entertainment'],
     },
     'Los Angeles': {
       neighborhoods: ['Hollywood', 'Beverly Hills', 'Santa Monica', 'Venice', 'Downtown LA'],
@@ -99,18 +104,23 @@ function getCityEnrichment(city: string, state: string): Partial<CityContext> {
       zipCodes: ['90001', '90012', '90210', '90291', '91001'],
       areaCodes: ['213', '323', '310', '424', '818'],
       avgBusinessCount: '180,000+',
-      localIndustries: ['Entertainment', 'Technology', 'Tourism', 'Fashion', 'Aerospace']
+      localIndustries: ['Entertainment', 'Technology', 'Tourism', 'Fashion', 'Aerospace'],
     },
-    'Chicago': {
+    Chicago: {
       neighborhoods: ['Loop', 'River North', 'Wicker Park', 'Lincoln Park', 'South Loop'],
       landmarks: ['Willis Tower', 'Navy Pier', 'Millennium Park', 'Art Institute'],
       businessDistricts: ['Loop', 'West Loop', 'River North', 'Magnificent Mile'],
-      localEvents: ['Lollapalooza', 'Chicago Air & Water Show', 'Taste of Chicago', 'Chicago Marathon'],
+      localEvents: [
+        'Lollapalooza',
+        'Chicago Air & Water Show',
+        'Taste of Chicago',
+        'Chicago Marathon',
+      ],
       economicData: 'Major transportation and trading hub with diverse economy',
       zipCodes: ['60601', '60602', '60614', '60622', '60657'],
       areaCodes: ['312', '773', '872', '224', '847'],
       avgBusinessCount: '120,000+',
-      localIndustries: ['Finance', 'Manufacturing', 'Transportation', 'Technology', 'Healthcare']
+      localIndustries: ['Finance', 'Manufacturing', 'Transportation', 'Technology', 'Healthcare'],
     },
     // Add more major cities as needed...
   }
@@ -128,9 +138,9 @@ function getCityEnrichment(city: string, state: string): Partial<CityContext> {
     localEvents: [`${city} Festival`, `${city} Fair`, `${state} State Fair`],
     economicData: `Growing city in ${state} with diverse local businesses`,
     zipCodes: ['00000'], // Placeholder
-    areaCodes: ['000'],  // Placeholder
+    areaCodes: ['000'], // Placeholder
     avgBusinessCount: '5,000+',
-    localIndustries: ['Retail', 'Healthcare', 'Services', 'Manufacturing']
+    localIndustries: ['Retail', 'Healthcare', 'Services', 'Manufacturing'],
   }
 }
 
@@ -176,28 +186,31 @@ FORMAT: 3-4 bullet points with specific local details`
 /**
  * Generate city-specific FAQs
  */
-export function generateCityFAQs(cityContext: CityContext, productType: string): Array<{question: string, answer: string}> {
+export function generateCityFAQs(
+  cityContext: CityContext,
+  productType: string
+): Array<{ question: string; answer: string }> {
   return [
     {
       question: `Do you deliver to ${cityContext.neighborhoods[0]} and ${cityContext.neighborhoods[1]} in ${cityContext.city}?`,
-      answer: `Yes! We deliver to all ${cityContext.neighborhoods.length} areas of ${cityContext.city}, including ${cityContext.neighborhoods.join(', ')}. We offer same-day service in ${cityContext.neighborhoods[0]} and next-day delivery across ${cityContext.city}.`
+      answer: `Yes! We deliver to all ${cityContext.neighborhoods.length} areas of ${cityContext.city}, including ${cityContext.neighborhoods.join(', ')}. We offer same-day service in ${cityContext.neighborhoods[0]} and next-day delivery across ${cityContext.city}.`,
     },
     {
       question: `What businesses in ${cityContext.city} use your ${productType}?`,
-      answer: `We serve ${cityContext.avgBusinessCount} businesses in ${cityContext.city}, from ${cityContext.businessDistricts[0]} startups to ${cityContext.businessDistricts[1]} enterprises. Popular uses include ${cityContext.localEvents[0]} marketing materials and ${cityContext.landmarks[0]} area promotions.`
+      answer: `We serve ${cityContext.avgBusinessCount} businesses in ${cityContext.city}, from ${cityContext.businessDistricts[0]} startups to ${cityContext.businessDistricts[1]} enterprises. Popular uses include ${cityContext.localEvents[0]} marketing materials and ${cityContext.landmarks[0]} area promotions.`,
     },
     {
       question: `How fast can I get ${productType} printed in ${cityContext.city}?`,
-      answer: `We offer same-day printing in ${cityContext.neighborhoods[0]}, with pickup or delivery available. For other areas of ${cityContext.city}, standard turnaround is 1-3 business days. Rush options available for urgent needs.`
+      answer: `We offer same-day printing in ${cityContext.neighborhoods[0]}, with pickup or delivery available. For other areas of ${cityContext.city}, standard turnaround is 1-3 business days. Rush options available for urgent needs.`,
     },
     {
       question: `Do you work with ${cityContext.localIndustries[0]} and ${cityContext.localIndustries[1]} companies in ${cityContext.city}?`,
-      answer: `Absolutely! We specialize in serving ${cityContext.localIndustries.join(', ')} businesses throughout ${cityContext.city}. We understand the unique needs of ${cityContext.economicData.toLowerCase()}.`
+      answer: `Absolutely! We specialize in serving ${cityContext.localIndustries.join(', ')} businesses throughout ${cityContext.city}. We understand the unique needs of ${cityContext.economicData.toLowerCase()}.`,
     },
     {
       question: `Can you handle large orders for events like ${cityContext.localEvents[0]}?`,
-      answer: `Yes! We've produced ${productType} for major ${cityContext.city} events including ${cityContext.localEvents[0]}, ${cityContext.localEvents[1]}, and more. Our capacity handles orders from 50 to 50,000+ pieces.`
-    }
+      answer: `Yes! We've produced ${productType} for major ${cityContext.city} events including ${cityContext.localEvents[0]}, ${cityContext.localEvents[1]}, and more. Our capacity handles orders from 50 to 50,000+ pieces.`,
+    },
   ]
 }
 
@@ -242,8 +255,8 @@ export async function generateCityContent(
   h1: string
   aiIntro: string
   aiBenefits: string
-  contentSections: Array<{title: string, content: string}>
-  faqSchema: Array<{question: string, answer: string}>
+  contentSections: Array<{ title: string; content: string }>
+  faqSchema: Array<{ question: string; answer: string }>
 }> {
   // 1. Enrich city data
   const cityContext = await enrichCityData(cityId)
@@ -271,16 +284,16 @@ export async function generateCityContent(
   const contentSections = [
     {
       title: `Why ${cityContext.city} Businesses Choose Us`,
-      content: aiIntro
+      content: aiIntro,
     },
     {
       title: `${productType} Services in ${cityContext.city}`,
-      content: aiBenefits
+      content: aiBenefits,
     },
     {
       title: `Delivery & Service Areas in ${cityContext.city}`,
-      content: `We proudly serve all areas of ${cityContext.city}, including ${cityContext.neighborhoods.join(', ')}. With same-day service in ${cityContext.neighborhoods[0]} and next-day delivery across ${cityContext.city}, we make professional printing accessible to all ${cityContext.populationFormatted} residents.`
-    }
+      content: `We proudly serve all areas of ${cityContext.city}, including ${cityContext.neighborhoods.join(', ')}. With same-day service in ${cityContext.neighborhoods[0]} and next-day delivery across ${cityContext.city}, we make professional printing accessible to all ${cityContext.populationFormatted} residents.`,
+    },
   ]
 
   return {
@@ -290,7 +303,7 @@ export async function generateCityContent(
     aiIntro,
     aiBenefits,
     contentSections,
-    faqSchema
+    faqSchema,
   }
 }
 

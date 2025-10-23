@@ -42,9 +42,11 @@ The system uses a cascading template resolution:
 ### Files Created (Phase 4)
 
 **Email Service:**
+
 - `/src/lib/email/status-change-email-service.ts` - Main automation service
 
 **Integration Points:**
+
 - `/src/lib/services/order-service.ts` - Line 215: Auto-send on status update
 - `/src/app/api/admin/orders/bulk-status-update/route.ts` - Line 150: Bulk email sending
 
@@ -94,6 +96,7 @@ Authorization: Bearer <admin-token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -132,54 +135,55 @@ EmailTemplate {
 
 All email templates support these variables:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `{{orderNumber}}` | Order number | ORD-2025-123 |
-| `{{customerName}}` | Customer's name | John Doe |
-| `{{statusName}}` | Human-readable status | Production |
-| `{{statusSlug}}` | Database slug | PRODUCTION |
-| `{{trackingNumber}}` | Tracking number if available | 1Z999AA10123456784 |
-| `{{trackingUrl}}` | Full tracking URL | https://gangrunprinting.com/track?order=... |
-| `{{orderUrl}}` | Order details page | https://gangrunprinting.com/orders/123 |
-| `{{notes}}` | Status change notes | Vendor assigned: ABC Print Shop |
-| `{{total}}` | Order total formatted | $299.99 |
+| Variable             | Description                  | Example                                     |
+| -------------------- | ---------------------------- | ------------------------------------------- |
+| `{{orderNumber}}`    | Order number                 | ORD-2025-123                                |
+| `{{customerName}}`   | Customer's name              | John Doe                                    |
+| `{{statusName}}`     | Human-readable status        | Production                                  |
+| `{{statusSlug}}`     | Database slug                | PRODUCTION                                  |
+| `{{trackingNumber}}` | Tracking number if available | 1Z999AA10123456784                          |
+| `{{trackingUrl}}`    | Full tracking URL            | https://gangrunprinting.com/track?order=... |
+| `{{orderUrl}}`       | Order details page           | https://gangrunprinting.com/orders/123      |
+| `{{notes}}`          | Status change notes          | Vendor assigned: ABC Print Shop             |
+| `{{total}}`          | Order total formatted        | $299.99                                     |
 
 ### Template Example
 
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Order Update</title>
-</head>
-<body style="font-family: Arial, sans-serif;">
-  <h1>Your Order is Now in Production!</h1>
+  <head>
+    <title>Order Update</title>
+  </head>
+  <body style="font-family: Arial, sans-serif;">
+    <h1>Your Order is Now in Production!</h1>
 
-  <p>Hi {{customerName}},</p>
+    <p>Hi {{customerName}},</p>
 
-  <p>Great news! Your order <strong>{{orderNumber}}</strong> has entered production.</p>
+    <p>Great news! Your order <strong>{{orderNumber}}</strong> has entered production.</p>
 
-  <p><strong>Order Total:</strong> {{total}}</p>
+    <p><strong>Order Total:</strong> {{total}}</p>
 
-  {{#if notes}}
-  <p><strong>Notes:</strong> {{notes}}</p>
-  {{/if}}
+    {{#if notes}}
+    <p><strong>Notes:</strong> {{notes}}</p>
+    {{/if}}
 
-  <p>
-    <a href="{{orderUrl}}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
-      Track Your Order
-    </a>
-  </p>
+    <p>
+      <a
+        href="{{orderUrl}}"
+        style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px;"
+      >
+        Track Your Order
+      </a>
+    </p>
 
-  <p>
-    Questions? Reply to this email or call 1-800-PRINTING
-  </p>
+    <p>Questions? Reply to this email or call 1-800-PRINTING</p>
 
-  <p>
-    Best regards,<br>
-    GangRun Printing Team
-  </p>
-</body>
+    <p>
+      Best regards,<br />
+      GangRun Printing Team
+    </p>
+  </body>
 </html>
 ```
 
@@ -199,6 +203,7 @@ getOrderStatusUpdateEmail({
 ```
 
 This provides a clean, professional email with:
+
 - Order number
 - Status name
 - Tracking information (if available)
@@ -214,6 +219,7 @@ This provides a clean, professional email with:
 All emails are sent through **Resend** using the configuration in `/src/lib/resend.ts`.
 
 **Environment Variables Required:**
+
 ```bash
 RESEND_API_KEY=re_...
 RESEND_FROM_EMAIL=orders@gangrunprinting.com
@@ -289,6 +295,7 @@ Monitor email delivery at: https://resend.com/emails
 Navigate to: `/admin/settings/order-statuses`
 
 For each status:
+
 1. Click "Edit"
 2. Toggle "Send Email on Status Change"
 3. (Optional) Select an email template
@@ -338,6 +345,7 @@ Before going live with email automation:
 Main entry point for triggering automated emails.
 
 **Parameters:**
+
 - `orderId` (string): Order ID to send email for
 - `toStatusSlug` (string): Target status slug (e.g., 'PRODUCTION')
 - `options` (optional):
@@ -348,15 +356,12 @@ Main entry point for triggering automated emails.
 **Returns:** `Promise<boolean>` - true if email sent, false if skipped/failed
 
 **Example:**
+
 ```typescript
-const sent = await StatusChangeEmailService.sendStatusChangeEmail(
-  'order-123',
-  'PRODUCTION',
-  {
-    notes: 'Assigned to vendor: ABC Print',
-    changedBy: 'admin@gangrunprinting.com'
-  }
-)
+const sent = await StatusChangeEmailService.sendStatusChangeEmail('order-123', 'PRODUCTION', {
+  notes: 'Assigned to vendor: ABC Print',
+  changedBy: 'admin@gangrunprinting.com',
+})
 ```
 
 #### `previewTemplate(templateId, sampleOrderId?)`
@@ -364,10 +369,12 @@ const sent = await StatusChangeEmailService.sendStatusChangeEmail(
 Generate email preview with sample/real data.
 
 **Parameters:**
+
 - `templateId` (string): EmailTemplate ID
 - `sampleOrderId` (string, optional): Real order ID for data
 
 **Returns:**
+
 ```typescript
 {
   subject: string
@@ -398,6 +405,7 @@ Potential improvements for future phases:
 ### Issue: Emails not sending
 
 **Check:**
+
 1. Is `sendEmailOnEnter` enabled for the status?
 2. Is Resend API key configured?
 3. Check application logs for errors
@@ -407,6 +415,7 @@ Potential improvements for future phases:
 ### Issue: Wrong template rendering
 
 **Check:**
+
 1. Is correct `emailTemplateId` linked to status?
 2. Are template variables using correct syntax (`{{variable}}`)?
 3. Is template content valid JSON?
@@ -415,6 +424,7 @@ Potential improvements for future phases:
 ### Issue: Variables not replacing
 
 **Check:**
+
 1. Variable syntax: Use `{{variable}}` or `{variable}`
 2. Case-sensitive: `{{customerName}}` not `{{CustomerName}}`
 3. Check order data: Does order have the required fields?
@@ -425,6 +435,7 @@ Potential improvements for future phases:
 ## Support
 
 For email automation issues:
+
 1. Check logs: `pm2 logs gangrunprinting | grep StatusChangeEmail`
 2. Test Resend connection: `node test-resend-connection.js`
 3. Review this documentation

@@ -13,10 +13,7 @@ import { randomUUID } from 'crypto'
  * 2. Generates 200 unique city landing pages with AI content
  * 3. Creates hidden Product record for cart integration
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!user || !session) {
@@ -33,59 +30,48 @@ export async function POST(
       include: {
         PaperStockSet: true,
         QuantityGroup: true,
-        SizeGroup: true
-      }
+        SizeGroup: true,
+      },
     })
 
     if (!landingPageSet) {
-      return NextResponse.json(
-        { error: 'Landing page set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Landing page set not found' }, { status: 404 })
     }
 
     if (landingPageSet.status === 'published') {
-      return NextResponse.json(
-        { error: 'Landing page set is already published' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Landing page set is already published' }, { status: 400 })
     }
 
     // Update status to generating
     await prisma.landingPageSet.update({
       where: { id: params.id },
-      data: { status: 'generating' }
+      data: { status: 'generating' },
     })
 
     // Get all active cities (top 200)
     const cities = await prisma.city.findMany({
       where: { isActive: true },
       orderBy: { rank: 'asc' },
-      take: 200
+      take: 200,
     })
 
     if (cities.length === 0) {
       await prisma.landingPageSet.update({
         where: { id: params.id },
-        data: { status: 'draft' }
+        data: { status: 'draft' },
       })
-      return NextResponse.json(
-        { error: 'No active cities found in database' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No active cities found in database' }, { status: 400 })
     }
-
 
     // Extract product type from name (e.g., "Postcards 4x6 Landing Pages" -> "Postcards 4x6")
     const productType = landingPageSet.name.replace(/\s*landing\s*pages?$/i, '').trim()
 
     // Generate landing pages for each city
     const generatedPages: string[] = []
-    const errors: Array<{city: string, error: string}> = []
+    const errors: Array<{ city: string; error: string }> = []
 
     for (const city of cities) {
       try {
-
         // Generate unique content for this city
         const content = await generateCityContent(
           city.id,
@@ -94,22 +80,23 @@ export async function POST(
             titleTemplate: landingPageSet.titleTemplate,
             metaDescTemplate: landingPageSet.metaDescTemplate,
             h1Template: landingPageSet.h1Template,
-            contentTemplate: landingPageSet.contentTemplate
+            contentTemplate: landingPageSet.contentTemplate,
           },
           productType
         )
 
         // Create slug: product-type-city-state (e.g., "postcards-4x6-new-york-ny")
-        const slug = `${landingPageSet.slug}-${city.name.toLowerCase()}-${city.stateCode.toLowerCase()}`
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
+        const slug =
+          `${landingPageSet.slug}-${city.name.toLowerCase()}-${city.stateCode.toLowerCase()}`
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
 
         // Check if this city page already exists
         const existing = await prisma.cityLandingPage.findFirst({
           where: {
             landingPageSetId: landingPageSet.id,
-            cityId: city.id
-          }
+            cityId: city.id,
+          },
         })
 
         if (existing) {
@@ -136,8 +123,8 @@ export async function POST(
             schemaMarkup: null as any, // Will generate schema markup in next iteration
             status: 'published',
             published: true,
-            publishedAt: new Date()
-          }
+            publishedAt: new Date(),
+          },
         })
 
         generatedPages.push(cityLandingPage.id)
@@ -146,7 +133,7 @@ export async function POST(
         console.error(`    ❌ Error for ${city.name}, ${city.stateCode}:`, errorMsg)
         errors.push({
           city: `${city.name}, ${city.stateCode}`,
-          error: errorMsg
+          error: errorMsg,
         })
       }
     }
@@ -154,9 +141,8 @@ export async function POST(
     // Update status to published
     await prisma.landingPageSet.update({
       where: { id: params.id },
-      data: { status: 'published' }
+      data: { status: 'published' },
     })
-
 
     return NextResponse.json({
       success: true,
@@ -164,7 +150,7 @@ export async function POST(
       citiesGenerated: generatedPages.length,
       totalCities: cities.length,
       errors: errors.length > 0 ? errors : undefined,
-      message: `Successfully generated ${generatedPages.length} city landing pages${errors.length > 0 ? ` (${errors.length} errors)` : ''}`
+      message: `Successfully generated ${generatedPages.length} city landing pages${errors.length > 0 ? ` (${errors.length} errors)` : ''}`,
     })
   } catch (error) {
     console.error(`[POST /api/landing-page-sets/${params.id}/publish] Error:`, error)
@@ -173,7 +159,7 @@ export async function POST(
     try {
       await prisma.landingPageSet.update({
         where: { id: params.id },
-        data: { status: 'draft' }
+        data: { status: 'draft' },
       })
     } catch (revertError) {
       console.error('Failed to revert status:', revertError)
@@ -182,7 +168,7 @@ export async function POST(
     return NextResponse.json(
       {
         error: 'Failed to publish landing page set',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )

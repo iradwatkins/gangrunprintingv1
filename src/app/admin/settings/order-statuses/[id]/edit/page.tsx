@@ -56,13 +56,34 @@ const COLOR_OPTIONS = [
 
 // Badge color presets
 const BADGE_COLOR_OPTIONS = [
-  { label: 'Gray (Default)', value: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400' },
-  { label: 'Red (Error/Cancel)', value: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' },
-  { label: 'Orange (Warning)', value: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400' },
-  { label: 'Yellow (Pending)', value: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' },
-  { label: 'Green (Success)', value: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' },
-  { label: 'Blue (Info)', value: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' },
-  { label: 'Purple (Process)', value: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' },
+  {
+    label: 'Gray (Default)',
+    value: 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
+  },
+  {
+    label: 'Red (Error/Cancel)',
+    value: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+  },
+  {
+    label: 'Orange (Warning)',
+    value: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
+  },
+  {
+    label: 'Yellow (Pending)',
+    value: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+  },
+  {
+    label: 'Green (Success)',
+    value: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+  },
+  {
+    label: 'Blue (Info)',
+    value: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+  },
+  {
+    label: 'Purple (Process)',
+    value: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+  },
 ]
 
 interface OrderStatus {
@@ -189,7 +210,9 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
       return
     }
 
-    if (!confirm(`Are you sure you want to delete "${status.name}"? This action cannot be undone.`)) {
+    if (
+      !confirm(`Are you sure you want to delete "${status.name}"? This action cannot be undone.`)
+    ) {
       return
     }
 
@@ -276,8 +299,9 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
             <CardTitle className="text-sm">Core Status - Limited Editing</CardTitle>
           </CardHeader>
           <CardContent className="text-sm">
-            This is a system core status. You can only modify: description, sort order, email template, and email
-            automation settings. Name, slug, and other core properties are locked.
+            This is a system core status. You can only modify: description, sort order, email
+            template, and email automation settings. Name, slug, and other core properties are
+            locked.
           </CardContent>
         </Card>
       )}
@@ -289,7 +313,8 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
             <CardTitle className="text-sm">Active Orders</CardTitle>
           </CardHeader>
           <CardContent className="text-sm">
-            This status has {status.orderCount} active orders. Deletion is disabled. You can still edit settings.
+            This status has {status.orderCount} active orders. Deletion is disabled. You can still
+            edit settings.
           </CardContent>
         </Card>
       )}
@@ -317,7 +342,9 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
                     value={formData.name}
                     onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                   />
-                  {isCore && <p className="text-xs text-muted-foreground">Locked for core statuses</p>}
+                  {isCore && (
+                    <p className="text-xs text-muted-foreground">Locked for core statuses</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -333,7 +360,9 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
                   id="description"
                   rows={3}
                   value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
                 />
               </div>
             </CardContent>
@@ -397,7 +426,9 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
                     min={0}
                     type="number"
                     value={formData.sortOrder}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, sortOrder: parseInt(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, sortOrder: parseInt(e.target.value) }))
+                    }
                   />
                 </div>
               </div>
@@ -435,29 +466,33 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
                 <div className="space-y-0.5">
                   <Label htmlFor="isActive">Active Status</Label>
                   <p className="text-sm text-muted-foreground">
-                    {isCore
-                      ? 'Core statuses are always active'
-                      : 'Enable or disable this status'}
+                    {isCore ? 'Core statuses are always active' : 'Enable or disable this status'}
                   </p>
                 </div>
                 <Switch
                   checked={formData.isActive}
                   disabled={isCore}
                   id="isActive"
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isActive: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isActive: checked }))
+                  }
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="isPaid">Payment Required</Label>
-                  <p className="text-sm text-muted-foreground">Orders in this status have been paid</p>
+                  <p className="text-sm text-muted-foreground">
+                    Orders in this status have been paid
+                  </p>
                 </div>
                 <Switch
                   checked={formData.isPaid}
                   disabled={isCore}
                   id="isPaid"
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isPaid: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isPaid: checked }))
+                  }
                 />
               </div>
 
@@ -489,7 +524,9 @@ export default function EditOrderStatusPage({ params }: { params: Promise<{ id: 
                   checked={formData.allowDownloads}
                   disabled={isCore}
                   id="allowDownloads"
-                  onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, allowDownloads: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, allowDownloads: checked }))
+                  }
                 />
               </div>
 

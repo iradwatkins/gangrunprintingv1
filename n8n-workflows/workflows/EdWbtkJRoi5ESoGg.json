@@ -1,1 +1,114 @@
-{"createdAt":"2025-10-20T23:00:00.542Z","updatedAt":"2025-10-20T23:00:00.542Z","id":"EdWbtkJRoi5ESoGg","name":"GangRun - Order Anniversaries","active":false,"isArchived":false,"nodes":[{"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"0 9 * * *"}]}},"name":"Daily at 9 AM","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.1,"position":[250,300],"id":"d50b5d58-534c-4680-afb8-c63e1f6643ff"},{"parameters":{"url":"https://gangrunprinting.com/api/marketing/customers/anniversaries","sendQuery":true,"queryParameters":{"parameters":[{"name":"type","value":"any_purchase"},{"name":"daysAgo","value":"365"}]},"options":{}},"name":"Fetch Anniversaries","type":"n8n-nodes-base.httpRequest","typeVersion":4.1,"position":[470,300],"id":"f02cbe39-7836-49b3-931d-cee4664cb625"},{"parameters":{"batchSize":1,"options":{}},"name":"Split Into Batches","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[690,300],"id":"4d80feda-52f4-424e-8fe9-45551c1a147a"},{"parameters":{"url":"https://gangrunprinting.com/api/marketing/emails/render","authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth","sendBody":true,"bodyParameters":{"parameters":[{"name":"template","value":"anniversary"},{"name":"to","value":"={{ $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].userEmail }}"},{"name":"subject","value":"🎉 Happy {{ $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].yearsAgo }}-Year Anniversary!"},{"name":"data","value":"={{ JSON.stringify({\n  customerName: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].userName,\n  orderDate: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].orderDate,\n  orderNumber: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].orderNumber,\n  yearsAgo: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].yearsAgo\n}) }}"}]},"options":{}},"name":"Send Anniversary Email","type":"n8n-nodes-base.httpRequest","typeVersion":4.1,"position":[910,300],"id":"44cf30a6-e616-4a39-bbc9-85f10f12a250"}],"connections":{"Daily at 9 AM":{"main":[[{"node":"Fetch Anniversaries","type":"main","index":0}]]},"Fetch Anniversaries":{"main":[[{"node":"Split Into Batches","type":"main","index":0}]]},"Split Into Batches":{"main":[[{"node":"Send Anniversary Email","type":"main","index":0}]]},"Send Anniversary Email":{"main":[[{"node":"Split Into Batches","type":"main","index":0}]]}},"settings":{"timezone":"America/Chicago"},"staticData":null,"meta":null,"pinData":null,"versionId":null,"triggerCount":0,"tags":[],"shared":[{"createdAt":"2025-10-20T23:00:00.544Z","updatedAt":"2025-10-20T23:00:00.544Z","role":"workflow:owner","workflowId":"EdWbtkJRoi5ESoGg","projectId":"tFB2q6JWkfPj6FdL","project":{"createdAt":"2025-09-11T20:13:27.250Z","updatedAt":"2025-09-11T20:14:08.507Z","id":"tFB2q6JWkfPj6FdL","name":"Ira Watkins <iradwatkins@gmail.com>","type":"personal","icon":null,"description":null}}]}
+{
+  "createdAt": "2025-10-20T23:00:00.542Z",
+  "updatedAt": "2025-10-20T23:00:00.542Z",
+  "id": "EdWbtkJRoi5ESoGg",
+  "name": "GangRun - Order Anniversaries",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 9 * * *" }] }
+      },
+      "name": "Daily at 9 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "id": "d50b5d58-534c-4680-afb8-c63e1f6643ff"
+    },
+    {
+      "parameters": {
+        "url": "https://gangrunprinting.com/api/marketing/customers/anniversaries",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "type", "value": "any_purchase" },
+            { "name": "daysAgo", "value": "365" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Fetch Anniversaries",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [470, 300],
+      "id": "f02cbe39-7836-49b3-931d-cee4664cb625"
+    },
+    {
+      "parameters": { "batchSize": 1, "options": {} },
+      "name": "Split Into Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [690, 300],
+      "id": "4d80feda-52f4-424e-8fe9-45551c1a147a"
+    },
+    {
+      "parameters": {
+        "url": "https://gangrunprinting.com/api/marketing/emails/render",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "template", "value": "anniversary" },
+            {
+              "name": "to",
+              "value": "={{ $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].userEmail }}"
+            },
+            {
+              "name": "subject",
+              "value": "🎉 Happy {{ $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].yearsAgo }}-Year Anniversary!"
+            },
+            {
+              "name": "data",
+              "value": "={{ JSON.stringify({\n  customerName: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].userName,\n  orderDate: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].orderDate,\n  orderNumber: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].orderNumber,\n  yearsAgo: $node['Fetch Anniversaries'].json.customers[$node['Split Into Batches'].json.index].yearsAgo\n}) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Send Anniversary Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [910, 300],
+      "id": "44cf30a6-e616-4a39-bbc9-85f10f12a250"
+    }
+  ],
+  "connections": {
+    "Daily at 9 AM": { "main": [[{ "node": "Fetch Anniversaries", "type": "main", "index": 0 }]] },
+    "Fetch Anniversaries": {
+      "main": [[{ "node": "Split Into Batches", "type": "main", "index": 0 }]]
+    },
+    "Split Into Batches": {
+      "main": [[{ "node": "Send Anniversary Email", "type": "main", "index": 0 }]]
+    },
+    "Send Anniversary Email": {
+      "main": [[{ "node": "Split Into Batches", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "timezone": "America/Chicago" },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": null,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-10-20T23:00:00.544Z",
+      "updatedAt": "2025-10-20T23:00:00.544Z",
+      "role": "workflow:owner",
+      "workflowId": "EdWbtkJRoi5ESoGg",
+      "projectId": "tFB2q6JWkfPj6FdL",
+      "project": {
+        "createdAt": "2025-09-11T20:13:27.250Z",
+        "updatedAt": "2025-09-11T20:14:08.507Z",
+        "id": "tFB2q6JWkfPj6FdL",
+        "name": "Ira Watkins <iradwatkins@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

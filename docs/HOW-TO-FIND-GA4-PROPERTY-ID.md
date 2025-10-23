@@ -12,7 +12,7 @@
    - GA4 properties show as "GA4" or have a flame icon 🔥
 
 3. **Find the Property ID**
-   
+
    **Method 1: Property Settings**
    - Click **Admin** (gear icon, bottom left)
    - Under "Property" column, click **Property Settings**
@@ -33,6 +33,7 @@
 ## What if I only have Universal Analytics?
 
 **Option 1: Create a GA4 Property (Recommended)**
+
 1. In Google Analytics, click **Admin**
 2. Under "Property" column, click **Create Property**
 3. Follow the setup wizard
@@ -42,6 +43,7 @@
 7. Copy the new **G-XXXXXXXXXX** Property ID
 
 **Option 2: Use GA4 Setup Assistant (If available)**
+
 1. In Admin → Property column
 2. Look for "GA4 Setup Assistant"
 3. Click "Get Started"
@@ -51,14 +53,17 @@
 ## Common Issues:
 
 **I see multiple properties:**
+
 - Choose the one for gangrunprinting.com
 - Make sure it's GA4 (has `G-` prefix)
 
 **I don't see Property Settings:**
+
 - Make sure you're in the "Property" column (middle column in Admin)
 - You need Editor or Administrator role
 
 **Property ID doesn't start with G-:**
+
 - You're looking at Universal Analytics (old)
 - Create a new GA4 property (see above)
 
@@ -74,6 +79,7 @@
 
 ---
 
-**Need Help?** 
+**Need Help?**
+
 - GA4 Documentation: https://support.google.com/analytics/answer/9539598
 - Property ID Help: https://support.google.com/analytics/answer/12270356

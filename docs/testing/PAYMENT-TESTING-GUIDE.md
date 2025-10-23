@@ -1,4 +1,5 @@
 # Payment Testing Guide
+
 ## Complete Test Suite for Square Card & Cash App Pay
 
 **Created:** 2025-10-18
@@ -12,15 +13,18 @@
 ### What We're Testing
 
 **Payment Methods:**
+
 1. ✅ Square Credit/Debit Card
 2. ✅ Cash App Pay
 
 **Test Iterations:**
+
 - 3 iterations per payment method
 - 2 testing frameworks (Playwright + Chrome DevTools MCP)
 - **Total:** 12 automated test runs
 
 **Test Verification:**
+
 - ✅ Payment forms load correctly
 - ✅ Payment processing succeeds
 - ✅ Orders created in database
@@ -33,7 +37,9 @@
 ## 📂 Test Files Created
 
 ### 1. Test Utilities
+
 **File:** `tests/helpers/payment-test-helpers.ts`
+
 - Shared helper functions for all tests
 - Database query utilities
 - Screenshot capture
@@ -41,7 +47,9 @@
 - Square test card configurations
 
 ### 2. Playwright Tests
+
 **Files:**
+
 - `tests/payment-square-card.spec.ts` - Square Card (3 iterations)
 - `tests/payment-cashapp.spec.ts` - Cash App Pay (3 iterations)
 
@@ -50,7 +58,9 @@
 **Target:** Production website (https://gangrunprinting.com)
 
 ### 3. Chrome DevTools MCP Tests
+
 **Files:**
+
 - `test-square-card-chrome-devtools.js` - Square Card (3 iterations)
 - `test-cashapp-chrome-devtools.js` - Cash App Pay (3 iterations)
 
@@ -59,7 +69,9 @@
 **Target:** Production website
 
 ### 4. Reporting & Cleanup
+
 **Files:**
+
 - `generate-payment-test-report.js` - Consolidate results & generate report
 - `cleanup-test-orders.ts` - Remove test orders from database
 
@@ -72,16 +84,19 @@
 **Update configuration to test against production:**
 
 Edit `playwright.config.ts` and change:
+
 ```typescript
 baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'https://gangrunprinting.com',
 ```
 
 And update `webServer` to not start local dev server:
+
 ```typescript
 webServer: undefined, // Don't start local server
 ```
 
 **Run tests:**
+
 ```bash
 # Square Credit Card test (3 iterations)
 npx playwright test tests/payment-square-card.spec.ts --project=chromium --headed
@@ -94,6 +109,7 @@ npx playwright test tests/payment-*.spec.ts --project=chromium
 ```
 
 **View results:**
+
 ```bash
 # Open Playwright HTML report
 npx playwright show-report
@@ -106,6 +122,7 @@ npx playwright show-report
 **These tests are designed to be executed by Claude using MCP chrome-devtools tools.**
 
 The test files contain detailed instructions for Claude to:
+
 1. Navigate to product pages
 2. Fill forms using `mcp__chrome-devtools__fill()`
 3. Click buttons using `mcp__chrome-devtools__click()`
@@ -114,6 +131,7 @@ The test files contain detailed instructions for Claude to:
 
 **To run:**
 Ask Claude to execute the Chrome DevTools tests:
+
 - "Claude, run test-square-card-chrome-devtools.js using your MCP tools"
 - "Claude, run test-cashapp-chrome-devtools.js using your MCP tools"
 
@@ -129,10 +147,12 @@ node generate-payment-test-report.js
 ```
 
 **Output:**
+
 - `test-results/payment-test-report.md` - Comprehensive markdown report
 - `test-results/payment-test-results.json` - JSON data export
 
 **Report includes:**
+
 - Total orders created
 - Payment method breakdown
 - Order status distribution
@@ -155,6 +175,7 @@ npx tsx cleanup-test-orders.ts --force
 ```
 
 **Test customer emails:**
+
 - `payment-test@gangrunprinting.com`
 - `chrome-test@gangrunprinting.com`
 - `cashapp-test@gangrunprinting.com`
@@ -166,6 +187,7 @@ All orders with these emails will be removed.
 ## 🧪 Test Configuration
 
 ### Test Customer Information
+
 ```typescript
 {
   name: 'Payment Test Customer',
@@ -175,6 +197,7 @@ All orders with these emails will be removed.
 ```
 
 ### Test Shipping Address
+
 ```typescript
 {
   street: '123 Test Street',
@@ -186,6 +209,7 @@ All orders with these emails will be removed.
 ```
 
 ### Square Test Cards (Sandbox)
+
 ```typescript
 {
   visa: {
@@ -202,6 +226,7 @@ All orders with these emails will be removed.
 ```
 
 ### Test Product
+
 - **URL:** `/products/4x6-flyers-9pt-card-stock`
 - **Product:** 4x6 Flyers (9pt Card Stock)
 - **Quantity:** 500 pieces
@@ -212,6 +237,7 @@ All orders with these emails will be removed.
 ## ✅ Success Criteria
 
 ### Payment Processing
+
 - [ ] Payment forms load without errors
 - [ ] Square SDK initializes correctly
 - [ ] Test cards are accepted
@@ -219,6 +245,7 @@ All orders with these emails will be removed.
 - [ ] Square Payment IDs are generated
 
 ### Order Creation
+
 - [ ] Orders exist in database
 - [ ] Order numbers are generated (format: GRP-XXXXX-XXXX)
 - [ ] Order items match cart contents
@@ -227,6 +254,7 @@ All orders with these emails will be removed.
 - [ ] Square Payment ID is stored
 
 ### Customer Experience
+
 - [ ] Order confirmation page displays
 - [ ] Order number is visible
 - [ ] Payment status shows "Paid" or "Confirmed"
@@ -234,6 +262,7 @@ All orders with these emails will be removed.
 - [ ] No broken links
 
 ### Admin Experience
+
 - [ ] Admin receives email notification
 - [ ] Order appears in `/admin/orders` dashboard
 - [ ] Order details are accurate
@@ -275,6 +304,7 @@ ORDER BY "createdAt" DESC;
 Navigate to: `https://gangrunprinting.com/admin/orders`
 
 **Verify:**
+
 - Test orders appear in list
 - Order details are complete
 - Payment status is correct
@@ -285,6 +315,7 @@ Navigate to: `https://gangrunprinting.com/admin/orders`
 **Admin email:** `iradwatkins@gmail.com`
 
 Look for emails with subject:
+
 - "New Order: GRP-XXXXX-XXXX"
 - Order confirmation emails
 
@@ -297,6 +328,7 @@ Look for emails with subject:
 **Expected:** 6/6 pass (3 Playwright + 3 Chrome DevTools)
 
 **Each test should:**
+
 1. Load product page successfully
 2. Add product to cart
 3. Navigate to checkout
@@ -315,6 +347,7 @@ Look for emails with subject:
 **Note:** Cash App Pay may not be available in Square sandbox mode. This is expected and tests will handle it gracefully.
 
 **Each test should:**
+
 1. Load product page successfully
 2. Add product to cart
 3. Navigate to checkout
@@ -333,6 +366,7 @@ Look for emails with subject:
 **Problem:** Tests run locally but database is on production server
 
 **Solution:** Update `playwright.config.ts` to test against production:
+
 ```typescript
 baseURL: 'https://gangrunprinting.com',
 webServer: undefined, // Don't start local server
@@ -341,11 +375,13 @@ webServer: undefined, // Don't start local server
 ### Issue: Square form not loading
 
 **Possible causes:**
+
 - Square SDK script blocked
 - CSP (Content Security Policy) restrictions
 - Network timeout
 
 **Check:**
+
 - Browser console for errors
 - Network tab for failed requests
 - Screenshots in `test-results/screenshots/`
@@ -355,6 +391,7 @@ webServer: undefined, // Don't start local server
 **Cause:** Not using correct test card numbers
 
 **Solution:** Use Square sandbox test cards:
+
 - Visa: `4111 1111 1111 1111`
 - Any future expiry date
 - Any 3-digit CVV
@@ -362,6 +399,7 @@ webServer: undefined, // Don't start local server
 ### Issue: Orders not appearing in database
 
 **Check:**
+
 1. Database connection is correct
 2. Order API endpoint is working
 3. Check server logs for errors
@@ -372,6 +410,7 @@ webServer: undefined, // Don't start local server
 ## 📞 Support
 
 ### Test Files Location
+
 ```
 tests/
 ├── helpers/
@@ -387,6 +426,7 @@ tests/
 ```
 
 ### Environment Variables Required
+
 ```bash
 # Square API (already configured in .env)
 SQUARE_ACCESS_TOKEN=EAAAl2BAJUi5Neov0Jo8...
@@ -452,6 +492,6 @@ All test files have been created and are ready to execute. Follow the instructio
 
 ---
 
-*Generated: 2025-10-18*
-*Test Suite Version: 1.0*
-*Framework: Playwright + Chrome DevTools MCP*
+_Generated: 2025-10-18_
+_Test Suite Version: 1.0_
+_Framework: Playwright + Chrome DevTools MCP_

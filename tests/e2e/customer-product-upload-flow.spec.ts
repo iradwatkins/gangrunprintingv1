@@ -59,7 +59,7 @@ test.describe('Customer Product Upload Flow - Real Customer Simulation', () => {
     // Wait for configuration form to be visible (increased timeout for slower browsers)
     await page.waitForSelector('[data-testid="product-configuration"]', {
       timeout: 15000,
-      state: 'visible'
+      state: 'visible',
     })
     console.log('✓ Product configuration form loaded')
 
@@ -129,13 +129,19 @@ test.describe('Customer Product Upload Flow - Real Customer Simulation', () => {
 
       // Wait for upload to complete with multiple possible indicators
       await Promise.race([
-        page.waitForSelector('text=/uploaded|success|complete/i', { timeout: 10000 }).catch(() => null),
-        page.waitForSelector('[class*="thumbnail"], [class*="preview"]', { timeout: 10000 }).catch(() => null),
-        page.waitForTimeout(3000) // Fallback timeout
+        page
+          .waitForSelector('text=/uploaded|success|complete/i', { timeout: 10000 })
+          .catch(() => null),
+        page
+          .waitForSelector('[class*="thumbnail"], [class*="preview"]', { timeout: 10000 })
+          .catch(() => null),
+        page.waitForTimeout(3000), // Fallback timeout
       ])
 
       // Verify file thumbnail or preview appears
-      const filePreview = page.locator('[class*="thumbnail"], [class*="preview"], img[alt*="test"]').first()
+      const filePreview = page
+        .locator('[class*="thumbnail"], [class*="preview"], img[alt*="test"]')
+        .first()
       const previewVisible = await filePreview.isVisible({ timeout: 3000 }).catch(() => false)
 
       if (previewVisible) {
@@ -176,7 +182,9 @@ test.describe('Customer Product Upload Flow - Real Customer Simulation', () => {
     }
 
     // Verify cart contains the product - more flexible selector
-    const cartProductName = page.locator('.cart-item, [data-testid="cart-item"], [class*="CartItem"]').first()
+    const cartProductName = page
+      .locator('.cart-item, [data-testid="cart-item"], [class*="CartItem"]')
+      .first()
     const cartProductVisible = await cartProductName.isVisible({ timeout: 5000 }).catch(() => false)
 
     if (cartProductVisible) {
@@ -185,8 +193,13 @@ test.describe('Customer Product Upload Flow - Real Customer Simulation', () => {
 
     // Verify uploaded files appear in cart if files were uploaded
     if (fileInputVisible) {
-      const cartFileThumbnails = page.locator('[class*="thumbnail"], [class*="FileThumbnails"], [class*="file-preview"]')
-      const thumbnailsVisible = await cartFileThumbnails.first().isVisible({ timeout: 3000 }).catch(() => false)
+      const cartFileThumbnails = page.locator(
+        '[class*="thumbnail"], [class*="FileThumbnails"], [class*="file-preview"]'
+      )
+      const thumbnailsVisible = await cartFileThumbnails
+        .first()
+        .isVisible({ timeout: 3000 })
+        .catch(() => false)
 
       if (thumbnailsVisible) {
         console.log('✓ Uploaded files visible in cart')
@@ -194,7 +207,11 @@ test.describe('Customer Product Upload Flow - Real Customer Simulation', () => {
     }
 
     // Verify proceed to checkout button - more flexible selector
-    const checkoutButton = page.locator('button:has-text("Proceed to Checkout"), button:has-text("Checkout"), a:has-text("Checkout")').first()
+    const checkoutButton = page
+      .locator(
+        'button:has-text("Proceed to Checkout"), button:has-text("Checkout"), a:has-text("Checkout")'
+      )
+      .first()
     const checkoutVisible = await checkoutButton.isVisible({ timeout: 5000 }).catch(() => false)
 
     if (checkoutVisible) {
@@ -272,7 +289,9 @@ test.describe('Customer Product Upload Flow - Real Customer Simulation', () => {
       console.log('✓ Navigated to homepage')
 
       // Check cart button shows item count or total
-      const cartButton = page.locator('button:has-text("Cart"), [data-testid="cart-button"], a[href*="cart"]').first()
+      const cartButton = page
+        .locator('button:has-text("Cart"), [data-testid="cart-button"], a[href*="cart"]')
+        .first()
       await expect(cartButton).toBeVisible()
       console.log('✓ Cart button visible with items')
 

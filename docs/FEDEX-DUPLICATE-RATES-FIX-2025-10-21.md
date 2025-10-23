@@ -16,6 +16,7 @@
 ## Root Cause Analysis
 
 ### API Behavior
+
 The FedEx shipping API was returning **duplicate service codes** with different prices:
 
 ```json
@@ -30,15 +31,15 @@ The FedEx shipping API was returning **duplicate service codes** with different 
       "rateAmount": 92.99
     },
     {
-      "serviceCode": "SMART_POST",  // ← Duplicate #1
+      "serviceCode": "SMART_POST", // ← Duplicate #1
       "rateAmount": 23.88
     },
     {
-      "serviceCode": "SMART_POST",  // ← Duplicate #2
+      "serviceCode": "SMART_POST", // ← Duplicate #2
       "rateAmount": 26.53
     },
     {
-      "serviceCode": "SMART_POST",  // ← Duplicate #3
+      "serviceCode": "SMART_POST", // ← Duplicate #3
       "rateAmount": 26.53
     }
   ]
@@ -46,14 +47,13 @@ The FedEx shipping API was returning **duplicate service codes** with different 
 ```
 
 ### Frontend Impact
+
 React components use `key={rate.serviceCode}` for list rendering:
 
 ```tsx
-{rates.map((rate) => (
-  <div key={rate.serviceCode}>  // ❌ Duplicate keys!
-    ...
-  </div>
-))}
+{
+  rates.map((rate) => <div key={rate.serviceCode}> // ❌ Duplicate keys! ...</div>)
+}
 ```
 
 **Result**: React refuses to render duplicate keys, causing component failures.
@@ -61,6 +61,7 @@ React components use `key={rate.serviceCode}` for list rendering:
 ## Solution Implemented
 
 ### Fix #1: Backend Deduplication
+
 **File**: `src/lib/shipping/providers/fedex-enhanced.ts`
 **Method**: `parseRateResponse()`
 
@@ -90,6 +91,7 @@ if (allRates.length !== deduplicatedRates.length) {
 ```
 
 **After Fix**:
+
 ```json
 {
   "rates": [
@@ -102,7 +104,7 @@ if (allRates.length !== deduplicatedRates.length) {
       "rateAmount": 92.99
     },
     {
-      "serviceCode": "SMART_POST",  // ✅ Only cheapest rate kept
+      "serviceCode": "SMART_POST", // ✅ Only cheapest rate kept
       "rateAmount": 23.88
     }
   ]
@@ -110,6 +112,7 @@ if (allRates.length !== deduplicatedRates.length) {
 ```
 
 ### Fix #2: Frontend Unique Keys
+
 **File**: `src/components/checkout/shipping-method-selector.tsx`
 
 Changed from simple `serviceCode` keys to compound unique keys:
@@ -127,6 +130,7 @@ Changed from simple `serviceCode` keys to compound unique keys:
 This ensures truly unique keys even if deduplication somehow fails.
 
 ### Fix #3: Enhanced Error Handling
+
 **File**: `src/components/checkout/shipping-method-selector.tsx`
 
 Added comprehensive logging and validation:
@@ -148,6 +152,7 @@ catch (err) {
 ```
 
 Now includes:
+
 - Structured logging with `[ShippingMethodSelector]` prefix
 - Detailed API error logging (status, statusText, errorData)
 - Response validation before setting state
@@ -155,15 +160,16 @@ Now includes:
 
 ## Files Changed
 
-| File | Changes | Lines |
-|------|---------|-------|
-| `src/lib/shipping/providers/fedex-enhanced.ts` | Add deduplication logic | 435-458 |
+| File                                                   | Changes                      | Lines           |
+| ------------------------------------------------------ | ---------------------------- | --------------- |
+| `src/lib/shipping/providers/fedex-enhanced.ts`         | Add deduplication logic      | 435-458         |
 | `src/components/checkout/shipping-method-selector.tsx` | Unique keys + error handling | 67-134, 242-246 |
-| `docs/FEDEX-DUPLICATE-RATES-FIX-2025-10-21.md` | This document | N/A |
+| `docs/FEDEX-DUPLICATE-RATES-FIX-2025-10-21.md`         | This document                | N/A             |
 
 ## Testing Instructions
 
 ### 1. Rebuild Docker Container
+
 Changes require Docker rebuild:
 
 ```bash
@@ -173,6 +179,7 @@ docker-compose up -d --build
 ```
 
 ### 2. Test API Endpoint
+
 Verify deduplication in API response:
 
 ```bash
@@ -193,6 +200,7 @@ curl -X POST http://localhost:3020/api/shipping/rates \
 **Expected**: No duplicate `serviceCode` values in response
 
 ### 3. Test Browser Checkout
+
 Complete checkout flow:
 
 1. Navigate to https://gangrunprinting.com
@@ -204,6 +212,7 @@ Complete checkout flow:
    - Look for: `[FedEx] Deduplicated X rates → Y unique services`
 
 ### 4. Verify Console Logging
+
 Open browser DevTools Console, should see:
 
 ```
@@ -226,12 +235,14 @@ Open browser DevTools Console, should see:
 ## Impact Assessment
 
 **Risk Level**: Low
+
 - Changes isolated to rate parsing and rendering logic
 - No database schema changes
 - No API contract changes
 - Backward compatible
 
 **User Impact**: High
+
 - Fixes complete checkout blocker for FedEx
 - Improves UX with better error messages
 - Provides debugging visibility via console logs
@@ -239,11 +250,13 @@ Open browser DevTools Console, should see:
 ## Related Issues
 
 **Similar to Southwest Cargo Fix (Oct 18, 2025)**:
+
 - Root cause: Duplicate provider data causing UI failures
 - Solution: Deduplication + unique keys
 - Lesson: Always validate for duplicates when rendering lists
 
 **Prevention**:
+
 - Add API response validation tests
 - Monitor for duplicate service codes in production
 - Consider adding `unique` constraint checks in data layer
@@ -263,6 +276,7 @@ Fallback rates will still work (FedEx provider has test mode fallback).
 ## Monitoring
 
 After deployment, monitor:
+
 - Checkout completion rate (should increase)
 - FedEx selection rate (should become non-zero)
 - Browser error logs (duplicate key warnings should disappear)
@@ -284,23 +298,35 @@ After deployment, monitor:
 ### Fix Applied (src/lib/shipping/providers/fedex-enhanced.ts)
 
 **Lines 160-165**: Added filtering to test rates path
+
 ```typescript
 // Before
 if (!this.config.clientId || !this.config.accountNumber) {
   console.warn('[FedEx] No API credentials, returning test rates')
-  return this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+  return this.getTestRates(
+    packages,
+    fromAddress.zipCode,
+    toAddress.zipCode,
+    toAddress.isResidential
+  )
 }
 
 // After
 if (!this.config.clientId || !this.config.accountNumber) {
   console.warn('[FedEx] No API credentials, returning test rates')
-  const testRates = this.getTestRates(packages, fromAddress.zipCode, toAddress.zipCode, toAddress.isResidential)
+  const testRates = this.getTestRates(
+    packages,
+    fromAddress.zipCode,
+    toAddress.zipCode,
+    toAddress.isResidential
+  )
   const filteredRates = this.filterByEnabledServices(testRates)
   return this.applyMarkup(filteredRates)
 }
 ```
 
 **Lines 206-211**: Also fixed error fallback path
+
 ```typescript
 // Before
 catch (error) {
@@ -356,7 +382,13 @@ const services = [
 const services = [
   { code: 'STANDARD_OVERNIGHT', name: 'FedEx Standard Overnight', base: 45, perLb: 2.0, days: 1 },
   { code: 'FEDEX_2_DAY', name: 'FedEx 2Day', base: 25, perLb: 1.5, days: 2 },
-  { code: isResidential ? 'GROUND_HOME_DELIVERY' : 'FEDEX_GROUND', name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground', base: 12, perLb: 0.85, days: 3 },
+  {
+    code: isResidential ? 'GROUND_HOME_DELIVERY' : 'FEDEX_GROUND',
+    name: isResidential ? 'FedEx Home Delivery' : 'FedEx Ground',
+    base: 12,
+    perLb: 0.85,
+    days: 3,
+  },
   { code: 'SMART_POST', name: 'FedEx Ground Economy', base: 8, perLb: 0.6, days: 5 },
 ]
 ```
@@ -379,26 +411,28 @@ enabledServices: ['STANDARD_OVERNIGHT', 'FEDEX_2_DAY', 'FEDEX_GROUND', 'GROUND_H
 ### Testing Results
 
 **Residential Address (`isResidential: true`)**:
+
 ```json
 {
   "ratesCount": 4,
   "services": [
     "STANDARD_OVERNIGHT",
     "FEDEX_2_DAY",
-    "GROUND_HOME_DELIVERY",  // ✅ Shows instead of FEDEX_GROUND
+    "GROUND_HOME_DELIVERY", // ✅ Shows instead of FEDEX_GROUND
     "SMART_POST"
   ]
 }
 ```
 
 **Business Address (`isResidential: false`)**:
+
 ```json
 {
   "ratesCount": 4,
   "services": [
     "STANDARD_OVERNIGHT",
     "FEDEX_2_DAY",
-    "FEDEX_GROUND",  // ✅ Shows for business
+    "FEDEX_GROUND", // ✅ Shows for business
     "SMART_POST"
   ]
 }

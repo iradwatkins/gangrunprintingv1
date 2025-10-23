@@ -42,7 +42,7 @@ console.log('\n📊 DASH (NFG) Pricing:\n')
 console.log('Weight | Base Rate | Calculation | Total | With 5% Markup')
 console.log('-------|-----------|-------------|-------|----------------')
 
-testWeights.forEach(weight => {
+testWeights.forEach((weight) => {
   const baseRate = calculateDashRate(weight)
   const withMarkup = baseRate * 1.05
 
@@ -61,9 +61,9 @@ testWeights.forEach(weight => {
 
   console.log(
     `${weight.toString().padEnd(6)} | ` +
-    `${calculation.padEnd(25)} | ` +
-    `$${baseRate.toFixed(2).padEnd(6)} | ` +
-    `$${withMarkup.toFixed(2)}`
+      `${calculation.padEnd(25)} | ` +
+      `$${baseRate.toFixed(2).padEnd(6)} | ` +
+      `$${withMarkup.toFixed(2)}`
   )
 })
 

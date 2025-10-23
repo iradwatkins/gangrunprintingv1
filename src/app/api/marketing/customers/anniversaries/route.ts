@@ -126,9 +126,6 @@ export async function GET(req: NextRequest) {
     })
   } catch (error) {
     console.error('[API] Fetch anniversaries error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch anniversaries' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch anniversaries' }, { status: 500 })
   }
 }

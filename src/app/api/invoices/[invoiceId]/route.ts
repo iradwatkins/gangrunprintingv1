@@ -7,8 +7,8 @@
  * Tracks first view timestamp
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { getInvoiceByInvoiceId, trackInvoiceView } from '@/lib/services/invoice-service';
+import { type NextRequest, NextResponse } from 'next/server'
+import { getInvoiceByInvoiceId, trackInvoiceView } from '@/lib/services/invoice-service'
 
 // ============================================================================
 // API HANDLER
@@ -19,31 +19,24 @@ export async function GET(
   { params }: { params: Promise<{ invoiceId: string }> }
 ) {
   try {
-    const { invoiceId } = await params;
+    const { invoiceId } = await params
 
     // Validate invoice ID format (UUID)
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
     if (!uuidRegex.test(invoiceId)) {
-      return NextResponse.json(
-        { error: 'Invalid invoice ID format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid invoice ID format' }, { status: 400 })
     }
 
     // Get invoice details
-    const invoice = await getInvoiceByInvoiceId(invoiceId);
+    const invoice = await getInvoiceByInvoiceId(invoiceId)
 
     if (!invoice) {
-      return NextResponse.json(
-        { error: 'Invoice not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
     }
 
     // Track invoice view (only records first view)
-    await trackInvoiceView(invoiceId);
+    await trackInvoiceView(invoiceId)
 
     // Return invoice details
     return NextResponse.json({
@@ -68,9 +61,9 @@ export async function GET(
         paymentDueDate: invoice.paymentDueDate,
         paymentLink: invoice.paymentLink,
       },
-    });
+    })
   } catch (error) {
-    console.error('Error retrieving invoice:', error);
+    console.error('Error retrieving invoice:', error)
 
     return NextResponse.json(
       {
@@ -78,6 +71,6 @@ export async function GET(
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
-    );
+    )
   }
 }

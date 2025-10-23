@@ -123,13 +123,9 @@ export class FedExErrorHandler {
     }
 
     // Unknown error type
-    return new FedExError(
-      'An unknown error occurred',
-      ERROR_CODES.UNKNOWN,
-      {
-        retryable: false,
-      }
-    )
+    return new FedExError('An unknown error occurred', ERROR_CODES.UNKNOWN, {
+      retryable: false,
+    })
   }
 
   /**
@@ -181,42 +177,29 @@ export class FedExErrorHandler {
     // Client errors (4xx) - not retryable
     if (status && status >= 400 && status < 500) {
       const fedexErrors = responseData?.errors || []
-      const errorMessage = fedexErrors.length > 0
-        ? fedexErrors.map(e => e.message).join(', ')
-        : error.message
+      const errorMessage =
+        fedexErrors.length > 0 ? fedexErrors.map((e) => e.message).join(', ') : error.message
 
-      return new FedExError(
-        errorMessage,
-        this.mapFedExErrorCode(fedexErrors[0]?.code),
-        {
-          statusCode: status,
-          response: responseData,
-          retryable: false,
-        }
-      )
+      return new FedExError(errorMessage, this.mapFedExErrorCode(fedexErrors[0]?.code), {
+        statusCode: status,
+        response: responseData,
+        retryable: false,
+      })
     }
 
     // Network errors (no response)
     if (error.code === 'ECONNREFUSED') {
-      return new FedExError(
-        'Could not connect to FedEx API.',
-        ERROR_CODES.CONNECTION_REFUSED,
-        {
-          retryable: true,
-          cause: error,
-        }
-      )
+      return new FedExError('Could not connect to FedEx API.', ERROR_CODES.CONNECTION_REFUSED, {
+        retryable: true,
+        cause: error,
+      })
     }
 
     if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
-      return new FedExError(
-        'Request to FedEx API timed out.',
-        ERROR_CODES.TIMEOUT,
-        {
-          retryable: true,
-          cause: error,
-        }
-      )
+      return new FedExError('Request to FedEx API timed out.', ERROR_CODES.TIMEOUT, {
+        retryable: true,
+        cause: error,
+      })
     }
 
     // Generic network error
@@ -243,7 +226,7 @@ export class FedExErrorHandler {
       'WEIGHT.EXCEEDS.MAXIMUM': ERROR_CODES.WEIGHT_EXCEEDED,
       'DIMENSIONS.INVALID': ERROR_CODES.INVALID_DIMENSIONS,
       'SERVICE.NOT.AVAILABLE': ERROR_CODES.UNSUPPORTED_SERVICE,
-      'UNAUTHORIZED': ERROR_CODES.AUTH_FAILED,
+      UNAUTHORIZED: ERROR_CODES.AUTH_FAILED,
       'AUTHENTICATION.FAILED': ERROR_CODES.AUTH_FAILED,
     }
 
@@ -338,7 +321,10 @@ export class FedExErrorHandler {
     }
 
     // All retries exhausted
-    throw lastError || new FedExError('Max retries exhausted', ERROR_CODES.UNKNOWN, { retryable: false })
+    throw (
+      lastError ||
+      new FedExError('Max retries exhausted', ERROR_CODES.UNKNOWN, { retryable: false })
+    )
   }
 
   /**
@@ -355,11 +341,13 @@ export class FedExErrorHandler {
         statusCode: error.statusCode,
         retryable: error.retryable,
       },
-      fedexResponse: error.response ? {
-        transactionId: error.response.transactionId,
-        errors: error.response.errors,
-        alerts: error.response.output?.alerts,
-      } : undefined,
+      fedexResponse: error.response
+        ? {
+            transactionId: error.response.transactionId,
+            errors: error.response.errors,
+            alerts: error.response.output?.alerts,
+          }
+        : undefined,
     }
 
     // In production, send to logging service (Sentry, LogRocket, etc.)
@@ -375,7 +363,7 @@ export class FedExErrorHandler {
    * Sleep utility
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   /**
@@ -385,8 +373,8 @@ export class FedExErrorHandler {
     results: Array<{ success: boolean; data?: T; error?: FedExError }>,
     context: string
   ): T[] {
-    const successful = results.filter(r => r.success && r.data).map(r => r.data!)
-    const failed = results.filter(r => !r.success)
+    const successful = results.filter((r) => r.success && r.data).map((r) => r.data!)
+    const failed = results.filter((r) => !r.success)
 
     if (failed.length > 0) {
       console.warn(

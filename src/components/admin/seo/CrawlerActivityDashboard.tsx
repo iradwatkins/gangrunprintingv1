@@ -45,7 +45,13 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
         { name: 'Google', category: 'Search Engine', requests: 0, lastSeen: null, change: 0 },
         { name: 'Bing', category: 'Search Engine', requests: 0, lastSeen: null, change: 0 },
         { name: 'ChatGPT (OpenAI)', category: 'AI Search', requests: 0, lastSeen: null, change: 0 },
-        { name: 'Claude (Anthropic)', category: 'AI Search', requests: 0, lastSeen: null, change: 0 },
+        {
+          name: 'Claude (Anthropic)',
+          category: 'AI Search',
+          requests: 0,
+          lastSeen: null,
+          change: 0,
+        },
         { name: 'Perplexity AI', category: 'AI Search', requests: 0, lastSeen: null, change: 0 },
       ]
 
@@ -87,10 +93,10 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
 
   const totalCrawls = crawlers.reduce((sum, c) => sum + c.requests, 0)
   const aiCrawls = crawlers
-    .filter(c => c.category === 'AI Search')
+    .filter((c) => c.category === 'AI Search')
     .reduce((sum, c) => sum + c.requests, 0)
   const searchEngineCrawls = crawlers
-    .filter(c => c.category === 'Search Engine')
+    .filter((c) => c.category === 'Search Engine')
     .reduce((sum, c) => sum + c.requests, 0)
 
   return (
@@ -133,9 +139,7 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
             <CardTitle className="text-3xl">{totalCrawls.toLocaleString()}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-600">
-              Last {days} days
-            </div>
+            <div className="text-sm text-gray-600">Last {days} days</div>
           </CardContent>
         </Card>
 
@@ -183,15 +187,26 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
           <div>
             <h4 className="font-semibold text-amber-900 mb-1">Crawler data is collecting</h4>
             <p className="text-sm text-amber-700">
-              It may take 24-48 hours after submitting your sitemap before crawlers discover your site.
-              Make sure you've submitted sitemaps to{' '}
-              <a className="underline" href="https://search.google.com/search-console" rel="noopener noreferrer" target="_blank">
+              It may take 24-48 hours after submitting your sitemap before crawlers discover your
+              site. Make sure you've submitted sitemaps to{' '}
+              <a
+                className="underline"
+                href="https://search.google.com/search-console"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
                 Google Search Console
-              </a>
-              {' '}and{' '}
-              <a className="underline" href="https://www.bing.com/webmasters" rel="noopener noreferrer" target="_blank">
+              </a>{' '}
+              and{' '}
+              <a
+                className="underline"
+                href="https://www.bing.com/webmasters"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
                 Bing Webmaster Tools
-              </a>.
+              </a>
+              .
             </p>
           </div>
         </div>
@@ -201,9 +216,7 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Crawler Breakdown</CardTitle>
-          <CardDescription>
-            Detailed activity by individual bots
-          </CardDescription>
+          <CardDescription>Detailed activity by individual bots</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs className="w-full" defaultValue="all">
@@ -214,12 +227,16 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
             </TabsList>
 
             <TabsContent value="all">
-              <CrawlerList crawlers={crawlers} getCategoryColor={getCategoryColor} getCategoryIcon={getCategoryIcon} />
+              <CrawlerList
+                crawlers={crawlers}
+                getCategoryColor={getCategoryColor}
+                getCategoryIcon={getCategoryIcon}
+              />
             </TabsContent>
 
             <TabsContent value="search">
               <CrawlerList
-                crawlers={crawlers.filter(c => c.category === 'Search Engine')}
+                crawlers={crawlers.filter((c) => c.category === 'Search Engine')}
                 getCategoryColor={getCategoryColor}
                 getCategoryIcon={getCategoryIcon}
               />
@@ -227,7 +244,7 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
 
             <TabsContent value="ai">
               <CrawlerList
-                crawlers={crawlers.filter(c => c.category === 'AI Search')}
+                crawlers={crawlers.filter((c) => c.category === 'AI Search')}
                 getCategoryColor={getCategoryColor}
                 getCategoryIcon={getCategoryIcon}
               />
@@ -248,7 +265,8 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
                 1
               </div>
               <div>
-                <strong>Submit Sitemaps:</strong> Add your sitemap to Google Search Console and Bing Webmaster Tools.
+                <strong>Submit Sitemaps:</strong> Add your sitemap to Google Search Console and Bing
+                Webmaster Tools.
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -256,7 +274,11 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
                 2
               </div>
               <div>
-                <strong>Create FAQ Content:</strong> AI bots love question-answer format. Visit <a className="text-blue-600 underline" href="/faq">/faq</a> to see examples.
+                <strong>Create FAQ Content:</strong> AI bots love question-answer format. Visit{' '}
+                <a className="text-blue-600 underline" href="/faq">
+                  /faq
+                </a>{' '}
+                to see examples.
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -264,7 +286,8 @@ export function CrawlerActivityDashboard({ className = '' }: Props) {
                 3
               </div>
               <div>
-                <strong>Monitor Weekly:</strong> Check this dashboard weekly to see which bots are visiting and optimize accordingly.
+                <strong>Monitor Weekly:</strong> Check this dashboard weekly to see which bots are
+                visiting and optimize accordingly.
               </div>
             </div>
           </div>
@@ -282,11 +305,7 @@ interface CrawlerListProps {
 
 function CrawlerList({ crawlers, getCategoryIcon, getCategoryColor }: CrawlerListProps) {
   if (crawlers.length === 0) {
-    return (
-      <div className="text-center py-8 text-gray-500">
-        No crawler data available yet
-      </div>
-    )
+    return <div className="text-center py-8 text-gray-500">No crawler data available yet</div>
   }
 
   return (

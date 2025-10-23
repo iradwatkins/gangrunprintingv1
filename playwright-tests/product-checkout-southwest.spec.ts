@@ -157,12 +157,18 @@ async function runCheckoutTest(page: Page, iteration: number) {
     for (const select of selects) {
       const options = await select.locator('option').allTextContents()
       const hasBothSides = options.some(
-        (o) => o.toLowerCase().includes('both') || o.includes('4/4') || o.toLowerCase().includes('double')
+        (o) =>
+          o.toLowerCase().includes('both') ||
+          o.includes('4/4') ||
+          o.toLowerCase().includes('double')
       )
 
       if (hasBothSides) {
         const bothOption = options.find(
-          (o) => o.toLowerCase().includes('both') || o.includes('4/4') || o.toLowerCase().includes('double')
+          (o) =>
+            o.toLowerCase().includes('both') ||
+            o.includes('4/4') ||
+            o.toLowerCase().includes('double')
         )
         if (bothOption) {
           await select.selectOption({ label: bothOption })
@@ -235,7 +241,9 @@ async function runCheckoutTest(page: Page, iteration: number) {
 
     // Fill street
     console.log(`  → Entering street: ${street}`)
-    const streetInput = page.locator('input[name="street"], input[name="address"], input[placeholder*="street" i]').first()
+    const streetInput = page
+      .locator('input[name="street"], input[name="address"], input[placeholder*="street" i]')
+      .first()
     await streetInput.fill(street)
     console.log('    ✅ Street entered')
 
@@ -253,14 +261,18 @@ async function runCheckoutTest(page: Page, iteration: number) {
 
     // Fill ZIP
     console.log(`  → Entering ZIP: ${zipCode}`)
-    const zipInput = page.locator('input[name="zipCode"], input[name="zip"], input[placeholder*="zip" i]').first()
+    const zipInput = page
+      .locator('input[name="zipCode"], input[name="zip"], input[placeholder*="zip" i]')
+      .first()
     await zipInput.fill(zipCode)
     console.log('    ✅ ZIP entered')
 
     await takeScreenshot(page, '05-shipping-info-filled', iteration)
 
     // Click continue/calculate
-    const continueBtn = page.locator('button:has-text("Continue"), button:has-text("Calculate"), button[type="submit"]').first()
+    const continueBtn = page
+      .locator('button:has-text("Continue"), button:has-text("Calculate"), button[type="submit"]')
+      .first()
     if (await continueBtn.isVisible()) {
       await continueBtn.click()
       console.log('✅ Clicked continue')
@@ -308,7 +320,9 @@ async function runCheckoutTest(page: Page, iteration: number) {
     console.log('  → Looking for airport selector...')
     await page.waitForTimeout(1500)
 
-    const airportSelect = page.locator('select[name*="airport" i], select:has(option[value*="ORD" i])').first()
+    const airportSelect = page
+      .locator('select[name*="airport" i], select:has(option[value*="ORD" i])')
+      .first()
     await expect(airportSelect).toBeVisible()
 
     // Count airports
@@ -323,7 +337,9 @@ async function runCheckoutTest(page: Page, iteration: number) {
 
     // Select Chicago ORD
     const options = await airportSelect.locator('option').allTextContents()
-    const ordOption = options.find((o) => o.includes('ORD') || o.includes('Chicago') || o.includes("O'Hare"))
+    const ordOption = options.find(
+      (o) => o.includes('ORD') || o.includes('Chicago') || o.includes("O'Hare")
+    )
 
     if (ordOption) {
       await airportSelect.selectOption({ label: ordOption })
@@ -349,8 +365,12 @@ async function runCheckoutTest(page: Page, iteration: number) {
     const checks = {
       product: summaryText?.includes('4x6') && summaryText.includes('Flyer'),
       quantity: summaryText?.includes('5000') || summaryText?.includes('5,000'),
-      southwest: summaryText?.toLowerCase().includes('southwest') || summaryText?.toLowerCase().includes('cargo'),
-      total: summaryText?.includes('$') && (summaryText.includes('Total') || summaryText.includes('total')),
+      southwest:
+        summaryText?.toLowerCase().includes('southwest') ||
+        summaryText?.toLowerCase().includes('cargo'),
+      total:
+        summaryText?.includes('$') &&
+        (summaryText.includes('Total') || summaryText.includes('total')),
     }
 
     console.log('  Order Summary Checks:')

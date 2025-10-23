@@ -1,23 +1,23 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { useState, useEffect, useCallback } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu'
 import {
   FileText,
   Image,
@@ -34,55 +34,62 @@ import {
   FileArchive,
   Loader2,
   AlertCircle,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface FilePreviewProps {
-  filename: string;
-  fileUrl: string;
-  thumbnailUrl?: string;
-  mimeType?: string;
-  fileSize?: number;
-  label?: string;
-  className?: string;
-  showActions?: boolean;
-  showFileInfo?: boolean;
-  onPreview?: () => void;
-  onDownload?: () => void;
+  filename: string
+  fileUrl: string
+  thumbnailUrl?: string
+  mimeType?: string
+  fileSize?: number
+  label?: string
+  className?: string
+  showActions?: boolean
+  showFileInfo?: boolean
+  onPreview?: () => void
+  onDownload?: () => void
 }
 
 // File type detection helpers
 const getFileType = (filename: string, mimeType?: string): string => {
-  const ext = filename.toLowerCase().split('.').pop() || '';
-  
-  if (mimeType?.startsWith('image/')) return 'image';
-  if (mimeType === 'application/pdf' || ext === 'pdf') return 'pdf';
-  if (['ai', 'eps'].includes(ext)) return 'vector';
-  if (['psd', 'psb'].includes(ext)) return 'photoshop';
-  if (['doc', 'docx'].includes(ext)) return 'document';
-  if (['zip', 'rar', '7z'].includes(ext)) return 'archive';
-  
-  return 'unknown';
-};
+  const ext = filename.toLowerCase().split('.').pop() || ''
+
+  if (mimeType?.startsWith('image/')) return 'image'
+  if (mimeType === 'application/pdf' || ext === 'pdf') return 'pdf'
+  if (['ai', 'eps'].includes(ext)) return 'vector'
+  if (['psd', 'psb'].includes(ext)) return 'photoshop'
+  if (['doc', 'docx'].includes(ext)) return 'document'
+  if (['zip', 'rar', '7z'].includes(ext)) return 'archive'
+
+  return 'unknown'
+}
 
 const getFileIcon = (fileType: string) => {
   switch (fileType) {
-    case 'image': return Image;
-    case 'pdf': return FileText;
-    case 'vector': return FileImage;
-    case 'photoshop': return FileImage;
-    case 'document': return FileText;
-    case 'archive': return FileArchive;
-    default: return FileText;
+    case 'image':
+      return Image
+    case 'pdf':
+      return FileText
+    case 'vector':
+      return FileImage
+    case 'photoshop':
+      return FileImage
+    case 'document':
+      return FileText
+    case 'archive':
+      return FileArchive
+    default:
+      return FileText
   }
-};
+}
 
 const formatFileSize = (bytes?: number): string => {
-  if (!bytes) return '';
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
-};
+  if (!bytes) return ''
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`
+}
 
 export function EnhancedFilePreview({
   filename,
@@ -97,59 +104,59 @@ export function EnhancedFilePreview({
   onPreview,
   onDownload,
 }: FilePreviewProps) {
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
-  const [zoom, setZoom] = useState(100);
-  const [rotation, setRotation] = useState(0);
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+  const [imageError, setImageError] = useState(false)
+  const [zoom, setZoom] = useState(100)
+  const [rotation, setRotation] = useState(0)
 
-  const fileType = getFileType(filename, mimeType);
-  const FileIcon = getFileIcon(fileType);
-  const isImage = fileType === 'image';
-  const isPdf = fileType === 'pdf';
-  const displayName = label || filename;
+  const fileType = getFileType(filename, mimeType)
+  const FileIcon = getFileIcon(fileType)
+  const isImage = fileType === 'image'
+  const isPdf = fileType === 'pdf'
+  const displayName = label || filename
 
   // Reset zoom and rotation when opening preview
   useEffect(() => {
     if (previewOpen) {
-      setZoom(100);
-      setRotation(0);
+      setZoom(100)
+      setRotation(0)
     }
-  }, [previewOpen]);
+  }, [previewOpen])
 
   const handlePreview = useCallback(() => {
-    setPreviewOpen(true);
-    onPreview?.();
-  }, [onPreview]);
+    setPreviewOpen(true)
+    onPreview?.()
+  }, [onPreview])
 
   const handleDownload = useCallback(async () => {
     try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      onDownload?.();
+      const response = await fetch(fileUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      onDownload?.()
     } catch (error) {
-      console.error('Download failed:', error);
+      console.error('Download failed:', error)
       // Fallback: open in new tab
-      window.open(fileUrl, '_blank');
+      window.open(fileUrl, '_blank')
     }
-  }, [fileUrl, filename, onDownload]);
+  }, [fileUrl, filename, onDownload])
 
   const handleCopyLink = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(fileUrl);
+      await navigator.clipboard.writeText(fileUrl)
       // You could add a toast notification here
     } catch (error) {
-      console.error('Failed to copy link:', error);
+      console.error('Failed to copy link:', error)
     }
-  }, [fileUrl]);
+  }, [fileUrl])
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
@@ -157,20 +164,20 @@ export function EnhancedFilePreview({
         await navigator.share({
           title: displayName,
           url: fileUrl,
-        });
+        })
       } catch (error) {
         // User cancelled or share failed
-        handleCopyLink();
+        handleCopyLink()
       }
     } else {
-      handleCopyLink();
+      handleCopyLink()
     }
-  }, [displayName, fileUrl, handleCopyLink]);
+  }, [displayName, fileUrl, handleCopyLink])
 
-  const zoomIn = () => setZoom(prev => Math.min(prev + 25, 300));
-  const zoomOut = () => setZoom(prev => Math.max(prev - 25, 25));
-  const resetZoom = () => setZoom(100);
-  const rotate = () => setRotation(prev => (prev + 90) % 360);
+  const zoomIn = () => setZoom((prev) => Math.min(prev + 25, 300))
+  const zoomOut = () => setZoom((prev) => Math.max(prev - 25, 25))
+  const resetZoom = () => setZoom(100)
+  const rotate = () => setRotation((prev) => (prev + 90) % 360)
 
   return (
     <>
@@ -198,32 +205,27 @@ export function EnhancedFilePreview({
                 loading="lazy"
                 onLoad={() => setImageLoading(false)}
                 onError={() => {
-                  setImageError(true);
-                  setImageLoading(false);
+                  setImageError(true)
+                  setImageLoading(false)
                 }}
                 onClick={handlePreview}
               />
             ) : (
               /* Fallback icon */
-              <div 
+              <div
                 className="flex flex-col items-center justify-center h-full text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                 onClick={handlePreview}
               >
                 <FileIcon className="h-12 w-12 mb-2" />
                 <p className="text-sm font-medium text-center px-2">{displayName}</p>
                 {fileSize && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {formatFileSize(fileSize)}
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{formatFileSize(fileSize)}</p>
                 )}
               </div>
             )}
 
             {/* File type badge */}
-            <Badge 
-              variant="secondary" 
-              className="absolute top-2 left-2 text-xs opacity-90"
-            >
+            <Badge variant="secondary" className="absolute top-2 left-2 text-xs opacity-90">
               {fileType.toUpperCase()}
             </Badge>
 
@@ -257,22 +259,12 @@ export function EnhancedFilePreview({
           {/* Action buttons */}
           {showActions && (
             <div className="flex gap-2 mt-3">
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex-1"
-                onClick={handlePreview}
-              >
+              <Button size="sm" variant="outline" className="flex-1" onClick={handlePreview}>
                 <Eye className="h-4 w-4 mr-1" />
                 View
               </Button>
-              
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex-1"
-                onClick={handleDownload}
-              >
+
+              <Button size="sm" variant="outline" className="flex-1" onClick={handleDownload}>
                 <Download className="h-4 w-4 mr-1" />
                 Download
               </Button>
@@ -315,7 +307,7 @@ export function EnhancedFilePreview({
                   {mimeType} • {fileSize && formatFileSize(fileSize)}
                 </DialogDescription>
               </div>
-              
+
               {/* Toolbar for images */}
               {isImage && (
                 <div className="flex items-center gap-2">
@@ -338,7 +330,7 @@ export function EnhancedFilePreview({
               )}
             </div>
           </DialogHeader>
-          
+
           <div className="overflow-auto flex-1 p-6 pt-2">
             {isImage ? (
               <div className="flex items-center justify-center min-h-[60vh]">
@@ -369,7 +361,7 @@ export function EnhancedFilePreview({
                     This file type cannot be previewed in the browser.
                   </p>
                 </div>
-                
+
                 <div className="flex gap-3">
                   <Button onClick={handleDownload}>
                     <Download className="h-4 w-4 mr-2" />
@@ -380,7 +372,7 @@ export function EnhancedFilePreview({
                     Open in New Tab
                   </Button>
                 </div>
-                
+
                 {/* File details */}
                 <Card className="w-full max-w-md">
                   <CardContent className="p-4">
@@ -410,5 +402,5 @@ export function EnhancedFilePreview({
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

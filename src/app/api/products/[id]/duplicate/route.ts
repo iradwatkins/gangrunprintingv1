@@ -143,7 +143,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
         // Copy turnaround time sets
         ProductTurnaroundTimeSet:
-          originalProduct.ProductTurnaroundTimeSet && originalProduct.ProductTurnaroundTimeSet.length > 0
+          originalProduct.ProductTurnaroundTimeSet &&
+          originalProduct.ProductTurnaroundTimeSet.length > 0
             ? {
                 create: originalProduct.ProductTurnaroundTimeSet.map((ptts) => ({
                   id: randomUUID(),
@@ -215,6 +216,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     })
   } catch (error) {
     console.error('Error duplicating product:', error)
-    return NextResponse.json({ error: 'Failed to duplicate product', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Failed to duplicate product',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    )
   }
 }

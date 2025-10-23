@@ -5,7 +5,10 @@ import { randomUUID } from 'crypto'
 import sharp from 'sharp'
 import path from 'path'
 import { validateFileAdvanced } from '@/lib/security/advanced-file-validator'
-import { checkFileUploadRateLimit, formatFileRateLimitError } from '@/lib/security/file-rate-limiter'
+import {
+  checkFileUploadRateLimit,
+  formatFileRateLimitError,
+} from '@/lib/security/file-rate-limiter'
 import { validateRequest } from '@/lib/auth'
 import { logger } from '@/lib/logger-safe'
 
@@ -106,9 +109,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Get authentication info for rate limiting
-    const { user } = await validateRequest();
+    const { user } = await validateRequest()
     const sessionId = getSessionId(request)
-    
+
     // Check rate limits before processing files
     const rateLimitResult = checkFileUploadRateLimit(
       request.headers,
@@ -117,28 +120,28 @@ export async function POST(request: NextRequest) {
       undefined, // We'll check individual files below
       1,
       user?.role === 'ADMIN'
-    );
+    )
 
     if (!rateLimitResult.allowed) {
-      const errorMessage = formatFileRateLimitError(rateLimitResult);
+      const errorMessage = formatFileRateLimitError(rateLimitResult)
       logger.warn('File upload rate limit exceeded', {
         userId: user?.id,
         sessionId,
         reason: rateLimitResult.reason,
         blocked: rateLimitResult.blocked,
-      });
-      
+      })
+
       return NextResponse.json(
         { error: errorMessage },
-        { 
+        {
           status: 429,
           headers: {
             'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
             'X-RateLimit-Remaining-Files': rateLimitResult.remaining.files.toString(),
             'X-RateLimit-Remaining-Size': rateLimitResult.remaining.size.toString(),
-          }
+          },
         }
-      );
+      )
     }
 
     const formData = await request.formData()
@@ -180,15 +183,10 @@ export async function POST(request: NextRequest) {
     // Enhanced validation for each file
     for (const file of files) {
       // Convert file to buffer for advanced validation
-      const buffer = await file.arrayBuffer();
-      
+      const buffer = await file.arrayBuffer()
+
       // Perform comprehensive validation including security checks
-      const validationResult = await validateFileAdvanced(
-        file.name,
-        file.size,
-        file.type,
-        buffer
-      );
+      const validationResult = await validateFileAdvanced(file.name, file.size, file.type, buffer)
 
       if (!validationResult.valid) {
         logger.warn('File validation failed', {
@@ -200,18 +198,21 @@ export async function POST(request: NextRequest) {
           warnings: validationResult.warnings,
           userId: user?.id,
           sessionId,
-        });
+        })
 
         return NextResponse.json(
           {
             error: `File "${file.name}": ${validationResult.error}`,
-            securityDetails: validationResult.threatLevel === 'high' ? {
-              threatLevel: validationResult.threatLevel,
-              warnings: validationResult.warnings,
-            } : undefined,
+            securityDetails:
+              validationResult.threatLevel === 'high'
+                ? {
+                    threatLevel: validationResult.threatLevel,
+                    warnings: validationResult.warnings,
+                  }
+                : undefined,
           },
           { status: 400 }
-        );
+        )
       }
 
       // Log security warnings for medium/high threat files
@@ -223,7 +224,7 @@ export async function POST(request: NextRequest) {
           scanResults: validationResult.scanResults,
           userId: user?.id,
           sessionId,
-        });
+        })
       }
 
       // Check basic file type (fallback validation)

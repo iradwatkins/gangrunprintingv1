@@ -112,9 +112,7 @@ export function ProductDesignOptions({
                 <p className="font-medium mb-1">How it works:</p>
                 <ul className="space-y-1 list-disc list-inside ml-2">
                   <li>Customers see a Design dropdown on the product page</li>
-                  <li>
-                    Default option: "Upload Your Own Artwork" (FREE) - shows file upload zone
-                  </li>
+                  <li>Default option: "Upload Your Own Artwork" (FREE) - shows file upload zone</li>
                   <li>Other options: Professional design services - hide upload, show email</li>
                   <li>Design prices are calculated and added to cart total</li>
                 </ul>
@@ -128,9 +126,9 @@ export function ProductDesignOptions({
           <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
             <Info className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
             <p className="text-xs text-gray-600">
-              Select a design set above to enable design services. Customers will see design
-              options in a dropdown and can choose to upload their own files or request
-              professional design assistance.
+              Select a design set above to enable design services. Customers will see design options
+              in a dropdown and can choose to upload their own files or request professional design
+              assistance.
             </p>
           </div>
         )}

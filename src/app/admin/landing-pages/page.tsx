@@ -63,7 +63,7 @@ export default function LandingPagesListPage() {
       draft: 'secondary',
       generating: 'outline',
       published: 'default',
-      archived: 'destructive'
+      archived: 'destructive',
     }
     return <Badge variant={variants[status] || 'default'}>{status.toUpperCase()}</Badge>
   }
@@ -75,7 +75,7 @@ export default function LandingPagesListPage() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount)
   }
 
@@ -121,7 +121,8 @@ export default function LandingPagesListPage() {
           </div>
           <h2 className="text-xl font-semibold mb-2">No Landing Page Sets Yet</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            Create your first landing page set to generate 200 city-specific SEO pages and drive organic traffic.
+            Create your first landing page set to generate 200 city-specific SEO pages and drive
+            organic traffic.
           </p>
           <Button onClick={() => router.push('/admin/landing-pages/new')}>
             <Plus className="h-4 w-4 mr-2" />
@@ -198,7 +199,11 @@ export default function LandingPagesListPage() {
                         size="sm"
                         variant="ghost"
                         onClick={() => {
-                          if (confirm(`Delete "${set.name}" and all ${set.metrics.citiesGenerated} city pages?`)) {
+                          if (
+                            confirm(
+                              `Delete "${set.name}" and all ${set.metrics.citiesGenerated} city pages?`
+                            )
+                          ) {
                             // TODO: Implement delete
                           }
                         }}

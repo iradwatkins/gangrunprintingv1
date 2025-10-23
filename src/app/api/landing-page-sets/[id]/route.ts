@@ -6,10 +6,7 @@ import { validateRequest } from '@/lib/auth'
  * GET /api/landing-page-sets/[id]
  * Get single landing page set with full details
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!user || !session) {
@@ -30,17 +27,14 @@ export async function GET(
         TurnaroundTimeSet: true,
         _count: {
           select: {
-            CityLandingPage: true
-          }
-        }
-      }
+            CityLandingPage: true,
+          },
+        },
+      },
     })
 
     if (!landingPageSet) {
-      return NextResponse.json(
-        { error: 'Landing page set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Landing page set not found' }, { status: 404 })
     }
 
     // Get aggregate metrics
@@ -50,8 +44,8 @@ export async function GET(
         organicViews: true,
         orders: true,
         revenue: true,
-        conversionRate: true
-      }
+        conversionRate: true,
+      },
     })
 
     const metrics = {
@@ -59,21 +53,19 @@ export async function GET(
       totalViews: cityPages.reduce((sum, page) => sum + page.organicViews, 0),
       totalOrders: cityPages.reduce((sum, page) => sum + page.orders, 0),
       totalRevenue: cityPages.reduce((sum, page) => sum + page.revenue, 0),
-      avgConversionRate: cityPages.length > 0
-        ? cityPages.reduce((sum, page) => sum + (page.conversionRate || 0), 0) / cityPages.length
-        : 0
+      avgConversionRate:
+        cityPages.length > 0
+          ? cityPages.reduce((sum, page) => sum + (page.conversionRate || 0), 0) / cityPages.length
+          : 0,
     }
 
     return NextResponse.json({
       ...landingPageSet,
-      metrics
+      metrics,
     })
   } catch (error) {
     console.error(`[GET /api/landing-page-sets/${params.id}] Error:`, error)
-    return NextResponse.json(
-      { error: 'Failed to fetch landing page set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch landing page set' }, { status: 500 })
   }
 }
 
@@ -81,10 +73,7 @@ export async function GET(
  * PUT /api/landing-page-sets/[id]
  * Update landing page set template
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!user || !session) {
@@ -113,19 +102,16 @@ export async function PUT(
       urgencyEnabled,
       discountEnabled,
       discountPercent,
-      chatWidgetEnabled
+      chatWidgetEnabled,
     } = body
 
     // Check if landing page set exists
     const existing = await prisma.landingPageSet.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     if (!existing) {
-      return NextResponse.json(
-        { error: 'Landing page set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Landing page set not found' }, { status: 404 })
     }
 
     // Don't allow updating if it's published (must archive first)
@@ -145,35 +131,36 @@ export async function PUT(
         metaDescTemplate: metaDescTemplate || existing.metaDescTemplate,
         h1Template: h1Template || existing.h1Template,
         contentTemplate: contentTemplate || existing.contentTemplate,
-        aiGenerationPrompt: aiGenerationPrompt !== undefined ? aiGenerationPrompt : existing.aiGenerationPrompt,
+        aiGenerationPrompt:
+          aiGenerationPrompt !== undefined ? aiGenerationPrompt : existing.aiGenerationPrompt,
         generateIntro: generateIntro !== undefined ? generateIntro : existing.generateIntro,
-        generateBenefits: generateBenefits !== undefined ? generateBenefits : existing.generateBenefits,
+        generateBenefits:
+          generateBenefits !== undefined ? generateBenefits : existing.generateBenefits,
         generateFAQs: generateFAQs !== undefined ? generateFAQs : existing.generateFAQs,
-        generateCaseStudy: generateCaseStudy !== undefined ? generateCaseStudy : existing.generateCaseStudy,
+        generateCaseStudy:
+          generateCaseStudy !== undefined ? generateCaseStudy : existing.generateCaseStudy,
         robotsIndex: robotsIndex !== undefined ? robotsIndex : existing.robotsIndex,
         robotsFollow: robotsFollow !== undefined ? robotsFollow : existing.robotsFollow,
         canonicalUrl: canonicalUrl !== undefined ? canonicalUrl : existing.canonicalUrl,
         urgencyEnabled: urgencyEnabled !== undefined ? urgencyEnabled : existing.urgencyEnabled,
         discountEnabled: discountEnabled !== undefined ? discountEnabled : existing.discountEnabled,
         discountPercent: discountPercent !== undefined ? discountPercent : existing.discountPercent,
-        chatWidgetEnabled: chatWidgetEnabled !== undefined ? chatWidgetEnabled : existing.chatWidgetEnabled
+        chatWidgetEnabled:
+          chatWidgetEnabled !== undefined ? chatWidgetEnabled : existing.chatWidgetEnabled,
       },
       include: {
         PaperStockSet: true,
         QuantityGroup: true,
         SizeGroup: true,
         AddOnSet: true,
-        TurnaroundTimeSet: true
-      }
+        TurnaroundTimeSet: true,
+      },
     })
 
     return NextResponse.json(updated)
   } catch (error) {
     console.error(`[PUT /api/landing-page-sets/${params.id}] Error:`, error)
-    return NextResponse.json(
-      { error: 'Failed to update landing page set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update landing page set' }, { status: 500 })
   }
 }
 
@@ -181,10 +168,7 @@ export async function PUT(
  * DELETE /api/landing-page-sets/[id]
  * Delete landing page set and all associated city pages (CASCADE)
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user, session } = await validateRequest()
     if (!user || !session) {
@@ -200,32 +184,26 @@ export async function DELETE(
       where: { id: params.id },
       include: {
         _count: {
-          select: { CityLandingPage: true }
-        }
-      }
+          select: { CityLandingPage: true },
+        },
+      },
     })
 
     if (!existing) {
-      return NextResponse.json(
-        { error: 'Landing page set not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Landing page set not found' }, { status: 404 })
     }
 
     // Delete (will cascade to all city landing pages)
     await prisma.landingPageSet.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     return NextResponse.json({
       success: true,
-      message: `Deleted landing page set and ${existing._count.CityLandingPage} city pages`
+      message: `Deleted landing page set and ${existing._count.CityLandingPage} city pages`,
     })
   } catch (error) {
     console.error(`[DELETE /api/landing-page-sets/${params.id}] Error:`, error)
-    return NextResponse.json(
-      { error: 'Failed to delete landing page set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete landing page set' }, { status: 500 })
   }
 }

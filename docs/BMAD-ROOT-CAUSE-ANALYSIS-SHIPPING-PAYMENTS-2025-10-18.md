@@ -1,4 +1,5 @@
 # B-MAD ROOT CAUSE ANALYSIS: Shipping & Payment Integration Issues
+
 **Date:** October 18, 2025
 **Analyst:** B-MAD Agent
 **Status:** CRITICAL ISSUES IDENTIFIED
@@ -10,10 +11,12 @@
 
 **Issues Found:** 4 Critical, 6 Major Code Quality Violations
 **User Symptoms:**
+
 - ❌ Southwest Cargo "repeatedly having problems" (user report)
 - ❌ Cash App Pay not working (Square Card works fine)
 
 **Root Causes Identified:**
+
 1. **Cash App:** Missing `NEXT_PUBLIC_*` environment variables (P0 - Critical)
 2. **Southwest Cargo:** Dead duplicate code file causing potential conflicts (P1 - High)
 3. **DRY Violations:** 156 lines of duplicated Square SDK initialization code
@@ -34,8 +37,8 @@
 ```typescript
 // Line 24-31 in cash-app-payment.tsx
 export function CashAppPayment({
-  applicationId,    // ❌ Props passed from parent
-  locationId,       // ❌ Props passed from parent
+  applicationId, // ❌ Props passed from parent
+  locationId, // ❌ Props passed from parent
   total,
   onPaymentSuccess,
   onPaymentError,
@@ -66,10 +69,12 @@ SQUARE_WEBHOOK_SIGNATURE=           # ✅ Backend only (correct)
 ### Why This Breaks Cash App
 
 **Next.js Environment Variable Rules:**
+
 - Variables without `NEXT_PUBLIC_` prefix = **Backend only**
 - Variables with `NEXT_PUBLIC_` prefix = **Exposed to browser**
 
 **What Happens:**
+
 1. Checkout page tries to read `process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID` → **UNDEFINED**
 2. Passes `undefined` to `<CashAppPayment applicationId={undefined} />`
 3. Cash App SDK initialization fails with "invalid application ID"
@@ -84,7 +89,9 @@ const paymentsInstance = (window.Square as any).payments(applicationId, location
 
 // cash-app-payment.tsx line 147-148
 if (errorMsg.includes('not available') || errorMsg.includes('unsupported')) {
-  setError('Cash App Pay is not available for this merchant. Please use a different payment method.')
+  setError(
+    'Cash App Pay is not available for this merchant. Please use a different payment method.'
+  )
 }
 // ✅ THIS IS THE ERROR MESSAGE THE USER SEES
 ```
@@ -92,6 +99,7 @@ if (errorMsg.includes('not available') || errorMsg.includes('unsupported')) {
 ### The Fix (Priority: CRITICAL)
 
 **Required Environment Variables:**
+
 ```bash
 # .env - ADD THESE
 NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-XXXXXXXXXXXXXXXXXXXXX
@@ -104,6 +112,7 @@ SQUARE_WEBHOOK_SIGNATURE=wh_XXXXXXXXXXXXXXX
 ```
 
 **Where to get these values:**
+
 - Square Developer Dashboard → Applications → OAuth → Application ID
 - Square Developer Dashboard → Locations → Location ID
 
@@ -120,6 +129,7 @@ SQUARE_WEBHOOK_SIGNATURE=wh_XXXXXXXXXXXXXXX
 ### Code Comparison
 
 #### OLD Implementation (DEAD CODE)
+
 ```typescript
 // /src/lib/shipping/providers/southwest-cargo.ts
 import { CARRIER_AVAILABILITY } from '../config'
@@ -134,6 +144,7 @@ async isStateAvailable(state: string): Promise<boolean> {
 **Issue:** `CARRIER_AVAILABILITY[Carrier.SOUTHWEST_CARGO]` returns `[]` (empty array)
 
 #### NEW Implementation (ACTIVE)
+
 ```typescript
 // /src/lib/shipping/modules/southwest-cargo/provider.ts
 import { isStateAvailable } from './airport-availability'
@@ -147,6 +158,7 @@ import { isStateAvailable } from './airport-availability'
 ### Why This Might Cause "Repeatedly Having Problems"
 
 **Scenario 1: Import Confusion**
+
 ```typescript
 // If somewhere imports the wrong file:
 import { SouthwestCargoProvider } from '@/lib/shipping/providers/southwest-cargo'
@@ -158,6 +170,7 @@ import { SouthwestCargoProvider } from '@/lib/shipping/modules/southwest-cargo'
 ```
 
 **Scenario 2: Webpack/TypeScript Confusion**
+
 - Two files with same export name (`SouthwestCargoProvider`)
 - TypeScript/Webpack might cache wrong version
 - Hot reload might load old file instead of new one
@@ -166,6 +179,7 @@ import { SouthwestCargoProvider } from '@/lib/shipping/modules/southwest-cargo'
 ### Evidence
 
 **File locations:**
+
 ```
 /src/lib/shipping/
 ├── providers/
@@ -191,12 +205,14 @@ import { SouthwestCargoProvider, SOUTHWEST_CARGO_CONFIG } from './modules/southw
 ### The Fix (Priority: HIGH)
 
 **Delete these dead code files:**
+
 ```bash
 rm /src/lib/shipping/providers/southwest-cargo.ts
 rm /src/lib/shipping/providers/fedex.ts
 ```
 
 **Why safe to delete:**
+
 1. ✅ Confirmed active imports use `./modules/southwest-cargo`
 2. ✅ No other imports reference `./providers/southwest-cargo` (verified via grep)
 3. ✅ Module registry explicitly imports from modules directory
@@ -215,11 +231,14 @@ rm /src/lib/shipping/providers/fedex.ts
 ### Code Duplication Analysis
 
 **Duplicated Logic:**
+
 ```typescript
 // BOTH FILES DUPLICATE THIS EXACT PATTERN:
 
 // 1. Load Square.js script dynamically
-const loadSquareScript = () => { /* same code */ }
+const loadSquareScript = () => {
+  /* same code */
+}
 
 // 2. Wait for Square SDK with retry loop
 let attempts = 0
@@ -249,6 +268,7 @@ const timeout = setTimeout(() => {
 ```
 
 **Lines of Duplication:**
+
 - Square.js script loading: 30 lines × 2 = 60 lines duplicated
 - SDK wait loop: 15 lines × 2 = 30 lines duplicated
 - Container wait loop: 15 lines × 2 = 30 lines duplicated
@@ -259,9 +279,11 @@ const timeout = setTimeout(() => {
 ### DRY Principle Violation
 
 **Don't Repeat Yourself (DRY):**
+
 > "Every piece of knowledge must have a single, unambiguous, authoritative representation within a system"
 
 **Violation Score: 8/10 (Severe)**
+
 - Same logic duplicated across 2 files
 - Changes must be made in 2 places
 - High risk of divergence (one file gets updated, other doesn't)
@@ -285,7 +307,11 @@ export class SquareSDKLoader {
     return SquareSDKLoader.instance
   }
 
-  async initialize(applicationId: string, locationId: string, environment: 'sandbox' | 'production') {
+  async initialize(
+    applicationId: string,
+    locationId: string,
+    environment: 'sandbox' | 'production'
+  ) {
     if (this.sdkReady && this.paymentsInstance) {
       return this.paymentsInstance
     }
@@ -300,9 +326,10 @@ export class SquareSDKLoader {
   private async loadScript(environment: 'sandbox' | 'production') {
     if (window.Square) return
 
-    const sdkUrl = environment === 'production'
-      ? 'https://web.squarecdn.com/v1/square.js'
-      : 'https://sandbox.web.squarecdn.com/v1/square.js'
+    const sdkUrl =
+      environment === 'production'
+        ? 'https://web.squarecdn.com/v1/square.js'
+        : 'https://sandbox.web.squarecdn.com/v1/square.js'
 
     return new Promise((resolve, reject) => {
       const script = document.createElement('script')
@@ -342,6 +369,7 @@ export class SquareSDKLoader {
 ```
 
 **Usage (DRY):**
+
 ```typescript
 // square-card-payment.tsx - AFTER REFACTOR
 const loader = SquareSDKLoader.getInstance()
@@ -352,6 +380,7 @@ await cardInstance.attach('#square-card-container')
 ```
 
 **Benefits:**
+
 - ✅ 156 lines → 30 lines (80% reduction)
 - ✅ Single source of truth
 - ✅ Easier to maintain
@@ -364,6 +393,7 @@ await cardInstance.attach('#square-card-container')
 ### The Problem
 
 **Separation of Concerns (SoC) Violation:**
+
 - Each shipping provider duplicates base functionality
 - No shared base class or interface enforcement
 - Error handling duplicated across providers
@@ -372,6 +402,7 @@ await cardInstance.attach('#square-card-container')
 ### Code Analysis
 
 **Current Structure:**
+
 ```typescript
 // fedex-enhanced.ts
 class FedExProviderEnhanced implements ShippingProvider {
@@ -401,6 +432,7 @@ class SouthwestCargoProvider implements ShippingProvider {
 ```
 
 **Duplicated Concerns:**
+
 1. Error handling (try/catch patterns)
 2. Logging (console.log patterns)
 3. Input validation
@@ -410,9 +442,11 @@ class SouthwestCargoProvider implements ShippingProvider {
 ### SoC Principle Violation
 
 **Separation of Concerns:**
+
 > "Different concerns should be separated into different modules/components"
 
 **Concerns Identified:**
+
 - ✅ **Provider Logic** (FedEx API, Southwest pricing) - CORRECTLY SEPARATED
 - ❌ **Error Handling** (try/catch, error formatting) - DUPLICATED
 - ❌ **Logging** (console.log, debug output) - DUPLICATED
@@ -457,7 +491,11 @@ export abstract class BaseShippingProvider implements ShippingProvider {
   }
 
   // Each provider implements this
-  protected abstract fetchRates(from: Address, to: Address, packages: Package[]): Promise<ShippingRate[]>
+  protected abstract fetchRates(
+    from: Address,
+    to: Address,
+    packages: Package[]
+  ): Promise<ShippingRate[]>
 
   protected validateInput(data: any) {
     // Shared validation logic
@@ -474,6 +512,7 @@ export abstract class BaseShippingProvider implements ShippingProvider {
 ```
 
 **Usage (SoC):**
+
 ```typescript
 // fedex-enhanced.ts - AFTER REFACTOR
 class FedExProviderEnhanced extends BaseShippingProvider {
@@ -501,6 +540,7 @@ class SouthwestCargoProvider extends BaseShippingProvider {
 ```
 
 **Benefits:**
+
 - ✅ Shared error handling (no duplication)
 - ✅ Shared logging (consistent format)
 - ✅ Shared validation (consistent rules)
@@ -511,12 +551,12 @@ class SouthwestCargoProvider extends BaseShippingProvider {
 
 ## PRIORITY MATRIX
 
-| Issue | Priority | Impact | Effort | User-Facing |
-|-------|----------|--------|--------|-------------|
-| Cash App Missing Env Vars | **P0** | High | 5 min | ✅ YES - Breaks Cash App |
-| Southwest Dead Code | **P1** | Medium | 2 min | ⚠️ MAYBE - Intermittent failures |
-| DRY: Square SDK Duplication | **P2** | Low | 2 hours | ❌ NO - Code quality |
-| SoC: Shipping Base Class | **P3** | Low | 3 hours | ❌ NO - Code quality |
+| Issue                       | Priority | Impact | Effort  | User-Facing                      |
+| --------------------------- | -------- | ------ | ------- | -------------------------------- |
+| Cash App Missing Env Vars   | **P0**   | High   | 5 min   | ✅ YES - Breaks Cash App         |
+| Southwest Dead Code         | **P1**   | Medium | 2 min   | ⚠️ MAYBE - Intermittent failures |
+| DRY: Square SDK Duplication | **P2**   | Low    | 2 hours | ❌ NO - Code quality             |
+| SoC: Shipping Base Class    | **P3**   | Low    | 3 hours | ❌ NO - Code quality             |
 
 ---
 
@@ -525,6 +565,7 @@ class SouthwestCargoProvider extends BaseShippingProvider {
 ### Phase 1: Critical Fixes (30 minutes)
 
 **Task 1.1: Fix Cash App Environment Variables**
+
 ```bash
 # 1. Get Square credentials from dashboard
 # 2. Add to .env file:
@@ -544,6 +585,7 @@ npm run dev
 ```
 
 **Task 1.2: Delete Dead Code Files**
+
 ```bash
 # Remove duplicate Southwest Cargo provider
 rm src/lib/shipping/providers/southwest-cargo.ts
@@ -561,6 +603,7 @@ git commit -m "CLEANUP: Remove dead shipping provider files (DRY principle)"
 ```
 
 **Task 1.3: Test Southwest Cargo**
+
 ```bash
 # Test Southwest availability check
 curl -X POST http://localhost:3020/api/shipping/calculate \
@@ -586,18 +629,21 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 ### Phase 2: DRY Refactor (2-3 hours)
 
 **Task 2.1: Create Square SDK Loader**
+
 - Create `/lib/square/sdk-loader.ts`
 - Extract shared initialization logic
 - Add singleton pattern for performance
 - Add comprehensive error handling
 
 **Task 2.2: Refactor Square Components**
+
 - Update `square-card-payment.tsx` to use loader
 - Update `cash-app-payment.tsx` to use loader
 - Remove duplicated initialization code
 - Test both payment methods
 
 **Task 2.3: Test Payment Flow**
+
 - Test Square Card payment
 - Test Cash App Pay payment
 - Verify error handling works
@@ -606,18 +652,21 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 ### Phase 3: SoC Refactor (3-4 hours)
 
 **Task 3.1: Create Base Provider**
+
 - Create `/lib/shipping/base-provider.ts`
 - Implement template method pattern
 - Add shared error handling
 - Add shared logging
 
 **Task 3.2: Refactor Providers**
+
 - Update `FedExProviderEnhanced` to extend base
 - Update `SouthwestCargoProvider` to extend base
 - Remove duplicated error handling
 - Remove duplicated logging
 
 **Task 3.3: Test Shipping Flow**
+
 - Test FedEx rate calculation
 - Test Southwest rate calculation
 - Verify error handling works
@@ -628,6 +677,7 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 ## TESTING CHECKLIST
 
 ### Cash App Pay Testing
+
 - [ ] Environment variables set correctly
 - [ ] Cash App Pay button appears in checkout
 - [ ] Cash App Pay button is clickable
@@ -636,6 +686,7 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 - [ ] Order confirmation page shows payment details
 
 ### Southwest Cargo Testing
+
 - [ ] Dead code file deleted
 - [ ] No TypeScript errors after deletion
 - [ ] Southwest rates appear for Dallas, TX
@@ -645,6 +696,7 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 - [ ] Rate calculation matches pricing config
 
 ### DRY Refactor Testing
+
 - [ ] Square SDK loads correctly with new loader
 - [ ] Card payment still works
 - [ ] Cash App Pay still works
@@ -653,6 +705,7 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 - [ ] No console errors
 
 ### SoC Refactor Testing
+
 - [ ] FedEx rates still work after refactor
 - [ ] Southwest rates still work after refactor
 - [ ] Error handling is consistent
@@ -666,12 +719,14 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 ### Code Quality Improvements
 
 **Before:**
+
 - 2 dead code files (392 lines)
 - 156 lines of duplicated Square initialization
 - ~80 lines of duplicated shipping error handling
 - **Total Waste:** 628 lines of duplicated/dead code
 
 **After:**
+
 - 0 dead code files ✅
 - 30 lines of shared Square initialization ✅
 - 40 lines of shared shipping base class ✅
@@ -680,12 +735,14 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 ### Maintainability Improvements
 
 **Before:**
+
 - Changes to Square SDK require editing 2 files
 - Changes to error handling require editing 2+ files
 - Risk of divergence between components
 - Confusing which Southwest file is active
 
 **After:**
+
 - Changes to Square SDK require editing 1 file
 - Changes to error handling require editing 1 file
 - Single source of truth for all shared logic
@@ -696,6 +753,7 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 ## CONCLUSION
 
 **DRY + SoC Principles Applied:**
+
 - ✅ Eliminated 558 lines of duplicate code
 - ✅ Created single source of truth for Square SDK initialization
 - ✅ Separated concerns (provider logic vs infrastructure)
@@ -703,12 +761,14 @@ curl -X POST http://localhost:3020/api/shipping/calculate \
 - ✅ Fixed potential Southwest Cargo reliability issue
 
 **User Impact:**
+
 - ✅ Cash App Pay will now work (was completely broken)
 - ✅ Southwest Cargo will be more reliable (no duplicate code conflicts)
 - ✅ Future changes easier to implement (DRY structure)
 - ✅ Bugs easier to fix (shared error handling)
 
 **Technical Debt Reduced:**
+
 - Before: 628 lines of waste
 - After: 70 lines of shared utilities
 - **89% reduction in code duplication**

@@ -470,7 +470,8 @@ export function ProductImageUpload({
                     <img
                       alt="Draft version"
                       className="w-full h-32 object-cover rounded"
-                      loading="lazy" src={draft.url}
+                      loading="lazy"
+                      src={draft.url}
                     />
                     <div className="flex gap-1">
                       <Button
@@ -534,7 +535,8 @@ export function ProductImageUpload({
             <img
               alt="Product preview"
               className="w-24 h-24 object-cover rounded-lg border"
-              loading="lazy" src={imageUrl}
+              loading="lazy"
+              src={imageUrl}
             />
             <div className="flex-1">
               <p className="text-sm font-medium text-green-600">Image selected</p>

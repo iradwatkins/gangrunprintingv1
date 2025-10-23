@@ -3,10 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // GET /api/addons/[id] - Get single addon
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
@@ -17,9 +14,9 @@ export async function GET(
           select: {
             AddOnSetItem: true,
             ProductAddOn: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     if (!addon) {
@@ -29,18 +26,12 @@ export async function GET(
     return NextResponse.json(addon)
   } catch (error) {
     console.error('[GET /api/addons/[id]] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch addon' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch addon' }, { status: 500 })
   }
 }
 
 // PUT /api/addons/[id] - Update addon
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
@@ -59,7 +50,7 @@ export async function PUT(
     // If name is being changed, check for duplicates
     if (data.name && data.name !== existing.name) {
       const duplicate = await prisma.addOn.findUnique({
-        where: { name: data.name }
+        where: { name: data.name },
       })
       if (duplicate) {
         return NextResponse.json(
@@ -90,16 +81,13 @@ export async function PUT(
 
     // Handle unique constraint violations
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'An addon with this name already exists' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'An addon with this name already exists' }, { status: 400 })
     }
 
     return NextResponse.json(
       {
         error: 'Failed to update addon',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )
@@ -127,9 +115,9 @@ export async function DELETE(
           select: {
             AddOnSetItem: true,
             ProductAddOn: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     if (!addon) {
@@ -141,7 +129,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           error: 'Cannot delete addon that is in use',
-          details: `This addon is used in ${addon._count.AddOnSetItem} addon sets and ${addon._count.ProductAddOn} products`
+          details: `This addon is used in ${addon._count.AddOnSetItem} addon sets and ${addon._count.ProductAddOn} products`,
         },
         { status: 400 }
       )
@@ -155,7 +143,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         error: 'Failed to delete addon',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )
@@ -163,10 +151,7 @@ export async function DELETE(
 }
 
 // PATCH /api/addons/[id] - Partial update (for toggles)
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user, session } = await validateRequest()
     if (!session || !user || user.role !== 'ADMIN') {
@@ -184,9 +169,6 @@ export async function PATCH(
     return NextResponse.json(addon)
   } catch (error) {
     console.error('[PATCH /api/addons/[id]] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to update addon' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update addon' }, { status: 500 })
   }
 }

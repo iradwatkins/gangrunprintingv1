@@ -275,8 +275,8 @@ Screenshots/Console Errors:
 
 ---
 
-**Tester**: ********\_********
-**Date**: ********\_********
+**Tester**: **\*\*\*\***\_**\*\*\*\***
+**Date**: **\*\*\*\***\_**\*\*\*\***
 **Version**: 1.0.0
 **Status**: [ ] Passed [ ] Failed [ ] Partial
 

@@ -31,10 +31,7 @@ export interface WinnerPattern {
 /**
  * Analyze top performers and extract patterns
  */
-export async function analyzeWinners(params: {
-  campaignId: string
-  topCount?: number
-}): Promise<{
+export async function analyzeWinners(params: { campaignId: string; topCount?: number }): Promise<{
   success: boolean
   pattern?: WinnerPattern
   sourceCities?: string[]
@@ -107,7 +104,6 @@ export async function analyzeWinners(params: {
         sampleSize: topPages.length,
       },
     })
-
 
     return {
       success: true,

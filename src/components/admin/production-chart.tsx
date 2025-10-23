@@ -18,7 +18,11 @@ interface ProductionMetrics {
 
 export function ProductionChart() {
   const [productionData, setProductionData] = useState<ProductionData[]>([])
-  const [metrics, setMetrics] = useState<ProductionMetrics>({ totalJobs: 0, completed: 0, completionRate: 0 })
+  const [metrics, setMetrics] = useState<ProductionMetrics>({
+    totalJobs: 0,
+    completed: 0,
+    completionRate: 0,
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

@@ -30,20 +30,20 @@ Please update the code to integrate these FREE data sources:
 
 \#\#\# 2\. Dashboard Components to Add/Update  
 \`\`\`javascript  
-*// Add these new metric components:*  
+_// Add these new metric components:_  
 const requiredMetrics \= {  
-  coreWebVitals: \['LCP', 'FID', 'CLS', 'INP', 'TTFB'\],  
-  searchMetrics: \['impressions', 'clicks', 'CTR', 'averagePosition'\],  
-  keywordTracking: \['rankingKeywords', 'keywordDifficulty', 'searchVolume'\],  
-  backlinks: \['referringDomains', 'backlinksTotal', 'domainRating'\],  
-  technicalSEO: \['crawlErrors', 'indexedPages', 'sitemapStatus', 'robotsTxt'\],  
-  competitive: \['competitorComparison', 'keywordGap', 'contentGap'\]  
+ coreWebVitals: \['LCP', 'FID', 'CLS', 'INP', 'TTFB'\],  
+ searchMetrics: \['impressions', 'clicks', 'CTR', 'averagePosition'\],  
+ keywordTracking: \['rankingKeywords', 'keywordDifficulty', 'searchVolume'\],  
+ backlinks: \['referringDomains', 'backlinksTotal', 'domainRating'\],  
+ technicalSEO: \['crawlErrors', 'indexedPages', 'sitemapStatus', 'robotsTxt'\],  
+ competitive: \['competitorComparison', 'keywordGap', 'contentGap'\]  
 };  
 \`\`\`
 
 \#\#\# 3\. Visual Updates Required  
 \`\`\`css  
-*/\* Update the dashboard with these design requirements: \*/*  
+_/\* Update the dashboard with these design requirements: \*/_  
 \- Modern card-based layout using CSS Grid or Flexbox  
 \- Dark mode toggle functionality  
 \- Smooth animations and transitions  
@@ -55,7 +55,7 @@ const requiredMetrics \= {
 
 \#\#\# 4\. Feature Implementations  
 \`\`\`javascript  
-*// Implement these specific features:*
+_// Implement these specific features:_
 
 1\. Real\-time data updates every 15 minutes  
 2\. Data caching to reduce API calls (localStorage \+ sessionStorage)  
@@ -71,26 +71,26 @@ const requiredMetrics \= {
 
 \#\#\# 5\. API Connection Template  
 \`\`\`javascript  
-*// Use this structure for all API connections:*  
+_// Use this structure for all API connections:_  
 class SEODataConnector {  
-  constructor(apiName) {  
-    this.apiName \= apiName;  
-    this.cache \= new Map();  
-    this.rateLimiter \= this.createRateLimiter();  
-  }  
-    
-  async fetchData(endpoint, params) {  
-    *// Check cache first*  
-    *// Implement rate limiting*  
-    *// Handle errors gracefully*  
-    *// Return formatted data*  
-  }  
-    
-  *// Add methods for:*  
-  *// \- Authentication (OAuth 2.0 where needed)*  
-  *// \- Error handling with retry logic*  
-  *// \- Data transformation*  
-  *// \- Cache management*  
+ constructor(apiName) {  
+ this.apiName \= apiName;  
+ this.cache \= new Map();  
+ this.rateLimiter \= this.createRateLimiter();  
+ }
+
+async fetchData(endpoint, params) {  
+ _// Check cache first_  
+ _// Implement rate limiting_  
+ _// Handle errors gracefully_  
+ _// Return formatted data_  
+ }
+
+_// Add methods for:_  
+ _// \- Authentication (OAuth 2.0 where needed)_  
+ _// \- Error handling with retry logic_  
+ _// \- Data transformation_  
+ _// \- Cache management_  
 }  
 \`\`\`
 
@@ -106,7 +106,7 @@ class SEODataConnector {
 
 \#\#\# 7\. Security Updates  
 \`\`\`javascript  
-*// Implement these security measures:*  
+_// Implement these security measures:_  
 \- Content Security Policy (CSP) headers  
 \- XSS protection  
 \- HTTPS enforcement  
@@ -118,7 +118,7 @@ class SEODataConnector {
 
 \#\#\# 8\. Testing Requirements  
 \`\`\`javascript  
-*// Add tests for:*  
+_// Add tests for:_  
 \- Unit tests for all data transformation functions  
 \- Integration tests for API connections  
 \- UI component tests  
@@ -139,7 +139,7 @@ Please update/create:
 
 \#\#\# 10\. Specific Code Patterns to Follow  
 \`\`\`javascript  
-*// Use modern JavaScript (ES6+):*  
+_// Use modern JavaScript (ES6+):_  
 \- Async/await over promises  
 \- Destructuring where appropriate  
 \- Template literals  
@@ -147,7 +147,7 @@ Please update/create:
 \- Optional chaining (?.)  
 \- Nullish coalescing (??)
 
-*// React/Vue/Vanilla JS patterns:*  
+_// React/Vue/Vanilla JS patterns:_  
 \- Functional components (if React)  
 \- Composition API (if Vue)  
 \- Web Components (if Vanilla JS)  
@@ -157,27 +157,27 @@ Please update/create:
 \#\# File Structure Expected  
 \`\`\`  
 /project-root  
-  /src  
-    /components  
-      /dashboard  
-      /charts  
-      /widgets  
-    /api  
-      /connectors  
-      /transformers  
-    /utils  
-      /helpers  
-      /constants  
-    /styles  
-      /themes  
-      /components  
-  /public  
-    /assets  
-  /tests  
-  /docs  
-  .env.example  
-  package.json  
-  README.md  
+ /src  
+ /components  
+ /dashboard  
+ /charts  
+ /widgets  
+ /api  
+ /connectors  
+ /transformers  
+ /utils  
+ /helpers  
+ /constants  
+ /styles  
+ /themes  
+ /components  
+ /public  
+ /assets  
+ /tests  
+ /docs  
+ .env.example  
+ package.json  
+ README.md  
 \`\`\`
 
 \#\# Error Handling Requirements
@@ -238,9 +238,9 @@ Begin by examining the current codebase and providing an implementation plan.
 
 ## **How to Use This Prompt:**
 
-1. **Copy the entire prompt above**  
-2. **Add your specific details** in the bracketed sections  
-3. **Attach your current code files** to Claude Code  
+1. **Copy the entire prompt above**
+2. **Add your specific details** in the bracketed sections
+3. **Attach your current code files** to Claude Code
 4. **Add any specific requirements** unique to your project
 
 ## **Example Customization:**
@@ -251,20 +251,20 @@ markdown
 \- Expected traffic: 10-50 concurrent users  
 \- Deployment target: Netlify  
 \- Current tech stack: HTML, CSS, JavaScript (Vanilla), Chart.js  
-\- Known issues to fix:   
-  \- Google Analytics Universal deprecation  
-  \- Mobile layout breaks on iPhone 12
+\- Known issues to fix:  
+ \- Google Analytics Universal deprecation  
+ \- Mobile layout breaks on iPhone 12
 
-  \- API calls timeout occasionally
+\- API calls timeout occasionally
 
 This prompt will guide Claude Code to:
 
-* Understand your current setup  
-* Modernize the code properly  
-* Maintain working features  
-* Add new functionality systematically  
-* Provide clear documentation
+- Understand your current setup
+- Modernize the code properly
+- Maintain working features
+- Add new functionality systematically
+- Provide clear documentation
 
 The structured approach ensures you get comprehensive updates while maintaining code quality and functionality.
 
-Retry  
+Retry

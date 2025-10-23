@@ -279,9 +279,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                 <Separator />
                 <div className="text-center space-y-4 pt-4">
                   <PayInvoiceButton amount={invoice.order.total} invoiceId={invoiceId} />
-                  <p className="text-xs text-muted-foreground">
-                    Secure payment powered by Square
-                  </p>
+                  <p className="text-xs text-muted-foreground">Secure payment powered by Square</p>
                 </div>
               </>
             )}

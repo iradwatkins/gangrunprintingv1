@@ -279,9 +279,7 @@ export default function DesignSetsPage() {
           <div className="flex justify-between items-center">
             <div>
               <CardTitle>Design Sets Management</CardTitle>
-              <CardDescription>
-                Manage collections of design options for products
-              </CardDescription>
+              <CardDescription>Manage collections of design options for products</CardDescription>
             </div>
             <Button
               onClick={() => {
@@ -545,8 +543,8 @@ export default function DesignSetsPage() {
           <DialogHeader>
             <DialogTitle>Delete Design Set</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{setToDelete?.name}&quot;? This action cannot
-              be undone.
+              Are you sure you want to delete &quot;{setToDelete?.name}&quot;? This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

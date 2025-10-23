@@ -70,10 +70,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('[GET /api/admin/notifications] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch notifications' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
   }
 }
 
@@ -93,9 +90,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[POST /api/admin/notifications/mark-read] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to mark notification as read' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to mark notification as read' }, { status: 500 })
   }
 }

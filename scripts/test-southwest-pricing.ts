@@ -19,14 +19,14 @@ const testCases: PricingTest[] = [
   // Tier 1: 0-50 lbs
   {
     weight: 10,
-    expectedPickup: 80.00, // Flat $80 for 0-50 lbs
-    expectedDash: 95.00,   // $85 base + $10 handling
+    expectedPickup: 80.0, // Flat $80 for 0-50 lbs
+    expectedDash: 95.0, // $85 base + $10 handling
     description: '10 lbs (Tier 1: ≤50 lbs)',
   },
   {
     weight: 50,
-    expectedPickup: 80.00, // Flat $80 for 0-50 lbs
-    expectedDash: 95.00,   // $85 base + $10 handling
+    expectedPickup: 80.0, // Flat $80 for 0-50 lbs
+    expectedDash: 95.0, // $85 base + $10 handling
     description: '50 lbs (Tier 1: boundary)',
   },
 
@@ -37,33 +37,33 @@ const testCases: PricingTest[] = [
     // Let me recalculate from WooCommerce logic:
     // Image 4 shows: Weight ≥51, Shipping: $102, Cost per weight: $1.75
     // This should be: $102 + ((weight - 50) × $1.75)? Or just base?
-    expectedDash: 143.00,   // $133 base + $10 handling (no per-lb for 51-100)
+    expectedDash: 143.0, // $133 base + $10 handling (no per-lb for 51-100)
     description: '51 lbs (Tier 2: start)',
   },
   {
     weight: 75,
-    expectedPickup: 145.00, // Need to verify WooCommerce calculation
-    expectedDash: 143.00,   // $133 + $10 handling
+    expectedPickup: 145.0, // Need to verify WooCommerce calculation
+    expectedDash: 143.0, // $133 + $10 handling
     description: '75 lbs (Tier 2: middle)',
   },
   {
     weight: 100,
     expectedPickup: 187.75, // Need to verify
-    expectedDash: 143.00,   // $133 + $10 handling
+    expectedDash: 143.0, // $133 + $10 handling
     description: '100 lbs (Tier 2: boundary)',
   },
 
   // Tier 3: 101+ lbs
   {
     weight: 101,
-    expectedPickup: 143.00 + (101 * 1.75) + 10, // $133 base + weight × $1.75 + $10 handling
-    expectedDash: 143.00 + (101 * 1.75) + 10,   // Same calculation
+    expectedPickup: 143.0 + 101 * 1.75 + 10, // $133 base + weight × $1.75 + $10 handling
+    expectedDash: 143.0 + 101 * 1.75 + 10, // Same calculation
     description: '101 lbs (Tier 3: start)',
   },
   {
     weight: 150,
-    expectedPickup: 143.00 + (150 * 1.75) + 10,
-    expectedDash: 143.00 + (150 * 1.75) + 10,
+    expectedPickup: 143.0 + 150 * 1.75 + 10,
+    expectedDash: 143.0 + 150 * 1.75 + 10,
     description: '150 lbs (Tier 3: heavy)',
   },
 ]
@@ -120,7 +120,7 @@ function calculateDashRate(weight: number): number {
 function runTests() {
   console.log('🧪 Southwest Cargo Pricing Verification\n')
   console.log('Comparing Next.js implementation against WooCommerce configuration\n')
-  console.log('=' .repeat(80))
+  console.log('='.repeat(80))
 
   let passed = 0
   let failed = 0
@@ -130,7 +130,7 @@ function runTests() {
 
   const weights = [10, 50, 51, 75, 100, 101, 150]
 
-  weights.forEach(weight => {
+  weights.forEach((weight) => {
     const pickupRate = calculatePickupRate(weight)
     const dashRate = calculateDashRate(weight)
 
@@ -175,7 +175,7 @@ function runTests() {
   console.log('  Tier 3: 101+ lbs → $133 + $10 handling + $1.75/lb')
   console.log()
 
-  console.log('=' .repeat(80))
+  console.log('='.repeat(80))
   console.log('\n✅ Test Complete')
   console.log(`\nNote: This test shows current calculations. Manual review needed to confirm`)
   console.log(`they match WooCommerce's conditional shipping rate logic.`)

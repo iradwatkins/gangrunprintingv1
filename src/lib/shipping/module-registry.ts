@@ -50,7 +50,13 @@ class ShippingModuleRegistry {
         testMode: true, // FORCE TEST MODE - API returns too many services
         markupPercentage: 0,
         useIntelligentPacking: true,
-        enabledServices: ['STANDARD_OVERNIGHT', 'FEDEX_2_DAY', 'FEDEX_GROUND', 'GROUND_HOME_DELIVERY', 'SMART_POST'], // Allow both ground services
+        enabledServices: [
+          'STANDARD_OVERNIGHT',
+          'FEDEX_2_DAY',
+          'FEDEX_GROUND',
+          'GROUND_HOME_DELIVERY',
+          'SMART_POST',
+        ], // Allow both ground services
       }),
       config: {
         enabled: true, // Always enabled (falls back to test rates if no API keys)

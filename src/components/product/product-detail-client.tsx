@@ -293,8 +293,7 @@ export default function ProductDetailClient({ product, configuration }: ProductD
                             ),
                             inDropdown: filtered.filter(
                               (addon: any) =>
-                                !addon.displayPosition ||
-                                addon.displayPosition === 'IN_DROPDOWN'
+                                !addon.displayPosition || addon.displayPosition === 'IN_DROPDOWN'
                             ),
                             belowDropdown: filtered.filter(
                               (addon: any) => addon.displayPosition === 'BELOW_DROPDOWN'
@@ -312,8 +311,7 @@ export default function ProductDetailClient({ product, configuration }: ProductD
                     ProductImage: product.ProductImage,
                   }}
                   productId={product.id}
-                  onAddonChange={(addonId: string, selected: boolean) => {
-                  }}
+                  onAddonChange={(addonId: string, selected: boolean) => {}}
                 />
               ) : (
                 <div className="p-4 text-red-500">

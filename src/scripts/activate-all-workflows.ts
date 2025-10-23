@@ -37,7 +37,7 @@ async function main() {
 
     console.log('\n⚠️  WARNING: This will activate ALL workflows and start sending emails!')
     console.log('Press Ctrl+C to cancel or wait 5 seconds to continue...\n')
-    await new Promise(resolve => setTimeout(resolve, 5000))
+    await new Promise((resolve) => setTimeout(resolve, 5000))
 
     // Activate all workflows
     const result = await prisma.marketingWorkflow.updateMany({
@@ -64,12 +64,15 @@ async function main() {
     for (const workflow of activeWorkflows) {
       const trigger = workflow.trigger as any
       console.log(`✓ ${workflow.name}`)
-      console.log(`  Trigger: ${trigger.event || trigger.schedule?.type || trigger.condition?.field}`)
+      console.log(
+        `  Trigger: ${trigger.event || trigger.schedule?.type || trigger.condition?.field}`
+      )
     }
 
     console.log('\n' + '─'.repeat(80))
-    console.log(`\n✨ ${activeWorkflows.length} workflows are now ACTIVE and ready to send emails!\n`)
-
+    console.log(
+      `\n✨ ${activeWorkflows.length} workflows are now ACTIVE and ready to send emails!\n`
+    )
   } catch (error) {
     console.error('❌ Error activating workflows:', error)
     process.exit(1)

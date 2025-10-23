@@ -147,7 +147,11 @@ export function generateSEOReportPDF(data: SEOReportData): Blob {
         [
           'Performance Score',
           data.performance.performanceScore.toString(),
-          data.performance.performanceScore >= 90 ? 'Good' : data.performance.performanceScore >= 50 ? 'Fair' : 'Poor',
+          data.performance.performanceScore >= 90
+            ? 'Good'
+            : data.performance.performanceScore >= 50
+              ? 'Fair'
+              : 'Poor',
         ],
         [
           'LCP (ms)',
@@ -183,18 +187,20 @@ export function generateSEOReportPDF(data: SEOReportData): Blob {
   doc.text('Keyword Rankings', 14, yPos)
   yPos += 3
 
-  const rankingsData = data.rankings.slice(0, 20).map(r => [
-    r.keyword,
-    `#${r.position}`,
-    r.clicks.toString(),
-    r.impressions.toLocaleString(),
-    `${r.ctr.toFixed(1)}%`,
-    r.positionChange
-      ? r.positionChange > 0
-        ? `+${r.positionChange}`
-        : r.positionChange.toString()
-      : '-',
-  ])
+  const rankingsData = data.rankings
+    .slice(0, 20)
+    .map((r) => [
+      r.keyword,
+      `#${r.position}`,
+      r.clicks.toString(),
+      r.impressions.toLocaleString(),
+      `${r.ctr.toFixed(1)}%`,
+      r.positionChange
+        ? r.positionChange > 0
+          ? `+${r.positionChange}`
+          : r.positionChange.toString()
+        : '-',
+    ])
 
   autoTable(doc, {
     startY: yPos,
@@ -219,7 +225,7 @@ export function generateSEOReportPDF(data: SEOReportData): Blob {
     doc.text('Alerts & Recommendations', 14, yPos)
     yPos += 3
 
-    const alertsData = data.alerts.map(a => [
+    const alertsData = data.alerts.map((a) => [
       a.severity,
       a.keyword,
       `#${a.oldValue} → #${a.newValue}`,

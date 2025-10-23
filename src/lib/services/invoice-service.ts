@@ -8,54 +8,54 @@
  * - Email notifications
  */
 
-import { prisma } from '@/lib/prisma';
-import { Prisma, type PaymentMethodType } from '@prisma/client';
-import { randomUUID } from 'crypto';
+import { prisma } from '@/lib/prisma'
+import { Prisma, type PaymentMethodType } from '@prisma/client'
+import { randomUUID } from 'crypto'
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 export interface CreateInvoiceParams {
-  orderId: string;
-  paymentDueDate?: Date;
-  customMessage?: string;
+  orderId: string
+  paymentDueDate?: Date
+  customMessage?: string
 }
 
 export interface InvoiceDetails {
-  invoiceNumber: string;
-  invoiceId: string;
+  invoiceNumber: string
+  invoiceId: string
   order: {
-    id: string;
-    orderNumber: string;
-    total: number;
-    subtotal: number;
-    tax: number;
-    shipping: number;
+    id: string
+    orderNumber: string
+    total: number
+    subtotal: number
+    tax: number
+    shipping: number
     items: {
-      productName: string;
-      quantity: number;
-      price: number;
-      options?: any;
-    }[];
+      productName: string
+      quantity: number
+      price: number
+      options?: any
+    }[]
     customer: {
-      name: string | null;
-      email: string;
-      phone: string | null;
-    };
-    shippingAddress: any;
-  };
-  paymentDueDate: Date;
-  paymentLink: string;
-  status: 'pending' | 'viewed' | 'paid' | 'overdue';
+      name: string | null
+      email: string
+      phone: string | null
+    }
+    shippingAddress: any
+  }
+  paymentDueDate: Date
+  paymentLink: string
+  status: 'pending' | 'viewed' | 'paid' | 'overdue'
 }
 
 export interface RecordPaymentParams {
-  invoiceId: string;
-  paymentMethodType: PaymentMethodType;
-  squarePaymentId?: string;
-  paymentIntentId?: string;
-  notes?: string;
+  invoiceId: string
+  paymentMethodType: PaymentMethodType
+  squarePaymentId?: string
+  paymentIntentId?: string
+  notes?: string
 }
 
 // ============================================================================
@@ -67,7 +67,7 @@ export interface RecordPaymentParams {
  * Example: INV-2025-000123
  */
 export async function generateInvoiceNumber(): Promise<string> {
-  const year = new Date().getFullYear();
+  const year = new Date().getFullYear()
 
   // Find the last invoice for this year
   const lastInvoice = await prisma.order.findFirst({
@@ -82,19 +82,19 @@ export async function generateInvoiceNumber(): Promise<string> {
     select: {
       invoiceNumber: true,
     },
-  });
+  })
 
-  let sequence = 1;
+  let sequence = 1
 
   if (lastInvoice?.invoiceNumber) {
     // Extract sequence number from last invoice
-    const parts = lastInvoice.invoiceNumber.split('-');
-    const lastSequence = parseInt(parts[2], 10);
-    sequence = lastSequence + 1;
+    const parts = lastInvoice.invoiceNumber.split('-')
+    const lastSequence = parseInt(parts[2], 10)
+    sequence = lastSequence + 1
   }
 
   // Format: INV-2025-000123 (6 digits, zero-padded)
-  return `INV-${year}-${sequence.toString().padStart(6, '0')}`;
+  return `INV-${year}-${sequence.toString().padStart(6, '0')}`
 }
 
 /**
@@ -102,7 +102,7 @@ export async function generateInvoiceNumber(): Promise<string> {
  * Used for public invoice view URLs
  */
 export function generateInvoiceId(): string {
-  return randomUUID();
+  return randomUUID()
 }
 
 // ============================================================================
@@ -114,7 +114,7 @@ export function generateInvoiceId(): string {
  * Sets invoice number, invoice ID, and payment due date
  */
 export async function createInvoice(params: CreateInvoiceParams): Promise<InvoiceDetails> {
-  const { orderId, paymentDueDate, customMessage } = params;
+  const { orderId, paymentDueDate, customMessage } = params
 
   // Get order with items and customer info
   const order = await prisma.order.findUnique({
@@ -131,22 +131,22 @@ export async function createInvoice(params: CreateInvoiceParams): Promise<Invoic
       },
       User: true,
     },
-  });
+  })
 
   if (!order) {
-    throw new Error(`Order ${orderId} not found`);
+    throw new Error(`Order ${orderId} not found`)
   }
 
   if (order.invoiceNumber) {
-    throw new Error(`Order ${orderId} already has an invoice: ${order.invoiceNumber}`);
+    throw new Error(`Order ${orderId} already has an invoice: ${order.invoiceNumber}`)
   }
 
   // Calculate due date (default: 7 days from now)
-  const dueDate = paymentDueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const dueDate = paymentDueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   // Generate invoice identifiers
-  const invoiceNumber = await generateInvoiceNumber();
-  const invoiceId = generateInvoiceId();
+  const invoiceNumber = await generateInvoiceNumber()
+  const invoiceId = generateInvoiceId()
 
   // Update order with invoice details
   const updatedOrder = await prisma.order.update({
@@ -169,7 +169,7 @@ export async function createInvoice(params: CreateInvoiceParams): Promise<Invoic
       },
       User: true,
     },
-  });
+  })
 
   // Create status history entry
   await prisma.statusHistory.create({
@@ -180,12 +180,12 @@ export async function createInvoice(params: CreateInvoiceParams): Promise<Invoic
       notes: `Invoice ${invoiceNumber} generated and sent to customer`,
       changedBy: order.createdByAdminId || undefined,
     },
-  });
+  })
 
   // Build invoice details
-  const paymentLink = `${process.env.NEXT_PUBLIC_URL}/invoice/${invoiceId}`;
+  const paymentLink = `${process.env.NEXT_PUBLIC_URL}/invoice/${invoiceId}`
 
-  return buildInvoiceDetails(updatedOrder, paymentLink);
+  return buildInvoiceDetails(updatedOrder, paymentLink)
 }
 
 /**
@@ -206,14 +206,14 @@ export async function getInvoiceByInvoiceId(invoiceId: string): Promise<InvoiceD
       },
       User: true,
     },
-  });
+  })
 
   if (!order) {
-    return null;
+    return null
   }
 
-  const paymentLink = `${process.env.NEXT_PUBLIC_URL}/invoice/${invoiceId}`;
-  return buildInvoiceDetails(order, paymentLink);
+  const paymentLink = `${process.env.NEXT_PUBLIC_URL}/invoice/${invoiceId}`
+  return buildInvoiceDetails(order, paymentLink)
 }
 
 /**
@@ -223,10 +223,10 @@ export async function trackInvoiceView(invoiceId: string): Promise<void> {
   const order = await prisma.order.findUnique({
     where: { invoiceId },
     select: { id: true, invoiceViewedAt: true },
-  });
+  })
 
   if (!order) {
-    throw new Error(`Invoice ${invoiceId} not found`);
+    throw new Error(`Invoice ${invoiceId} not found`)
   }
 
   // Only record first view
@@ -236,7 +236,7 @@ export async function trackInvoiceView(invoiceId: string): Promise<void> {
       data: {
         invoiceViewedAt: new Date(),
       },
-    });
+    })
   }
 }
 
@@ -249,18 +249,18 @@ export async function trackInvoiceView(invoiceId: string): Promise<void> {
  * Updates order status to PAID and records payment details
  */
 export async function recordPayment(params: RecordPaymentParams): Promise<void> {
-  const { invoiceId, paymentMethodType, squarePaymentId, paymentIntentId, notes } = params;
+  const { invoiceId, paymentMethodType, squarePaymentId, paymentIntentId, notes } = params
 
   const order = await prisma.order.findUnique({
     where: { invoiceId },
-  });
+  })
 
   if (!order) {
-    throw new Error(`Invoice ${invoiceId} not found`);
+    throw new Error(`Invoice ${invoiceId} not found`)
   }
 
   if (order.paidAt) {
-    throw new Error(`Invoice ${invoiceId} has already been paid`);
+    throw new Error(`Invoice ${invoiceId} has already been paid`)
   }
 
   // Update order with payment info
@@ -273,7 +273,7 @@ export async function recordPayment(params: RecordPaymentParams): Promise<void> 
       squarePaymentId: squarePaymentId || order.squarePaymentId,
       paymentIntentId,
     },
-  });
+  })
 
   // Create status history entry
   await prisma.statusHistory.create({
@@ -284,31 +284,34 @@ export async function recordPayment(params: RecordPaymentParams): Promise<void> 
       notes: notes || `Payment received via ${paymentMethodType}`,
       changedBy: order.createdByAdminId || undefined,
     },
-  });
+  })
 }
 
 /**
  * Check if invoice is overdue
  */
-export function isInvoiceOverdue(order: { paymentDueDate: Date | null; paidAt: Date | null }): boolean {
-  if (order.paidAt) return false; // Paid invoices are never overdue
-  if (!order.paymentDueDate) return false; // No due date set
+export function isInvoiceOverdue(order: {
+  paymentDueDate: Date | null
+  paidAt: Date | null
+}): boolean {
+  if (order.paidAt) return false // Paid invoices are never overdue
+  if (!order.paymentDueDate) return false // No due date set
 
-  return order.paymentDueDate < new Date();
+  return order.paymentDueDate < new Date()
 }
 
 /**
  * Get invoice status
  */
 export function getInvoiceStatus(order: {
-  paidAt: Date | null;
-  invoiceViewedAt: Date | null;
-  paymentDueDate: Date | null;
+  paidAt: Date | null
+  invoiceViewedAt: Date | null
+  paymentDueDate: Date | null
 }): 'pending' | 'viewed' | 'paid' | 'overdue' {
-  if (order.paidAt) return 'paid';
-  if (isInvoiceOverdue(order)) return 'overdue';
-  if (order.invoiceViewedAt) return 'viewed';
-  return 'pending';
+  if (order.paidAt) return 'paid'
+  if (isInvoiceOverdue(order)) return 'overdue'
+  if (order.invoiceViewedAt) return 'viewed'
+  return 'pending'
 }
 
 // ============================================================================
@@ -331,7 +334,7 @@ export async function getUnpaidInvoices() {
     orderBy: {
       paymentDueDate: 'asc',
     },
-  });
+  })
 }
 
 /**
@@ -353,7 +356,7 @@ export async function getOverdueInvoices() {
     orderBy: {
       paymentDueDate: 'asc',
     },
-  });
+  })
 }
 
 /**
@@ -372,7 +375,7 @@ export async function getInvoicesByAdmin(adminId: string) {
     orderBy: {
       createdAt: 'desc',
     },
-  });
+  })
 }
 
 // ============================================================================
@@ -409,7 +412,7 @@ function buildInvoiceDetails(order: any, paymentLink: string): InvoiceDetails {
     paymentDueDate: order.paymentDueDate!,
     paymentLink,
     status: getInvoiceStatus(order),
-  };
+  }
 }
 
 /**
@@ -419,7 +422,7 @@ export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(amount);
+  }).format(amount)
 }
 
 /**
@@ -430,5 +433,5 @@ export function formatDate(date: Date): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(date);
+  }).format(date)
 }

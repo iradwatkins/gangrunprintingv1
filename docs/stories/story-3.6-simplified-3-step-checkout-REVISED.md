@@ -14,11 +14,13 @@
 Redesign the checkout flow from a **4-step process** to a **simplified 3-step process** based on proven UX patterns from high-converting print e-commerce sites (specifically UVCoatedClubFlyers.com).
 
 **Current Flow (4 Steps):**
+
 ```
 Information → Shipping → Payment Method Selection → Review & Pay
 ```
 
 **New Flow (3 Steps):**
+
 ```
 Step 1: Order Summary
 Step 2: Shipping Method (Complete Address for Shipping Options)
@@ -30,16 +32,19 @@ Step 3: Payment (Confirm your order)
 ## 🎯 Key Requirements
 
 ### Guest Checkout
+
 - **NO LOGIN REQUIRED** - Customers can checkout as guests
 - Only require: Email + Phone + Shipping Address
 - Optional: Company name
 
 ### Billing Address Smart Default
+
 - **Default:** Billing address same as shipping
 - Only show billing address fields if customer checks "Billing address is different"
 - **Saves time:** 95% of customers have same billing/shipping address
 
 ### Notes System (Space-Saving)
+
 Two types of notes, **both hidden behind checkboxes**:
 
 1. **Order Notes Checkbox**
@@ -53,7 +58,9 @@ Two types of notes, **both hidden behind checkboxes**:
    - Example: "Leave package at side door"
 
 ### Payment Method Switching
+
 Payment forms appear **immediately** when method is selected (see CC example images):
+
 - Credit Card selected → Card form visible (Card Number, MM/YY, CVV)
 - PayPal selected → "Pay via PayPal" + PayPal button
 - Cash App Pay selected → "Pay securely using Cash App Pay" + button
@@ -66,6 +73,7 @@ Payment forms appear **immediately** when method is selected (see CC example ima
 ### **Step 1: Order Summary**
 
 **Page Header:**
+
 ```
 Order Summary
 ```
@@ -73,11 +81,13 @@ Order Summary
 **Components:**
 
 1. **Progress Indicator**
+
    ```
    ● 1. Order Summary  →  ○ 2. Shipping Method  →  ○ 3. Payment
    ```
 
 2. **Product Details Card** (not collapsible on this step)
+
    ```
    ┌─────────────────────────────────────────────┐
    │ [📄 Icon]  5000 9pt Standard 4x6 Flyers    │ $160.55
@@ -90,6 +100,7 @@ Order Summary
    ```
 
 3. **Uploaded Images Display** (if files uploaded)
+
    ```
    ┌─────────────────────────────────────────────┐
    │ ✅ Design Files Uploaded (3)                │
@@ -98,6 +109,7 @@ Order Summary
    ```
 
 4. **Price Breakdown**
+
    ```
    Subtotal:        $160.55
    Shipping:        TBD
@@ -116,12 +128,14 @@ Order Summary
 ### **Step 2: Shipping Method**
 
 **Page Header:**
+
 ```
 Shipping Method
 Complete Address for Shipping Options
 ```
 
 **Progress Indicator:**
+
 ```
 ✓ 1. Order Summary  →  ● 2. Shipping Method  →  ○ 3. Payment
 ```
@@ -129,12 +143,15 @@ Complete Address for Shipping Options
 **Components:**
 
 1. **Collapsible Order Summary (Top)** - New Feature
+
    ```
    [▼ Show Order Summary ▲]                      $222.01
    ```
+
    When expanded, shows full product details + price breakdown
 
 2. **Contact Information Section**
+
    ```
    📧 Contact Details
 
@@ -145,6 +162,7 @@ Complete Address for Shipping Options
    ```
 
 3. **Shipping Address Section**
+
    ```
    📍 Shipping Address
 
@@ -155,6 +173,7 @@ Complete Address for Shipping Options
    ```
 
 4. **Billing Address Section** (Smart Show/Hide)
+
    ```
    ☑ Billing address same as shipping
 
@@ -170,6 +189,7 @@ Complete Address for Shipping Options
    ```
 
 5. **Shipping Options** (Prices Right-Aligned)
+
    ```
    Shipping to: John Doe, 123 Main Street, Dallas, TX 75001
 
@@ -185,6 +205,7 @@ Complete Address for Shipping Options
    ```
 
 6. **Order Notes** (Hidden Behind Checkbox)
+
    ```
    ☐ Add notes for your order
 
@@ -201,6 +222,7 @@ Complete Address for Shipping Options
    ```
 
 7. **Shipping Notes** (Hidden Behind Checkbox)
+
    ```
    ☐ Add notes for shipping
 
@@ -227,12 +249,14 @@ Complete Address for Shipping Options
 ### **Step 3: Payment**
 
 **Page Header:**
+
 ```
 Payment
 Confirm your order
 ```
 
 **Progress Indicator:**
+
 ```
 ✓ 1. Order Summary  →  ✓ 2. Shipping Method  →  ● 3. Payment
 ```
@@ -240,6 +264,7 @@ Confirm your order
 **Components:**
 
 1. **Collapsible Order Summary** (Expanded by default)
+
    ```
    [▼ Hide Order Summary ▲]                      $222.01
 
@@ -256,27 +281,32 @@ Confirm your order
    ```
 
 2. **Review Section with Change Links**
+
    ```
    Email:   john.doe@example.com              [Change]
    Phone:   (555) 123-4567                    [Change]
    Name:    John Doe                          [Change]
    Method:  FedEx Ground Home Delivery        [Change]
    ```
+
    Clicking "Change" navigates back to Step 2 and scrolls to that field
 
 3. **Order Notes Display** (if provided)
+
    ```
    📝 Order Notes
    Please use red ink for company logo
    ```
 
 4. **Shipping Notes Display** (if provided)
+
    ```
    🚚 Shipping Notes
    Leave package at side door, call on arrival
    ```
 
 5. **Complete Payment Section**
+
    ```
    Complete Payment
 
@@ -284,6 +314,7 @@ Confirm your order
    ```
 
 6. **Payment Information Section**
+
    ```
    Payment Information
    All transactions are secure and encrypted.
@@ -292,6 +323,7 @@ Confirm your order
 7. **Payment Method Selection** (With Visible Forms)
 
    **● Credit Card (Default Selected)**
+
    ```
    ● Credit Card
      [Visa] [MC] [Amex] [Discover] [Diners] [UnionPay]
@@ -303,6 +335,7 @@ Confirm your order
    ```
 
    **○ PayPal**
+
    ```
    ○ PayPal [PayPal logo]
 
@@ -315,6 +348,7 @@ Confirm your order
    ```
 
    **○ Cash App Pay**
+
    ```
    ○ Cash App Pay [$]
 
@@ -324,6 +358,7 @@ Confirm your order
    ```
 
    **○ Test Gateway (DEV ONLY)**
+
    ```
    ○ Test Gateway By FunnelKit
 
@@ -332,6 +367,7 @@ Confirm your order
    ```
 
 8. **Privacy & Terms**
+
    ```
    Your personal data will be used to process your order,
    support your experience throughout this website, and for
@@ -341,6 +377,7 @@ Confirm your order
    ```
 
 9. **Action Buttons**
+
    ```
    [🔒 PLACE ORDER NOW $222.01]
    (Big red button, full width, large text)
@@ -349,6 +386,7 @@ Confirm your order
    ```
 
 10. **Trust Badges**
+
     ```
     [🔒 McAfee Secure]      [✓ Norton Secured]
 
@@ -415,6 +453,7 @@ Right sidebar visible on all steps (desktop only, hidden on mobile):
 **File:** `/src/app/(customer)/checkout/page.tsx`
 
 **1. Update STEPS array** (around line 56):
+
 ```typescript
 const STEPS: {
   id: CheckoutStep
@@ -426,29 +465,31 @@ const STEPS: {
     id: 'order-summary',
     label: 'Order Summary',
     subtitle: '',
-    icon: Package2
+    icon: Package2,
   },
   {
     id: 'shipping',
     label: 'Shipping Method',
     subtitle: 'Complete Address for Shipping Options',
-    icon: Truck
+    icon: Truck,
   },
   {
     id: 'payment',
     label: 'Payment',
     subtitle: 'Confirm your order',
-    icon: CreditCard
+    icon: CreditCard,
   },
 ]
 ```
 
 **2. Update CheckoutStep type** (around line 54):
+
 ```typescript
 type CheckoutStep = 'order-summary' | 'shipping' | 'payment'
 ```
 
 **3. Add new state variables** (around line 72-99):
+
 ```typescript
 const [currentStep, setCurrentStep] = useState<CheckoutStep>('order-summary')
 const [orderNotes, setOrderNotes] = useState<string>('')
@@ -459,6 +500,7 @@ const [billingDifferent, setBillingDifferent] = useState<boolean>(false)
 ```
 
 **4. Update formData state** (around line 85):
+
 ```typescript
 const [formData, setFormData] = useState({
   email: '',
@@ -1625,6 +1667,7 @@ const createCheckoutData = () => {
 ## 📝 Acceptance Criteria (Updated)
 
 ### Step 1: Order Summary
+
 - [ ] Shows product details card (not collapsible)
 - [ ] Displays all selected options (QUANTITY, SIZE, PAPER, etc.)
 - [ ] Shows uploaded images if present (with grid layout)
@@ -1633,6 +1676,7 @@ const createCheckoutData = () => {
 - [ ] "Back to Cart" link works
 
 ### Step 2: Shipping Method
+
 - [ ] Collapsible order summary at top (collapsed by default)
 - [ ] Contact information fields visible (Email, Phone, Name, Company)
 - [ ] Shipping address fields visible
@@ -1647,6 +1691,7 @@ const createCheckoutData = () => {
 - [ ] Subtitle: "Complete Address for Shipping Options"
 
 ### Step 3: Payment
+
 - [ ] Collapsible order summary at top (expanded by default)
 - [ ] Review section shows Email, Phone, Name, Method with "Change" links
 - [ ] "Change" links navigate back to Step 2
@@ -1664,12 +1709,14 @@ const createCheckoutData = () => {
 - [ ] Subtitle: "Confirm your order"
 
 ### Sidebar: Shop With Confidence
+
 - [ ] Visible on all steps (desktop only)
 - [ ] Shows 4 trust badges (100% Money-Back, Nextday Airport, etc.)
 - [ ] Shows 3 customer testimonials with 5-star ratings
 - [ ] Sticky positioning works correctly
 
 ### General
+
 - [ ] Progress indicator shows 3 steps (not 4)
 - [ ] Guest checkout works (no login required)
 - [ ] Mobile responsive design (sidebar hidden on mobile)
@@ -1685,6 +1732,7 @@ const createCheckoutData = () => {
 ## 🧪 Testing Checklist (Updated)
 
 ### Desktop Testing
+
 - [ ] Complete checkout with Credit Card (Square form visible)
 - [ ] Complete checkout with PayPal (PayPal button shown)
 - [ ] Complete checkout with Cash App Pay (if implemented)
@@ -1699,6 +1747,7 @@ const createCheckoutData = () => {
 - [ ] Test with both billing same and different addresses
 
 ### Mobile Testing
+
 - [ ] Test complete flow on mobile (320px - 414px width)
 - [ ] Verify sidebar is hidden on mobile
 - [ ] Verify collapsible summary works on mobile
@@ -1708,6 +1757,7 @@ const createCheckoutData = () => {
 - [ ] Test notes checkboxes on mobile
 
 ### Edge Cases
+
 - [ ] Test with no uploaded files
 - [ ] Test with multiple uploaded files (4+)
 - [ ] Test with very long order notes (500+ characters)
@@ -1723,11 +1773,13 @@ const createCheckoutData = () => {
 ## 📚 References (Updated)
 
 ### Design References
+
 - UVCoatedClubFlyers.com checkout flow (`.aaaaaa/checkout flow/` directory)
 - CC payment method examples (`.aaaaaa/checkout flow/cc/` directory)
 - [Checkout UX Analysis](/docs/checkout-ux-analysis-2025-10-11.md)
 
 ### Related Stories
+
 - Story 3.3: Address Management Enhancement
 - Story 3.4: Shipping Provider Selection
 - Story 3.5: Payment Processing Integration
@@ -1737,6 +1789,7 @@ const createCheckoutData = () => {
 ## 🚀 Deployment Plan
 
 ### Pre-Deployment
+
 1. **Code Review**
    - Review all checkout page changes
    - Review new ConfidenceSidebar component
@@ -1756,6 +1809,7 @@ const createCheckoutData = () => {
    - Verify billing address fields exist
 
 ### Deployment
+
 ```bash
 npm run build
 pm2 stop gangrunprinting
@@ -1767,6 +1821,7 @@ pm2 save
 ```
 
 ### Post-Deployment
+
 1. **Smoke Tests**
    - Complete full checkout flow
    - Test all payment methods

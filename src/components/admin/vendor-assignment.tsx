@@ -36,7 +36,9 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
   const suggestedVendor =
     order.categoryVendors && order.categoryVendors.length > 0 ? order.categoryVendors[0] : null
 
-  const [selectedVendorId, setSelectedVendorId] = useState(order.vendorId || suggestedVendorId || '')
+  const [selectedVendorId, setSelectedVendorId] = useState(
+    order.vendorId || suggestedVendorId || ''
+  )
   const [isAssigning, setIsAssigning] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [notes, setNotes] = useState('')
@@ -192,9 +194,7 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
                 <AlertDescription>
                   <div>
                     <strong>Suggested:</strong> {suggestedVendor.name}
-                    <div className="text-xs text-muted-foreground mt-1">
-                      From product category
-                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">From product category</div>
                   </div>
                 </AlertDescription>
               </Alert>

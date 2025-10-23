@@ -232,7 +232,6 @@ export function useModule(...): ModuleValue {
 
 ```tsx
 import { QuantityModule } from './modules/quantity'
-
 ;<QuantityModule
   quantities={quantityData}
   value={selectedQuantityId}

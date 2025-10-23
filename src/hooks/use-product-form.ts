@@ -38,7 +38,13 @@ export interface ProductFormData {
 }
 
 export interface ProductFormOptions {
-  categories: Array<{ id: string; name: string; description?: string; slug?: string; isHidden?: boolean }>
+  categories: Array<{
+    id: string
+    name: string
+    description?: string
+    slug?: string
+    isHidden?: boolean
+  }>
   paperStockSets: Array<{
     id: string
     name: string

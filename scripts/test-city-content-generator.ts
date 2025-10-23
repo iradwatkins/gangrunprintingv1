@@ -9,14 +9,14 @@ import { prisma } from '../src/lib/prisma'
 
 async function testContentGenerator() {
   console.log('🧪 Testing City Content Generator for Uniqueness\n')
-  console.log('=' .repeat(80))
+  console.log('='.repeat(80))
 
   try {
     // Get 3 sample cities
     const cities = await prisma.city.findMany({
       where: { isActive: true },
       orderBy: { rank: 'asc' },
-      take: 3
+      take: 3,
     })
 
     if (cities.length === 0) {
@@ -26,20 +26,24 @@ async function testContentGenerator() {
 
     console.log(`\nFound ${cities.length} cities for testing:`)
     cities.forEach((city, i) => {
-      console.log(`  ${i + 1}. ${city.name}, ${city.stateCode} (Pop: ${city.population.toLocaleString()})`)
+      console.log(
+        `  ${i + 1}. ${city.name}, ${city.stateCode} (Pop: ${city.population.toLocaleString()})`
+      )
     })
     console.log()
 
     // Test templates
     const templates = {
       titleTemplate: 'Professional [PRODUCT] Printing in [CITY], [STATE] | GangRun Printing',
-      metaDescTemplate: 'Order premium [PRODUCT] in [CITY], [STATE]. Fast printing, [POPULATION_FORMATTED] satisfied customers. Free shipping on orders over $50.',
+      metaDescTemplate:
+        'Order premium [PRODUCT] in [CITY], [STATE]. Fast printing, [POPULATION_FORMATTED] satisfied customers. Free shipping on orders over $50.',
       h1Template: 'Professional [PRODUCT] Printing in [CITY], [STATE]',
-      contentTemplate: 'Welcome to [CITY], [STATE] - serving [POPULATION_FORMATTED] residents across [NEIGHBORHOODS].'
+      contentTemplate:
+        'Welcome to [CITY], [STATE] - serving [POPULATION_FORMATTED] residents across [NEIGHBORHOODS].',
     }
 
     const productType = 'Postcards 4x6'
-    const results: Array<{city: string, content: any}> = []
+    const results: Array<{ city: string; content: any }> = []
 
     // Generate content for each city
     for (const city of cities) {
@@ -54,7 +58,7 @@ async function testContentGenerator() {
 
       results.push({
         city: `${city.name}, ${city.stateCode}`,
-        content
+        content,
       })
 
       console.log(`  ✅ Generated:`)
@@ -116,7 +120,6 @@ async function testContentGenerator() {
       console.log(result.content.aiIntro)
       console.log('\n' + '-'.repeat(80) + '\n')
     })
-
   } catch (error) {
     console.error('❌ Error testing content generator:', error)
     throw error

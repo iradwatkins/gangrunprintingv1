@@ -1,4 +1,5 @@
 # System Fix Report - Southwest Cargo & Upload Flow
+
 **Date:** October 19, 2025
 **Status:** ✅ FIXES APPLIED - AWAITING FINAL TESTING
 
@@ -7,50 +8,64 @@
 ## 🎯 Issues Identified & Fixed
 
 ### 1. ✅ Southwest Cargo Airports Not Seeded
+
 **Problem:**
+
 - Database had 0 Southwest Cargo airports
 - Shipping API couldn't show Southwest Cargo rates
 
 **Root Cause:**
+
 - Seed script had Prisma validation error (missing `updatedAt` field)
 
 **Fix Applied:**
+
 - Updated `/scripts/seed-southwest-airports.ts` to include `updatedAt` field
 - Successfully seeded all 82 Southwest Cargo airports
 - Verification: `SELECT COUNT(*) FROM "Airport" WHERE carrier = 'SOUTHWEST_CARGO'` returns 82 ✅
 
 **Files Modified:**
+
 - `scripts/seed-southwest-airports.ts` ✅
 
 ---
 
 ### 2. ✅ Airport Availability Checker Using Wrong Field
+
 **Problem:**
+
 - Southwest Cargo provider never returned rates
 - Availability checker looking for `operator: 'Southwest Cargo'`
 - Database uses `carrier: 'SOUTHWEST_CARGO'`
 
 **Root Cause:**
+
 - Field mismatch between availability checker and database schema
 
 **Fix Applied:**
+
 - Changed query in `src/lib/shipping/modules/southwest-cargo/airport-availability.ts`
 - Old: `where: { operator: 'Southwest Cargo', isActive: true }`
 - New: `where: { carrier: 'SOUTHWEST_CARGO', isActive: true }`
 
 **Files Modified:**
+
 - `src/lib/shipping/modules/southwest-cargo/airport-availability.ts` ✅
 
 ---
 
 ### 3. ✅ Docker Build Webpack Cache Configuration Error
+
 **Problem:**
+
 - Docker build failing with webpack cache directory error
 
 **Fix Applied:**
+
 - Removed webpack cache configuration from production builds
 
 **Files Modified:**
+
 - `next.config.mjs` ✅
 
 ---
@@ -96,9 +111,11 @@
 ### Changes Implemented
 
 #### 1. Airport Display in Admin Order Forms ✅
+
 **File:** `/src/app/admin/orders/[id]/page.tsx`
 
 **Changes:**
+
 - Modified `getOrder()` function to fetch Airport data when `selectedAirportId` exists
 - Added new "Shipping & Tracking" section displaying:
   - Shipping Method
@@ -108,11 +125,13 @@
 **Code Location:** Lines 68-77 (airport fetch), Lines 570-628 (display section)
 
 #### 2. Customer Uploaded Files Display ✅
+
 **Status:** Already functional - no changes needed
 
 **Component:** `/src/components/admin/files/order-files-manager.tsx`
 
 **Existing Features:**
+
 - Fetches files from `/api/orders/${orderId}/files`
 - Displays all customer artwork (`CUSTOMER_ARTWORK` fileType)
 - Approval workflow (WAITING, APPROVED, REJECTED)
@@ -122,9 +141,11 @@
 **Integration:** Line 483 of order page
 
 #### 3. Remove Duplicate Tracking Fields ✅
+
 **File:** `/src/app/admin/orders/[id]/page.tsx`
 
 **Changes:**
+
 - Removed "Update Tracking" button from Quick Actions section
 - Consolidated all tracking functionality into new "Shipping & Tracking" section
 
@@ -133,18 +154,21 @@
 **New Files Created:**
 
 A. **Client Component:** `/src/components/admin/orders/editable-tracking.tsx` (127 lines)
-   - Edit mode with Save/Cancel buttons
-   - View mode with "Track Package" link
-   - Carrier-specific tracking URLs (FedEx, UPS, USPS, Southwest Cargo)
-   - Toast notifications
-   - Loading states
+
+- Edit mode with Save/Cancel buttons
+- View mode with "Track Package" link
+- Carrier-specific tracking URLs (FedEx, UPS, USPS, Southwest Cargo)
+- Toast notifications
+- Loading states
 
 B. **API Endpoint:** `/src/app/api/admin/orders/[id]/tracking/route.ts` (35 lines)
-   - PATCH endpoint for updating tracking number
-   - Admin-only authentication
-   - Updates `trackingNumber` field in database
+
+- PATCH endpoint for updating tracking number
+- Admin-only authentication
+- Updates `trackingNumber` field in database
 
 **Tracking URLs Supported:**
+
 - FedEx: `https://www.fedex.com/fedextrack/?trknbr=...`
 - UPS: `https://www.ups.com/track?tracknum=...`
 - USPS: `https://tools.usps.com/go/TrackConfirmAction?tLabels=...`
@@ -153,11 +177,11 @@ B. **API Endpoint:** `/src/app/api/admin/orders/[id]/tracking/route.ts` (35 line
 
 ### Files Changed Summary
 
-| File | Type | Changes |
-|------|------|---------|
-| `/src/app/admin/orders/[id]/page.tsx` | Modified | +60 lines |
-| `/src/components/admin/orders/editable-tracking.tsx` | Created | +127 lines |
-| `/src/app/api/admin/orders/[id]/tracking/route.ts` | Created | +35 lines |
+| File                                                 | Type     | Changes    |
+| ---------------------------------------------------- | -------- | ---------- |
+| `/src/app/admin/orders/[id]/page.tsx`                | Modified | +60 lines  |
+| `/src/components/admin/orders/editable-tracking.tsx` | Created  | +127 lines |
+| `/src/app/api/admin/orders/[id]/tracking/route.ts`   | Created  | +35 lines  |
 
 **Total:** 2 new files, 1 modified file, ~222 lines added
 
@@ -171,6 +195,7 @@ B. **API Endpoint:** `/src/app/api/admin/orders/[id]/tracking/route.ts` (35 line
 **Impact:** Cannot deploy to production (same error from previous sessions)
 
 **Build Status:**
+
 ```bash
 ✅ Compiles successfully (78s)
 ✅ TypeScript validation passes
@@ -184,6 +209,7 @@ B. **API Endpoint:** `/src/app/api/admin/orders/[id]/tracking/route.ts` (35 line
 ## ✅ Verification Checklist
 
 ### Code Quality
+
 - [x] TypeScript compilation successful
 - [x] All imports properly typed
 - [x] Client/Server components separated correctly
@@ -191,6 +217,7 @@ B. **API Endpoint:** `/src/app/api/admin/orders/[id]/tracking/route.ts` (35 line
 - [x] Security validation (admin-only endpoints)
 
 ### Functionality
+
 - [x] Airport display logic implemented
 - [x] Tracking number edit/save flow complete
 - [x] Click-to-track URLs for all carriers
@@ -198,6 +225,7 @@ B. **API Endpoint:** `/src/app/api/admin/orders/[id]/tracking/route.ts` (35 line
 - [x] Duplicate tracking fields removed
 
 ### User Experience
+
 - [x] Collapsible sections for organization
 - [x] Toast notifications for save actions
 - [x] Loading states during saves

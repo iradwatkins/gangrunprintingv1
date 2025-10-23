@@ -70,7 +70,8 @@ export async function POST(req: NextRequest) {
           lastActivity: now,
           // Mark as recovered if was previously abandoned
           recovered: existingCart.abandoned ? true : existingCart.recovered,
-          recoveredAt: existingCart.abandoned && !existingCart.recovered ? now : existingCart.recoveredAt,
+          recoveredAt:
+            existingCart.abandoned && !existingCart.recovered ? now : existingCart.recoveredAt,
         },
       })
 
@@ -107,9 +108,6 @@ export async function POST(req: NextRequest) {
     }
   } catch (error) {
     console.error('[API] Cart tracking error:', error)
-    return NextResponse.json(
-      { error: 'Failed to track cart session' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to track cart session' }, { status: 500 })
   }
 }

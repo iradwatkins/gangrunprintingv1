@@ -15,16 +15,19 @@ The customer file upload system allows customers to upload design files (artwork
 **API:** `/api/upload/temporary`
 
 Customers upload files while configuring their product. Files are:
+
 - Uploaded to temporary storage
 - Stored in sessionStorage with key `uploaded_images_${productId}`
 - Displayed in checkout summary
 
 **Supported File Types:**
+
 - PDF (application/pdf)
 - Images (JPEG, PNG, SVG, WebP)
 - Design files (AI, PSD, EPS)
 
 **File Limits:**
+
 - Max 10MB per file
 - Max 50MB total
 - Max 10 files per order
@@ -35,6 +38,7 @@ Customers upload files while configuring their product. Files are:
 **Service:** `order-file-service.ts`
 
 After order creation, temporary uploads are converted to permanent `OrderFile` records:
+
 - File type: `CUSTOMER_ARTWORK`
 - Approval status: `NOT_REQUIRED` (customer artwork doesn't need approval)
 - Uploaded by role: `CUSTOMER`
@@ -49,19 +53,16 @@ After order creation, temporary uploads are converted to permanent `OrderFile` r
 If you want to add file upload to a product page, use the `FileUploadZone` component:
 
 ```tsx
-import FileUploadZone from '@/components/product/FileUploadZone';
+import FileUploadZone from '@/components/product/FileUploadZone'
 
 function ProductPage({ product }: Props) {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([])
 
   const handleFilesUploaded = (files) => {
-    setUploadedFiles(files);
+    setUploadedFiles(files)
     // Store in sessionStorage for checkout
-    sessionStorage.setItem(
-      `uploaded_images_${product.id}`,
-      JSON.stringify(files)
-    );
-  };
+    sessionStorage.setItem(`uploaded_images_${product.id}`, JSON.stringify(files))
+  }
 
   return (
     <div>
@@ -73,7 +74,7 @@ function ProductPage({ product }: Props) {
         maxTotalSize={50}
       />
     </div>
-  );
+  )
 }
 ```
 
@@ -82,22 +83,25 @@ function ProductPage({ product }: Props) {
 The checkout page already displays uploaded files. To associate them with an order after creation:
 
 ```typescript
-import { associateTemporaryFilesWithOrder, getUploadedFilesFromSession } from '@/lib/services/order-file-service';
+import {
+  associateTemporaryFilesWithOrder,
+  getUploadedFilesFromSession,
+} from '@/lib/services/order-file-service'
 
 async function handleOrderCreated(orderId: string, productId: string) {
   // Get uploaded files from session
-  const tempFiles = getUploadedFilesFromSession(productId);
+  const tempFiles = getUploadedFilesFromSession(productId)
 
   if (tempFiles.length > 0) {
     // Associate files with order
-    const result = await associateTemporaryFilesWithOrder(orderId, tempFiles);
+    const result = await associateTemporaryFilesWithOrder(orderId, tempFiles)
 
     if (result.success) {
-      console.log(`${result.files?.length} files associated with order`);
+      console.log(`${result.files?.length} files associated with order`)
       // Clean up sessionStorage
-      clearUploadedFilesFromSession(productId);
+      clearUploadedFilesFromSession(productId)
     } else {
-      console.error('Failed to associate files:', result.error);
+      console.error('Failed to associate files:', result.error)
       // Handle error - maybe notify user
     }
   }
@@ -153,6 +157,7 @@ export default function CheckoutSuccessPage() {
 Associate temporary uploads with an order.
 
 **Request Body:**
+
 ```json
 {
   "tempFiles": [
@@ -169,6 +174,7 @@ Associate temporary uploads with an order.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -190,6 +196,7 @@ Associate temporary uploads with an order.
 **Authentication:** Required (user must own the order)
 
 **Errors:**
+
 - `401` - Unauthorized (not logged in)
 - `403` - Forbidden (user doesn't own order)
 - `404` - Order not found
@@ -205,6 +212,7 @@ Associate temporary uploads with an order.
 Associates temporary uploads with an order via API call.
 
 **Parameters:**
+
 - `orderId` (string) - Order ID
 - `tempFiles` (TempFile[]) - Array of temporary file metadata
 
@@ -215,6 +223,7 @@ Associates temporary uploads with an order via API call.
 Retrieves uploaded files from sessionStorage.
 
 **Parameters:**
+
 - `productId` (string) - Product ID
 
 **Returns:** TempFile[] - Array of file metadata or empty array
@@ -224,6 +233,7 @@ Retrieves uploaded files from sessionStorage.
 Clears uploaded files from sessionStorage after successful order creation.
 
 **Parameters:**
+
 - `productId` (string) - Product ID
 
 ---
@@ -231,12 +241,14 @@ Clears uploaded files from sessionStorage after successful order creation.
 ## File Storage Flow
 
 ### Current Implementation:
+
 1. **Upload** → Temporary storage (`/tmp` directory)
 2. **Checkout** → Files referenced in sessionStorage
 3. **Order Created** → Files associated with order via API
 4. **Storage** → Files remain in temporary location
 
 ### TODO: MinIO Integration
+
 1. **Upload** → Temporary storage
 2. **Order Created** → Copy to permanent MinIO bucket
 3. **Storage** → Files in MinIO at `gangrun-orders/{orderId}/customer-artwork/`
@@ -247,6 +259,7 @@ Clears uploaded files from sessionStorage after successful order creation.
 ## Error Handling
 
 ### Upload Errors
+
 - **File too large:** Max 10MB per file
 - **Too many files:** Max 10 files
 - **Total size exceeded:** Max 50MB total
@@ -255,6 +268,7 @@ Clears uploaded files from sessionStorage after successful order creation.
 **User Experience:** Errors displayed inline in FileUploadZone with dismiss option
 
 ### Association Errors
+
 - **Order not found:** User may have entered invalid order ID
 - **Permission denied:** User trying to associate files with someone else's order
 - **Network error:** API call failed
@@ -272,6 +286,7 @@ After files are associated with an order, admins can view them in:
 **Component:** `OrderFilesManager`
 
 **Features:**
+
 - View all customer-uploaded artwork
 - Download files
 - Add messages/comments
@@ -301,12 +316,14 @@ After files are associated with an order, admins can view them in:
 ## Security Considerations
 
 ### Current Implementation:
+
 - ✅ File type validation (whitelist of allowed types)
 - ✅ File size limits
 - ✅ Authentication required for association
 - ✅ Order ownership verification
 
 ### TODO:
+
 - 🚧 Virus scanning on upload
 - 🚧 Rate limiting on upload endpoints
 - 🚧 Move to permanent secure storage (MinIO with signed URLs)

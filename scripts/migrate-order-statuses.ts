@@ -355,9 +355,7 @@ async function main() {
     console.log(`   Total orders: ${orderCount}`)
     console.log(`   Distinct statuses in use: ${distinctStatuses.length}`)
 
-    const invalidStatuses = distinctStatuses.filter(
-      (order) => !createdStatuses.has(order.status)
-    )
+    const invalidStatuses = distinctStatuses.filter((order) => !createdStatuses.has(order.status))
 
     if (invalidStatuses.length > 0) {
       console.warn('\n⚠️  WARNING: Found orders with invalid statuses:')
@@ -374,7 +372,6 @@ async function main() {
     console.log(`   • Transitions: ${transitionsCreated}`)
     console.log(`   • Orders Validated: ${orderCount}`)
     console.log('\n✅ Migration completed successfully!\n')
-
   } catch (error) {
     console.error('\n❌ Migration failed:', error)
     throw error
@@ -383,8 +380,7 @@ async function main() {
   }
 }
 
-main()
-  .catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
+main().catch((error) => {
+  console.error(error)
+  process.exit(1)
+})

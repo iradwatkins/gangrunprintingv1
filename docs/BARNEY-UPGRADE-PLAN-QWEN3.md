@@ -15,6 +15,7 @@ Upgrade Barney from basic models (qwen2.5:3b, smollm:1.7b) to **Qwen3-30B** - th
 ## Current State (What You Already Have)
 
 ### ✅ Google Imagen 4 ("Nana Banana")
+
 - **Status:** Production-ready and working
 - **Model:** `imagen-4.0-generate-001`
 - **API Key:** Configured in `.env`
@@ -23,10 +24,12 @@ Upgrade Barney from basic models (qwen2.5:3b, smollm:1.7b) to **Qwen3-30B** - th
 - **Docs:** `/docs/AI-IMAGE-GENERATION-GUIDE.md`
 
 **How Barney uses it:**
+
 1. Generates ONE main product image per campaign
 2. Generates 200 unique city hero images (one per city)
 
 ### ✅ SEO Brain System
+
 - **Files:** 35 files created
 - **Database:** 6 tables migrated
 - **API:** 6 endpoints ready
@@ -34,6 +37,7 @@ Upgrade Barney from basic models (qwen2.5:3b, smollm:1.7b) to **Qwen3-30B** - th
 - **Telegram:** Bot configured
 
 ### ❌ Current AI Model (NEEDS UPGRADE)
+
 - **qwen2.5:3b** - Too basic, low-quality content
 - **smollm:1.7b** - Too small
 - **tinyllama** - Too small
@@ -45,17 +49,20 @@ Upgrade Barney from basic models (qwen2.5:3b, smollm:1.7b) to **Qwen3-30B** - th
 ### Why Qwen3-30B?
 
 **Benchmarks (2025):**
+
 - ✅ **Beats GPT-4o** on MMLU (general knowledge)
 - ✅ **Beats DeepSeek-V3** on BBH (complex reasoning)
 - ✅ **Beats Llama 3.3** on most tasks
 - ✅ **#1 Open-Source** LLM of 2025
 
 **Quality Improvement:**
+
 - Current (qwen2.5:3b): 70/100 content quality
 - Upgraded (Qwen3-30B): 95/100 content quality
 - **+35% improvement**
 
 **What This Means for Barney:**
+
 - **Better city intros** - More natural, engaging writing
 - **Better benefits** - More compelling value props
 - **Better FAQs** - More helpful, accurate answers
@@ -67,22 +74,26 @@ Upgrade Barney from basic models (qwen2.5:3b, smollm:1.7b) to **Qwen3-30B** - th
 ## Phase 1: Download Qwen3-30B
 
 ### Command:
+
 ```bash
 ollama pull qwen3:30b
 ```
 
 **Details:**
+
 - Size: ~17 GB
 - Time: 10-30 minutes (depending on internet)
 - One-time download (keeps forever)
 - FREE (no API costs)
 
 ### Verify Download:
+
 ```bash
 ollama list
 ```
 
 **Expected output:**
+
 ```
 NAME            ID              SIZE       MODIFIED
 qwen3:30b       abc123def       17 GB      Now
@@ -96,6 +107,7 @@ qwen2.5:3b      357c53fb        1.9 GB     3 weeks ago
 ### File: `/src/lib/seo-brain/ollama-client.ts`
 
 **Change Line 8:**
+
 ```typescript
 // Before
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'deepseek-r1:32b'
@@ -105,6 +117,7 @@ const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3:30b'
 ```
 
 ### Update `.env`:
+
 ```bash
 # Before
 OLLAMA_MODEL=deepseek-r1:32b
@@ -118,6 +131,7 @@ OLLAMA_MODEL=qwen3:30b
 ## Phase 3: Test Quality Improvement
 
 ### Run Test Campaign (10 Cities):
+
 ```bash
 npx tsx -e "
 import { generate200CityPages } from './src/lib/seo-brain/city-page-generator.js'
@@ -142,6 +156,7 @@ console.log('Test Results:', result)
 ### Compare Quality:
 
 **Before (qwen2.5:3b):**
+
 ```
 Miami Flyers - Affordable Printing
 
@@ -150,6 +165,7 @@ printing at low prices. Fast turnaround available. Order now.
 ```
 
 **After (Qwen3-30B):**
+
 ```
 Premium Flyer Printing in Miami: Where Art Deco Meets Modern Marketing
 
@@ -162,6 +178,7 @@ District, we've printed for over 2,000 Miami businesses.
 ```
 
 **Quality Difference:** ~35% improvement in:
+
 - Natural language flow
 - Local references (Art Deco, Wynwood, Brickell)
 - Compelling value propositions
@@ -234,12 +251,12 @@ District, we've printed for over 2,000 Miami businesses.
 
 ## Cost Comparison
 
-| Option | Quality | Cost per 200 Cities | Speed |
-|--------|---------|---------------------|-------|
-| **Current (qwen2.5:3b)** | 70/100 | $0 | 6-7 hours |
-| **Qwen3-30B (upgraded)** | 95/100 | $0 | 6-7 hours |
-| **Claude API** | 98/100 | $35 | 6-7 hours |
-| **GPT-4o API** | 92/100 | $45 | 6-7 hours |
+| Option                   | Quality | Cost per 200 Cities | Speed     |
+| ------------------------ | ------- | ------------------- | --------- |
+| **Current (qwen2.5:3b)** | 70/100  | $0                  | 6-7 hours |
+| **Qwen3-30B (upgraded)** | 95/100  | $0                  | 6-7 hours |
+| **Claude API**           | 98/100  | $35                 | 6-7 hours |
+| **GPT-4o API**           | 92/100  | $45                 | 6-7 hours |
 
 **Winner:** Qwen3-30B - Best quality for FREE!
 
@@ -248,11 +265,13 @@ District, we've printed for over 2,000 Miami businesses.
 ## Performance Expectations
 
 ### Content Generation Speed:
+
 - **qwen2.5:3b:** 1-2 seconds per response
 - **Qwen3-30B:** 3-5 seconds per response
 - **Total time:** Still 6-7 hours (batching + delays)
 
 ### Memory Usage:
+
 - **qwen2.5:3b:** ~3 GB RAM
 - **Qwen3-30B:** ~18 GB RAM
 - **Your server:** 64 GB RAM ✅ (plenty of room)
@@ -277,7 +296,9 @@ docker-compose restart app
 ## Next Steps
 
 ### Immediate (When Ready):
+
 1. **Download Qwen3-30B:**
+
    ```bash
    ollama pull qwen3:30b
    ```
@@ -287,6 +308,7 @@ docker-compose restart app
    - Edit `.env` (OLLAMA_MODEL)
 
 3. **Test with 10 cities:**
+
    ```bash
    npx tsx src/scripts/seo-brain/test-qwen3-upgrade.ts
    ```
@@ -297,6 +319,7 @@ docker-compose restart app
    ```
 
 ### Future (Advanced Features):
+
 1. Add RAG system (research + data retrieval)
 2. Add function calling (tool use)
 3. Add memory system (learning)

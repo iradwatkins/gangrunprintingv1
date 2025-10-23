@@ -19,11 +19,13 @@ Successfully activated your FunnelKit marketing workflow engine with complete em
 ### 1. Email System (✅ Already Configured)
 
 **Resend Integration:**
+
 - ✅ Resend API configured and working
 - ✅ From email: `noreply@gangrunprinting.com`
 - ✅ Ready to send emails immediately
 
 **Email Templates Created:**
+
 - ✅ **16 Transactional Templates:**
   - order-confirmation.tsx
   - order-shipped.tsx
@@ -89,12 +91,14 @@ Successfully activated your FunnelKit marketing workflow engine with complete em
 ### 3. Integration Complete
 
 **Checkout Integration:**
+
 - ✅ Added to `/src/app/api/checkout/route.ts`
 - ✅ Triggers `triggerOrderPlaced()` after order creation
 - ✅ Only for logged-in users (guest orders skip workflow)
 - ✅ Separated from n8n trigger (commented clearly)
 
 **Event Integration Service:**
+
 - ✅ Created `/src/lib/marketing/workflow-events.ts`
 - ✅ Functions for all event triggers:
   - `triggerUserRegistered()`
@@ -104,6 +108,7 @@ Successfully activated your FunnelKit marketing workflow engine with complete em
   - `triggerEmailOpened()`
 
 **Cron Job Infrastructure:**
+
 - ✅ Created `/src/scripts/workflow-cron-jobs.ts`
 - ✅ Functions:
   - `checkAbandonedCarts()` - Run hourly
@@ -115,18 +120,23 @@ Successfully activated your FunnelKit marketing workflow engine with complete em
 ### 4. Management Scripts Created
 
 **Initialize Workflows:**
+
 ```bash
 npx tsx src/scripts/initialize-workflows.ts
 ```
+
 Creates the 3 predefined workflows in database
 
 **Activate All Workflows:**
+
 ```bash
 npx tsx src/scripts/activate-all-workflows.ts
 ```
+
 Activates ALL workflows to start sending emails
 
 **Cron Jobs:**
+
 ```bash
 # Test abandoned cart check
 npx tsx src/scripts/workflow-cron-jobs.ts abandoned-carts
@@ -143,18 +153,21 @@ npx tsx src/scripts/workflow-cron-jobs.ts
 ## 📋 Next Steps to Go Live
 
 ### Step 1: Initialize Workflows (2 minutes)
+
 ```bash
 cd /root/websites/gangrunprinting
 npx tsx src/scripts/initialize-workflows.ts
 ```
 
 **This will:**
+
 - Create Welcome Series workflow
 - Create Abandoned Cart workflow
 - Create Win-Back Campaign workflow
 - Show you a summary of all workflows
 
 ### Step 2: Activate Workflows (30 seconds)
+
 ```bash
 npx tsx src/scripts/activate-all-workflows.ts
 ```
@@ -162,6 +175,7 @@ npx tsx src/scripts/activate-all-workflows.ts
 **WARNING:** This starts sending automated emails immediately!
 
 ### Step 3: Set Up Cron Jobs (5 minutes)
+
 ```bash
 # Edit crontab
 crontab -e
@@ -177,16 +191,19 @@ crontab -e
 ### Step 4: Test Workflows (10 minutes)
 
 **Test 1: Welcome Email**
+
 1. Create a new user account
 2. Check email for welcome message
 3. Wait 3 days (or modify workflow for testing) for onboarding email
 
 **Test 2: Order Placed**
+
 1. Place an order as logged-in user
 2. Workflow should trigger automatically
 3. Check database: `SELECT * FROM "WorkflowExecution" ORDER BY "createdAt" DESC LIMIT 5`
 
 **Test 3: Abandoned Cart**
+
 1. Run manually: `npx tsx src/scripts/workflow-cron-jobs.ts abandoned-carts`
 2. Check for users with cart items but no recent orders
 3. Workflow should trigger for eligible users
@@ -198,10 +215,12 @@ crontab -e
 ### Email Flow Separation
 
 **n8n (Minimal Use - Backend Only):**
+
 - ✅ Vendor order notifications (print shop partners)
 - ✅ Daily admin reports
 
 **FunnelKit (Primary System - Customer Facing):**
+
 - ✅ All customer emails (transactional, marketing, proactive)
 - ✅ Workflow automation
 - ✅ Customer journey tracking
@@ -233,11 +252,13 @@ User Event → WorkflowEngine.handleEvent()
 ## 📊 Database Tables Used
 
 **Marketing Workflows:**
+
 - `MarketingWorkflow` - Workflow definitions
 - `WorkflowExecution` - Execution tracking
 - `CustomerSegment` - User segmentation (optional)
 
 **Campaigns:**
+
 - `Campaign` - Email campaign records
 - `CampaignSend` - Individual send tracking
 - `SMSCampaign` - SMS campaign records (if using SMS)
@@ -248,6 +269,7 @@ User Event → WorkflowEngine.handleEvent()
 ## 🔍 Monitoring & Debugging
 
 **Check Workflow Executions:**
+
 ```sql
 SELECT
   we.id,
@@ -263,6 +285,7 @@ LIMIT 20;
 ```
 
 **Check Active Workflows:**
+
 ```sql
 SELECT id, name, "isActive", trigger
 FROM "MarketingWorkflow"
@@ -270,6 +293,7 @@ WHERE "isActive" = true;
 ```
 
 **Check Campaign Sends:**
+
 ```sql
 SELECT
   cs."recipientEmail",
@@ -284,6 +308,7 @@ LIMIT 20;
 ```
 
 **View Cron Job Logs:**
+
 ```bash
 tail -f /var/log/workflow-crons.log
 ```

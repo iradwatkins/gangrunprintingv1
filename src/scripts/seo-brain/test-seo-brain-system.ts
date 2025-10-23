@@ -199,10 +199,7 @@ async function testAPIEndpoints() {
   try {
     log('🧪', 'Testing API endpoints...')
 
-    const endpoints = [
-      '/api/seo-brain/campaigns',
-      '/api/seo-brain/approve-decision',
-    ]
+    const endpoints = ['/api/seo-brain/campaigns', '/api/seo-brain/approve-decision']
 
     for (const endpoint of endpoints) {
       const response = await fetch(`http://localhost:3020${endpoint}`)

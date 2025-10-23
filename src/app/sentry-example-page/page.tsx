@@ -25,7 +25,9 @@ export default function SentryExamplePage() {
           </Button>
 
           <div className="text-sm text-muted-foreground space-y-2">
-            <p><strong>What happens when you click:</strong></p>
+            <p>
+              <strong>What happens when you click:</strong>
+            </p>
             <ol className="list-decimal list-inside space-y-1">
               <li>A JavaScript error will be thrown</li>
               <li>Sentry will catch and report it</li>

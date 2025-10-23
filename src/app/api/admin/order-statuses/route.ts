@@ -13,7 +13,11 @@ import { z } from 'zod'
 // Validation schema for creating/updating status
 const createStatusSchema = z.object({
   name: z.string().min(1, 'Name is required').max(50),
-  slug: z.string().min(1).max(50).regex(/^[a-z0-9_]+$/i, 'Slug must be alphanumeric with underscores'),
+  slug: z
+    .string()
+    .min(1)
+    .max(50)
+    .regex(/^[a-z0-9_]+$/i, 'Slug must be alphanumeric with underscores'),
   description: z.string().optional(),
   icon: z.string().min(1, 'Icon is required'),
   color: z.string().min(1, 'Color is required'),
@@ -64,10 +68,13 @@ export async function GET(request: NextRequest) {
       _count: true,
     })
 
-    const orderCountsMap = orderCounts.reduce((acc, item) => {
-      acc[item.status] = item._count
-      return acc
-    }, {} as Record<string, number>)
+    const orderCountsMap = orderCounts.reduce(
+      (acc, item) => {
+        acc[item.status] = item._count
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     // Combine data
     const statusesWithMetadata = statuses.map((status) => ({
@@ -85,10 +92,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('[Order Statuses API] GET error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch order statuses' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch order statuses' }, { status: 500 })
   }
 }
 
@@ -114,10 +118,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingStatus) {
-      return NextResponse.json(
-        { error: 'A status with this slug already exists' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'A status with this slug already exists' }, { status: 400 })
     }
 
     // Create new status
@@ -137,11 +138,14 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
-      success: true,
-      status: newStatus,
-      message: `Custom status "${newStatus.name}" created successfully`,
-    }, { status: 201 })
+    return NextResponse.json(
+      {
+        success: true,
+        status: newStatus,
+        message: `Custom status "${newStatus.name}" created successfully`,
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('[Order Statuses API] POST error:', error)
 
@@ -152,9 +156,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create order status' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create order status' }, { status: 500 })
   }
 }

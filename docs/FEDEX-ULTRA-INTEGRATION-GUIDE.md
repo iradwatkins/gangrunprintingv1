@@ -160,15 +160,15 @@ FEDEX_MARKUP_PERCENTAGE="0"  # Add markup to rates (e.g., 10 for 10%)
 ```typescript
 interface FedExProviderConfig {
   // Required
-  clientId: string              // FedEx API Client ID
-  clientSecret: string          // FedEx API Client Secret
-  accountNumber: string         // Your FedEx Account Number
+  clientId: string // FedEx API Client ID
+  clientSecret: string // FedEx API Client Secret
+  accountNumber: string // Your FedEx Account Number
 
   // Optional
-  testMode?: boolean            // Default: false
-  markupPercentage?: number     // Default: 0 (no markup)
+  testMode?: boolean // Default: false
+  markupPercentage?: number // Default: 0 (no markup)
   useIntelligentPacking?: boolean // Default: true
-  enabledServices?: string[]    // Default: all services
+  enabledServices?: string[] // Default: all services
   rateTypes?: Array<'LIST' | 'ACCOUNT' | 'PREFERRED'> // Default: ['LIST', 'ACCOUNT']
 }
 ```
@@ -178,12 +178,7 @@ interface FedExProviderConfig {
 ```typescript
 const fedex = new FedExProviderEnhanced({
   ...credentials,
-  enabledServices: [
-    'FEDEX_GROUND',
-    'FEDEX_2_DAY',
-    'STANDARD_OVERNIGHT',
-    'SMART_POST',
-  ],
+  enabledServices: ['FEDEX_GROUND', 'FEDEX_2_DAY', 'STANDARD_OVERNIGHT', 'SMART_POST'],
 })
 ```
 
@@ -213,6 +208,7 @@ const rates = await fedex.getRates(fromAddress, toAddress, packages)
 ```
 
 **What Happens:**
+
 - Intelligent box packer analyzes all packages
 - Finds optimal FedEx box types (saves 15-30% on shipping)
 - Returns rates for Express, Ground, and SmartPost services
@@ -220,9 +216,7 @@ const rates = await fedex.getRates(fromAddress, toAddress, packages)
 ### **2. Freight Shipping (Heavy Orders)**
 
 ```typescript
-const heavyPackages = [
-  { weight: 200, dimensions: { length: 48, width: 40, height: 36 } },
-]
+const heavyPackages = [{ weight: 200, dimensions: { length: 48, width: 40, height: 36 } }]
 
 const rates = await fedex.getRates(fromAddress, toAddress, heavyPackages)
 
@@ -233,6 +227,7 @@ const rates = await fedex.getRates(fromAddress, toAddress, heavyPackages)
 ```
 
 **Freight Triggers:**
+
 - Total weight > 150 lbs
 - Any dimension > 96 inches (8 feet)
 
@@ -284,6 +279,7 @@ const rates = await fedex.getRates(fromAddress, toAddress, packages)
 ### **1. Intelligent Box Packing**
 
 The box packer automatically:
+
 - Analyzes your items
 - Finds optimal FedEx box types (14 options)
 - Uses 3D bin packing algorithm
@@ -339,18 +335,14 @@ console.log(services)
 ### **3. Freight Class Calculation**
 
 ```typescript
-import {
-  calculateDensity,
-  determineFreightClass,
-  calculatePallets
-} from '@/lib/shipping/fedex'
+import { calculateDensity, determineFreightClass, calculatePallets } from '@/lib/shipping/fedex'
 
 // Calculate density
 const density = calculateDensity(
   200, // weight (lbs)
-  48,  // length (inches)
-  40,  // width (inches)
-  36   // height (inches)
+  48, // length (inches)
+  40, // width (inches)
+  36 // height (inches)
 )
 console.log(density) // 5.78 lbs/cubic foot
 
@@ -409,6 +401,7 @@ const fedex = new FedExProviderEnhanced({
 ```
 
 **Automatic Error Handling:**
+
 - **401 (Token Expired):** Automatically refreshes token and retries immediately
 - **429 (Rate Limit):** Exponential backoff (1s, 2s, 4s, 8s...)
 - **503 (Service Unavailable):** Retries with jitter to prevent thundering herd
@@ -434,9 +427,11 @@ const rates = await fedex.getRates(fromAddress, toAddress, packages, {
 ### **FedExProviderEnhanced**
 
 #### **`getRates(fromAddress, toAddress, packages, options?)`**
+
 Get shipping rates for packages.
 
 **Parameters:**
+
 - `fromAddress: ShippingAddress` - Origin address
 - `toAddress: ShippingAddress` - Destination address
 - `packages: ShippingPackage[]` - Array of packages
@@ -445,6 +440,7 @@ Get shipping rates for packages.
 **Returns:** `Promise<ShippingRate[]>`
 
 **Example:**
+
 ```typescript
 const rates = await fedex.getRates(from, to, packages, {
   rateTypes: ['ACCOUNT', 'LIST'],
@@ -454,9 +450,11 @@ const rates = await fedex.getRates(from, to, packages, {
 ```
 
 #### **`createLabel(fromAddress, toAddress, packages, serviceCode)`**
+
 Create a shipping label.
 
 **Parameters:**
+
 - `fromAddress: ShippingAddress`
 - `toAddress: ShippingAddress`
 - `packages: ShippingPackage[]`
@@ -465,25 +463,31 @@ Create a shipping label.
 **Returns:** `Promise<ShippingLabel>`
 
 #### **`track(trackingNumber)`**
+
 Track a shipment.
 
 **Parameters:**
+
 - `trackingNumber: string`
 
 **Returns:** `Promise<TrackingInfo>`
 
 #### **`validateAddress(address)`**
+
 Validate an address.
 
 **Parameters:**
+
 - `address: ShippingAddress`
 
 **Returns:** `Promise<boolean>`
 
 #### **`cancelShipment(trackingNumber)`**
+
 Cancel a shipment.
 
 **Parameters:**
+
 - `trackingNumber: string`
 
 **Returns:** `Promise<boolean>`
@@ -532,12 +536,12 @@ const fedex = new FedExProviderEnhanced({ ...credentials })
 const rates = await fedex.getRates(warehouseAddress, customerAddress, packages)
 
 // Show customer their options
-rates.forEach(rate => {
+rates.forEach((rate) => {
   console.log(`${rate.serviceName}: $${rate.rateAmount} (${rate.estimatedDays} days)`)
 })
 
 // Customer selects FedEx Ground
-const selectedRate = rates.find(r => r.serviceCode === 'FEDEX_GROUND')
+const selectedRate = rates.find((r) => r.serviceCode === 'FEDEX_GROUND')
 
 // Create label
 const label = await fedex.createLabel(
@@ -608,6 +612,7 @@ const rates = await fedex.getRates(usWarehouse, canadaAddress, packages)
 ### **Problem: "Failed to authenticate with FedEx API"**
 
 **Solution:**
+
 1. Check environment variables are set correctly
 2. Verify Client ID and Client Secret are correct
 3. Check if using test mode with production credentials (or vice versa)
@@ -622,18 +627,21 @@ echo $FEDEX_ACCOUNT_NUMBER
 ### **Problem: "Rate limit exceeded"**
 
 **Solution:**
+
 - Error handler automatically retries with exponential backoff
 - If persistent, you may need to upgrade your FedEx API plan
 
 ### **Problem: "No rates returned"**
 
 **Possible causes:**
+
 1. **Weight too high:** Use freight for >150 lbs
 2. **Dimensions too large:** Use freight for oversized items
 3. **Invalid address:** Use `validateAddress()` to check
 4. **Service not available:** Check `enabledServices` configuration
 
 **Debug:**
+
 ```typescript
 // Enable test mode to see estimated rates
 const fedex = new FedExProviderEnhanced({
@@ -645,6 +653,7 @@ const fedex = new FedExProviderEnhanced({
 ### **Problem: "Intelligent packing not working"**
 
 **Solution:**
+
 ```typescript
 const fedex = new FedExProviderEnhanced({
   ...credentials,
@@ -663,6 +672,7 @@ const packages = [
 ### **Problem: "SmartPost not showing up"**
 
 **Possible causes:**
+
 1. **Destination not served:** SmartPost serves all 50 US states, but check with `isStateServedBySmartPost()`
 2. **Weight too high:** SmartPost has 70 lb limit
 3. **Service disabled:** Check `enabledServices` includes `'SMART_POST'`
@@ -672,18 +682,22 @@ const packages = [
 ## 📊 Performance Tips
 
 ### **1. Use Intelligent Packing**
+
 - Saves 15-30% on shipping costs
 - Enabled by default
 
 ### **2. Cache Rates**
+
 - FedEx allows caching rates for 5 minutes
 - Implement Redis caching for high-traffic sites
 
 ### **3. Parallel Requests**
+
 - Provider automatically fetches Express/Ground/Freight/SmartPost in parallel
 - 4x faster than sequential requests
 
 ### **4. Test Mode for Development**
+
 - Use test mode during development
 - Returns instant estimated rates (no API calls)
 

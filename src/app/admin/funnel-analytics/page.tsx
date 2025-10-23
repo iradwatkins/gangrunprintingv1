@@ -187,9 +187,7 @@ async function getFunnelAnalyticsData(funnelId?: string, period: string = '30d')
 
     const dropOffRate = nextStep
       ? step.uniqueVisitors > 0
-        ? (((step.uniqueVisitors - nextStep.uniqueVisitors) / step.uniqueVisitors) * 100).toFixed(
-            1
-          )
+        ? (((step.uniqueVisitors - nextStep.uniqueVisitors) / step.uniqueVisitors) * 100).toFixed(1)
         : '0.0'
       : null
 
@@ -264,7 +262,8 @@ export default async function FunnelAnalyticsPage({ searchParams }: FunnelAnalyt
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Funnel Analytics</h1>
           <p className="text-muted-foreground">
-            Conversion tracking and performance metrics for {periodLabels[data.period as keyof typeof periodLabels]}
+            Conversion tracking and performance metrics for{' '}
+            {periodLabels[data.period as keyof typeof periodLabels]}
           </p>
         </div>
       </div>
@@ -296,12 +295,7 @@ export default async function FunnelAnalyticsPage({ searchParams }: FunnelAnalyt
       {/* Period Selector */}
       <div className="flex gap-2">
         {Object.entries(periodLabels).map(([key, label]) => (
-          <Button
-            key={key}
-            asChild
-            size="sm"
-            variant={data.period === key ? 'default' : 'outline'}
-          >
+          <Button key={key} asChild size="sm" variant={data.period === key ? 'default' : 'outline'}>
             <Link href={`/admin/funnel-analytics?funnelId=${data.selectedFunnel.id}&period=${key}`}>
               {label}
             </Link>

@@ -5,9 +5,9 @@
 **Module Name:** Turnaround Time Selector  
 **Priority Level:** 3 (Third Module)  
 **Status:** [ ] Not Started [ ] In Progress [ ] Complete  
-**BMAD Agent Assigned:** ******\_\_\_******  
-**Date Started:** ******\_\_\_******  
-**Date Completed:** ******\_\_\_******  
+**BMAD Agent Assigned:** **\*\***\_\_\_**\*\***  
+**Date Started:** **\*\***\_\_\_**\*\***  
+**Date Completed:** **\*\***\_\_\_**\*\***  
 **Prerequisites:** Quantity Module AND Size Module MUST be 100% complete
 
 ---
@@ -124,11 +124,11 @@ Document all turnaround types in system:
 
 Test each real production option:
 
-- [ ] Same Day: ******\_\_\_******
-- [ ] Next Day: ******\_\_\_******
-- [ ] 2-3 Business Days: ******\_\_\_******
-- [ ] 5-7 Business Days: ******\_\_\_******
-- [ ] 10-14 Business Days: ******\_\_\_******
+- [ ] Same Day: **\*\***\_\_\_**\*\***
+- [ ] Next Day: **\*\***\_\_\_**\*\***
+- [ ] 2-3 Business Days: **\*\***\_\_\_**\*\***
+- [ ] 5-7 Business Days: **\*\***\_\_\_**\*\***
+- [ ] 10-14 Business Days: **\*\***\_\_\_**\*\***
 
 #### Date Calculation Testing
 
@@ -377,8 +377,8 @@ Comments: _______________
 
 **Turnaround Time Module Status:** [ ] COMPLETE  
 **Authorization to proceed to Image Add-on Module:** [ ] GRANTED  
-**Authorized By:** ******\_\_\_******  
-**Date:** ******\_\_\_******
+**Authorized By:** **\*\***\_\_\_**\*\***  
+**Date:** **\*\***\_\_\_**\*\***
 
 ---
 

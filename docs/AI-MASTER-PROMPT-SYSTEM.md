@@ -55,18 +55,21 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 **Key Elements:**
 
 #### Credentials & Expertise
+
 - 15+ years dominating Google rankings
 - $50M+ revenue generated through SEO
 - Deep mastery of Google's E-E-A-T principles (2024 algorithm updates)
 - Specialized in printing industry B2B/B2C buyers
 
 #### Forbidden Phrases (Instant Rejection)
+
 ❌ "high quality" / "best" / "professional" / "trusted" / "leading"
 ❌ "we offer" / "we provide" / "contact us for"
 ❌ Generic superlatives without proof points
 ❌ Marketing jargon that doesn't educate
 
 #### Required Elements (Must Include)
+
 ✅ Specific technical details (16pt cardstock, UV coating, gang run process)
 ✅ Tangible benefits with numbers (saves 40% vs sheet-fed, ships in 3-5 days)
 ✅ Industry terminology buyers actually search
@@ -77,6 +80,7 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 #### Advanced SEO Strategy
 
 **1. PRIMARY KEYWORD PLACEMENT:**
+
 - First 60 characters of title (weight: 10x)
 - First 100 words of description (weight: 5x)
 - H1 tag (weight: 8x)
@@ -84,41 +88,48 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 - Alt text for images (weight: 2x)
 
 **2. KEYWORD DENSITY & DISTRIBUTION:**
+
 - Primary keyword: 1.5-2% density (natural, not forced)
 - LSI keywords: 15-20 semantic variations throughout
 - Long-tail keywords: 3-5 conversational phrases for voice search
 - Question keywords: 2-3 "how to", "what is", "why" variations
 
 **3. FEATURED SNIPPET OPTIMIZATION:**
+
 - Include comparison tables (vs competitors)
 - Answer "People Also Ask" questions
 - Use definition format: "[Product] is a [category] that [benefit]"
 - Numbered lists for processes, bullet points for features
 
 **4. CONVERSION PSYCHOLOGY:**
+
 - Scarcity: "gang run printing" (implies limited-time shared runs)
 - Social proof: "used by 10,000+ businesses"
 - Authority: "industry-standard 16pt thickness"
 - Urgency: "same-day turnaround available"
 
 **5. SCHEMA MARKUP CONSIDERATIONS:**
+
 - Include specifications for Product schema
 - Add FAQ-style content for FAQPage schema
 - Use measurement units for technical specs
 
 #### Content Structure (250-350 words)
+
 - **Paragraph 1 (60-80 words):** Product definition + primary benefit + primary keyword
 - **Paragraph 2 (80-100 words):** Technical specifications + secondary keywords + why it matters
 - **Paragraph 3 (60-80 words):** Use cases + target audience + social proof
 - **Paragraph 4 (50-70 words):** Call-to-action + urgency + secondary benefit
 
 #### Competitive Intelligence (Built-In)
+
 - **VistaPrint weakness:** Slow turnaround (7-10 days standard)
 - **GotPrint weakness:** Limited paper stock options
 - **Overnight Prints weakness:** Higher prices for standard delivery
 - **OUR ADVANTAGE:** Gang run efficiency = faster + cheaper, multiple paper stocks, flexible turnaround
 
 #### SEO Scoring Criteria (95-100 target)
+
 - Keyword optimization: 25 points
 - Content quality (E-E-A-T): 25 points
 - Readability & structure: 20 points
@@ -134,6 +145,7 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 **Components:**
 
 #### Product Context
+
 - Product name (required)
 - Additional context (optional)
 - Target audience (optional)
@@ -192,6 +204,7 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 #### Critical Requirements Checklist
 
 ✅ **Must Include:**
+
 - Printing industry terminology (gang run, offset, cardstock, GSM, C2S)
 - Specific measurements (16pt, 3.5"x2", 350 GSM)
 - Real turnaround times (3-5 days, same-day, 24-hour)
@@ -200,6 +213,7 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 - Target 95+ SEO score
 
 ❌ **Must Avoid:**
+
 - Generic marketing speak
 - Superlatives without proof
 - Fluffy descriptions
@@ -251,25 +265,28 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 
 ### SEO Metrics (30 Days Post-Launch)
 
-| Metric | Target | Industry Average | Our Advantage |
-|--------|--------|------------------|---------------|
-| Organic Traffic | +150% | +50% | Advanced SEO + LSI keywords |
-| Google Rank | Top 3 | Top 10 | Featured snippet optimization |
-| SEO Score | 95-100 | 70-80 | Comprehensive optimization |
-| Conversion Rate | 3.5%+ | 2.1% | Conversion psychology integration |
-| Featured Snippets | 15-20% | 5% | Q&A format + comparison tables |
+| Metric            | Target | Industry Average | Our Advantage                     |
+| ----------------- | ------ | ---------------- | --------------------------------- |
+| Organic Traffic   | +150%  | +50%             | Advanced SEO + LSI keywords       |
+| Google Rank       | Top 3  | Top 10           | Featured snippet optimization     |
+| SEO Score         | 95-100 | 70-80            | Comprehensive optimization        |
+| Conversion Rate   | 3.5%+  | 2.1%             | Conversion psychology integration |
+| Featured Snippets | 15-20% | 5%               | Q&A format + comparison tables    |
 
 ### Competitive Positioning
 
 **vs VistaPrint:**
+
 - Our turnaround: 3-5 days (gang run) vs their 7-10 days
 - Keyword: "fast business card printing" (high intent, lower competition)
 
 **vs GotPrint:**
+
 - Our paper stocks: 7 options vs their 3
 - Keyword: "custom paper stock business cards" (specific, high-value)
 
 **vs Overnight Prints:**
+
 - Our pricing: Gang run efficiency = 40% cheaper for same quality
 - Keyword: "affordable gang run printing" (cost-conscious buyers)
 
@@ -295,12 +312,14 @@ This master prompt system leverages advanced SEO strategies, competitive intelli
 ### Cost Analysis:
 
 **BUILD PHASE (Now):**
+
 - SEO Content: $0 (Claude Code via chat)
 - 4 Images: $0.16 (Google Imagen 4)
 - Total per product: $0.16
 - Total for 200 pages: $32
 
 **PRODUCTION MODE (After Launch):**
+
 - SEO Content: ~$0.05 per product (Claude 3.5 Sonnet API)
 - 4 Images: $0.16 per product
 - Total per product: $0.21
@@ -354,6 +373,7 @@ BUILD_PHASE=true
 **POST** `/api/ai-agents/create-product`
 
 **Request Body:**
+
 ```json
 {
   "productName": "Premium Business Cards 16pt",
@@ -365,6 +385,7 @@ BUILD_PHASE=true
 ```
 
 **Response (Build Phase):**
+
 ```json
 {
   "buildPhase": true,
@@ -375,6 +396,7 @@ BUILD_PHASE=true
 ```
 
 **Response (Production Mode):**
+
 ```json
 {
   "success": true,
@@ -395,18 +417,21 @@ BUILD_PHASE=true
 ## 📈 Next Steps
 
 ### Immediate (Generate First Master Product)
+
 - [ ] Test AI Designer UI at `/admin/products/new`
 - [ ] Generate first product with Claude Code assistance
 - [ ] Verify 95+ SEO score
 - [ ] Review keyword strategy and competitive positioning
 
 ### Phase 2 (Landing Page AI)
+
 - [ ] Create Landing Page AI section in sidebar
 - [ ] Integrate 82 Southwest Cargo airports (subtle pickup copy)
 - [ ] Build city landing page generator
 - [ ] Generate 200 city pages in batches
 
 ### Phase 3 (Production Handoff)
+
 - [ ] Set BUILD_PHASE=false
 - [ ] Add ANTHROPIC_API_KEY to environment
 - [ ] Test Sonnet 3.5 API integration

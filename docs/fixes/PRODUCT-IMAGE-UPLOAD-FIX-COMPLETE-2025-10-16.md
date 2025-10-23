@@ -8,24 +8,29 @@
 ## Problem Summary
 
 User reported two distinct issues:
+
 1. **Image upload not working** - Images showing in UI but not persisting
 2. **CRUD not working** - Both create and edit operations failing to save images
 
 ## Root Causes Identified
 
 ### Issue #1: Missing Database Fields (CRUD/Edit Mode)
+
 **Location:** `/src/app/api/products/[id]/route.ts` line ~225
 **Problem:** `Image.create()` missing required fields:
+
 - Missing `id: randomUUID()`
 - Missing `updatedAt: new Date()`
 
 **Impact:** Database constraint violation → silent failures when editing products with new images
 
 ### Issue #2: Race Condition (Upload Component)
+
 **Location:** `/src/components/admin/product-image-upload.tsx` lines 254-285
 **Problem:** Using stale `images` prop when updating after multiple uploads
 
 **Impact:**
+
 - Second and subsequent image uploads fail to update state
 - Images uploaded but not visible in UI
 - Duplicate images appearing
@@ -268,6 +273,7 @@ const updateFormData = (
 ### ✅ Ready to Test
 
 #### Test 1: Create Product with Multiple Images
+
 ```
 1. Go to /admin/products/new
 2. Upload 4 images simultaneously
@@ -283,6 +289,7 @@ const updateFormData = (
 **Expected:** ✅ All 4 images save and display
 
 #### Test 2: Edit Product - Add Images
+
 ```
 1. Open existing product in edit mode
 2. Upload 2 new images
@@ -296,6 +303,7 @@ const updateFormData = (
 **Expected:** ✅ New images save successfully
 
 #### Test 3: Edit Product - Replace Images
+
 ```
 1. Open product with 2 existing images
 2. Delete 1 image
@@ -309,6 +317,7 @@ const updateFormData = (
 **Expected:** ✅ Old images preserved, new images added, deleted images removed
 
 #### Test 4: Error Handling
+
 ```
 1. Upload 5 images (exceeds 4 max)
 2. Verify error toast shows
@@ -321,6 +330,7 @@ const updateFormData = (
 **Expected:** ✅ Proper error messages, UI remains stable
 
 #### Test 5: Concurrent Operations
+
 ```
 1. Open product in edit mode
 2. Upload 2 images
@@ -338,6 +348,7 @@ const updateFormData = (
 ## Success Criteria
 
 ### Must Pass
+
 - [x] Product create saves images successfully
 - [x] Product edit saves images successfully
 - [x] Multi-image uploads work without race conditions
@@ -348,12 +359,14 @@ const updateFormData = (
 - [x] Blob URLs cleaned up after upload
 
 ### Performance
+
 - Images upload immediately (no delay)
 - UI updates smoothly during upload
 - No memory leaks from blob URLs
 - No duplicate API calls
 
 ### Edge Cases
+
 - Handles max 4 images limit
 - Handles file size limits
 - Handles invalid file types
@@ -367,6 +380,7 @@ const updateFormData = (
 ### Key Architectural Patterns Used
 
 #### 1. Callback State Updates (React Best Practice)
+
 ```typescript
 // ❌ BAD: Uses stale state
 onImagesChange(images.map(...))
@@ -376,6 +390,7 @@ onImagesChange((prevImages) => prevImages.map(...))
 ```
 
 #### 2. Unique ID Tracking
+
 ```typescript
 // Generates unique uploadId for each file
 const uploadIds = files.map(() => crypto.randomUUID())
@@ -385,6 +400,7 @@ img.uploadId === currentUploadId
 ```
 
 #### 3. Database ID Generation
+
 ```typescript
 // Explicit UUID generation (not auto-generated)
 id: randomUUID()
@@ -396,16 +412,19 @@ updatedAt: new Date()
 ### Why These Patterns Matter
 
 **Callback Form:**
+
 - Prevents race conditions in concurrent operations
 - Ensures state updates see latest values
 - React's recommended pattern for dependent updates
 
 **Upload ID Tracking:**
+
 - Blob URLs change after first upload
 - Index position can shift during reordering
 - uploadId remains stable throughout lifecycle
 
 **Explicit IDs:**
+
 - Database requires id field (not auto-generated in this schema)
 - updatedAt required by Prisma @updatedAt field
 - Prevents silent database failures
@@ -417,6 +436,7 @@ updatedAt: new Date()
 ### If Images Still Don't Save
 
 **Check 1: Database Constraints**
+
 ```sql
 -- Verify Image table structure
 SELECT column_name, data_type, is_nullable
@@ -429,6 +449,7 @@ WHERE table_name = 'Image';
 ```
 
 **Check 2: Upload API Response**
+
 ```javascript
 // In browser console during upload:
 // Should see:
@@ -444,6 +465,7 @@ WHERE table_name = 'Image';
 ```
 
 **Check 3: State Updates**
+
 ```javascript
 // Add to ProductImageUpload handleFiles:
 console.log('Images before upload:', images)
@@ -452,6 +474,7 @@ console.log('UploadId match:', uploadIds[i], currentUploadId)
 ```
 
 **Check 4: Form Submission**
+
 ```javascript
 // In browser console before save:
 console.log('Images to submit:', formData.images)
@@ -463,11 +486,13 @@ console.log('Images to submit:', formData.images)
 ## Migration Notes
 
 ### No Database Migration Required
+
 - All changes are code-level only
 - No schema changes
 - No data migration needed
 
 ### Deployment Steps
+
 1. Deploy code changes
 2. Test create product with images
 3. Test edit product with images
@@ -481,15 +506,18 @@ console.log('Images to submit:', formData.images)
 ✅ **Both issues fixed!**
 
 **CRUD Issue (Edit Mode):**
+
 - Added missing `id` and `updatedAt` fields to Image.create()
 - Product edit now saves images successfully to database
 
 **Upload Issue (Component):**
+
 - Added uploadId tracking for reliable image matching
 - Changed to callback form to prevent race conditions
 - Multi-image uploads now work correctly
 
 **Hook Update:**
+
 - Added callback form support to updateFormData
 - Maintains backward compatibility with plain object updates
 

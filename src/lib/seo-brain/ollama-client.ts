@@ -71,7 +71,7 @@ export class OllamaClient {
 
     try {
       // Extract JSON from response (sometimes model wraps it in markdown)
-      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      const jsonMatch = response.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0])
       }

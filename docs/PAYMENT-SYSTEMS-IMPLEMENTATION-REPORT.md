@@ -9,6 +9,7 @@
 ## Executive Summary
 
 All three payment systems have been successfully integrated into a unified checkout flow:
+
 - **Square Card Payment** ✅ Fully functional
 - **Cash App Pay** ✅ Fully functional (via Square Web Payments SDK)
 - **PayPal** ✅ Fully functional
@@ -20,9 +21,11 @@ The payment flow is now complete from cart → payment selection → payment pro
 ## What Was Implemented
 
 ### 1. Unified Payment Page (`/checkout/payment`)
+
 **File:** `/src/app/(customer)/checkout/payment/page.tsx`
 
 **Features:**
+
 - Clean payment method selection UI
 - Three payment options: Credit/Debit Card, Cash App Pay, and PayPal
 - Conditional rendering based on selected method
@@ -32,6 +35,7 @@ The payment flow is now complete from cart → payment selection → payment pro
 - Proper navigation flow
 
 **User Experience:**
+
 1. Customer clicks "Continue to Payment" from cart
 2. Sees clean selection of 3 payment methods
 3. Clicks preferred method
@@ -42,9 +46,11 @@ The payment flow is now complete from cart → payment selection → payment pro
 ---
 
 ### 2. Updated Checkout Flow
+
 **File:** `/src/app/(customer)/checkout/page.tsx`
 
 **Changes:**
+
 - Added session storage for cart data persistence
 - Changed navigation to `/checkout/payment` instead of incomplete placeholder
 - Stores uploaded artwork files for later processing
@@ -55,9 +61,11 @@ The payment flow is now complete from cart → payment selection → payment pro
 ### 3. Existing Payment Components (Verified Working)
 
 #### Square Card Payment
+
 **File:** `/src/components/checkout/square-card-payment.tsx`
 
 **Features:**
+
 - Loads Square Web Payments SDK dynamically
 - Initializes both Card and Cash App Pay methods
 - Secure card tokenization with billing contact support
@@ -66,6 +74,7 @@ The payment flow is now complete from cart → payment selection → payment pro
 - Supports both sandbox and production environments
 
 **Environment Variables:**
+
 ```env
 NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-AJF8fI5VayKCq9veQRAw5g
 NEXT_PUBLIC_SQUARE_LOCATION_ID=LWMA9R9E2ENXP
@@ -74,9 +83,11 @@ SQUARE_ACCESS_TOKEN=EAAAl53bo4N0R1Jl2rbqSdHGkeboWL_TGNE3kNUIO8Ws1q6uoUNfMJ1twZSu
 ```
 
 #### Cash App Pay
+
 **File:** `/src/components/checkout/cash-app-payment.tsx`
 
 **Features:**
+
 - Standalone Cash App Pay component (also integrated in SquareCardPayment)
 - Uses same Square SDK as card payment
 - Button-based payment flow
@@ -86,19 +97,23 @@ SQUARE_ACCESS_TOKEN=EAAAl53bo4N0R1Jl2rbqSdHGkeboWL_TGNE3kNUIO8Ws1q6uoUNfMJ1twZSu
 **Status:** Works via the unified `SquareCardPayment` component which includes both card and Cash App Pay options.
 
 #### PayPal
+
 **File:** `/src/components/checkout/paypal-button.tsx`
 
 **Features:**
+
 - PayPal React SDK integration (`@paypal/react-paypal-js`)
 - Backend order creation via REST API
 - Secure payment capture
 - Live production credentials configured
 
 **API Routes:**
+
 - `/api/checkout/create-paypal-order` - Creates PayPal order
 - `/api/checkout/capture-paypal-order` - Captures payment after approval
 
 **Environment Variables:**
+
 ```env
 NEXT_PUBLIC_PAYPAL_CLIENT_ID=ATbx4I5yE923Z2BDq7ZU_sTssg8EFvTtrMKBj3Xbg_cdaae4Lu0ExywU5ccWy57UUZGZMDuiEea3_2ht
 PAYPAL_CLIENT_ID=ATbx4I5yE923Z2BDq7ZU_sTssg8EFvTtrMKBj3Xbg_cdaae4Lu0ExywU5ccWy57UUZGZMDuiEea3_2ht
@@ -109,9 +124,11 @@ PAYPAL_MODE=live
 ---
 
 ### 4. Success Page (Existing)
+
 **File:** `/src/app/(customer)/checkout/success/page.tsx`
 
 **Features:**
+
 - Order confirmation display
 - Payment ID and order number shown
 - Next steps guide (email confirmation, order processing, tracking)
@@ -182,10 +199,12 @@ PAYPAL_MODE=live
 ## API Endpoints
 
 ### Square Payment Processing
+
 **Endpoint:** `POST /api/checkout/process-square-payment`
 **File:** `/src/app/api/checkout/process-square-payment/route.ts`
 
 **Request:**
+
 ```json
 {
   "sourceId": "cnon:card-nonce-ok",
@@ -196,6 +215,7 @@ PAYPAL_MODE=live
 ```
 
 **Response (Success):**
+
 ```json
 {
   "success": true,
@@ -208,6 +228,7 @@ PAYPAL_MODE=live
 ```
 
 **Error Handling:**
+
 - Card declined
 - Insufficient funds
 - Invalid card data
@@ -216,10 +237,12 @@ PAYPAL_MODE=live
 ---
 
 ### PayPal Order Creation
+
 **Endpoint:** `POST /api/checkout/create-paypal-order`
 **File:** `/src/app/api/checkout/create-paypal-order/route.ts`
 
 **Request:**
+
 ```json
 {
   "amount": "50.00"
@@ -227,6 +250,7 @@ PAYPAL_MODE=live
 ```
 
 **Response:**
+
 ```json
 {
   "id": "7J826422F7734232D"
@@ -236,10 +260,12 @@ PAYPAL_MODE=live
 ---
 
 ### PayPal Order Capture
+
 **Endpoint:** `POST /api/checkout/capture-paypal-order`
 **File:** `/src/app/api/checkout/capture-paypal-order/route.ts`
 
 **Request:**
+
 ```json
 {
   "orderID": "7J826422F7734232D"
@@ -247,6 +273,7 @@ PAYPAL_MODE=live
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -265,14 +292,16 @@ PAYPAL_MODE=live
 
 ### ✅ All Required Variables Configured
 
-**Square (Frontend - NEXT_PUBLIC_):**
+**Square (Frontend - NEXT*PUBLIC*):**
+
 ```env
 NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-AJF8fI5VayKCq9veQRAw5g
 NEXT_PUBLIC_SQUARE_LOCATION_ID=LWMA9R9E2ENXP
 NEXT_PUBLIC_SQUARE_ENVIRONMENT=production
 ```
 
-**Square (Backend - No NEXT_PUBLIC_):**
+**Square (Backend - No NEXT*PUBLIC*):**
+
 ```env
 SQUARE_ACCESS_TOKEN=EAAAl53bo4N0R1Jl2rbqSdHGkeboWL_TGNE3kNUIO8Ws1q6uoUNfMJ1twZSu06TU
 SQUARE_ENVIRONMENT=production
@@ -282,11 +311,13 @@ SQUARE_WEBHOOK_SIGNATURE=your_webhook_signature
 ```
 
 **PayPal (Frontend):**
+
 ```env
 NEXT_PUBLIC_PAYPAL_CLIENT_ID=ATbx4I5yE923Z2BDq7ZU_sTssg8EFvTtrMKBj3Xbg_cdaae4Lu0ExywU5ccWy57UUZGZMDuiEea3_2ht
 ```
 
 **PayPal (Backend):**
+
 ```env
 PAYPAL_CLIENT_ID=ATbx4I5yE923Z2BDq7ZU_sTssg8EFvTtrMKBj3Xbg_cdaae4Lu0ExywU5ccWy57UUZGZMDuiEea3_2ht
 PAYPAL_CLIENT_SECRET=EIj5ZsaBVmm5eWQgLalVEZIu8XMV4_KWX7h-vZlnuU7FAnz4JxyjuUx907VopACeEOYwpG8S73zbmnpw
@@ -300,6 +331,7 @@ PAYPAL_MODE=live
 ### Manual Testing Required
 
 #### Square Card Payment
+
 - [ ] Navigate to cart → checkout → payment
 - [ ] Select "Credit/Debit Card"
 - [ ] Test with Square test card: `4111 1111 1111 1111`
@@ -310,6 +342,7 @@ PAYPAL_MODE=live
 - [ ] Check payment appears in Square dashboard
 
 #### Cash App Pay
+
 - [ ] Navigate to cart → checkout → payment
 - [ ] Select "Credit/Debit Card" (includes Cash App option)
 - [ ] Click Cash App Pay button (if available)
@@ -320,6 +353,7 @@ PAYPAL_MODE=live
 **Note:** Cash App Pay may only work with verified merchants. If button doesn't appear, this is expected for sandbox/test accounts.
 
 #### PayPal
+
 - [ ] Navigate to cart → checkout → payment
 - [ ] Select "PayPal"
 - [ ] Click PayPal button
@@ -335,6 +369,7 @@ PAYPAL_MODE=live
 ## Known Limitations & Next Steps
 
 ### Current Limitations
+
 1. **Order creation not implemented** - Payment succeeds but order is not created in database
    - Need to add: `POST /api/orders/create` endpoint
    - Should create Order, OrderItem, and OrderFile records
@@ -350,11 +385,11 @@ PAYPAL_MODE=live
 ### Recommended Next Steps
 
 1. **Create Order API Endpoint**
+
    ```typescript
-   POST /api/orders/create
+   POST / api / orders / create
    Body: {
-     paymentId, cartItems, shippingAddress,
-     billingAddress, artworkFiles, total
+     ;(paymentId, cartItems, shippingAddress, billingAddress, artworkFiles, total)
    }
    ```
 
@@ -382,11 +417,14 @@ PAYPAL_MODE=live
 ## Code Quality Notes
 
 ### DRY Principle Status
+
 **Improvement Needed:** Square SDK initialization is duplicated between:
+
 - `/src/components/checkout/square-card-payment.tsx` (156 lines)
 - `/src/components/checkout/cash-app-payment.tsx` (156 lines)
 
 **Recommendation:** Extract to shared utility:
+
 ```typescript
 // /src/lib/payments/square-client.ts
 export async function loadSquareSDK(environment: 'sandbox' | 'production') { ... }
@@ -426,12 +464,14 @@ export async function createSquarePaymentsInstance(appId, locationId) { ... }
 ## Deployment Instructions
 
 ### Build Verification
+
 ```bash
 npm run build
 # Should complete without TypeScript errors
 ```
 
 ### Docker Deployment
+
 ```bash
 # Rebuild app container
 docker-compose build app
@@ -447,12 +487,14 @@ curl -s http://localhost:3020/checkout/payment | grep "payment"
 ```
 
 ### Environment Variables Check
+
 ```bash
 # Verify all required variables are set
 docker exec gangrunprinting_app env | grep -E "(SQUARE|PAYPAL)"
 ```
 
 ### Testing After Deployment
+
 1. Visit: `https://gangrunprinting.com/cart`
 2. Add test product to cart
 3. Click "Continue to Payment"
@@ -482,12 +524,15 @@ docker exec gangrunprinting_app env | grep -E "(SQUARE|PAYPAL)"
 ## Files Modified/Created
 
 ### Created
+
 - `/src/app/(customer)/checkout/payment/page.tsx` (358 lines) - Unified payment page
 
 ### Modified
+
 - `/src/app/(customer)/checkout/page.tsx` - Updated to navigate to payment page and store cart data
 
 ### Existing (Verified Working)
+
 - `/src/components/checkout/square-card-payment.tsx` - Square Card + Cash App Pay
 - `/src/components/checkout/cash-app-payment.tsx` - Standalone Cash App (not used)
 - `/src/components/checkout/paypal-button.tsx` - PayPal integration
@@ -503,6 +548,7 @@ docker exec gangrunprinting_app env | grep -E "(SQUARE|PAYPAL)"
 ✅ **All three payment systems are fully functional and integrated.**
 
 The payment flow is complete from cart to payment confirmation. Customers can now:
+
 1. Add products to cart
 2. Upload artwork files
 3. Select from 3 payment methods

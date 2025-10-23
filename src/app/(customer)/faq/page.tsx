@@ -8,14 +8,7 @@ import type { Metadata } from 'next'
 import { FAQPage } from '@/components/seo/FAQSchema'
 import { generalFAQs } from '@/data/faqs/general'
 import Link from 'next/link'
-import {
-  CreditCard,
-  FileText,
-  HelpCircle,
-  Truck,
-  Clock,
-  CheckCircle
-} from 'lucide-react'
+import { CreditCard, FileText, HelpCircle, Truck, Clock, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Printing FAQ - Frequently Asked Questions | GangRun Printing',
@@ -79,11 +72,10 @@ export default function FAQIndexPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-6">
             <HelpCircle className="w-8 h-8" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            How Can We Help You?
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">How Can We Help You?</h1>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Find answers to common questions about our printing services, file requirements, and more.
+            Find answers to common questions about our printing services, file requirements, and
+            more.
           </p>
         </div>
       </div>
@@ -108,12 +100,8 @@ export default function FAQIndexPage() {
                     <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                       {category.title}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-3">
-                      {category.description}
-                    </p>
-                    <span className="text-xs text-gray-500">
-                      {category.count}
-                    </span>
+                    <p className="text-sm text-gray-600 mb-3">{category.description}</p>
+                    <span className="text-xs text-gray-500">{category.count}</span>
                   </div>
                 </div>
               </Link>
@@ -135,12 +123,10 @@ export default function FAQIndexPage() {
       {/* Still Have Questions CTA */}
       <div className="bg-gray-50 border-t">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Still Have Questions?
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Still Have Questions?</h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Can't find what you're looking for? Our customer support team is here to help.
-            Contact us and we'll get back to you within 24 hours.
+            Can't find what you're looking for? Our customer support team is here to help. Contact
+            us and we'll get back to you within 24 hours.
           </p>
           <div className="flex gap-4 justify-center">
             <Link

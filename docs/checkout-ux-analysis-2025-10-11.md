@@ -32,6 +32,7 @@ Step 4: Review
 ```
 
 **Problems:**
+
 - ❌ **4 clicks to complete checkout** (too many)
 - ❌ **Payment form hidden until step 4** (user doesn't see card inputs until final step)
 - ❌ **Information overload** (too many separate steps)
@@ -67,6 +68,7 @@ Step 3: Payment
 ```
 
 **Advantages:**
+
 - ✅ **3 steps = faster checkout**
 - ✅ **Payment inputs visible immediately** (no hiding)
 - ✅ **Collapsible summary keeps page clean**
@@ -80,6 +82,7 @@ Step 3: Payment
 ## Visual Comparison (from Reference Images)
 
 ### Image 1: Product Page
+
 - Clean dropdown selectors for all options
 - Addons shown with checkboxes and prices
 - **Final total prominently displayed: $160.55**
@@ -87,7 +90,9 @@ Step 3: Payment
 - Single "Add to cart" button
 
 ### Image 2: Step 2 - Shipping Method (Collapsed)
+
 ![Reference: Collapsed Order Summary]
+
 - **3-step progress indicator**: Order Summary (gray) → **Shipping Method (red)** → Payment (gray)
 - Collapsible order summary showing **$222.01** total
 - **Shipping options clearly listed:**
@@ -105,7 +110,9 @@ Step 3: Payment
 - Right sidebar: "Shop With Confidence" + customer testimonials
 
 ### Image 3: Step 2 - Shipping Method (Expanded)
+
 ![Reference: Expanded Order Summary]
+
 - Same as Image 2, but order summary expanded showing:
   - Product thumbnail
   - Full product details (Quantity, Size, Paper, Sides, Coating, Turnaround)
@@ -115,7 +122,9 @@ Step 3: Payment
     - **Total: $222.01**
 
 ### Image 4: Step 3 - Payment
+
 ![Reference: Payment Step]
+
 - Progress shows **Step 3 active**
 - Collapsible order summary at top
 - **Contact info display:**
@@ -151,11 +160,13 @@ Step 3: Payment
 ### 1. Reduce from 4 Steps to 3 Steps
 
 **Current:**
+
 ```
 Information → Shipping → Payment → Review
 ```
 
 **Proposed:**
+
 ```
 Order Summary → Shipping Method → Payment
 ```
@@ -165,10 +176,12 @@ Order Summary → Shipping Method → Payment
 ### 2. Show Payment Form Immediately on Payment Step
 
 **Current:**
+
 - Step 3: Select payment method button
 - Step 4: Review everything, THEN show form
 
 **Proposed:**
+
 - Step 3: Payment form visible immediately
   - Credit Card (default, form visible)
   - PayPal button
@@ -181,6 +194,7 @@ Order Summary → Shipping Method → Payment
 **Current:** ShippingRates component (need to verify formatting)
 
 **Proposed:**
+
 ```
 Radio buttons with prices aligned right:
 
@@ -196,6 +210,7 @@ Radio buttons with prices aligned right:
 **Current:** Sticky sidebar on right (always visible, takes space)
 
 **Proposed:** Collapsible summary at top
+
 ```
 [▼ Show Order Summary ▲]               $222.01
 
@@ -222,6 +237,7 @@ When expanded:
 ### 5. Add Missing Features
 
 **Add:**
+
 - Coupon code field (on shipping step)
 - Order notes textarea (on shipping step)
 - "Change" links on payment step
@@ -237,6 +253,7 @@ When expanded:
 **File:** `/src/app/(customer)/checkout/page.tsx`
 
 **Changes:**
+
 - Add new step: `order-summary`
 - Update STEPS array:
   ```typescript
@@ -252,6 +269,7 @@ When expanded:
 ### Step 2: Shipping Method (Combine Information + Shipping)
 
 **Changes:**
+
 - Move contact fields to shipping step
 - Keep shipping address fields
 - Add shipping rate selection
@@ -262,6 +280,7 @@ When expanded:
 ### Step 3: Payment (Combine Payment + Review)
 
 **Changes:**
+
 - Show collapsible order summary at top
 - Display contact info with "Change" links
 - Show payment methods with forms VISIBLE
@@ -279,15 +298,18 @@ When expanded:
 ## Files to Modify
 
 ### Primary File:
+
 - `/src/app/(customer)/checkout/page.tsx` (main checkout page)
 
 ### Component Updates:
+
 - `/src/components/checkout/shipping-rates.tsx` (verify price alignment)
 - `/src/components/checkout/payment-methods.tsx` (update to show forms immediately)
 - `/src/components/checkout/square-card-payment.tsx` (show by default when Credit Card selected)
 - `/src/components/checkout/paypal-button.tsx` (show when PayPal selected)
 
 ### New Components Needed:
+
 - `/src/components/checkout/collapsible-order-summary.tsx` (collapsible summary widget)
 - `/src/components/checkout/change-link.tsx` (Change link component for payment step)
 
@@ -296,12 +318,14 @@ When expanded:
 ## Success Metrics
 
 **Before:**
+
 - 4-step checkout
 - Payment form hidden until step 4
 - No order notes
 - Large sidebar takes space
 
 **After:**
+
 - 3-step checkout ✅
 - Payment form visible on step 3 ✅
 - Order notes field added ✅

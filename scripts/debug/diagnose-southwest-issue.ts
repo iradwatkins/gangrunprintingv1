@@ -20,7 +20,7 @@ const results: DiagnosticResult[] = []
 
 async function runDiagnostics() {
   console.log('🔍 Southwest Cargo Airport Diagnostic Report')
-  console.log('=' .repeat(80))
+  console.log('='.repeat(80))
   console.log('\n')
 
   // Test 1: Check database airport count
@@ -44,7 +44,7 @@ async function runDiagnostics() {
   // Print results
   console.log('\n')
   console.log('📊 DIAGNOSTIC RESULTS')
-  console.log('=' .repeat(80))
+  console.log('='.repeat(80))
   console.log('\n')
 
   results.forEach((result, index) => {
@@ -63,15 +63,15 @@ async function runDiagnostics() {
   const failed = results.filter((r) => r.status === 'FAIL').length
   const warnings = results.filter((r) => r.status === 'WARNING').length
 
-  console.log('=' .repeat(80))
+  console.log('='.repeat(80))
   console.log(`SUMMARY: ${passed} passed, ${failed} failed, ${warnings} warnings`)
-  console.log('=' .repeat(80))
+  console.log('='.repeat(80))
   console.log('\n')
 
   // Root cause analysis
   if (failed > 0) {
     console.log('🔧 ROOT CAUSE ANALYSIS & FIXES')
-    console.log('=' .repeat(80))
+    console.log('='.repeat(80))
     console.log('\n')
     analyzeAndProvideFixes()
   }
@@ -228,10 +228,7 @@ async function testForHardcodedLocations() {
   const path = require('path')
 
   try {
-    const locationsPagePath = path.join(
-      process.cwd(),
-      'src/app/(customer)/locations/page.tsx'
-    )
+    const locationsPagePath = path.join(process.cwd(), 'src/app/(customer)/locations/page.tsx')
 
     if (!fs.existsSync(locationsPagePath)) {
       results.push({
@@ -336,10 +333,7 @@ async function testLocationsPageImplementation() {
   const path = require('path')
 
   try {
-    const locationsPagePath = path.join(
-      process.cwd(),
-      'src/app/(customer)/locations/page.tsx'
-    )
+    const locationsPagePath = path.join(process.cwd(), 'src/app/(customer)/locations/page.tsx')
 
     if (!fs.existsSync(locationsPagePath)) {
       results.push({

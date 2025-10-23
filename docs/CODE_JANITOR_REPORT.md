@@ -82,7 +82,7 @@ const data: ApiResponse = await response.json()
 **PRIORITY:** HIGH
 **FOUND INSTANCES:**
 
-- MAX_FILE_SIZE = 10 _ 1024 _ 1024 (multiple locations)
+- MAX*FILE_SIZE = 10 * 1024 \_ 1024 (multiple locations)
 - Pagination limits (10, 20, 50)
 - Timeout values (60000, 120000)
 - Tax rate (0.0825)

@@ -28,7 +28,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { DollarSign, FileText, Mail, MoreVertical, RefreshCw, Send, Trash2, Truck } from 'lucide-react'
+import {
+  DollarSign,
+  FileText,
+  Mail,
+  MoreVertical,
+  RefreshCw,
+  Send,
+  Trash2,
+  Truck,
+} from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -467,9 +476,7 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
               <p className="text-sm text-destructive font-medium">
                 ⚠️ This action cannot be undone
               </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                This will permanently delete:
-              </p>
+              <p className="text-sm text-muted-foreground mt-2">This will permanently delete:</p>
               <ul className="list-disc list-inside text-sm text-muted-foreground mt-2 space-y-1">
                 <li>Order record and all order items</li>
                 <li>All uploaded files from MinIO storage</li>
@@ -480,7 +487,11 @@ export function OrderQuickActions({ order, onUpdate }: OrderQuickActionsProps) {
           </div>
 
           <DialogFooter>
-            <Button disabled={updating} variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+            <Button
+              disabled={updating}
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button disabled={updating} variant="destructive" onClick={handleDeleteOrder}>

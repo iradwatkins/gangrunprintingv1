@@ -53,7 +53,6 @@ export async function generate200CityPages(
   failed: number
   results: CityPageGenerationResult[]
 }> {
-
   // Get top 200 US cities
   const cities = await getTop200USCities()
 
@@ -69,12 +68,10 @@ export async function generate200CityPages(
     return { success: false, generated: 0, failed: 200, results: [] }
   }
 
-
   // Step 2: Generate city pages in batches of 10
   const batchSize = 10
   for (let i = 0; i < cities.length; i += batchSize) {
     const batch = cities.slice(i, i + batchSize)
-
 
     // Process batch in parallel
     const batchResults = await Promise.allSettled(
@@ -121,7 +118,6 @@ export async function generate200CityPages(
     },
   })
 
-
   return {
     success: generated > 0,
     generated,
@@ -143,12 +139,12 @@ async function generateMainProductImage(productSpec: ProductCampaignSpec): Promi
     const productType = productSpec.productName.toLowerCase().includes('flyer')
       ? 'flyers'
       : productSpec.productName.toLowerCase().includes('business card')
-      ? 'business cards'
-      : productSpec.productName.toLowerCase().includes('postcard')
-      ? 'postcards'
-      : productSpec.productName.toLowerCase().includes('brochure')
-      ? 'brochures'
-      : 'printed materials'
+        ? 'business cards'
+        : productSpec.productName.toLowerCase().includes('postcard')
+          ? 'postcards'
+          : productSpec.productName.toLowerCase().includes('brochure')
+            ? 'brochures'
+            : 'printed materials'
 
     // Create professional product photography prompt
     const prompt = `Professional product photography of ${productSpec.size} ${productType} in ${productSpec.material}, displayed fanned out on clean white surface, studio lighting with soft shadows, high-end marketing photography, ultra sharp focus, premium paper texture visible, 4k resolution, minimalist composition`
@@ -193,7 +189,6 @@ async function generateSingleCityPage(params: {
   const { city, campaignId, productSpec, mainProductImageUrl, ollamaClient } = params
 
   try {
-
     // Step 1: Generate city-specific content (500 words + 10 benefits + 15 FAQs)
     const content = await generateCompleteCityContent({
       city,
@@ -275,7 +270,6 @@ async function generateSingleCityPage(params: {
       },
     })
 
-
     return {
       success: true,
       cityLandingPageId: cityPage.id,
@@ -297,10 +291,7 @@ async function generateSingleCityPage(params: {
 /**
  * Generate SEO metadata for city page
  */
-function generateSEOMetadata(params: {
-  city: CityData
-  productSpec: ProductCampaignSpec
-}): {
+function generateSEOMetadata(params: { city: CityData; productSpec: ProductCampaignSpec }): {
   title: string
   description: string
   h1: string

@@ -52,13 +52,15 @@ Docker Host (72.60.28.175)
 **Health Check:** `wget http://localhost:3002/api/health`
 
 **Environment:**
+
 - NODE_ENV=production
 - PORT=3002 (internal)
-- DATABASE_URL=postgresql://gangrun_user:***@postgres:5432/gangrun_db
+- DATABASE_URL=postgresql://gangrun_user:\*\*\*@postgres:5432/gangrun_db
 - REDIS_URL=redis://redis:6379
 - MINIO_ENDPOINT=minio
 
 **Volumes:**
+
 - `uploads:/app/uploads` - Customer uploaded files
 - `print_files:/app/print-files` - Print-ready files
 - `./public:/app/public` - Static assets
@@ -76,6 +78,7 @@ Docker Host (72.60.28.175)
 **Health Check:** `pg_isready -U gangrun_user -d gangrun_db`
 
 **Credentials:**
+
 - User: `gangrun_user`
 - Password: `GangRun2024Secure`
 - Database: `gangrun_db`
@@ -103,12 +106,14 @@ Docker Host (72.60.28.175)
 **Purpose:** File storage for customer uploads and product images
 **Image:** minio/minio:latest
 **Port Mappings:**
+
 - `9002:9000` - API endpoint
 - `9102:9001` - Web console
 
 **Health Check:** `curl -f http://localhost:9000/minio/health/live`
 
 **Credentials:**
+
 - Access Key: `gangrun_minio_access`
 - Secret Key: `gangrun_minio_secret_2024`
 
@@ -121,13 +126,13 @@ Docker Host (72.60.28.175)
 
 ### Exclusive Ports (MUST be assigned to gangrunprinting ONLY)
 
-| Port | Service | Purpose | External Access | Status |
-|------|---------|---------|----------------|--------|
-| **3020** | Next.js App | Web application | Via Nginx | ✅ ACTIVE |
-| **5435** | PostgreSQL | Database | Localhost only | ✅ ACTIVE |
-| **6302** | Redis | Cache/Sessions | Localhost only | ✅ ACTIVE |
-| **9002** | MinIO API | File storage API | Localhost only | ✅ ACTIVE |
-| **9102** | MinIO Console | Storage admin UI | Localhost only | ✅ ACTIVE |
+| Port     | Service       | Purpose          | External Access | Status    |
+| -------- | ------------- | ---------------- | --------------- | --------- |
+| **3020** | Next.js App   | Web application  | Via Nginx       | ✅ ACTIVE |
+| **5435** | PostgreSQL    | Database         | Localhost only  | ✅ ACTIVE |
+| **6302** | Redis         | Cache/Sessions   | Localhost only  | ✅ ACTIVE |
+| **9002** | MinIO API     | File storage API | Localhost only  | ✅ ACTIVE |
+| **9102** | MinIO Console | Storage admin UI | Localhost only  | ✅ ACTIVE |
 
 **Total:** 5 ports exclusively for gangrunprinting.com
 
@@ -146,6 +151,7 @@ Docker Host (72.60.28.175)
 **Purpose:** Private network for container-to-container communication
 
 **Internal DNS:**
+
 - `postgres` resolves to gangrunprinting-postgres
 - `redis` resolves to gangrunprinting-redis
 - `minio` resolves to gangrunprinting-minio
@@ -172,13 +178,13 @@ docker volume ls | grep gangrun
 docker volume inspect gangrun_postgres_data
 ```
 
-| Volume | Purpose | Size | Backup Priority |
-|--------|---------|------|----------------|
-| `postgres_data` | Database | ~500MB | 🔴 CRITICAL |
-| `minio_data` | File uploads | Growing | 🔴 CRITICAL |
-| `redis_data` | Cache/Sessions | ~50MB | 🟡 MEDIUM |
-| `uploads` | Temp uploads | ~100MB | 🟢 LOW |
-| `print_files` | Print-ready | ~200MB | 🟡 MEDIUM |
+| Volume          | Purpose        | Size    | Backup Priority |
+| --------------- | -------------- | ------- | --------------- |
+| `postgres_data` | Database       | ~500MB  | 🔴 CRITICAL     |
+| `minio_data`    | File uploads   | Growing | 🔴 CRITICAL     |
+| `redis_data`    | Cache/Sessions | ~50MB   | 🟡 MEDIUM       |
+| `uploads`       | Temp uploads   | ~100MB  | 🟢 LOW          |
+| `print_files`   | Print-ready    | ~200MB  | 🟡 MEDIUM       |
 
 ---
 
@@ -286,6 +292,7 @@ docker-compose up -d
 **File:** `/etc/nginx/sites-available/gangrunprinting`
 
 **Key Settings:**
+
 - Listens on ports 80 (HTTP) and 443 (HTTPS)
 - SSL certificates: `/etc/letsencrypt/live/gangrunprinting.com/`
 - Proxies all requests to `http://localhost:3020`
@@ -294,6 +301,7 @@ docker-compose up -d
 - MinIO proxy at `/minio/` → `http://localhost:9002`
 
 **Reload nginx after changes:**
+
 ```bash
 nginx -t
 systemctl reload nginx
@@ -432,11 +440,13 @@ docker stats
 ### Complete System Restore
 
 1. **Stop old containers:**
+
    ```bash
    docker-compose down -v
    ```
 
 2. **Restore code:**
+
    ```bash
    cd /root/websites
    rm -rf gangrunprinting
@@ -445,18 +455,21 @@ docker stats
    ```
 
 3. **Restore environment:**
+
    ```bash
    # Copy .env from backup
    cp /root/backups/.env.backup .env
    ```
 
 4. **Restore database:**
+
    ```bash
    docker-compose up -d postgres
    cat /root/backups/latest-db.sql | docker exec -i gangrunprinting-postgres psql -U gangrun_user -d gangrun_db
    ```
 
 5. **Restore MinIO data:**
+
    ```bash
    docker-compose up -d minio
    docker exec gangrunprinting-minio mc alias set local http://localhost:9000 gangrun_minio_access gangrun_minio_secret_2024

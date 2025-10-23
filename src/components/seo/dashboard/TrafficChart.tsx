@@ -63,11 +63,7 @@ export function TrafficChart({
         <ResponsiveContainer height={300} width="100%">
           <ComposedChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid className="stroke-muted" strokeDasharray="3 3" />
-            <XAxis
-              className="text-xs"
-              dataKey="date"
-              tick={{ fill: 'currentColor' }}
-            />
+            <XAxis className="text-xs" dataKey="date" tick={{ fill: 'currentColor' }} />
             <YAxis
               className="text-xs"
               label={{ value: 'Count', angle: -90, position: 'insideLeft' }}
@@ -111,7 +107,7 @@ export function TrafficChart({
               radius={[4, 4, 0, 0]}
               yAxisId="count"
             />
-            {data.some(d => d.ctr !== undefined) && (
+            {data.some((d) => d.ctr !== undefined) && (
               <Line
                 dataKey="ctr"
                 dot={{ fill: 'hsl(var(--primary))' }}

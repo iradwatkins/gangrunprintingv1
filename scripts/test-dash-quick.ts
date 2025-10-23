@@ -19,9 +19,15 @@ function calculateDashRate(weight: number): number {
 
       console.log(`  Tier match: >${previousTierMax} lbs`)
       console.log(`  Base rate: $${tier.baseRate}`)
-      console.log(`  Weight over threshold: ${weight} - ${previousTierMax} = ${weightOverThreshold} lbs`)
-      console.log(`  Additional cost: ${weightOverThreshold} × $${tier.additionalPerPound} = $${additionalCost.toFixed(2)}`)
-      console.log(`  Total: $${tier.baseRate} + $${additionalCost.toFixed(2)} = $${(tier.baseRate + additionalCost).toFixed(2)}`)
+      console.log(
+        `  Weight over threshold: ${weight} - ${previousTierMax} = ${weightOverThreshold} lbs`
+      )
+      console.log(
+        `  Additional cost: ${weightOverThreshold} × $${tier.additionalPerPound} = $${additionalCost.toFixed(2)}`
+      )
+      console.log(
+        `  Total: $${tier.baseRate} + $${additionalCost.toFixed(2)} = $${(tier.baseRate + additionalCost).toFixed(2)}`
+      )
 
       return tier.baseRate + additionalCost + tier.handlingFee
     }

@@ -52,9 +52,19 @@ const FEDEX_SERVICES = {
       description: 'Next day by 3 PM',
       days: '1 day',
     },
-    { code: 'FEDEX_2_DAY_AM', name: '2Day A.M.', description: 'Second day by 10:30 AM', days: '2 days' },
+    {
+      code: 'FEDEX_2_DAY_AM',
+      name: '2Day A.M.',
+      description: 'Second day by 10:30 AM',
+      days: '2 days',
+    },
     { code: 'FEDEX_2_DAY', name: '2Day', description: 'Second day by end of day', days: '2 days' },
-    { code: 'FEDEX_EXPRESS_SAVER', name: 'Express Saver', description: 'Third day by 3 PM', days: '3 days' },
+    {
+      code: 'FEDEX_EXPRESS_SAVER',
+      name: 'Express Saver',
+      description: 'Third day by 3 PM',
+      days: '3 days',
+    },
   ],
 
   // Ground (3 services)
@@ -86,9 +96,24 @@ const FEDEX_SERVICES = {
 
   // Freight (6 services)
   FREIGHT: [
-    { code: 'FEDEX_1_DAY_FREIGHT', name: '1 Day Freight', description: 'Next day freight', days: '1 day' },
-    { code: 'FEDEX_2_DAY_FREIGHT', name: '2 Day Freight', description: 'Second day freight', days: '2 days' },
-    { code: 'FEDEX_3_DAY_FREIGHT', name: '3 Day Freight', description: 'Third day freight', days: '3 days' },
+    {
+      code: 'FEDEX_1_DAY_FREIGHT',
+      name: '1 Day Freight',
+      description: 'Next day freight',
+      days: '1 day',
+    },
+    {
+      code: 'FEDEX_2_DAY_FREIGHT',
+      name: '2 Day Freight',
+      description: 'Second day freight',
+      days: '2 days',
+    },
+    {
+      code: 'FEDEX_3_DAY_FREIGHT',
+      name: '3 Day Freight',
+      description: 'Third day freight',
+      days: '3 days',
+    },
     {
       code: 'FEDEX_FREIGHT_ECONOMY',
       name: 'Freight Economy',
@@ -291,7 +316,8 @@ export function ShippingSettingsForm() {
                 FedEx Ultra-Integration Settings
               </CardTitle>
               <CardDescription>
-                Configure 30+ FedEx services with intelligent packing and automatic freight detection
+                Configure 30+ FedEx services with intelligent packing and automatic freight
+                detection
               </CardDescription>
             </div>
             <Badge className="gap-1" variant={hasApiKeys ? 'default' : 'secondary'}>
@@ -344,7 +370,9 @@ export function ShippingSettingsForm() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>Test Mode</Label>
-              <p className="text-sm text-muted-foreground">Use estimated rates instead of live API</p>
+              <p className="text-sm text-muted-foreground">
+                Use estimated rates instead of live API
+              </p>
             </div>
             <Switch checked={testMode} onCheckedChange={setTestMode} />
           </div>
@@ -391,11 +419,7 @@ export function ShippingSettingsForm() {
                     </CardDescription>
                   </div>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleToggleCategory(category)}
-                >
+                <Button size="sm" variant="outline" onClick={() => handleToggleCategory(category)}>
                   {categoryEnabledCount === services.length ? 'Disable All' : 'Enable All'}
                 </Button>
               </div>
@@ -453,7 +477,9 @@ export function ShippingSettingsForm() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Southwest Cargo Pickup</p>
-                  <p className="text-sm text-muted-foreground">Customer picks up at airport ($80-133)</p>
+                  <p className="text-sm text-muted-foreground">
+                    Customer picks up at airport ($80-133)
+                  </p>
                 </div>
                 <Badge variant="outline">Enabled</Badge>
               </div>
@@ -461,7 +487,9 @@ export function ShippingSettingsForm() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Southwest Cargo Dash</p>
-                  <p className="text-sm text-muted-foreground">Premium next-flight service ($85-133+)</p>
+                  <p className="text-sm text-muted-foreground">
+                    Premium next-flight service ($85-133+)
+                  </p>
                 </div>
                 <Badge variant="outline">Enabled</Badge>
               </div>
@@ -474,8 +502,8 @@ export function ShippingSettingsForm() {
               <div className="space-y-2">
                 <p className="text-sm font-medium text-blue-900">82 Airport Locations Available</p>
                 <p className="text-sm text-blue-800">
-                  Southwest Cargo serves 82 airports across 20+ states. Customers can pick up orders at
-                  any Southwest Cargo location. View all locations at{' '}
+                  Southwest Cargo serves 82 airports across 20+ states. Customers can pick up orders
+                  at any Southwest Cargo location. View all locations at{' '}
                   <a className="underline font-medium" href="/locations">
                     /locations
                   </a>
@@ -524,7 +552,9 @@ export function ShippingSettingsForm() {
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>✓ FedEx: 30+ services with automatic freight detection</li>
                 <li>✓ Southwest Cargo: 82 airport locations across 20+ states</li>
-                <li>✓ SmartPost automatically offered for residential addresses (20-40% cheaper)</li>
+                <li>
+                  ✓ SmartPost automatically offered for residential addresses (20-40% cheaper)
+                </li>
                 <li>✓ Real-time rates from FedEx API with automatic fallback</li>
                 <li>✓ Intelligent box packing using 14 official FedEx box types</li>
               </ul>

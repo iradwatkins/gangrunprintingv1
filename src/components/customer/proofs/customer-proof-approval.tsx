@@ -1,64 +1,64 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { ProofApprovalCard } from './proof-approval-card';
-import { Eye, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { ProofApprovalCard } from './proof-approval-card'
+import { Eye, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 
 interface ProofFile {
-  id: string;
-  filename: string;
-  fileUrl: string;
-  label?: string;
-  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED';
-  createdAt: string;
+  id: string
+  filename: string
+  fileUrl: string
+  label?: string
+  approvalStatus: 'WAITING' | 'APPROVED' | 'REJECTED' | 'NOT_REQUIRED'
+  createdAt: string
   FileMessage: Array<{
-    id: string;
-    message: string;
-    authorRole: string;
-    authorName: string;
-    createdAt: string;
-  }>;
+    id: string
+    message: string
+    authorRole: string
+    authorName: string
+    createdAt: string
+  }>
 }
 
 interface Props {
-  orderId: string;
+  orderId: string
 }
 
 export function CustomerProofApproval({ orderId }: Props) {
-  const [proofs, setProofs] = useState<ProofFile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [proofs, setProofs] = useState<ProofFile[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchProofs = async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
     try {
-      const response = await fetch(`/api/orders/${orderId}/files`);
+      const response = await fetch(`/api/orders/${orderId}/files`)
       if (!response.ok) {
-        throw new Error('Failed to load proofs');
+        throw new Error('Failed to load proofs')
       }
-      const data = await response.json();
+      const data = await response.json()
       // Filter to only show ADMIN_PROOF files
-      const adminProofs = data.files?.filter((f: any) => f.fileType === 'ADMIN_PROOF') || [];
-      setProofs(adminProofs);
+      const adminProofs = data.files?.filter((f: any) => f.fileType === 'ADMIN_PROOF') || []
+      setProofs(adminProofs)
     } catch (err) {
-      console.error('Error fetching proofs:', err);
-      setError('Unable to load proofs. Please try again.');
+      console.error('Error fetching proofs:', err)
+      setError('Unable to load proofs. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchProofs();
-  }, [orderId]);
+    fetchProofs()
+  }, [orderId])
 
-  const waitingProofs = proofs.filter((p) => p.approvalStatus === 'WAITING');
-  const approvedProofs = proofs.filter((p) => p.approvalStatus === 'APPROVED');
-  const rejectedProofs = proofs.filter((p) => p.approvalStatus === 'REJECTED');
+  const waitingProofs = proofs.filter((p) => p.approvalStatus === 'WAITING')
+  const approvedProofs = proofs.filter((p) => p.approvalStatus === 'APPROVED')
+  const rejectedProofs = proofs.filter((p) => p.approvalStatus === 'REJECTED')
 
   if (loading) {
     return (
@@ -76,7 +76,7 @@ export function CustomerProofApproval({ orderId }: Props) {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (error) {
@@ -96,7 +96,7 @@ export function CustomerProofApproval({ orderId }: Props) {
           </Alert>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (proofs.length === 0) {
@@ -107,9 +107,7 @@ export function CustomerProofApproval({ orderId }: Props) {
             <Eye className="h-5 w-5" />
             Proof Approval
           </CardTitle>
-          <CardDescription>
-            No proofs have been uploaded for this order yet.
-          </CardDescription>
+          <CardDescription>No proofs have been uploaded for this order yet.</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert>
@@ -122,7 +120,7 @@ export function CustomerProofApproval({ orderId }: Props) {
           </Alert>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -142,7 +140,10 @@ export function CustomerProofApproval({ orderId }: Props) {
             </div>
             <div className="flex gap-2">
               {waitingProofs.length > 0 && (
-                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300" variant="outline">
+                <Badge
+                  className="bg-yellow-100 text-yellow-800 border-yellow-300"
+                  variant="outline"
+                >
                   {waitingProofs.length} Waiting
                 </Badge>
               )}
@@ -160,9 +161,8 @@ export function CustomerProofApproval({ orderId }: Props) {
               <AlertCircle className="h-4 w-4 text-yellow-600" />
               <AlertTitle className="text-yellow-800">Action Required</AlertTitle>
               <AlertDescription className="text-yellow-700">
-                You have {waitingProofs.length} proof{waitingProofs.length !== 1 ? 's' : ''}{' '}
-                waiting for your approval. Please review and approve them so we can proceed with
-                production.
+                You have {waitingProofs.length} proof{waitingProofs.length !== 1 ? 's' : ''} waiting
+                for your approval. Please review and approve them so we can proceed with production.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -231,5 +231,5 @@ export function CustomerProofApproval({ orderId }: Props) {
         </div>
       )}
     </div>
-  );
+  )
 }

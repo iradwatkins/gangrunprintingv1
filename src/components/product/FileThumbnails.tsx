@@ -23,7 +23,7 @@ export function FileThumbnails({
   files,
   className,
   size = 'sm',
-  maxDisplay = 3
+  maxDisplay = 3,
 }: FileThumbnailsProps) {
   if (!files || files.length === 0) {
     return null
@@ -35,13 +35,13 @@ export function FileThumbnails({
   const sizeClasses = {
     sm: 'w-10 h-10',
     md: 'w-16 h-16',
-    lg: 'w-20 h-20'
+    lg: 'w-20 h-20',
   }
 
   const iconSizes = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
-    lg: 'w-8 h-8'
+    lg: 'w-8 h-8',
   }
 
   return (

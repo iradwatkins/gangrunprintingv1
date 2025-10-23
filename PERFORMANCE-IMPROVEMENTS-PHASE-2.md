@@ -1,4 +1,5 @@
 # Performance Improvements - Phase 2
+
 **Date**: October 22, 2025
 **Focus**: Bundle Optimization + Compression
 **Goal**: Pingdom Grade B87 → A95+
@@ -10,10 +11,11 @@
 **3 Major Optimizations Implemented:**
 
 1. ✅ **Webpack Chunk Optimization** - Reduce 22 JS files → ~10 files
-2. ✅ **Package Import Optimization** - Tree-shake 19 libraries  
+2. ✅ **Package Import Optimization** - Tree-shake 19 libraries
 3. ✅ **Gzip Compression** - Enable compression for all text content
 
 **Expected Impact:**
+
 - Pingdom Grade: B87 → A95+ (+8 points)
 - HTTP Requests: 28 → ~15 (-46%)
 - JavaScript Files: 22 → ~10 (-55%)
@@ -28,6 +30,7 @@
 **Lines 241-293**: Added SplitChunksPlugin configuration
 
 **Strategy**: Create 5 named chunks instead of 22 small chunks
+
 - **vendor.js** - All node_modules
 - **ui.js** - Radix UI + Lucide + Tailwind utilities
 - **forms.js** - React Hook Form + Zod
@@ -35,6 +38,7 @@
 - **commons.js** - Shared code across pages
 
 **Configuration**:
+
 ```javascript
 splitChunks: {
   chunks: 'all',
@@ -51,6 +55,7 @@ splitChunks: {
 **Lines 27-50**: Expanded `optimizePackageImports` from 4 → 19 packages
 
 **Added**:
+
 - 13 Radix UI component packages
 - react-hook-form
 - zod
@@ -92,15 +97,18 @@ du -h .next/static/chunks/*.js | sort -h
 ### Performance Testing
 
 **Pingdom**:
+
 - URL: https://tools.pingdom.com
 - Test: https://gangrunprinting.com
 - Expected: Grade A95+, ~15 requests
 
 **Lighthouse**:
+
 - Chrome DevTools → Lighthouse
 - Expected: Performance 90+
 
 **Browser DevTools**:
+
 - Network tab → Count JS files
 - Expected: ~10 JS files
 
@@ -140,7 +148,7 @@ curl -I https://gangrunprinting.com/_next/static/chunks/vendor.js
 # Check for: Content-Encoding: gzip
 
 # Test cache headers
-curl -I https://gangrunprinting.com/_next/static/chunks/vendor.js  
+curl -I https://gangrunprinting.com/_next/static/chunks/vendor.js
 # Check for: Cache-Control: public, max-age=31536000, immutable
 ```
 
@@ -150,24 +158,24 @@ curl -I https://gangrunprinting.com/_next/static/chunks/vendor.js
 
 ### Pingdom Metrics
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| Overall Grade | B87 | A95+ | +8 |
-| HTTP Requests | F24 | A90+ | +66 |
-| Gzip Compression | B89 | A95+ | +6 |
-| Cache Headers | B89 | A95+ | +6 |
-| Total Requests | 28 | ~15 | -46% |
-| JS Requests | 22 | ~10 | -55% |
-| Load Time | 800ms | ~600ms | -25% |
+| Metric           | Before | After  | Change |
+| ---------------- | ------ | ------ | ------ |
+| Overall Grade    | B87    | A95+   | +8     |
+| HTTP Requests    | F24    | A90+   | +66    |
+| Gzip Compression | B89    | A95+   | +6     |
+| Cache Headers    | B89    | A95+   | +6     |
+| Total Requests   | 28     | ~15    | -46%   |
+| JS Requests      | 22     | ~10    | -55%   |
+| Load Time        | 800ms  | ~600ms | -25%   |
 
 ### Lighthouse Core Web Vitals
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| FCP | 2.9s | ~2.0s | -31% |
-| LCP | 4.2s | ~3.0s | -29% |
-| TBT | 20ms | 20ms | No change |
-| CLS | 0 | 0 | No change |
+| Metric | Before | After | Change    |
+| ------ | ------ | ----- | --------- |
+| FCP    | 2.9s   | ~2.0s | -31%      |
+| LCP    | 4.2s   | ~3.0s | -29%      |
+| TBT    | 20ms   | 20ms  | No change |
+| CLS    | 0      | 0     | No change |
 
 ---
 
@@ -200,4 +208,3 @@ curl -I https://gangrunprinting.com/_next/static/chunks/vendor.js
 **Status**: ⏳ BUILD IN PROGRESS  
 **Next Step**: Verify build success, test performance, commit changes  
 **Deployment Date**: October 22, 2025
-

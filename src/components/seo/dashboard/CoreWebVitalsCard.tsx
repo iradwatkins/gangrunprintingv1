@@ -74,8 +74,12 @@ function getStatusIcon(status: VitalStatus) {
 }
 
 function getStatusBadge(status: VitalStatus): JSX.Element {
-  const label = status === 'needs-improvement' ? 'Needs Improvement' : status.charAt(0).toUpperCase() + status.slice(1)
-  const variant = status === 'good' ? 'default' : status === 'needs-improvement' ? 'secondary' : 'destructive'
+  const label =
+    status === 'needs-improvement'
+      ? 'Needs Improvement'
+      : status.charAt(0).toUpperCase() + status.slice(1)
+  const variant =
+    status === 'good' ? 'default' : status === 'needs-improvement' ? 'secondary' : 'destructive'
 
   return <Badge variant={variant as any}>{label}</Badge>
 }
@@ -107,11 +111,21 @@ export function CoreWebVitalsCard({
   ]
 
   if (data.inp !== undefined) {
-    vitals.push({ key: 'inp', label: 'INP', description: 'Interaction to Next Paint', value: data.inp })
+    vitals.push({
+      key: 'inp',
+      label: 'INP',
+      description: 'Interaction to Next Paint',
+      value: data.inp,
+    })
   }
 
   if (data.fcp !== undefined) {
-    vitals.push({ key: 'fcp', label: 'FCP', description: 'First Contentful Paint', value: data.fcp })
+    vitals.push({
+      key: 'fcp',
+      label: 'FCP',
+      description: 'First Contentful Paint',
+      value: data.fcp,
+    })
   }
 
   if (data.ttfb !== undefined) {
@@ -125,7 +139,7 @@ export function CoreWebVitalsCard({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {vitals.map(vital => {
+        {vitals.map((vital) => {
           const status = getStatus(vital.key, vital.value)
           return (
             <div key={vital.key} className="space-y-2">
@@ -144,10 +158,7 @@ export function CoreWebVitalsCard({
                   {getStatusBadge(status)}
                 </div>
               </div>
-              <Progress
-                className="h-2"
-                value={100 - getProgressValue(vital.key, vital.value)}
-              />
+              <Progress className="h-2" value={100 - getProgressValue(vital.key, vital.value)} />
             </div>
           )
         })}

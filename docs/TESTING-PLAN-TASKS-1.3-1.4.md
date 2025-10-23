@@ -1,4 +1,5 @@
 # Testing Plan: Tasks 1.3 & 1.4 Verification
+
 **Date:** October 18, 2025
 **Status:** Ready to Execute (Requires Docker)
 **Purpose:** Verify OrderService adoption and API response handler changes work correctly
@@ -11,13 +12,13 @@
 
 According to CLAUDE.md, the application requires these Docker services on dedicated ports:
 
-| Service | Port | Container Name | Required |
-|---------|------|----------------|----------|
-| **PostgreSQL** | 5435 | gangrunprinting-postgres | ✅ CRITICAL |
-| **Redis** | 6302 | gangrunprinting-redis | ✅ YES |
-| **MinIO API** | 9002 | gangrunprinting-minio | ✅ YES |
-| **MinIO Console** | 9102 | gangrunprinting-minio | ⚠️ Optional |
-| **Next.js App** | 3020 (external) / 3002 (internal) | gangrunprinting_app | ✅ YES |
+| Service           | Port                              | Container Name           | Required    |
+| ----------------- | --------------------------------- | ------------------------ | ----------- |
+| **PostgreSQL**    | 5435                              | gangrunprinting-postgres | ✅ CRITICAL |
+| **Redis**         | 6302                              | gangrunprinting-redis    | ✅ YES      |
+| **MinIO API**     | 9002                              | gangrunprinting-minio    | ✅ YES      |
+| **MinIO Console** | 9102                              | gangrunprinting-minio    | ⚠️ Optional |
+| **Next.js App**   | 3020 (external) / 3002 (internal) | gangrunprinting_app      | ✅ YES      |
 
 ### Current Status
 
@@ -52,6 +53,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
 
 **Expected Output:**
+
 ```
 NAMES                          STATUS              PORTS
 gangrunprinting_app           Up X minutes        0.0.0.0:3020->3002/tcp
@@ -98,6 +100,7 @@ curl -I http://localhost:3002
 **Status:** Already verified - TypeScript compiles without errors
 
 **Command:**
+
 ```bash
 npx tsc --noEmit --skipLibCheck 2>&1 | grep -E "checkout/route.ts|OrderService.ts"
 ```
@@ -152,9 +155,9 @@ describe('OrderService - Task 1.3 Changes', () => {
       },
       totals: {
         subtotal: 10000, // $100.00
-        tax: 825,        // $8.25 but rounded to $8
-        shipping: 1000,  // $10.00
-        total: 11825,    // $118.25 but should be $118.00
+        tax: 825, // $8.25 but rounded to $8
+        shipping: 1000, // $10.00
+        total: 11825, // $118.25 but should be $118.00
       },
     }
 
@@ -201,6 +204,7 @@ describe('OrderService - Task 1.3 Changes', () => {
 ```
 
 **Run:**
+
 ```bash
 npm test -- OrderService.test.ts
 ```
@@ -212,6 +216,7 @@ npm test -- OrderService.test.ts
 **Purpose:** Verify checkout route correctly calculates totals and passes to OrderService
 
 **Test Scenario:**
+
 - POST to `/api/checkout` with test order
 - Verify response contains order ID
 - Verify database order has correct totals
@@ -249,6 +254,7 @@ curl -X POST http://localhost:3002/api/checkout \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "success": true,
@@ -262,6 +268,7 @@ curl -X POST http://localhost:3002/api/checkout \
 ```
 
 **Verify in Database:**
+
 ```sql
 SELECT
   orderNumber,
@@ -277,6 +284,7 @@ LIMIT 1;
 ```
 
 **Expected Results:**
+
 - `subtotal`: 10000 ($100.00)
 - `tax`: 825 ($8.25, BUT should verify if rounded to 800 based on Math.round)
 - `shipping`: 1000 ($10.00 for standard)
@@ -292,32 +300,34 @@ LIMIT 1;
 **Test Cases:**
 
 | Subtotal | Tax Rate | Calculation | Math.round() | Expected Display |
-|----------|----------|-------------|--------------|------------------|
-| $100.00 | 8.25% | $8.25 | $8 | $8.00 |
-| $150.00 | 8.25% | $12.375 | $12 | $12.00 |
-| $200.00 | 8.25% | $16.50 | $17 | $17.00 |
+| -------- | -------- | ----------- | ------------ | ---------------- |
+| $100.00  | 8.25%    | $8.25       | $8           | $8.00            |
+| $150.00  | 8.25%    | $12.375     | $12          | $12.00           |
+| $200.00  | 8.25%    | $16.50      | $17          | $17.00           |
 
 **Test Script:**
+
 ```javascript
 // Test tax rounding matches checkout logic
 const TAX_RATE = 0.0825
 
 function testTaxRounding(subtotal) {
   const tax = Math.round(subtotal * TAX_RATE)
-  console.log(`Subtotal: $${subtotal/100}, Tax: $${tax/100}`)
+  console.log(`Subtotal: $${subtotal / 100}, Tax: $${tax / 100}`)
   return tax
 }
 
-testTaxRounding(10000)  // Should return 825 ($8.25 rounds to $8)
-testTaxRounding(15000)  // Should return 1238 ($12.375 rounds to $12)
-testTaxRounding(20000)  // Should return 1650 ($16.50 rounds to $17)
+testTaxRounding(10000) // Should return 825 ($8.25 rounds to $8)
+testTaxRounding(15000) // Should return 1238 ($12.375 rounds to $12)
+testTaxRounding(20000) // Should return 1650 ($16.50 rounds to $17)
 ```
 
 **Run in browser console:**
+
 ```javascript
 // Navigate to http://localhost:3002 and open DevTools console
 const TAX_RATE = 0.0825
-Math.round(10000 * TAX_RATE)  // Should output: 825
+Math.round(10000 * TAX_RATE) // Should output: 825
 ```
 
 ---
@@ -328,18 +338,20 @@ Math.round(10000 * TAX_RATE)  // Should output: 825
 
 **Test Cases:**
 
-| Shipping Method | Expected Cost | Formula |
-|-----------------|---------------|---------|
-| Standard | $10.00 (1000 cents) | Flat rate |
-| Express | $25.00 (2500 cents) | Flat rate |
+| Shipping Method | Expected Cost       | Formula   |
+| --------------- | ------------------- | --------- |
+| Standard        | $10.00 (1000 cents) | Flat rate |
+| Express         | $25.00 (2500 cents) | Flat rate |
 
 **Code Verification:**
+
 ```bash
 # Check checkout route shipping logic
 grep -A 2 "Calculate shipping" src/app/api/checkout/route.ts
 ```
 
 **Expected Output:**
+
 ```typescript
 // Calculate shipping
 const shipping = shippingMethod === 'express' ? 2500 : 1000 // $25 or $10
@@ -356,6 +368,7 @@ const shipping = shippingMethod === 'express' ? 2500 : 1000 // $25 or $10
 **Purpose:** Verify add-ons API uses new response handlers
 
 **Test:**
+
 ```bash
 # Get all add-ons
 curl http://localhost:3002/api/add-ons
@@ -368,10 +381,11 @@ curl http://localhost:3002/api/add-ons
 ```
 
 **Verify Response Structure:**
+
 ```javascript
 fetch('http://localhost:3002/api/add-ons')
-  .then(res => res.json())
-  .then(data => {
+  .then((res) => res.json())
+  .then((data) => {
     console.log('Has success field:', 'success' in data)
     console.log('Has data field:', 'data' in data)
     console.log('Response format:', Object.keys(data))
@@ -476,6 +490,7 @@ test.describe('Checkout Flow - Task 1.3 Verification', () => {
 ```
 
 **Run Tests:**
+
 ```bash
 # Install Playwright if not already installed
 npm install -D @playwright/test
@@ -562,6 +577,7 @@ npx playwright test --ui
 **Error:** `Can't reach database server at localhost:5435`
 
 **Solution:**
+
 ```bash
 # Check if PostgreSQL container is running
 docker ps | grep postgres
@@ -578,6 +594,7 @@ docker exec gangrunprinting-postgres pg_isready
 **Error:** Type errors in checkout route or OrderService
 
 **Solution:**
+
 ```bash
 # Run TypeScript compiler
 npx tsc --noEmit
@@ -592,6 +609,7 @@ npx tsc --noEmit src/services/OrderService.ts
 **Error:** Internal server error during checkout
 
 **Solution:**
+
 ```bash
 # Check dev server logs
 # Look for Prisma errors, validation errors, etc.
@@ -610,20 +628,20 @@ docker exec gangrunprinting-postgres psql -U postgres -d gangrun_production -c "
 **Tester:** [Your name]
 **Environment:** Local (Docker Compose)
 
-| Test ID | Description | Status | Notes |
-|---------|-------------|--------|-------|
-| 1.3.1 | TypeScript compilation | ✅/❌ | |
-| 1.3.2 | OrderService unit test | ✅/❌ | |
-| 1.3.3 | Checkout integration | ✅/❌ | |
-| 1.3.4 | Tax rounding | ✅/❌ | |
-| 1.3.5 | Shipping calculation | ✅/❌ | |
-| 1.4.1 | Add-ons API | ✅/❌ | |
+| Test ID | Description            | Status | Notes |
+| ------- | ---------------------- | ------ | ----- |
+| 1.3.1   | TypeScript compilation | ✅/❌  |       |
+| 1.3.2   | OrderService unit test | ✅/❌  |       |
+| 1.3.3   | Checkout integration   | ✅/❌  |       |
+| 1.3.4   | Tax rounding           | ✅/❌  |       |
+| 1.3.5   | Shipping calculation   | ✅/❌  |       |
+| 1.4.1   | Add-ons API            | ✅/❌  |       |
 
 ### Issues Found
 
 | Issue | Severity | Description | Status |
-|-------|----------|-------------|--------|
-| | | | |
+| ----- | -------- | ----------- | ------ |
+|       |          |             |        |
 
 ### Recommendations
 
@@ -636,11 +654,13 @@ docker exec gangrunprinting-postgres psql -U postgres -d gangrun_production -c "
 ## Next Steps After Testing
 
 **If All Tests Pass ✅:**
+
 1. Proceed with Task 1.2 (Product Configuration Service Extraction)
 2. OR proceed with Task 1.1 (Pricing Engine Consolidation)
 3. Create git commit for Tasks 1.3 & 1.4
 
 **If Tests Fail ❌:**
+
 1. Document issues in test report
 2. Fix identified problems
 3. Re-run tests

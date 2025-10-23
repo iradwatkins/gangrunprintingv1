@@ -50,10 +50,10 @@ export default function ChatGPTFeedViewer() {
     loadFeed()
   }, [])
 
-  const categories = [...new Set(products.map(p => p.product_category))]
+  const categories = [...new Set(products.map((p) => p.product_category))]
   const totalPrice = products.reduce((sum, p) => sum + parseFloat(p.price.split(' ')[0]), 0)
   const avgPrice = products.length > 0 ? (totalPrice / products.length).toFixed(2) : '0.00'
-  const inStockCount = products.filter(p => p.availability === 'in_stock').length
+  const inStockCount = products.filter((p) => p.availability === 'in_stock').length
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 p-5">
@@ -96,9 +96,7 @@ export default function ChatGPTFeedViewer() {
 
         {/* Loading */}
         {loading && (
-          <div className="text-center py-20 text-white text-2xl">
-            Loading products...
-          </div>
+          <div className="text-center py-20 text-white text-2xl">Loading products...</div>
         )}
 
         {/* Error */}
@@ -119,9 +117,11 @@ export default function ChatGPTFeedViewer() {
                 <img
                   alt={product.title}
                   className="w-full h-48 object-cover bg-gray-100"
-                  loading="lazy" src={product.image_link}
+                  loading="lazy"
+                  src={product.image_link}
                   onError={(e) => {
-                    e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="200"%3E%3Crect fill="%23f5f5f5" width="400" height="200"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="18" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E'
+                    e.currentTarget.src =
+                      'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="200"%3E%3Crect fill="%23f5f5f5" width="400" height="200"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="18" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E'
                   }}
                 />
                 <div className="p-5">
@@ -132,9 +132,7 @@ export default function ChatGPTFeedViewer() {
                   <span className="inline-block bg-purple-600 text-white text-xs px-3 py-1 rounded-full mb-4">
                     {product.product_category}
                   </span>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {product.description}
-                  </p>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{product.description}</p>
 
                   <div className="border-t pt-4 space-y-2 text-sm">
                     <div className="flex justify-between">
@@ -143,7 +141,9 @@ export default function ChatGPTFeedViewer() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Availability:</span>
-                      <span className={`font-semibold ${product.availability === 'in_stock' ? 'text-green-600' : 'text-red-600'}`}>
+                      <span
+                        className={`font-semibold ${product.availability === 'in_stock' ? 'text-green-600' : 'text-red-600'}`}
+                      >
                         {product.availability.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
@@ -153,11 +153,15 @@ export default function ChatGPTFeedViewer() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Search Enabled:</span>
-                      <span className="font-medium">{product.enable_search ? '✅ Yes' : '❌ No'}</span>
+                      <span className="font-medium">
+                        {product.enable_search ? '✅ Yes' : '❌ No'}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Checkout:</span>
-                      <span className="font-medium">{product.enable_checkout ? '✅ Enabled' : '⚠️ Disabled'}</span>
+                      <span className="font-medium">
+                        {product.enable_checkout ? '✅ Enabled' : '⚠️ Disabled'}
+                      </span>
                     </div>
                   </div>
 

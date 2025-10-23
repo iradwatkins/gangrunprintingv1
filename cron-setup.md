@@ -22,16 +22,19 @@ Add these entries:
 ## Manual Testing
 
 Test abandoned cart check:
+
 ```bash
 npx tsx src/scripts/workflow-cron-jobs.ts abandoned-carts
 ```
 
 Test inactive customer check:
+
 ```bash
 npx tsx src/scripts/workflow-cron-jobs.ts inactive-customers
 ```
 
 Run all checks:
+
 ```bash
 npx tsx src/scripts/workflow-cron-jobs.ts
 ```
@@ -45,11 +48,13 @@ tail -f /var/log/workflow-crons.log
 ## Monitoring
 
 Check if cron jobs are running:
+
 ```bash
 crontab -l | grep workflow
 ```
 
 Check recent executions:
+
 ```bash
 grep "workflow cron" /var/log/workflow-crons.log | tail -20
 ```

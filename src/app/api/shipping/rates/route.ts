@@ -14,16 +14,18 @@ const RateRequestSchema = z.object({
     countryCode: z.string().default('US'),
     isResidential: z.boolean().optional().default(true),
   }),
-  package: z.object({
-    weight: z.number().min(0.1).max(500), // increased to support freight
-    dimensions: z
-      .object({
-        length: z.number(),
-        width: z.number(),
-        height: z.number(),
-      })
-      .optional(),
-  }).optional(),
+  package: z
+    .object({
+      weight: z.number().min(0.1).max(500), // increased to support freight
+      dimensions: z
+        .object({
+          length: z.number(),
+          width: z.number(),
+          height: z.number(),
+        })
+        .optional(),
+    })
+    .optional(),
   packages: z
     .array(
       z.object({
@@ -119,7 +121,6 @@ export async function POST(request: NextRequest) {
 
     for (const module of modulesToUse) {
       try {
-
         const moduleRates = await module.provider.getRates(
           DEFAULT_ORIGIN,
           destinationAddress,
@@ -152,7 +153,6 @@ export async function POST(request: NextRequest) {
             },
           })
         })
-
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         console.error(`[Shipping API] ${module.name} error:`, errorMessage)

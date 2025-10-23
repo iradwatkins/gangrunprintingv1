@@ -11,6 +11,7 @@
 **ROOT CAUSE IDENTIFIED:** Missing `.env` file with `DATABASE_URL` configuration
 
 **Impact:** Complete failure of airport display functionality - affects both:
+
 1. `/locations` page - Air Cargo tab shows no airports
 2. Checkout flow - Airport selector cannot load locations
 
@@ -28,12 +29,12 @@
 
 ### 📊 Diagnostic Results
 
-| Test | Status | Finding |
-|------|--------|---------|
-| Database Connection | ❌ FAIL | `DATABASE_URL` environment variable not found |
+| Test                     | Status  | Finding                                        |
+| ------------------------ | ------- | ---------------------------------------------- |
+| Database Connection      | ❌ FAIL | `DATABASE_URL` environment variable not found  |
 | API Route Implementation | ✅ PASS | `/api/airports/route.ts` correctly implemented |
-| Frontend Implementation | ✅ PASS | Locations page fetches from `/api/airports` |
-| Hardcoded Data Check | ✅ PASS | No hardcoded airport arrays found |
+| Frontend Implementation  | ✅ PASS | Locations page fetches from `/api/airports`    |
+| Hardcoded Data Check     | ✅ PASS | No hardcoded airport arrays found              |
 
 ---
 
@@ -45,12 +46,14 @@
 **Required Variable:** `DATABASE_URL`
 
 **Evidence:**
+
 ```
 error: Environment variable not found: DATABASE_URL.
   -->  schema.prisma:7
 ```
 
 **Impact Chain:**
+
 1. No `.env` file → DATABASE_URL undefined
 2. Prisma cannot connect to database
 3. `/api/airports` endpoint fails when querying database
@@ -66,7 +69,7 @@ error: Environment variable not found: DATABASE_URL.
    - Returns JSON with success/airports/count
 
 2. **Frontend Implementation** ✅ CORRECT
-   - File: [src/app/(customer)/locations/page.tsx](src/app/(customer)/locations/page.tsx:84)
+   - File: [src/app/(customer)/locations/page.tsx](<src/app/(customer)/locations/page.tsx:84>)
    - useEffect hook fetches `/api/airports`
    - Sets state with `setAirCargoLocations()`
    - Renders airport cards from state
@@ -102,6 +105,7 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
 ```
 
 **Specific for GangRun Printing (per CLAUDE.md):**
+
 ```env
 DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5435/gangrun_production"
 
@@ -124,6 +128,7 @@ npx tsx src/scripts/seed-southwest-airports.ts
 ```
 
 **Expected Output:**
+
 ```
 🛫 Starting Southwest Cargo airport import...
 📍 Importing 82 airports...
@@ -146,6 +151,7 @@ npx tsx diagnose-southwest-issue.ts
 ```
 
 **Expected Output (after fix):**
+
 ```
 ✅ Database Airport Count - 82 airports
 ✅ Major Airports Check - All major airports found
@@ -159,19 +165,23 @@ npx tsx diagnose-southwest-issue.ts
 ## Test Files Created
 
 ### 1. Chrome DevTools Tests
+
 **File:** `test-southwest-chrome-devtools.js`
 
 **Tests:**
+
 1. Direct API endpoint test (`/api/airports`)
 2. Locations page load test (Air Cargo tab)
 3. Checkout airport selector test
 
 **Run with:**
+
 ```bash
 node test-southwest-chrome-devtools.js
 ```
 
 **Features:**
+
 - Opens browser with DevTools
 - Tracks network requests
 - Logs console messages
@@ -179,20 +189,24 @@ node test-southwest-chrome-devtools.js
 - Provides manual inspection points
 
 ### 2. Playwright Tests
+
 **File:** `playwright-tests/southwest-cargo-diagnostics.spec.ts`
 
 **Tests:**
+
 1. API returns 82 airports
 2. Locations page displays all airports
 3. Checkout shows airport selector
 4. Database query analysis
 
 **Run with:**
+
 ```bash
 npx playwright test southwest-cargo-diagnostics.spec.ts --headed
 ```
 
 **Features:**
+
 - Automated UI testing
 - Network request monitoring
 - Element counting
@@ -200,9 +214,11 @@ npx playwright test southwest-cargo-diagnostics.spec.ts --headed
 - Detailed assertions
 
 ### 3. Database Diagnostic Script
+
 **File:** `diagnose-southwest-issue.ts`
 
 **Checks:**
+
 1. Database airport count
 2. Specific major airports (MDW, ATL, DAL, etc.)
 3. Airport data structure
@@ -211,6 +227,7 @@ npx playwright test southwest-cargo-diagnostics.spec.ts --headed
 6. Frontend implementation validation
 
 **Run with:**
+
 ```bash
 npx tsx diagnose-southwest-issue.ts
 ```
@@ -220,24 +237,28 @@ npx tsx diagnose-southwest-issue.ts
 ## Verification Steps (Post-Fix)
 
 ### Step 1: Verify Database Connection
+
 ```bash
 npx prisma db push
 # Should complete without errors
 ```
 
 ### Step 2: Verify Airport Count
+
 ```bash
 npx tsx diagnose-southwest-issue.ts
 # Should show: ✅ Database Airport Count - 82 airports
 ```
 
 ### Step 3: Test API Endpoint
+
 ```bash
 curl http://localhost:3020/api/airports | jq '.count'
 # Should return: 82
 ```
 
 ### Step 4: Test Locations Page (Manual)
+
 1. Navigate to `http://localhost:3020/locations`
 2. Click "Air Cargo Pickup" tab
 3. Verify 82 airports are displayed
@@ -245,6 +266,7 @@ curl http://localhost:3020/api/airports | jq '.count'
 5. Check search works
 
 ### Step 5: Test Checkout (Manual)
+
 1. Add product to cart
 2. Go to checkout
 3. Enter shipping address
@@ -257,6 +279,7 @@ curl http://localhost:3020/api/airports | jq '.count'
 ## Hard-Coded Location Prevention
 
 ### ❌ FORBIDDEN (Per User Request)
+
 ```typescript
 // DO NOT DO THIS:
 const southwestAirports = [
@@ -267,18 +290,20 @@ const southwestAirports = [
 ```
 
 ### ✅ CORRECT PATTERN
+
 ```typescript
 // DO THIS:
 const [airports, setAirports] = useState([])
 
 useEffect(() => {
   fetch('/api/airports')
-    .then(res => res.json())
-    .then(data => setAirports(data.airports))
+    .then((res) => res.json())
+    .then((data) => setAirports(data.airports))
 }, [])
 ```
 
 **Rationale:**
+
 - Southwest Cargo may add/remove airports
 - Hardcoded data becomes stale
 - Database is single source of truth
@@ -305,12 +330,14 @@ Display (82 airports)
 ```
 
 ### Data Flow
+
 1. **Database** stores 82 Southwest Cargo airports
 2. **API Route** queries database, returns JSON
 3. **Frontend** fetches from API, updates state
 4. **UI** renders from state
 
 ### Why This Architecture is Good
+
 - ✅ Single source of truth (database)
 - ✅ RESTful API pattern
 - ✅ Separation of concerns
@@ -323,22 +350,27 @@ Display (82 airports)
 ## Related Files
 
 ### Database & Seed
+
 - `prisma/schema.prisma` - Airport model definition
 - `src/scripts/seed-southwest-airports.ts` - 82 airports seed script
 
 ### API
+
 - `src/app/api/airports/route.ts` - Airport API endpoint
 - `src/app/api/airports/[id]/route.ts` - Single airport endpoint
 
 ### Frontend
+
 - `src/app/(customer)/locations/page.tsx` - Locations page (uses API)
 - `src/components/checkout/airport-selector.tsx` - Checkout selector (uses API)
 
 ### Shipping Logic
+
 - `src/lib/shipping/providers/southwest-cargo.ts` - Southwest provider
 - `src/lib/shipping/config.ts` - Shipping configuration
 
 ### Documentation
+
 - `CLAUDE.md` - Project instructions (ports, deployment)
 - `SHIPPING-FIXED-FEDEX-SOUTHWEST-2025-10-16.md` - Recent shipping fixes
 
@@ -398,12 +430,14 @@ Display (82 airports)
 **Status:** ROOT CAUSE IDENTIFIED - FIXES REQUIRED
 
 **Confidence Level:** HIGH (95%)
+
 - Database diagnostic confirms missing DATABASE_URL
 - Frontend and API code review shows correct implementation
 - Test suites created and validated logic
 - Fix path is clear and straightforward
 
 **Risk Assessment:**
+
 - **Probability:** High (missing .env file is confirmed)
 - **Impact:** High (blocks Southwest Cargo orders)
 - **Mitigation:** Low effort (create .env, run seed script)

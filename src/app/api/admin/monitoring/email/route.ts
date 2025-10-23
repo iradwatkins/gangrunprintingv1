@@ -26,9 +26,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data }, { status: 200 })
   } catch (error: any) {
     console.error('Error sending monitoring email:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to send email' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: error.message || 'Failed to send email' }, { status: 500 })
   }
 }

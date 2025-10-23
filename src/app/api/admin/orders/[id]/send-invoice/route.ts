@@ -6,11 +6,11 @@
  * Generates invoice for an order and sends email to customer.
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { validateRequest } from '@/lib/auth';
-import { createInvoice } from '@/lib/services/invoice-service';
-import { sendInvoiceEmail } from '@/lib/email/invoice-email';
-import { z } from 'zod';
+import { type NextRequest, NextResponse } from 'next/server'
+import { validateRequest } from '@/lib/auth'
+import { createInvoice } from '@/lib/services/invoice-service'
+import { sendInvoiceEmail } from '@/lib/email/invoice-email'
+import { z } from 'zod'
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -19,7 +19,7 @@ import { z } from 'zod';
 const sendInvoiceSchema = z.object({
   paymentDueDate: z.string().datetime().optional(),
   customMessage: z.string().optional(),
-});
+})
 
 // ============================================================================
 // API HANDLER
@@ -28,28 +28,28 @@ const sendInvoiceSchema = z.object({
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     // Validate authentication and admin role
-    const { user } = await validateRequest();
+    const { user } = await validateRequest()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 })
     }
 
     // Parse and validate request body
-    const body = await request.json();
-    const validated = sendInvoiceSchema.parse(body);
+    const body = await request.json()
+    const validated = sendInvoiceSchema.parse(body)
 
-    const orderId = params.id;
+    const orderId = params.id
 
     // Create invoice
     const invoice = await createInvoice({
       orderId,
       paymentDueDate: validated.paymentDueDate ? new Date(validated.paymentDueDate) : undefined,
       customMessage: validated.customMessage,
-    });
+    })
 
     // Send invoice email to customer
     await sendInvoiceEmail({
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       paymentDueDate: invoice.paymentDueDate,
       paymentLink: invoice.paymentLink,
       customMessage: validated.customMessage,
-    });
+    })
 
     return NextResponse.json({
       success: true,
@@ -77,9 +77,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         sentAt: new Date(),
       },
       message: `Invoice ${invoice.invoiceNumber} sent to ${invoice.order.customer.email}`,
-    });
+    })
   } catch (error) {
-    console.error('Error sending invoice:', error);
+    console.error('Error sending invoice:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           details: error.issues,
         },
         { status: 400 }
-      );
+      )
     }
 
     return NextResponse.json(
@@ -97,6 +97,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
-    );
+    )
   }
 }

@@ -68,21 +68,21 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           where: { id: order.sourceLandingPageId },
           data: {
             orders: { increment: 1 },
-            revenue: { increment: order.total }
-          }
+            revenue: { increment: order.total },
+          },
         })
 
         // Recalculate conversion rate
         const landingPage = await prisma.cityLandingPage.findUnique({
           where: { id: order.sourceLandingPageId },
-          select: { organicViews: true, orders: true }
+          select: { organicViews: true, orders: true },
         })
 
         if (landingPage && landingPage.organicViews > 0) {
           const conversionRate = (landingPage.orders / landingPage.organicViews) * 100
           await prisma.cityLandingPage.update({
             where: { id: order.sourceLandingPageId },
-            data: { conversionRate }
+            data: { conversionRate },
           })
         }
       } catch (metricsError) {
@@ -180,7 +180,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     // Convert all statuses to validNextStates format (exclude current status)
     const validNextStates = allStatuses
-      .filter(s => s.slug !== order.status)
+      .filter((s) => s.slug !== order.status)
       .map((s) => ({
         ...s,
         requiresPayment: false,
@@ -201,7 +201,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 /**
  * Validate if a status transition is allowed (ORDER STATUS MANAGER)
  */
-async function validateStatusTransition(fromStatusSlug: string, toStatusSlug: string): Promise<boolean> {
+async function validateStatusTransition(
+  fromStatusSlug: string,
+  toStatusSlug: string
+): Promise<boolean> {
   // Allow same-status transitions
   if (fromStatusSlug === toStatusSlug) return true
 

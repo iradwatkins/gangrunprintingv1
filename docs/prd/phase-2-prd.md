@@ -915,8 +915,8 @@ Must be 100% complete before starting Phase 2:
 - [ ] Business Owner
 - [ ] Marketing Manager
 
-**Approved By:** ********\_********
-**Date:** ********\_********
+**Approved By:** **\*\*\*\***\_**\*\*\*\***
+**Date:** **\*\*\*\***\_**\*\*\*\***
 
 ---
 

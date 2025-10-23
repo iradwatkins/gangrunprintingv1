@@ -67,10 +67,7 @@ function processCheckout(data: unknown) {
 ### Product Configuration Validation
 
 ```typescript
-import {
-  validateProductConfiguration,
-  type ProductConfiguration
-} from '@/lib/validations/product'
+import { validateProductConfiguration, type ProductConfiguration } from '@/lib/validations/product'
 
 async function loadProductConfig(productId: string) {
   const data = await fetchProductConfig(productId)
@@ -100,10 +97,7 @@ export async function POST(request: Request) {
     const result = createOrderRequestSchema.safeParse(body)
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: getFirstError(result.error) },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: getFirstError(result.error) }, { status: 400 })
     }
 
     // Process valid data
@@ -112,10 +106,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Invalid request' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 }
 ```
@@ -168,9 +159,9 @@ type CartItem = z.infer<typeof cartItemSchema>
 
 function processCartItem(item: CartItem) {
   // TypeScript knows all the fields and types
-  console.log(item.productId)      // string (UUID)
-  console.log(item.quantity)       // number
-  console.log(item.options?.size)  // string | undefined
+  console.log(item.productId) // string (UUID)
+  console.log(item.quantity) // number
+  console.log(item.options?.size) // string | undefined
 }
 ```
 
@@ -191,7 +182,7 @@ async function createOrder(data: unknown) {
 
   // Now safe to insert into database
   const order = await prisma.order.create({
-    data: result.data
+    data: result.data,
   })
 
   return order

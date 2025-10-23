@@ -66,10 +66,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(parsedSettings)
   } catch (error) {
     console.error('Error fetching shipping settings:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch shipping settings' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch shipping settings' }, { status: 500 })
   }
 }
 
@@ -117,9 +114,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error saving shipping settings:', error)
-    return NextResponse.json(
-      { error: 'Failed to save shipping settings' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to save shipping settings' }, { status: 500 })
   }
 }

@@ -63,7 +63,6 @@ export async function GET(
     }
     const buffer = Buffer.concat(chunks)
 
-
     // Return the thumbnail with appropriate headers
     return new NextResponse(buffer, {
       status: 200,

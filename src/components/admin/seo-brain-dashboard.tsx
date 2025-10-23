@@ -160,13 +160,17 @@ export function SEOBrainDashboard() {
               <div
                 key={campaign.id}
                 className={`cursor-pointer rounded-lg border p-4 transition-colors ${
-                  selectedCampaign === campaign.id ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
+                  selectedCampaign === campaign.id
+                    ? 'border-primary bg-primary/5'
+                    : 'hover:bg-muted/50'
                 }`}
                 onClick={() => setSelectedCampaign(campaign.id)}
               >
                 <div className="font-medium">{campaign.productName}</div>
                 <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{campaign.citiesGenerated}/200 cities</span>
+                  <span className="text-muted-foreground">
+                    {campaign.citiesGenerated}/200 cities
+                  </span>
                   <Badge variant={campaign.status === 'COMPLETED' ? 'default' : 'secondary'}>
                     {campaign.status}
                   </Badge>
@@ -202,7 +206,9 @@ export function SEOBrainDashboard() {
                 <CardTitle className="text-sm font-medium">Total Views</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{performance.summary.totalViews.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  {performance.summary.totalViews.toLocaleString()}
+                </div>
               </CardContent>
             </Card>
             <Card>
@@ -218,7 +224,9 @@ export function SEOBrainDashboard() {
                 <CardTitle className="text-sm font-medium">Revenue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${performance.summary.totalRevenue.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  ${performance.summary.totalRevenue.toLocaleString()}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -235,7 +243,10 @@ export function SEOBrainDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {performance.topPerformers.slice(0, 5).map((city, i) => (
-                    <div key={i} className="flex items-center justify-between rounded-lg border p-3">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div>
                         <div className="font-medium">{city.city}</div>
                         <div className="text-sm text-muted-foreground">
@@ -261,7 +272,10 @@ export function SEOBrainDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {performance.bottomPerformers.slice(0, 5).map((city, i) => (
-                    <div key={i} className="flex items-center justify-between rounded-lg border p-3">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div>
                         <div className="font-medium">{city.city}</div>
                         <div className="text-sm text-muted-foreground">
@@ -288,7 +302,9 @@ export function SEOBrainDashboard() {
               <AlertCircle className="h-5 w-5 text-amber-600" />
               Pending Decisions ({decisions.length})
             </CardTitle>
-            <CardDescription>AI-generated improvement options awaiting your approval</CardDescription>
+            <CardDescription>
+              AI-generated improvement options awaiting your approval
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {decisions.map((decision) => (
@@ -304,10 +320,16 @@ export function SEOBrainDashboard() {
                       <div key={opt} className="rounded-lg border p-3">
                         <div className="mb-2 flex items-center justify-between">
                           <Badge variant="outline">Option {opt}</Badge>
-                          <span className="text-xs text-muted-foreground">{option.confidence}% confidence</span>
+                          <span className="text-xs text-muted-foreground">
+                            {option.confidence}% confidence
+                          </span>
                         </div>
                         <div className="mb-3 text-sm">{option.action}</div>
-                        <Button className="w-full" size="sm" onClick={() => handleDecision(decision.id, opt)}>
+                        <Button
+                          className="w-full"
+                          size="sm"
+                          onClick={() => handleDecision(decision.id, opt)}
+                        >
                           Select {opt}
                         </Button>
                       </div>

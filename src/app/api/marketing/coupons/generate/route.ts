@@ -36,10 +36,7 @@ export async function POST(req: NextRequest) {
 
     // Validate required fields
     if (!type || value === undefined) {
-      return NextResponse.json(
-        { error: 'Missing required fields: type, value' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required fields: type, value' }, { status: 400 })
     }
 
     if (type !== 'PERCENTAGE' && type !== 'FIXED_AMOUNT') {
@@ -50,12 +47,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate unique coupon code
-    const prefix = campaign === 'abandoned_cart' ? 'CART' :
-                   campaign === 'winback' ? 'BACK' :
-                   campaign === 'anniversary' ? 'YEAR' :
-                   'SAVE'
+    const prefix =
+      campaign === 'abandoned_cart'
+        ? 'CART'
+        : campaign === 'winback'
+          ? 'BACK'
+          : campaign === 'anniversary'
+            ? 'YEAR'
+            : 'SAVE'
 
-    const randomPart = nanoid(8).toUpperCase().replace(/[^A-Z0-9]/g, '')
+    const randomPart = nanoid(8)
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
     const code = `${prefix}${randomPart}`
 
     // Calculate expiration date
@@ -70,7 +73,8 @@ export async function POST(req: NextRequest) {
         type,
         value,
         userId,
-        description: description || `${value}${type === 'PERCENTAGE' ? '%' : ' cents'} off your order`,
+        description:
+          description || `${value}${type === 'PERCENTAGE' ? '%' : ' cents'} off your order`,
         minPurchase,
         maxDiscount,
         expiresAt,
@@ -98,10 +102,7 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     console.error('[API] Coupon generation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to generate coupon' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to generate coupon' }, { status: 500 })
   }
 }
 
@@ -116,10 +117,7 @@ export async function GET(req: NextRequest) {
     const code = searchParams.get('code')
 
     if (!code) {
-      return NextResponse.json(
-        { error: 'Missing code parameter' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing code parameter' }, { status: 400 })
     }
 
     const coupon = await prisma.coupon.findUnique({
@@ -127,10 +125,7 @@ export async function GET(req: NextRequest) {
     })
 
     if (!coupon) {
-      return NextResponse.json(
-        { valid: false, error: 'Coupon not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ valid: false, error: 'Coupon not found' }, { status: 404 })
     }
 
     // Check if active
@@ -171,9 +166,6 @@ export async function GET(req: NextRequest) {
     })
   } catch (error) {
     console.error('[API] Coupon validation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to validate coupon' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to validate coupon' }, { status: 500 })
   }
 }

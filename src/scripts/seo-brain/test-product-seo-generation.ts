@@ -115,9 +115,15 @@ async function main() {
     console.log('='.repeat(60))
     console.log(`Connection:     ✅ Success`)
     console.log(`Generation:     ✅ Success (${generationTime}ms)`)
-    console.log(`Word Count:     ${wordCountDiff <= 10 ? '✅' : '⚠️'} ${result.wordCount}/${targetWordCount} words`)
-    console.log(`Quality:        ${!hasReasoning ? '✅' : '⚠️'} ${!hasReasoning ? 'Clean' : 'Has reasoning'}`)
-    console.log(`Performance:    ${generationTime < targetTime ? '✅' : '⚠️'} ${generationTime < targetTime ? 'Fast' : 'Slow'}`)
+    console.log(
+      `Word Count:     ${wordCountDiff <= 10 ? '✅' : '⚠️'} ${result.wordCount}/${targetWordCount} words`
+    )
+    console.log(
+      `Quality:        ${!hasReasoning ? '✅' : '⚠️'} ${!hasReasoning ? 'Clean' : 'Has reasoning'}`
+    )
+    console.log(
+      `Performance:    ${generationTime < targetTime ? '✅' : '⚠️'} ${generationTime < targetTime ? 'Fast' : 'Slow'}`
+    )
 
     console.log('\n💡 Next Steps:')
     console.log('1. Review generated content above')

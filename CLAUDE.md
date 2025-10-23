@@ -48,12 +48,14 @@ const packages = items.map((item) => {
 ```
 
 ### **Git Search Terms for This Issue:**
+
 - `FEDEX-DIMENSIONS-VALIDATION`
 - `FEDEX-400-ERROR`
 - `FEDEX-INVALID-REQUEST`
 - `FEDEX-CHECKOUT-BLOCKED`
 
 ### **Protection Layers:**
+
 1. ✅ **In-code comments** with 🚨 warnings in source file
 2. ✅ **Permanent documentation**: `/docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md`
 3. ✅ **CLAUDE.md memory** (this section)
@@ -62,12 +64,14 @@ const packages = items.map((item) => {
 ### **If Checkout Breaks with "Invalid request" Error:**
 
 1. **Check if validation was removed**:
+
    ```bash
    grep -A 20 "CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION" \
      src/app/\(customer\)/checkout/shipping/page.tsx
    ```
 
 2. **Run test script**:
+
    ```bash
    node test-fedex-api-direct.js
    # Must pass 4/4 tests
@@ -83,7 +87,9 @@ const packages = items.map((item) => {
    ```
 
 ### **Key Rule:**
+
 **The dimensions property must be FULLY VALID or COMPLETELY OMITTED. There is no middle ground.**
+
 - ✅ `{ weight: 1 }` - Valid (no dimensions)
 - ✅ `{ weight: 1, dimensions: { length: 10, width: 5, height: 2 } }` - Valid (all numbers)
 - ❌ `{ weight: 1, dimensions: { length: undefined } }` - BREAKS CHECKOUT
@@ -108,14 +114,14 @@ Your entire product configuration system consists of **6 critical data types** +
 
 These SETS are how you organize and group your product options:
 
-| Set Type | Database Table | Count | Protection Level |
-|----------|---------------|-------|------------------|
-| **Size Sets** | `SizeGroup` | 21 records | 🔴 CRITICAL |
-| **Quantity Sets** | `QuantityGroup` | 5 records | 🔴 CRITICAL |
-| **Paper Stock Sets** | `PaperStockSet` | 9 records | 🔴 CRITICAL |
-| **Addon Sets** | `AddOnSet` | 2 records | 🔴 CRITICAL |
-| **Design Sets** | `DesignSet` | 1 record | 🔴 CRITICAL |
-| **Turnaround Time Sets** | `TurnaroundTimeSet` | 4 records | 🔴 CRITICAL |
+| Set Type                 | Database Table      | Count      | Protection Level |
+| ------------------------ | ------------------- | ---------- | ---------------- |
+| **Size Sets**            | `SizeGroup`         | 21 records | 🔴 CRITICAL      |
+| **Quantity Sets**        | `QuantityGroup`     | 5 records  | 🔴 CRITICAL      |
+| **Paper Stock Sets**     | `PaperStockSet`     | 9 records  | 🔴 CRITICAL      |
+| **Addon Sets**           | `AddOnSet`          | 2 records  | 🔴 CRITICAL      |
+| **Design Sets**          | `DesignSet`         | 1 record   | 🔴 CRITICAL      |
+| **Turnaround Time Sets** | `TurnaroundTimeSet` | 4 records  | 🔴 CRITICAL      |
 
 **Total: 42 SETS** - All are protected with the same priority as passwords.
 
@@ -126,18 +132,21 @@ These SETS are how you organize and group your product options:
 Your entire product configuration system consists of **6 critical data types**:
 
 #### **1. SIZES** ✅
+
 - `StandardSize` - 4 records
 - `SizeGroup` (Sets) - 21 records
 - `ProductSize` - Product-specific sizes
 - `ProductSizeGroup` - Product-size group relationships
 
 #### **2. QUANTITIES** ✅
+
 - `StandardQuantity` - 6 records
 - `QuantityGroup` (Sets) - 5 records
 - `ProductQuantity` - Product-specific quantities
 - `ProductQuantityGroup` - Product-quantity group relationships
 
 #### **3. PAPER STOCKS** ✅
+
 - `PaperStock` - 7 records (CRITICAL)
 - `PaperStockSet` - 9 records
 - `PaperStockSetItem` - 15 records
@@ -148,6 +157,7 @@ Your entire product configuration system consists of **6 critical data types**:
 - `VendorPaperStock` - Vendor paper stock mappings
 
 #### **4. ADDONS** ✅
+
 - `AddOn` - 20 records (CRITICAL)
 - `AddOnSet` - 2 records
 - `AddOnSetItem` - 23 records
@@ -156,12 +166,14 @@ Your entire product configuration system consists of **6 critical data types**:
 - `ProductAddOnSet` - Product-addon set relationships
 
 #### **5. DESIGNS** ✅
+
 - `DesignOption` - 5 records
 - `DesignSet` - 1 record
 - `DesignSetItem` - 5 records
 - `ProductDesignSet` - Product-design set relationships
 
 #### **6. TURNAROUND TIMES** ✅
+
 - `TurnaroundTime` - 6 records
 - `TurnaroundTimeSet` - 4 records
 - `TurnaroundTimeSetItem` - 10 records
@@ -170,18 +182,21 @@ Your entire product configuration system consists of **6 critical data types**:
 ### **Allowed Operations (Safe)**
 
 ✅ **CREATE** - Add new records (new sizes, addons, paper stocks, etc.)
+
 ```typescript
 // Example: Create new addon
 await prisma.addOn.create({ data: { name: "New Addon", ... } })
 ```
 
 ✅ **UPDATE** - Edit existing records (prices, descriptions, configurations)
+
 ```typescript
 // Example: Update addon price
 await prisma.addOn.update({ where: { id }, data: { configuration: {...} } })
 ```
 
 ✅ **SOFT DELETE** - Mark as inactive (preserves data)
+
 ```typescript
 // Example: Deactivate addon
 await prisma.addOn.update({ where: { id }, data: { isActive: false } })
@@ -190,6 +205,7 @@ await prisma.addOn.update({ where: { id }, data: { isActive: false } })
 ### **Forbidden Operations (Require Explicit Permission)**
 
 ❌ **HARD DELETE** - Permanent deletion of records
+
 ```typescript
 // FORBIDDEN without permission:
 await prisma.addOn.delete({ where: { id } })
@@ -197,6 +213,7 @@ await prisma.paperStock.deleteMany({})
 ```
 
 ❌ **DROP TABLES** - Deleting entire tables
+
 ```sql
 -- FORBIDDEN:
 DROP TABLE "AddOn";
@@ -204,6 +221,7 @@ DROP TABLE "PaperStock";
 ```
 
 ❌ **DESTRUCTIVE MIGRATIONS** - Changing table structure that loses data
+
 ```prisma
 // FORBIDDEN without permission:
 model AddOn {
@@ -214,6 +232,7 @@ model AddOn {
 ### **Verification Commands**
 
 **Quick check - Verify all 6 SETS (Primary Protection):**
+
 ```bash
 docker exec gangrunprinting-postgres psql -U gangrun_user -d gangrun_db -c "
 SELECT 'Size Sets' as set_type, COUNT(*) FROM \"SizeGroup\"
@@ -227,6 +246,7 @@ UNION ALL SELECT 'Turnaround Sets', COUNT(*) FROM \"TurnaroundTimeSet\";
 ```
 
 **Complete check - Verify all configuration data counts:**
+
 ```bash
 docker exec gangrunprinting-postgres psql -U gangrun_user -d gangrun_db -c "
 SELECT 'Sizes' as type, COUNT(*) FROM \"SizeGroup\"
@@ -241,6 +261,7 @@ UNION ALL SELECT 'Turnarounds', COUNT(*) FROM \"TurnaroundTime\";
 **Expected Counts (Baseline October 21, 2025):**
 
 **SETS (CRITICAL - Primary grouping system):**
+
 - Size Sets (`SizeGroup`): 21 sets
 - Quantity Sets (`QuantityGroup`): 5 sets
 - Paper Stock Sets (`PaperStockSet`): 9 sets
@@ -250,6 +271,7 @@ UNION ALL SELECT 'Turnarounds', COUNT(*) FROM \"TurnaroundTime\";
 - **Total SETS: 42**
 
 **INDIVIDUAL ITEMS:**
+
 - Standard Sizes: 4 items
 - Standard Quantities: 6 items
 - Paper Stocks: 7 stocks
@@ -260,6 +282,7 @@ UNION ALL SELECT 'Turnarounds', COUNT(*) FROM \"TurnaroundTime\";
 ### **Recovery Strategy**
 
 **Daily Database Backups:**
+
 ```bash
 # Automated via cron (already set up)
 docker exec gangrunprinting-postgres pg_dump -U gangrun_user gangrun_db \
@@ -267,6 +290,7 @@ docker exec gangrunprinting-postgres pg_dump -U gangrun_user gangrun_db \
 ```
 
 **Restore Product Configuration:**
+
 ```bash
 # If data accidentally deleted, restore from latest backup
 docker exec -i gangrunprinting-postgres psql -U gangrun_user gangrun_db \
@@ -274,11 +298,13 @@ docker exec -i gangrunprinting-postgres psql -U gangrun_user gangrun_db \
 ```
 
 ### **Git Search Terms for Future Reference**
+
 - `PRODUCT-CONFIGURATION-PROTECTION`
 - `DATABASE-CRITICAL-DATA`
 - `NEVER-DELETE-PRODUCT-DATA`
 
 ### **Key Rules**
+
 1. **Treat like passwords** - Never carelessly modify or delete
 2. **Add/Edit freely** - Normal operations are encouraged
 3. **Soft delete only** - Use `isActive: false` instead of hard deletes
@@ -295,15 +321,16 @@ docker exec -i gangrunprinting-postgres psql -U gangrun_user gangrun_db \
 
 **🎯 YOUR EXCLUSIVE PORTS - LOCKED AND RESERVED PERMANENTLY:**
 
-| Port | Service | Purpose | Container Name | Status |
-|------|---------|---------|----------------|--------|
-| **3020** | Next.js App | Main website (external) | gangrunprinting_app | ✅ ACTIVE |
-| **5435** | PostgreSQL | Database | gangrunprinting-postgres | ✅ ACTIVE |
-| **6302** | Redis | Cache/Sessions | gangrunprinting-redis | ✅ ACTIVE |
-| **9002** | MinIO API | File storage | gangrunprinting-minio | ✅ ACTIVE |
-| **9102** | MinIO Console | Storage admin | gangrunprinting-minio | ✅ ACTIVE |
+| Port     | Service       | Purpose                 | Container Name           | Status    |
+| -------- | ------------- | ----------------------- | ------------------------ | --------- |
+| **3020** | Next.js App   | Main website (external) | gangrunprinting_app      | ✅ ACTIVE |
+| **5435** | PostgreSQL    | Database                | gangrunprinting-postgres | ✅ ACTIVE |
+| **6302** | Redis         | Cache/Sessions          | gangrunprinting-redis    | ✅ ACTIVE |
+| **9002** | MinIO API     | File storage            | gangrunprinting-minio    | ✅ ACTIVE |
+| **9102** | MinIO Console | Storage admin           | gangrunprinting-minio    | ✅ ACTIVE |
 
 **🐳 DOCKER PORT MAPPING:**
+
 - App container: `3020:3002` (external:internal)
 - Internal port 3002 stays the same inside container
 - Nginx proxies `gangrunprinting.com` → `localhost:3020`
@@ -312,6 +339,7 @@ docker exec -i gangrunprinting-postgres psql -U gangrun_user gangrun_db \
 - **Port 3020 is MANDATORY** - Do NOT attempt to change this mapping to 3002:3002
 
 **🛡️ PROTECTION LEVEL: MAXIMUM**
+
 - These 5 ports are EXCLUSIVELY for gangrunprinting.com
 - NO other service can use these ports
 - Documented in `/root/PORT_MANAGEMENT_KEY.md`
@@ -319,6 +347,7 @@ docker exec -i gangrunprinting-postgres psql -U gangrun_user gangrun_db \
 - Enforced via Docker Compose isolation
 
 **💡 DEPLOYMENT RULES:**
+
 - **ALWAYS** use these exact ports in docker-compose.yml
 - **ALWAYS** use these exact container names
 - **NEVER** share ports with other services
@@ -326,6 +355,7 @@ docker exec -i gangrunprinting-postgres psql -U gangrun_user gangrun_db \
 - Port 3002 on host has auto-restart conflict - use port 3020 instead
 
 **📋 Quick Reference:**
+
 ```bash
 # View complete port allocation
 cat /root/GANGRUNPRINTING-EXCLUSIVE-PORTS.md
@@ -511,6 +541,7 @@ WHERE:
 - [x] Deploy on port 3020 (external) / 3002 (internal) ✅
 
 **Docker Deployment Commands:**
+
 ```bash
 # Start all containers
 docker-compose up -d
@@ -830,18 +861,21 @@ try {
 **MANDATORY: Apply these principles to ALL new code**
 
 **DRY Principle:**
+
 - ✅ Extract shared logic into utilities/base classes
 - ✅ Single source of truth for all functionality
 - ❌ Never duplicate code across components
 - ❌ Never copy-paste without extracting to shared function
 
 **SoC Principle:**
+
 - ✅ Separate business logic from UI components
 - ✅ Separate provider-specific logic from infrastructure (error handling, logging)
 - ✅ Each module has ONE clear responsibility
 - ❌ Never mix concerns (e.g., API calls + UI rendering in same file)
 
 **Reference Documentation:**
+
 - [BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md](docs/BMAD-ROOT-CAUSE-ANALYSIS-SHIPPING-PAYMENTS-2025-10-18.md)
 - [CRITICAL-FIXES-SHIPPING-PAYMENTS-2025-10-18.md](CRITICAL-FIXES-SHIPPING-PAYMENTS-2025-10-18.md)
 
@@ -853,13 +887,15 @@ try {
 
 **MANDATORY: All Square integrations require BOTH backend + frontend variables**
 
-**Backend Only (NO NEXT_PUBLIC_ prefix):**
+**Backend Only (NO NEXT*PUBLIC* prefix):**
+
 ```bash
 SQUARE_ACCESS_TOKEN=EAAAxxxxxxxxx          # Secret - server-side only
 SQUARE_WEBHOOK_SIGNATURE=wh_xxxxxx        # Secret - webhook verification
 ```
 
-**Frontend Required (MUST have NEXT_PUBLIC_ prefix):**
+**Frontend Required (MUST have NEXT*PUBLIC* prefix):**
+
 ```bash
 NEXT_PUBLIC_SQUARE_APPLICATION_ID=sq0idp-xxxxxxxxx
 NEXT_PUBLIC_SQUARE_LOCATION_ID=Lxxxxxxxxx
@@ -867,6 +903,7 @@ NEXT_PUBLIC_SQUARE_ENVIRONMENT=sandbox
 ```
 
 **Why This Matters:**
+
 - Next.js ONLY exposes `NEXT_PUBLIC_*` variables to browser
 - Cash App Pay runs in browser, not server
 - Missing `NEXT_PUBLIC_` prefix = undefined values = integration fails
@@ -883,17 +920,20 @@ NEXT_PUBLIC_SQUARE_ENVIRONMENT=sandbox
 **MANDATORY: Southwest Cargo uses DATABASE for airport data**
 
 **Correct Implementation:**
+
 - ✅ **Active File:** `/src/lib/shipping/modules/southwest-cargo/provider.ts`
 - ✅ **Airport Data:** Database table `Airport` (82 airports)
 - ✅ **Seed Script:** `npx tsx src/scripts/seed-southwest-airports.ts`
 - ✅ **API Endpoint:** `/api/airports` (returns all active airports)
 
 **FORBIDDEN:**
+
 - ❌ **Dead Code Removed:** `~/src/lib/shipping/providers/southwest-cargo.ts~` (DELETED October 18, 2025)
 - ❌ **Never use hardcoded arrays** for airport data
 - ❌ **Never create duplicate provider files**
 
 **If Southwest "repeatedly has problems":**
+
 1. Check for duplicate files in `/src/lib/shipping/providers/`
 2. Verify imports use `/modules/southwest-cargo` not `/providers/`
 3. Verify airports seeded: `SELECT COUNT(*) FROM "Airport" WHERE operator='Southwest Cargo'` (should return 82)

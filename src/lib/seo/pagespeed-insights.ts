@@ -105,7 +105,10 @@ export async function analyzeURL(
       lcp: audits['largest-contentful-paint']?.numericValue || 0,
       fid: audits['max-potential-fid']?.numericValue || 0, // FID is deprecated, using max potential
       cls: audits['cumulative-layout-shift']?.numericValue || 0,
-      inp: audits['interaction-to-next-paint']?.numericValue || audits['total-blocking-time']?.numericValue || 0,
+      inp:
+        audits['interaction-to-next-paint']?.numericValue ||
+        audits['total-blocking-time']?.numericValue ||
+        0,
       ttfb: audits['server-response-time']?.numericValue || 0,
       fcp: audits['first-contentful-paint']?.numericValue || 0,
     }
@@ -209,7 +212,7 @@ export async function getDiagnostics(
       'total-byte-weight',
     ]
 
-    keyAudits.forEach(auditKey => {
+    keyAudits.forEach((auditKey) => {
       const audit = audits[auditKey]
       if (audit && (audit.score === null || audit.score < 0.9)) {
         diagnostics.push({
@@ -301,7 +304,7 @@ export async function batchAnalyze(
 
     // Rate limiting delay
     if (urls.indexOf(url) < urls.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, delayMs))
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
     }
   }
 

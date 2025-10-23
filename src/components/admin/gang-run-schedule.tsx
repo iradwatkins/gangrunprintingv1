@@ -62,30 +62,30 @@ export function GangRunSchedule() {
           </div>
         ) : (
           gangRuns.map((gang) => (
-          <div key={gang.id} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">{gang.id}</p>
-                <p className="text-sm text-muted-foreground">{gang.type}</p>
+            <div key={gang.id} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">{gang.id}</p>
+                  <p className="text-sm text-muted-foreground">{gang.type}</p>
+                </div>
+                <div className="text-right">
+                  <Badge variant={gang.status === 'ready' ? 'default' : 'secondary'}>
+                    {gang.status}
+                  </Badge>
+                  <p className="text-sm text-muted-foreground mt-1">{gang.scheduledTime}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <Badge variant={gang.status === 'ready' ? 'default' : 'secondary'}>
-                  {gang.status}
-                </Badge>
-                <p className="text-sm text-muted-foreground mt-1">{gang.scheduledTime}</p>
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span>Capacity</span>
+                  <span>
+                    {gang.slots.used}/{gang.slots.total} slots
+                  </span>
+                </div>
+                <Progress className="h-2" value={(gang.slots.used / gang.slots.total) * 100} />
               </div>
             </div>
-            <div className="space-y-1">
-              <div className="flex justify-between text-sm">
-                <span>Capacity</span>
-                <span>
-                  {gang.slots.used}/{gang.slots.total} slots
-                </span>
-              </div>
-              <Progress className="h-2" value={(gang.slots.used / gang.slots.total) * 100} />
-            </div>
-          </div>
-        ))
+          ))
         )}
       </CardContent>
     </Card>

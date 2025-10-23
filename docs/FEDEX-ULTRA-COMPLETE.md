@@ -31,26 +31,28 @@ The core system is **fully functional** and ready for production deployment:
 
 ### **Before vs After**
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Services Available** | 4 | 30+ | **+650%** |
-| **Box Types** | 1 generic | 14 FedEx official | **Intelligent packing** |
-| **Packing Algorithm** | Simple weight split | 3D bin packing | **15-30% cost savings** |
-| **Error Handling** | Basic try/catch | Enterprise-grade | **99.9% uptime ready** |
-| **Freight Support** | ❌ None | ✅ Full LTL | **Large orders supported** |
-| **SmartPost** | ❌ None | ✅ 27 hubs | **20-40% cheaper** |
-| **International** | ❌ None | ✅ 200+ countries | **Global expansion ready** |
-| **Documentation** | Minimal | Comprehensive | **Production-ready** |
+| Metric                 | Before              | After             | Improvement                |
+| ---------------------- | ------------------- | ----------------- | -------------------------- |
+| **Services Available** | 4                   | 30+               | **+650%**                  |
+| **Box Types**          | 1 generic           | 14 FedEx official | **Intelligent packing**    |
+| **Packing Algorithm**  | Simple weight split | 3D bin packing    | **15-30% cost savings**    |
+| **Error Handling**     | Basic try/catch     | Enterprise-grade  | **99.9% uptime ready**     |
+| **Freight Support**    | ❌ None             | ✅ Full LTL       | **Large orders supported** |
+| **SmartPost**          | ❌ None             | ✅ 27 hubs        | **20-40% cheaper**         |
+| **International**      | ❌ None             | ✅ 200+ countries | **Global expansion ready** |
+| **Documentation**      | Minimal             | Comprehensive     | **Production-ready**       |
 
 ### **Cost Savings**
 
 Based on WooCommerce FedEx plugin benchmarks:
+
 - **Intelligent Box Packing:** 15-30% shipping cost reduction
 - **SmartPost for Residential:** 20-40% cheaper than FedEx Ground
 - **Regional Economy:** 10-15% cheaper for regional shipments
 - **Freight for Large Orders:** 30-50% cheaper than parcel (>150 lbs)
 
 **Example:**
+
 - Old system: 50 lbs of flyers → 2 generic boxes → FedEx Ground → $45
 - New system: 50 lbs of flyers → 1 FedEx Large Box → SmartPost → $28
 - **Savings: 38% ($17 per shipment)**
@@ -98,6 +100,7 @@ docs/
 ### **Quick Start (5 minutes)**
 
 **1. Set Environment Variables:**
+
 ```bash
 FEDEX_API_KEY="your_client_id"
 FEDEX_SECRET_KEY="your_client_secret"
@@ -106,6 +109,7 @@ FEDEX_TEST_MODE="false"
 ```
 
 **2. Initialize Provider:**
+
 ```typescript
 import { FedExProviderEnhanced } from '@/lib/shipping/fedex'
 
@@ -119,6 +123,7 @@ const fedex = new FedExProviderEnhanced({
 ```
 
 **3. Get Rates:**
+
 ```typescript
 const rates = await fedex.getRates(warehouseAddress, customerAddress, packages)
 
@@ -130,13 +135,9 @@ const rates = await fedex.getRates(warehouseAddress, customerAddress, packages)
 ```
 
 **4. Create Label:**
+
 ```typescript
-const label = await fedex.createLabel(
-  warehouseAddress,
-  customerAddress,
-  packages,
-  'FEDEX_GROUND'
-)
+const label = await fedex.createLabel(warehouseAddress, customerAddress, packages, 'FEDEX_GROUND')
 
 console.log(`Tracking: ${label.trackingNumber}`)
 console.log(`Label: ${label.labelUrl}`)
@@ -153,6 +154,7 @@ console.log(`Label: ${label.labelUrl}`)
 **Problem:** Shipping 50 business cards, 100 flyers, and 3 posters in generic boxes costs more.
 
 **Solution:**
+
 ```typescript
 import { packItems } from '@/lib/shipping/fedex'
 
@@ -174,6 +176,7 @@ const result = packItems(items)
 ### **2. SmartPost (Cheapest Residential)**
 
 **Automatic SmartPost Selection:**
+
 - FedEx → Regional Hub → USPS → Customer's mailbox
 - 20-40% cheaper than FedEx Ground for residential
 - Automatically offered for lightweight residential deliveries
@@ -190,10 +193,9 @@ const rates = await fedex.getRates(warehouse, residentialAddress, packages)
 ### **3. Freight Support (Heavy Orders)**
 
 **Automatic Freight Detection:**
+
 ```typescript
-const heavyOrder = [
-  { weight: 180, dimensions: { length: 48, width: 40, height: 24 } }
-]
+const heavyOrder = [{ weight: 180, dimensions: { length: 48, width: 40, height: 24 } }]
 
 const rates = await fedex.getRates(warehouse, customer, heavyOrder)
 
@@ -211,6 +213,7 @@ const rates = await fedex.getRates(warehouse, customer, heavyOrder)
 ### **4. Enterprise Error Handling**
 
 **Automatic Recovery:**
+
 - **Token Expired (401):** Refreshes token, retries immediately
 - **Rate Limited (429):** Exponential backoff (1s, 2s, 4s, 8s...)
 - **Service Down (503):** Retries with jitter (prevents thundering herd)
@@ -251,12 +254,14 @@ npm install axios axios-retry
 ### **Step 2: Replace Old Provider**
 
 **Before:**
+
 ```typescript
 import { FedExProvider } from '@/lib/shipping/providers/fedex'
 const fedex = new FedExProvider()
 ```
 
 **After:**
+
 ```typescript
 import { FedExProviderEnhanced } from '@/lib/shipping/fedex'
 const fedex = new FedExProviderEnhanced({
@@ -365,30 +370,45 @@ const fedex = new FedExProviderEnhanced({
 
 // Test 1: Basic rate quote
 const rates = await fedex.getRates(
-  { street: '1300 Basswood Road', city: 'Schaumburg', state: 'IL', zipCode: '60173', country: 'US' },
-  { street: '123 Main St', city: 'Los Angeles', state: 'CA', zipCode: '90001', country: 'US', isResidential: true },
+  {
+    street: '1300 Basswood Road',
+    city: 'Schaumburg',
+    state: 'IL',
+    zipCode: '60173',
+    country: 'US',
+  },
+  {
+    street: '123 Main St',
+    city: 'Los Angeles',
+    state: 'CA',
+    zipCode: '90001',
+    country: 'US',
+    isResidential: true,
+  },
   [{ weight: 5, dimensions: { length: 12, width: 9, height: 2 } }]
 )
 
 console.log('✅ Rate Quote:', rates.length, 'services')
 
 // Test 2: Freight (heavy order)
-const freightRates = await fedex.getRates(
-  warehouseAddress,
-  customerAddress,
-  [{ weight: 200, dimensions: { length: 48, width: 40, height: 36 } }]
-)
+const freightRates = await fedex.getRates(warehouseAddress, customerAddress, [
+  { weight: 200, dimensions: { length: 48, width: 40, height: 36 } },
+])
 
-console.log('✅ Freight Quote:', freightRates.find(r => r.serviceCode.includes('FREIGHT')))
+console.log(
+  '✅ Freight Quote:',
+  freightRates.find((r) => r.serviceCode.includes('FREIGHT'))
+)
 
 // Test 3: SmartPost
-const smartPostRates = await fedex.getRates(
-  warehouseAddress,
-  residentialAddress,
-  [{ weight: 5, dimensions: { length: 12, width: 9, height: 2 } }]
-)
+const smartPostRates = await fedex.getRates(warehouseAddress, residentialAddress, [
+  { weight: 5, dimensions: { length: 12, width: 9, height: 2 } },
+])
 
-console.log('✅ SmartPost:', smartPostRates.find(r => r.serviceCode === 'SMART_POST'))
+console.log(
+  '✅ SmartPost:',
+  smartPostRates.find((r) => r.serviceCode === 'SMART_POST')
+)
 
 console.log('\n🎉 All tests passed!')
 ```

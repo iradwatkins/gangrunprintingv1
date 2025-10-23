@@ -19,27 +19,33 @@
 ## What To Look For
 
 ### ✅ SUCCESSFUL Product Creation
+
 ```
 [POST /api/products] Creating product...
 [POST /api/products] Product created: {id}
 ```
 
 ### ✅ SUCCESSFUL Image Upload
+
 ```
 [POST /api/products/upload-image] Uploading image...
 [POST /api/products/upload-image] Image uploaded: {url}
 ```
 
 ### ❌ FAILED - Unauthorized
+
 ```
 [POST /api/products] Unauthorized attempt
 ```
+
 **This means:** Browser still not sending cookies (may need hard refresh)
 
 ### ❌ FAILED - Validation Error
+
 ```
 [POST /api/products] Validation failed: {error}
 ```
+
 **This means:** Missing required fields
 
 ---
@@ -49,6 +55,7 @@
 **Go ahead and test now. I'm watching everything in real-time.**
 
 I'll see:
+
 - When you submit the form
 - If authentication works
 - If product is created

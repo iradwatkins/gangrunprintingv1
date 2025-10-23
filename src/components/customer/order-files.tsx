@@ -182,7 +182,9 @@ export function CustomerOrderFiles({ orderId }: Props) {
   // Check if any files are waiting for approval
   const hasWaitingFiles = files.some((f) => f.approvalStatus === 'WAITING')
   const hasRejectedFiles = files.some((f) => f.approvalStatus === 'REJECTED')
-  const allApproved = files.length > 0 && files.every((f) => f.approvalStatus === 'APPROVED' || f.approvalStatus === 'NOT_REQUIRED')
+  const allApproved =
+    files.length > 0 &&
+    files.every((f) => f.approvalStatus === 'APPROVED' || f.approvalStatus === 'NOT_REQUIRED')
 
   if (loading) {
     return (
@@ -197,200 +199,202 @@ export function CustomerOrderFiles({ orderId }: Props) {
 
   return (
     <>
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5" />
-          Files & Artwork
-        </CardTitle>
-        <CardDescription>
-          {files.length === 0
-            ? 'No files uploaded yet'
-            : `${files.length} file${files.length !== 1 ? 's' : ''} uploaded`}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Status Alert */}
-        {allApproved && (
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-            <div className="flex gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-green-900">All Files Approved!</p>
-                <p className="text-sm text-green-700 mt-1">
-                  Your order is ready for production and will be processed shortly.
-                </p>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Upload className="h-5 w-5" />
+            Files & Artwork
+          </CardTitle>
+          <CardDescription>
+            {files.length === 0
+              ? 'No files uploaded yet'
+              : `${files.length} file${files.length !== 1 ? 's' : ''} uploaded`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Status Alert */}
+          {allApproved && (
+            <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+              <div className="flex gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-green-900">All Files Approved!</p>
+                  <p className="text-sm text-green-700 mt-1">
+                    Your order is ready for production and will be processed shortly.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {hasWaitingFiles && (
-          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-            <div className="flex gap-3">
-              <Clock className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-yellow-900">Awaiting Approval</p>
-                <p className="text-sm text-yellow-700 mt-1">
-                  Our team is reviewing your files. We'll notify you once they're approved.
-                </p>
+          {hasWaitingFiles && (
+            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+              <div className="flex gap-3">
+                <Clock className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-yellow-900">Awaiting Approval</p>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    Our team is reviewing your files. We'll notify you once they're approved.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {hasRejectedFiles && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-            <div className="flex gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-red-900">Changes Requested</p>
-                <p className="text-sm text-red-700 mt-1">
-                  Please review the feedback below and upload updated files.
-                </p>
+          {hasRejectedFiles && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+              <div className="flex gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-red-900">Changes Requested</p>
+                  <p className="text-sm text-red-700 mt-1">
+                    Please review the feedback below and upload updated files.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Customer Artwork Section */}
-        {customerArtwork.length > 0 && (
-          <div>
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <ImageIcon className="h-4 w-4" />
-              Your Artwork ({customerArtwork.length})
-            </h3>
-            <div className="space-y-3">
-              {customerArtwork.map((file) => (
-                <CustomerFileItem
-                  key={file.id}
-                  file={file}
-                  formatFileSize={formatFileSize}
-                  getFileIcon={getFileIcon}
+          {/* Customer Artwork Section */}
+          {customerArtwork.length > 0 && (
+            <div>
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <ImageIcon className="h-4 w-4" />
+                Your Artwork ({customerArtwork.length})
+              </h3>
+              <div className="space-y-3">
+                {customerArtwork.map((file) => (
+                  <CustomerFileItem
+                    key={file.id}
+                    file={file}
+                    formatFileSize={formatFileSize}
+                    getFileIcon={getFileIcon}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {customerArtwork.length > 0 && adminProofs.length > 0 && <Separator />}
+
+          {/* Admin Proofs Section */}
+          {adminProofs.length > 0 && (
+            <div>
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                Proofs for Your Approval ({adminProofs.length})
+              </h3>
+              <div className="space-y-3">
+                {adminProofs.map((file) => (
+                  <CustomerFileItem
+                    key={file.id}
+                    file={file}
+                    formatFileSize={formatFileSize}
+                    getFileIcon={getFileIcon}
+                    onApprove={
+                      file.approvalStatus === 'WAITING'
+                        ? () => handleApprovalClick(file, 'APPROVED')
+                        : undefined
+                    }
+                    onReject={
+                      file.approvalStatus === 'WAITING'
+                        ? () => handleApprovalClick(file, 'REJECTED')
+                        : undefined
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {files.length === 0 && (
+            <div className="text-center py-12 border-2 border-dashed rounded-lg">
+              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-sm text-muted-foreground mb-4">No files uploaded yet</p>
+              <p className="text-xs text-muted-foreground">Files will appear here once uploaded</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Approval Dialog */}
+      <Dialog open={approvalDialogOpen} onOpenChange={setApprovalDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {approvalAction === 'APPROVED' ? 'Approve File' : 'Request Changes'}
+            </DialogTitle>
+            <DialogDescription>
+              {approvalAction === 'APPROVED'
+                ? 'Confirm that you approve this file for production.'
+                : 'Let us know what changes are needed.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {fileToApprove && (
+              <Alert>
+                <FileText className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>{fileToApprove.label || fileToApprove.filename}</strong>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {approvalAction === 'REJECTED' && (
+              <div className="space-y-2">
+                <Label htmlFor="approval-message">What changes would you like to request? *</Label>
+                <Textarea
+                  required
+                  id="approval-message"
+                  placeholder="Please explain what needs to be changed..."
+                  rows={4}
+                  value={approvalMessage}
+                  onChange={(e) => setApprovalMessage(e.target.value)}
                 />
-              ))}
-            </div>
-          </div>
-        )}
+                <p className="text-xs text-muted-foreground">
+                  Your feedback will help us make the necessary corrections.
+                </p>
+              </div>
+            )}
 
-        {customerArtwork.length > 0 && adminProofs.length > 0 && <Separator />}
-
-        {/* Admin Proofs Section */}
-        {adminProofs.length > 0 && (
-          <div>
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <Eye className="h-4 w-4" />
-              Proofs for Your Approval ({adminProofs.length})
-            </h3>
-            <div className="space-y-3">
-              {adminProofs.map((file) => (
-                <CustomerFileItem
-                  key={file.id}
-                  file={file}
-                  formatFileSize={formatFileSize}
-                  getFileIcon={getFileIcon}
-                  onApprove={file.approvalStatus === 'WAITING' ? () => handleApprovalClick(file, 'APPROVED') : undefined}
-                  onReject={file.approvalStatus === 'WAITING' ? () => handleApprovalClick(file, 'REJECTED') : undefined}
+            {approvalAction === 'APPROVED' && (
+              <div className="space-y-2">
+                <Label htmlFor="approval-message">Additional notes (optional)</Label>
+                <Textarea
+                  id="approval-message"
+                  placeholder="Any additional comments..."
+                  rows={3}
+                  value={approvalMessage}
+                  onChange={(e) => setApprovalMessage(e.target.value)}
                 />
-              ))}
-            </div>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* Empty State */}
-        {files.length === 0 && (
-          <div className="text-center py-12 border-2 border-dashed rounded-lg">
-            <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground mb-4">No files uploaded yet</p>
-            <p className="text-xs text-muted-foreground">
-              Files will appear here once uploaded
-            </p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-
-    {/* Approval Dialog */}
-    <Dialog open={approvalDialogOpen} onOpenChange={setApprovalDialogOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {approvalAction === 'APPROVED' ? 'Approve File' : 'Request Changes'}
-          </DialogTitle>
-          <DialogDescription>
-            {approvalAction === 'APPROVED'
-              ? 'Confirm that you approve this file for production.'
-              : 'Let us know what changes are needed.'}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4 py-4">
-          {fileToApprove && (
-            <Alert>
-              <FileText className="h-4 w-4" />
-              <AlertDescription>
-                <strong>{fileToApprove.label || fileToApprove.filename}</strong>
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {approvalAction === 'REJECTED' && (
-            <div className="space-y-2">
-              <Label htmlFor="approval-message">
-                What changes would you like to request? *
-              </Label>
-              <Textarea
-                required
-                id="approval-message"
-                placeholder="Please explain what needs to be changed..."
-                rows={4}
-                value={approvalMessage}
-                onChange={(e) => setApprovalMessage(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Your feedback will help us make the necessary corrections.
-              </p>
-            </div>
-          )}
-
-          {approvalAction === 'APPROVED' && (
-            <div className="space-y-2">
-              <Label htmlFor="approval-message">
-                Additional notes (optional)
-              </Label>
-              <Textarea
-                id="approval-message"
-                placeholder="Any additional comments..."
-                rows={3}
-                value={approvalMessage}
-                onChange={(e) => setApprovalMessage(e.target.value)}
-              />
-            </div>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button disabled={isApproving} variant="outline" onClick={() => setApprovalDialogOpen(false)}>
-            Cancel
-          </Button>
-          <Button
-            className={
-              approvalAction === 'APPROVED'
-                ? 'bg-green-600 hover:bg-green-700'
-                : ''
-            }
-            disabled={isApproving || (approvalAction === 'REJECTED' && !approvalMessage.trim())}
-            onClick={handleApprovalConfirm}
-          >
-            {isApproving
-              ? 'Submitting...'
-              : approvalAction === 'APPROVED'
-                ? 'Confirm Approval'
-                : 'Submit Feedback'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter>
+            <Button
+              disabled={isApproving}
+              variant="outline"
+              onClick={() => setApprovalDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className={approvalAction === 'APPROVED' ? 'bg-green-600 hover:bg-green-700' : ''}
+              disabled={isApproving || (approvalAction === 'REJECTED' && !approvalMessage.trim())}
+              onClick={handleApprovalConfirm}
+            >
+              {isApproving
+                ? 'Submitting...'
+                : approvalAction === 'APPROVED'
+                  ? 'Confirm Approval'
+                  : 'Submit Feedback'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
@@ -466,12 +470,7 @@ function CustomerFileItem({
               </Button>
             )}
             {onReject && (
-              <Button
-                className="flex-1"
-                size="lg"
-                variant="outline"
-                onClick={onReject}
-              >
+              <Button className="flex-1" size="lg" variant="outline" onClick={onReject}>
                 <ThumbsDown className="h-5 w-5 mr-2" />
                 Request Changes
               </Button>

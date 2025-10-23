@@ -67,14 +67,12 @@ export async function POST(request: NextRequest) {
       success: true,
       campaignId: campaign.id,
       status: 'PENDING',
-      message: 'Campaign started. Generation will take 6-7 hours. You will receive Telegram notification when complete.',
+      message:
+        'Campaign started. Generation will take 6-7 hours. You will receive Telegram notification when complete.',
     })
   } catch (error) {
     console.error('[SEO Brain API] Start campaign error:', error)
-    return NextResponse.json(
-      { error: 'Failed to start campaign' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to start campaign' }, { status: 500 })
   }
 }
 
@@ -95,15 +93,18 @@ async function startCampaignGeneration(campaignId: string, productSpec: any) {
     // Initialize Ollama client
     const ollamaClient = {
       generate: async (prompt: string) => {
-        const response = await fetch(`${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api/generate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: process.env.OLLAMA_MODEL || 'deepseek-r1:32b',
-            prompt,
-            stream: false,
-          }),
-        })
+        const response = await fetch(
+          `${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api/generate`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: process.env.OLLAMA_MODEL || 'deepseek-r1:32b',
+              prompt,
+              stream: false,
+            }),
+          }
+        )
         const data = await response.json()
         return data.response
       },

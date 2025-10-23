@@ -150,7 +150,10 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
       const revenue = orders.reduce((sum, order) => sum + order.total, 0)
 
       // Calculate time on page (average of visit durations)
-      const avgTimeOnPage = visits.length > 0 ? Math.floor(visits.reduce((sum, v) => sum + 60, 0) / visits.length) : null
+      const avgTimeOnPage =
+        visits.length > 0
+          ? Math.floor(visits.reduce((sum, v) => sum + 60, 0) / visits.length)
+          : null
 
       // Device breakdown
       const deviceData = {
@@ -185,7 +188,8 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
           conversions,
           revenue,
           avgTimeOnPage,
-          bounceRate: uniqueVisitors > 0 ? ((uniqueVisitors - conversions) / uniqueVisitors) * 100 : null,
+          bounceRate:
+            uniqueVisitors > 0 ? ((uniqueVisitors - conversions) / uniqueVisitors) * 100 : null,
           exitRate: null,
           sourceData,
           deviceData,
@@ -196,7 +200,8 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
           conversions,
           revenue,
           avgTimeOnPage,
-          bounceRate: uniqueVisitors > 0 ? ((uniqueVisitors - conversions) / uniqueVisitors) * 100 : null,
+          bounceRate:
+            uniqueVisitors > 0 ? ((uniqueVisitors - conversions) / uniqueVisitors) * 100 : null,
           sourceData,
           deviceData,
         },
@@ -271,7 +276,8 @@ export async function calculateOrderMetrics(startDate: Date, endDate: Date) {
     const metrics = {
       totalOrders: orders.length,
       totalRevenue: orders.reduce((sum, o) => sum + o.total, 0),
-      avgOrderValue: orders.length > 0 ? orders.reduce((sum, o) => sum + o.total, 0) / orders.length : 0,
+      avgOrderValue:
+        orders.length > 0 ? orders.reduce((sum, o) => sum + o.total, 0) / orders.length : 0,
       totalSubtotal: orders.reduce((sum, o) => sum + o.subtotal, 0),
       totalTax: orders.reduce((sum, o) => sum + o.tax, 0),
       totalShipping: orders.reduce((sum, o) => sum + o.shipping, 0),
@@ -394,13 +400,21 @@ export async function calculateCustomerMetrics(startDate: Date, endDate: Date) {
 
     const metrics = {
       totalCustomers: users.length,
-      newCustomers: users.filter((u) => u.Order[0]?.createdAt >= startDate && u.Order[0]?.createdAt <= endDate)
-        .length,
+      newCustomers: users.filter(
+        (u) => u.Order[0]?.createdAt >= startDate && u.Order[0]?.createdAt <= endDate
+      ).length,
       returningCustomers: users.filter((u) => u.Order.length > 1).length,
-      avgLifetimeValue: users.length > 0 ? users.reduce((sum, u) => sum + u.Order.reduce((s, o) => s + o.total, 0), 0) / users.length : 0,
-      avgOrdersPerCustomer: users.length > 0 ? users.reduce((sum, u) => sum + u.Order.length, 0) / users.length : 0,
+      avgLifetimeValue:
+        users.length > 0
+          ? users.reduce((sum, u) => sum + u.Order.reduce((s, o) => s + o.total, 0), 0) /
+            users.length
+          : 0,
+      avgOrdersPerCustomer:
+        users.length > 0 ? users.reduce((sum, u) => sum + u.Order.length, 0) / users.length : 0,
       customerRetentionRate:
-        users.length > 0 ? (users.filter((u) => u.Order.length > 1).length / users.length) * 100 : 0,
+        users.length > 0
+          ? (users.filter((u) => u.Order.length > 1).length / users.length) * 100
+          : 0,
     }
 
     return { success: true, metrics }

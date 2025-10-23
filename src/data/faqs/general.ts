@@ -10,7 +10,7 @@ export const generalFAQs: FAQItem[] = [
   {
     question: 'What is gang run printing and how does it save money?',
     answer:
-      'Gang run printing combines multiple customers\' print jobs on one large press sheet to maximize efficiency. Instead of running your 500 business cards alone, we group them with other orders on the same paper stock and coating. This reduces setup time, paper waste, and costs - savings we pass directly to you. You get professional offset print quality at digital print prices.',
+      "Gang run printing combines multiple customers' print jobs on one large press sheet to maximize efficiency. Instead of running your 500 business cards alone, we group them with other orders on the same paper stock and coating. This reduces setup time, paper waste, and costs - savings we pass directly to you. You get professional offset print quality at digital print prices.",
     category: 'About Gang Run',
   },
   {

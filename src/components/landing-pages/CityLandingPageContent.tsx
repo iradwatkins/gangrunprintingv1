@@ -14,7 +14,7 @@ import {
   Phone,
   Mail,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react'
 
 interface CityLandingPageContentProps {
@@ -26,7 +26,7 @@ interface CityLandingPageContentProps {
 export function CityLandingPageContent({
   cityLandingPage,
   landingPageSet,
-  city
+  city,
 }: CityLandingPageContentProps) {
   const router = useRouter()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -53,7 +53,8 @@ export function CityLandingPageContent({
       {showDiscount && landingPageSet.discountEnabled && (
         <div className="bg-gradient-to-r from-red-600 to-orange-600 text-white py-3 px-4 text-center relative">
           <p className="font-bold">
-            🎉 Special {landingPageSet.discountPercent}% Discount for {city.name} Customers - Limited Time!
+            🎉 Special {landingPageSet.discountPercent}% Discount for {city.name} Customers -
+            Limited Time!
           </p>
           <button
             className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-200"
@@ -71,11 +72,17 @@ export function CityLandingPageContent({
             <div>
               {/* Breadcrumb */}
               <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                <a className="hover:text-blue-600" href="/">Home</a>
+                <a className="hover:text-blue-600" href="/">
+                  Home
+                </a>
                 <span>/</span>
-                <a className="hover:text-blue-600" href="/products">Products</a>
+                <a className="hover:text-blue-600" href="/products">
+                  Products
+                </a>
                 <span>/</span>
-                <span className="text-gray-900">{city.name}, {city.stateCode}</span>
+                <span className="text-gray-900">
+                  {city.name}, {city.stateCode}
+                </span>
               </div>
 
               {/* H1 - Critical for SEO */}
@@ -124,7 +131,9 @@ export function CityLandingPageContent({
                   className="px-8 py-6 text-lg"
                   size="lg"
                   variant="outline"
-                  onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() =>
+                    document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })
+                  }
                 >
                   Learn More
                 </Button>
@@ -133,7 +142,8 @@ export function CityLandingPageContent({
               {/* Urgency Message */}
               {landingPageSet.urgencyEnabled && (
                 <p className="mt-4 text-sm text-orange-600 font-medium">
-                  ⚡ {Math.floor(Math.random() * 5) + 3} people in {city.name} are viewing this right now
+                  ⚡ {Math.floor(Math.random() * 5) + 3} people in {city.name} are viewing this
+                  right now
                 </p>
               )}
             </div>
@@ -217,12 +227,8 @@ export function CityLandingPageContent({
               {cityLandingPage.contentSections.map((section: any, index: number) => (
                 <Card key={index}>
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">
-                      {section.title}
-                    </h3>
-                    <p className="text-gray-700 leading-relaxed">
-                      {section.content}
-                    </p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">{section.title}</h3>
+                    <p className="text-gray-700 leading-relaxed">{section.content}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -234,9 +240,7 @@ export function CityLandingPageContent({
       {/* Social Proof */}
       <section className="py-12 px-4 bg-blue-600 text-white">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Trusted by {city.name} Businesses
-          </h2>
+          <h2 className="text-3xl font-bold mb-4">Trusted by {city.name} Businesses</h2>
           <p className="text-xl mb-8 text-blue-100">
             Join thousands of satisfied customers across {city.name}
           </p>
@@ -258,48 +262,44 @@ export function CityLandingPageContent({
       </section>
 
       {/* FAQ Section */}
-      {cityLandingPage.faqSchema && Array.isArray(cityLandingPage.faqSchema) && cityLandingPage.faqSchema.length > 0 && (
-        <section className="py-12 px-4 bg-white" id="faq">
-          <div className="container mx-auto max-w-4xl">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-              Frequently Asked Questions
-            </h2>
-            <div className="space-y-4">
-              {cityLandingPage.faqSchema.map((faq: any, index: number) => (
-                <Card key={index} className="border-2 hover:border-blue-200 transition-colors">
-                  <CardContent className="p-6">
-                    <button
-                      className="w-full flex items-center justify-between text-left"
-                      onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                    >
-                      <h3 className="text-lg font-bold text-gray-900 pr-4">
-                        {faq.question}
-                      </h3>
-                      {openFaq === index ? (
-                        <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
+      {cityLandingPage.faqSchema &&
+        Array.isArray(cityLandingPage.faqSchema) &&
+        cityLandingPage.faqSchema.length > 0 && (
+          <section className="py-12 px-4 bg-white" id="faq">
+            <div className="container mx-auto max-w-4xl">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-4">
+                {cityLandingPage.faqSchema.map((faq: any, index: number) => (
+                  <Card key={index} className="border-2 hover:border-blue-200 transition-colors">
+                    <CardContent className="p-6">
+                      <button
+                        className="w-full flex items-center justify-between text-left"
+                        onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                      >
+                        <h3 className="text-lg font-bold text-gray-900 pr-4">{faq.question}</h3>
+                        {openFaq === index ? (
+                          <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                        )}
+                      </button>
+                      {openFaq === index && (
+                        <p className="mt-4 text-gray-700 leading-relaxed">{faq.answer}</p>
                       )}
-                    </button>
-                    {openFaq === index && (
-                      <p className="mt-4 text-gray-700 leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
       {/* Final CTA */}
       <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-indigo-50">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Ready to Get Started?
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
           <p className="text-xl text-gray-700 mb-8">
             Order your professional printing today and see the difference quality makes
           </p>
@@ -335,7 +335,9 @@ export function CityLandingPageContent({
             <div>
               <MapPin className="h-8 w-8 mx-auto mb-3 text-blue-400" />
               <h3 className="font-bold mb-2">Location</h3>
-              <p className="text-gray-400">Serving {city.name}, {city.stateCode}</p>
+              <p className="text-gray-400">
+                Serving {city.name}, {city.stateCode}
+              </p>
             </div>
           </div>
         </div>

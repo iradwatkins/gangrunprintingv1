@@ -30,29 +30,29 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         PaperStockSet: {
-          select: { name: true }
+          select: { name: true },
         },
         QuantityGroup: {
-          select: { name: true }
+          select: { name: true },
         },
         SizeGroup: {
-          select: { name: true }
+          select: { name: true },
         },
         AddOnSet: {
-          select: { name: true }
+          select: { name: true },
         },
         TurnaroundTimeSet: {
-          select: { name: true }
+          select: { name: true },
         },
         _count: {
           select: {
-            CityLandingPage: true
-          }
-        }
+            CityLandingPage: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
 
     // Calculate aggregate metrics for each set
@@ -64,16 +64,18 @@ export async function GET(request: NextRequest) {
             organicViews: true,
             orders: true,
             revenue: true,
-            conversionRate: true
-          }
+            conversionRate: true,
+          },
         })
 
         const totalViews = cityPages.reduce((sum, page) => sum + page.organicViews, 0)
         const totalOrders = cityPages.reduce((sum, page) => sum + page.orders, 0)
         const totalRevenue = cityPages.reduce((sum, page) => sum + page.revenue, 0)
-        const avgConversionRate = cityPages.length > 0
-          ? cityPages.reduce((sum, page) => sum + (page.conversionRate || 0), 0) / cityPages.length
-          : 0
+        const avgConversionRate =
+          cityPages.length > 0
+            ? cityPages.reduce((sum, page) => sum + (page.conversionRate || 0), 0) /
+              cityPages.length
+            : 0
 
         return {
           ...set,
@@ -82,8 +84,8 @@ export async function GET(request: NextRequest) {
             totalViews,
             totalOrders,
             totalRevenue,
-            avgConversionRate: Math.round(avgConversionRate * 100) / 100
-          }
+            avgConversionRate: Math.round(avgConversionRate * 100) / 100,
+          },
         }
       })
     )
@@ -91,10 +93,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(setsWithMetrics)
   } catch (error) {
     console.error('[GET /api/landing-page-sets] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch landing page sets' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch landing page sets' }, { status: 500 })
   }
 }
 
@@ -136,7 +135,7 @@ export async function POST(request: NextRequest) {
       urgencyEnabled,
       discountEnabled,
       discountPercent,
-      chatWidgetEnabled
+      chatWidgetEnabled,
     } = body
 
     // Validate required fields
@@ -148,20 +147,18 @@ export async function POST(request: NextRequest) {
     }
 
     if (!titleTemplate || !metaDescTemplate || !h1Template || !contentTemplate) {
-      return NextResponse.json(
-        { error: 'Missing required template fields' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required template fields' }, { status: 400 })
     }
 
     // Generate slug from name
-    const slug = name.toLowerCase()
+    const slug = name
+      .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
 
     // Check if slug already exists
     const existing = await prisma.landingPageSet.findUnique({
-      where: { slug }
+      where: { slug },
     })
 
     if (existing) {
@@ -175,7 +172,7 @@ export async function POST(request: NextRequest) {
     const [paperStockSet, quantityGroup, sizeGroup] = await Promise.all([
       prisma.paperStockSet.findUnique({ where: { id: paperStockSetId } }),
       prisma.quantityGroup.findUnique({ where: { id: quantityGroupId } }),
-      prisma.sizeGroup.findUnique({ where: { id: sizeGroupId } })
+      prisma.sizeGroup.findUnique({ where: { id: sizeGroupId } }),
     ])
 
     if (!paperStockSet || !quantityGroup || !sizeGroup) {
@@ -212,15 +209,15 @@ export async function POST(request: NextRequest) {
         urgencyEnabled: urgencyEnabled !== undefined ? urgencyEnabled : true,
         discountEnabled: discountEnabled !== undefined ? discountEnabled : false,
         discountPercent: discountPercent || null,
-        chatWidgetEnabled: chatWidgetEnabled !== undefined ? chatWidgetEnabled : true
+        chatWidgetEnabled: chatWidgetEnabled !== undefined ? chatWidgetEnabled : true,
       },
       include: {
         PaperStockSet: true,
         QuantityGroup: true,
         SizeGroup: true,
         AddOnSet: true,
-        TurnaroundTimeSet: true
-      }
+        TurnaroundTimeSet: true,
+      },
     })
 
     return NextResponse.json(landingPageSet, { status: 201 })
@@ -234,9 +231,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create landing page set' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create landing page set' }, { status: 500 })
   }
 }

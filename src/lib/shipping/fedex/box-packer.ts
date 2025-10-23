@@ -60,10 +60,7 @@ export interface PackingResult {
  * Main packing function
  * Uses first-fit decreasing algorithm with cost optimization
  */
-export function packItems(
-  items: PackItem[],
-  options: PackingOptions = {}
-): PackingResult {
+export function packItems(items: PackItem[], options: PackingOptions = {}): PackingResult {
   const {
     allowCustomBoxes = true,
     preferFewerBoxes = false,
@@ -94,7 +91,11 @@ export function packItems(
     // Check if item is rollable poster/banner
     if (item.rollable && isPosterDimensions(item.length, item.width, item.height)) {
       const tubeBox = availableBoxes.find((b) => b.type === FedExBoxType.TUBE)
-      if (tubeBox && item.length <= tubeBox.length && item.weight + tubeBox.boxWeight <= tubeBox.maxWeight) {
+      if (
+        tubeBox &&
+        item.length <= tubeBox.length &&
+        item.weight + tubeBox.boxWeight <= tubeBox.maxWeight
+      ) {
         addItemToNewBox(result, item, tubeBox)
         continue
       }
@@ -127,7 +128,9 @@ export function packItems(
     if (allowCustomBoxes && customBoxDimensions) {
       const customBox = createCustomBox(customBoxDimensions, item)
       addItemToNewBox(result, item, customBox)
-      result.warnings.push(`Using custom box for ${item.name} (${item.length}x${item.width}x${item.height})`)
+      result.warnings.push(
+        `Using custom box for ${item.name} (${item.length}x${item.width}x${item.height})`
+      )
       continue
     }
 
@@ -265,7 +268,10 @@ function addItemToNewBox(result: PackingResult, item: PackItem, box: FedExBox): 
 /**
  * Create custom box for oversized items
  */
-function createCustomBox(baseDimensions: { length: number; width: number; height: number }, item: PackItem): FedExBox {
+function createCustomBox(
+  baseDimensions: { length: number; width: number; height: number },
+  item: PackItem
+): FedExBox {
   return {
     id: 'CUSTOM_BOX',
     name: 'Custom Box',
@@ -378,10 +384,14 @@ export function formatPackingResult(result: PackingResult): string {
 
   result.boxes.forEach((box, index) => {
     lines.push(`Box ${index + 1}: ${box.box.displayName}`)
-    lines.push(`  Weight: ${box.totalWeight.toFixed(2)} lbs (${box.remainingWeight.toFixed(2)} lbs remaining)`)
+    lines.push(
+      `  Weight: ${box.totalWeight.toFixed(2)} lbs (${box.remainingWeight.toFixed(2)} lbs remaining)`
+    )
     lines.push(`  Items: ${box.items.length}`)
     box.items.forEach((item) => {
-      lines.push(`    - ${item.name} (${item.length}x${item.width}x${item.height}, ${item.weight} lbs)`)
+      lines.push(
+        `    - ${item.name} (${item.length}x${item.width}x${item.height}, ${item.weight} lbs)`
+      )
     })
     lines.push(``)
   })
@@ -419,7 +429,10 @@ export interface ShippingPackage {
   value?: number
 }
 
-export function convertToShippingPackages(result: PackingResult, declaredValuePerBox?: number): ShippingPackage[] {
+export function convertToShippingPackages(
+  result: PackingResult,
+  declaredValuePerBox?: number
+): ShippingPackage[] {
   return result.boxes.map((box) => ({
     weight: box.totalWeight,
     dimensions: {

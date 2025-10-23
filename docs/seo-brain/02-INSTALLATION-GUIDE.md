@@ -78,6 +78,7 @@ npx tsx src/scripts/seo-brain/setup-telegram.ts
 ```
 
 This script will:
+
 1. Test the bot token
 2. Ask you to message the bot
 3. Display your Chat ID
@@ -161,6 +162,7 @@ For each workflow file in `/root/websites/gangrunprinting/src/n8n-workflows/`:
 4. Click **Save**
 
 **Import Order:**
+
 1. `01-product-to-200-cities-orchestrator.json`
 2. `02-city-page-generator.json`
 3. `03-performance-monitor-daily.json`
@@ -176,6 +178,7 @@ For each workflow file in `/root/websites/gangrunprinting/src/n8n-workflows/`:
 Each workflow needs these credentials:
 
 **PostgreSQL:**
+
 - Host: `gangrunprinting-postgres`
 - Port: `5432`
 - Database: `gangrun_db`
@@ -183,11 +186,13 @@ Each workflow needs these credentials:
 - Password: (from DATABASE_URL)
 
 **Telegram API:**
+
 - Bot Token: `7510262123:AAFiInboeGKrhovu8hcmDvZsDgEpS3W1yWs`
 
 ### 6.4 Activate Workflows
 
 For each workflow:
+
 1. Click the workflow name
 2. Toggle **Inactive** → **Active** (top right)
 
@@ -274,6 +279,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ```
 
 Follow the prompts:
+
 - Product Name: `Test Flyers`
 - Quantity: `5000`
 - Size: `4x6`
@@ -299,6 +305,7 @@ console.log(campaigns[0])
 ### 9.3 Check Telegram
 
 You should receive:
+
 - "🚀 Campaign Started" (immediate)
 - "🎉 Campaign Complete" (after 6-7 hours)
 

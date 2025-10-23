@@ -22,10 +22,7 @@ export async function POST(request: NextRequest) {
     const { logs } = await request.json()
 
     if (!Array.isArray(logs)) {
-      return NextResponse.json(
-        { error: 'Invalid logs format' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid logs format' }, { status: 400 })
     }
 
     // Get user info if available
@@ -99,10 +96,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, count: logs.length })
   } catch (error) {
     console.error('Error processing logs:', error)
-    return NextResponse.json(
-      { error: 'Failed to process logs' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process logs' }, { status: 500 })
   }
 }
 
@@ -112,10 +106,7 @@ export async function GET(request: NextRequest) {
 
     // Only allow admins to view logs
     if (user?.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const searchParams = request.nextUrl.searchParams
@@ -128,15 +119,15 @@ export async function GET(request: NextRequest) {
     let filteredLogs = [...memoryLogs]
 
     if (type) {
-      filteredLogs = filteredLogs.filter(log => log.type === type)
+      filteredLogs = filteredLogs.filter((log) => log.type === type)
     }
 
     if (category) {
-      filteredLogs = filteredLogs.filter(log => log.category === category)
+      filteredLogs = filteredLogs.filter((log) => log.category === category)
     }
 
     if (level) {
-      filteredLogs = filteredLogs.filter(log => log.level === level)
+      filteredLogs = filteredLogs.filter((log) => log.level === level)
     }
 
     // Get the latest logs
@@ -145,12 +136,13 @@ export async function GET(request: NextRequest) {
     // Get summary statistics
     const stats = {
       totalLogs: memoryLogs.length,
-      errors: memoryLogs.filter(log => log.type === 'error').length,
-      warnings: memoryLogs.filter(log => log.type === 'warning').length,
-      criticalErrors: memoryLogs.filter(log => log.type === 'error' && log.level === 'critical').length,
-      cspViolations: memoryLogs.filter(log => log.category === 'csp').length,
-      authErrors: memoryLogs.filter(log => log.category === 'authentication').length,
-      paymentErrors: memoryLogs.filter(log => log.category === 'payment').length,
+      errors: memoryLogs.filter((log) => log.type === 'error').length,
+      warnings: memoryLogs.filter((log) => log.type === 'warning').length,
+      criticalErrors: memoryLogs.filter((log) => log.type === 'error' && log.level === 'critical')
+        .length,
+      cspViolations: memoryLogs.filter((log) => log.category === 'csp').length,
+      authErrors: memoryLogs.filter((log) => log.category === 'authentication').length,
+      paymentErrors: memoryLogs.filter((log) => log.category === 'payment').length,
     }
 
     return NextResponse.json({
@@ -160,9 +152,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error fetching logs:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch logs' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch logs' }, { status: 500 })
   }
 }

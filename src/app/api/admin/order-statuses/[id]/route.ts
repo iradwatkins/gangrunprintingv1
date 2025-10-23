@@ -31,10 +31,7 @@ const updateStatusSchema = z.object({
  *
  * Get single status with full details including transitions
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user } = await validateRequest()
 
@@ -108,10 +105,7 @@ export async function GET(
  *
  * Update an existing order status
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { user } = await validateRequest()
 
@@ -212,10 +206,7 @@ export async function DELETE(
 
     // Cannot delete core statuses
     if (status.isCore) {
-      return NextResponse.json(
-        { error: 'Cannot delete system core statuses' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Cannot delete system core statuses' }, { status: 400 })
     }
 
     // Check if status has orders
@@ -241,10 +232,7 @@ export async function DELETE(
       })
 
       if (!reassignStatus) {
-        return NextResponse.json(
-          { error: 'Reassignment target status not found' },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: 'Reassignment target status not found' }, { status: 400 })
       }
 
       // Reassign orders

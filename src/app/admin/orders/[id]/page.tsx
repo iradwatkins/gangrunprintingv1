@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
@@ -42,6 +43,7 @@ import { VendorAssignment } from '@/components/admin/vendor-assignment'
 import { OrderFilesManager } from '@/components/admin/files/order-files-manager'
 import { CollapsibleSection } from '@/components/admin/collapsible-section'
 import { EditableTracking } from '@/components/admin/orders/editable-tracking'
+import { EditableOrderStatus } from '@/components/admin/orders/editable-order-status'
 import { CustomerUploadsGallery } from '@/components/admin/orders/customer-uploads-gallery'
 
 // Force dynamic rendering
@@ -290,18 +292,31 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
-            <Download className="h-4 w-4 mr-2" />
-            Download Invoice
-          </div>
-          <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
+          <Button asChild size="sm" variant="outline">
+            <a
+              href={`/api/admin/orders/${order.id}/invoice`}
+              download
+              title="Download order invoice"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download Invoice
+            </a>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => window.print()}
+            title="Print this page"
+          >
             <Printer className="h-4 w-4 mr-2" />
             Print Order
-          </div>
-          <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Order
-          </div>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href={`/admin/orders/${order.id}/edit`}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Order
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -429,7 +444,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">Contact</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">
+                    Contact & Payment
+                  </p>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
@@ -441,6 +458,21 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                         <span className="text-sm">{shippingAddress.phone}</span>
                       </div>
                     )}
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        Payment: Credit Card
+                        {order.status === 'PENDING_PAYMENT' ? (
+                          <Badge variant="secondary" className="ml-2 text-xs">
+                            Pending
+                          </Badge>
+                        ) : (
+                          <Badge variant="default" className="ml-2 text-xs">
+                            Paid
+                          </Badge>
+                        )}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -490,14 +522,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </CollapsibleSection>
 
           {/* Order Files */}
-          <CollapsibleSection
-            defaultOpen={true}
-            description="Manage customer artwork and production files"
-            icon={<FileText className="h-5 w-5" />}
-            title="Order Files & Artwork"
-          >
-            <OrderFilesManager orderId={order.id} />
-          </CollapsibleSection>
+          <OrderFilesManager orderId={order.id} />
 
           {/* Order Notes */}
           {order.adminNotes && (
@@ -513,22 +538,56 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
         {/* Right Column - Status and Timeline */}
         <div className="space-y-6">
-          {/* Order Status */}
+          {/* Order Status & Timeline */}
           <CollapsibleSection
             defaultOpen={true}
             icon={<CheckCircle className="h-5 w-5" />}
-            title="Order Status"
+            title="Order Status & Timeline"
           >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Badge className={`${status.color} gap-1 px-3 py-1`}>
-                  <StatusIcon className="h-4 w-4" />
-                  {status.label}
-                </Badge>
-                <div className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Update
-                </div>
+            <div className="space-y-6">
+              {/* Editable Status */}
+              <EditableOrderStatus orderId={order.id} currentStatus={order.status} />
+
+              {/* Timeline */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-muted-foreground">Order Timeline</h4>
+                {timeline.map((event, index) => {
+                  const EventIcon = event.icon
+                  return (
+                    <div key={index} className="flex gap-3">
+                      <div className="relative flex flex-col items-center">
+                        <div
+                          className={`rounded-full p-2 ${
+                            event.completed
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground'
+                          }`}
+                        >
+                          <EventIcon className="h-4 w-4" />
+                        </div>
+                        {index < timeline.length - 1 && (
+                          <div
+                            className={`w-0.5 h-16 mt-2 ${
+                              event.completed ? 'bg-primary' : 'bg-muted'
+                            }`}
+                          />
+                        )}
+                      </div>
+                      <div className="flex-1 pt-1">
+                        <p className="font-medium text-sm">{event.status}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{event.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(event.date).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </CollapsibleSection>
@@ -542,35 +601,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <VendorAssignment order={order} vendors={vendors} />
           </CollapsibleSection>
 
-          {/* Payment Information */}
-          <CollapsibleSection
-            defaultOpen={true}
-            icon={<CreditCard className="h-5 w-5" />}
-            title="Payment Information"
-          >
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Method</span>
-                <span className="text-sm font-medium">{'Credit Card'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Status</span>
-                <Badge variant={order.status === 'PENDING_PAYMENT' ? 'secondary' : 'default'}>
-                  {order.status === 'PENDING_PAYMENT' ? 'Pending' : 'Paid'}
-                </Badge>
-              </div>
-              {order.paidAt && (
-                <>
-                  <Separator />
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Paid Date</span>
-                    <span className="text-xs">{new Date(order.paidAt).toLocaleDateString()}</span>
-                  </div>
-                </>
-              )}
-            </div>
-          </CollapsibleSection>
-
           {/* Shipping & Tracking Information */}
           <CollapsibleSection
             defaultOpen={true}
@@ -582,9 +612,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               {order.shippingMethod && (
                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
                   <p className="text-xs text-muted-foreground mb-1">Shipping Method</p>
-                  <p className="text-base font-semibold text-primary">
-                    {order.shippingMethod}
-                  </p>
+                  <p className="text-base font-semibold text-primary">{order.shippingMethod}</p>
                 </div>
               )}
 
@@ -630,77 +658,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 initialTrackingNumber={order.trackingNumber}
                 orderId={order.id}
               />
-            </div>
-          </CollapsibleSection>
-
-          {/* Order Timeline */}
-          <CollapsibleSection
-            defaultOpen={true}
-            icon={<Clock className="h-5 w-5" />}
-            title="Order Timeline"
-          >
-            <div className="space-y-4">
-                {timeline.map((event, index) => {
-                  const EventIcon = event.icon
-                  return (
-                    <div key={index} className="flex gap-3">
-                      <div className="relative flex flex-col items-center">
-                        <div
-                          className={`rounded-full p-2 ${
-                            event.completed
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-muted-foreground'
-                          }`}
-                        >
-                          <EventIcon className="h-4 w-4" />
-                        </div>
-                        {index < timeline.length - 1 && (
-                          <div
-                            className={`w-0.5 h-16 mt-2 ${
-                              event.completed ? 'bg-primary' : 'bg-muted'
-                            }`}
-                          />
-                        )}
-                      </div>
-                      <div className="flex-1 pt-1">
-                        <p className="font-medium text-sm">{event.status}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{event.description}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(event.date).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                })}
-            </div>
-          </CollapsibleSection>
-
-          {/* Quick Actions */}
-          <CollapsibleSection
-            defaultOpen={true}
-            icon={<Truck className="h-5 w-5" />}
-            title="Quick Actions"
-          >
-            <div className="space-y-2">
-              <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
-                <Mail className="h-4 w-4 mr-2" />
-                Send Email to Customer
-              </div>
-              <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
-                <FileText className="h-4 w-4 mr-2" />
-                Generate Invoice
-              </div>
-              {order.status !== 'CANCELLED' && order.status !== 'REFUNDED' && (
-                <div className="inline-flex items-center w-full justify-start h-9 px-3 rounded-md border border-input bg-background text-sm font-medium opacity-50 pointer-events-none">
-                  <XCircle className="h-4 w-4 mr-2" />
-                  Cancel Order
-                </div>
-              )}
             </div>
           </CollapsibleSection>
         </div>

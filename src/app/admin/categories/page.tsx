@@ -522,7 +522,9 @@ export default function CategoriesPage() {
                     <SelectItem value="none">No vendor (use default shipping)</SelectItem>
                     {vendors.map((vendor) => (
                       <SelectItem key={vendor.id} value={vendor.id}>
-                        {vendor.name} {vendor.supportedCarriers.length > 0 && `- ${vendor.supportedCarriers.join(', ')}`}
+                        {vendor.name}{' '}
+                        {vendor.supportedCarriers.length > 0 &&
+                          `- ${vendor.supportedCarriers.join(', ')}`}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -627,7 +629,10 @@ export default function CategoriesPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      seoKeywords: e.target.value.split(',').map((k) => k.trim()).filter(Boolean),
+                      seoKeywords: e.target.value
+                        .split(',')
+                        .map((k) => k.trim())
+                        .filter(Boolean),
                     })
                   }
                 />
@@ -672,12 +677,13 @@ export default function CategoriesPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      brokerDiscount: Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+                      brokerDiscount: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)),
                     })
                   }
                 />
                 <span className="text-xs text-muted-foreground mt-1 block">
-                  Default discount percentage (0-100%) applied when customer has broker status enabled
+                  Default discount percentage (0-100%) applied when customer has broker status
+                  enabled
                 </span>
               </div>
             </div>

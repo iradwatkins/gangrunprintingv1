@@ -2,7 +2,7 @@
 
 export default function EmailBuilderTestPage() {
   console.log('TEST PAGE RENDERING')
-  
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Email Builder Test Page</h1>

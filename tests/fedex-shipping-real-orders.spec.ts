@@ -130,10 +130,15 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
         console.log('📍 Step 2: Configuring product...')
 
         // Wait for quantity selector
-        await page.waitForSelector('[data-testid="quantity-select"], select[name="quantity"], .quantity-selector', { timeout: 10000 })
+        await page.waitForSelector(
+          '[data-testid="quantity-select"], select[name="quantity"], .quantity-selector',
+          { timeout: 10000 }
+        )
 
         // Select quantity 250
-        const quantitySelector = await page.$('select[name="quantity"]') || await page.$('[data-testid="quantity-select"]')
+        const quantitySelector =
+          (await page.$('select[name="quantity"]')) ||
+          (await page.$('[data-testid="quantity-select"]'))
         if (quantitySelector) {
           await quantitySelector.selectOption('250')
           console.log('✅ Selected quantity: 250')
@@ -148,7 +153,9 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
 
         // Step 3: Add to cart
         console.log('📍 Step 3: Adding to cart...')
-        const addToCartButton = await page.locator('button:has-text("Add to Cart"), button:has-text("Add to Bag")').first()
+        const addToCartButton = await page
+          .locator('button:has-text("Add to Cart"), button:has-text("Add to Bag")')
+          .first()
         await addToCartButton.click()
         await page.waitForTimeout(2000) // Wait for cart update
         console.log('✅ Added to cart')
@@ -190,7 +197,9 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
 
         // Set residential/business flag if available
         if (testUser.isResidential) {
-          const residentialCheckbox = await page.$('input[name="isResidential"], input[type="checkbox"][name="residential"]')
+          const residentialCheckbox = await page.$(
+            'input[name="isResidential"], input[type="checkbox"][name="residential"]'
+          )
           if (residentialCheckbox) {
             await residentialCheckbox.check()
           }
@@ -208,7 +217,11 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
         console.log('📍 Step 6: Loading shipping rates...')
 
         // Click continue or next button
-        const continueButton = await page.locator('button:has-text("Continue"), button:has-text("Next"), button:has-text("Continue to Shipping")').first()
+        const continueButton = await page
+          .locator(
+            'button:has-text("Continue"), button:has-text("Next"), button:has-text("Continue to Shipping")'
+          )
+          .first()
         if (await continueButton.isVisible()) {
           await continueButton.click()
           await page.waitForTimeout(3000) // Wait for shipping rates to load
@@ -218,10 +231,17 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
         console.log('📍 Step 7: Verifying FedEx shipping rates...')
 
         // Wait for shipping options to appear
-        await page.waitForSelector('[data-testid="shipping-option"], .shipping-rate, .shipping-method', { timeout: 15000 })
+        await page.waitForSelector(
+          '[data-testid="shipping-option"], .shipping-rate, .shipping-method',
+          { timeout: 15000 }
+        )
 
         // Count FedEx rates
-        const fedexRates = await page.locator('[data-testid="shipping-option"]:has-text("FedEx"), .shipping-rate:has-text("FedEx"), .shipping-method:has-text("FedEx")').all()
+        const fedexRates = await page
+          .locator(
+            '[data-testid="shipping-option"]:has-text("FedEx"), .shipping-rate:has-text("FedEx"), .shipping-method:has-text("FedEx")'
+          )
+          .all()
         result.fedexRatesFound = fedexRates.length
 
         console.log(`✅ Found ${result.fedexRatesFound} FedEx shipping rates`)
@@ -242,13 +262,15 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
         // Step 8: Verify expected service is present
         console.log(`📍 Step 8: Looking for expected service: ${testUser.expectedName}...`)
 
-        const expectedServiceLocator = await page.locator(
-          `[data-testid="shipping-option"]:has-text("${testUser.expectedName}"),
+        const expectedServiceLocator = await page
+          .locator(
+            `[data-testid="shipping-option"]:has-text("${testUser.expectedName}"),
            .shipping-rate:has-text("${testUser.expectedName}"),
            .shipping-method:has-text("${testUser.expectedName}")`
-        ).first()
+          )
+          .first()
 
-        const serviceExists = await expectedServiceLocator.count() > 0
+        const serviceExists = (await expectedServiceLocator.count()) > 0
 
         if (serviceExists) {
           console.log(`✅ Expected service found: ${testUser.expectedName}`)
@@ -279,7 +301,11 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
         // Step 9: Continue to payment
         console.log('📍 Step 9: Proceeding to payment...')
 
-        const continueToPayment = await page.locator('button:has-text("Continue to Payment"), button:has-text("Next"), button:has-text("Continue")').first()
+        const continueToPayment = await page
+          .locator(
+            'button:has-text("Continue to Payment"), button:has-text("Next"), button:has-text("Continue")'
+          )
+          .first()
         if (await continueToPayment.isVisible()) {
           await continueToPayment.click()
           await page.waitForLoadState('networkidle')
@@ -287,8 +313,10 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
         }
 
         // Extract total cost
-        const totalElement = await page.locator('[data-testid="order-total"], .total-amount, .order-total').first()
-        if (await totalElement.count() > 0) {
+        const totalElement = await page
+          .locator('[data-testid="order-total"], .total-amount, .order-total')
+          .first()
+        if ((await totalElement.count()) > 0) {
           const totalText = await totalElement.textContent()
           const totalMatch = totalText?.match(/\$[\d,]+\.\d{2}/)
           if (totalMatch) {
@@ -304,7 +332,6 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
         // Mark as success if we got this far
         result.success = true
         console.log(`✅ Order flow completed successfully!`)
-
       } catch (error) {
         console.error(`❌ Error in ${testUser.scenario}:`, error)
         result.error = error instanceof Error ? error.message : String(error)
@@ -336,7 +363,10 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
 
       // Assertions
       expect(result.fedexRatesFound, 'Should find FedEx shipping rates').toBeGreaterThanOrEqual(3)
-      expect(result.selectedServiceName, `Should find expected service: ${testUser.expectedName}`).toContain(testUser.expectedName.split(' ')[1]) // Match partial name
+      expect(
+        result.selectedServiceName,
+        `Should find expected service: ${testUser.expectedName}`
+      ).toContain(testUser.expectedName.split(' ')[1]) // Match partial name
     })
   }
 
@@ -351,7 +381,8 @@ test.describe('FedEx Shipping - 4 Real Orders', () => {
       summary: {
         allOrdersSuccessful: orderResults.every((r) => r.success),
         allExpectedServicesFound: orderResults.every((r) => r.selectedServiceName.length > 0),
-        averageFedexRatesFound: orderResults.reduce((sum, r) => sum + r.fedexRatesFound, 0) / orderResults.length,
+        averageFedexRatesFound:
+          orderResults.reduce((sum, r) => sum + r.fedexRatesFound, 0) / orderResults.length,
       },
     }
 

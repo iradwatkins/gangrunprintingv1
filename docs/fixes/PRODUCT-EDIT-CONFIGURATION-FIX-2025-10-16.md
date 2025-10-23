@@ -12,6 +12,7 @@ Product edit page at `/admin/products/[id]/edit` was not saving updates because 
 **User Report:** "edit product is not saving. https://gangrunprinting.com/admin/products/8cbdfd22-ab44-42b7-b5ff-883422f05457/edit updates can not be made"
 
 **Browser Errors:**
+
 - "Failed to load resource: the server responded with a status of 404 ()"
 - "Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist."
 
@@ -24,6 +25,7 @@ Product edit page at `/admin/products/[id]/edit` was not saving updates because 
 The data transformer (`/src/lib/data-transformers.ts`) was only checking for camelCase property names for group-based product relations, but Prisma's API returns PascalCase relation names.
 
 **Database Reality:**
+
 ```sql
 -- Product had all required configuration
 SELECT * FROM "ProductPaperStockSet" WHERE "productId" = '8cbdfd22-ab44-42b7-b5ff-883422f05457';
@@ -40,6 +42,7 @@ SELECT * FROM "ProductTurnaroundTimeSet" WHERE "productId" = '8cbdfd22-ab44-42b7
 ```
 
 **API Response Structure (from Prisma):**
+
 ```typescript
 {
   id: "8cbdfd22-ab44-42b7-b5ff-883422f05457",
@@ -63,6 +66,7 @@ SELECT * FROM "ProductTurnaroundTimeSet" WHERE "productId" = '8cbdfd22-ab44-42b7
 ```
 
 **Transformer Was Looking For:**
+
 ```typescript
 // BEFORE (lines 73-77):
 productSizeGroups: product.productSizeGroups,           // ← camelCase only
@@ -81,6 +85,7 @@ productAddOnSets: product.productAddOnSets,             // ← camelCase only
 ### File: `/src/lib/data-transformers.ts`
 
 **Lines 73-77 (Before):**
+
 ```typescript
 // NEW group-based fields (keep raw for now)
 productSizeGroups: product.productSizeGroups,
@@ -91,6 +96,7 @@ productAddOnSets: product.productAddOnSets,
 ```
 
 **Lines 73-77 (After):**
+
 ```typescript
 // NEW group-based fields (keep raw for now)
 productSizeGroups: product.productSizeGroups || (product as any).ProductSizeGroup,
@@ -103,6 +109,7 @@ productAddOnSets: product.productAddOnSets || (product as any).ProductAddOnSet,
 ### Why This Works
 
 The transformer now checks for **two** possible property names in order:
+
 1. `product.camelCase` - backward compatibility with any existing camelCase responses
 2. `(product as any).PascalCase` - **NEW** - matches Prisma's actual relation names
 
@@ -130,6 +137,7 @@ This pattern was already used for `ProductImage` (line 61 and 81) but was missin
 **Purpose:** Automated testing to verify product edit functionality and identify missing configuration
 
 **What It Tests:**
+
 - Fetches product from API: `GET /api/products/8cbdfd22-ab44-42b7-b5ff-883422f05457`
 - Verifies all required configuration fields are present
 - Extracts IDs: paperStockSetId, quantityGroupId, sizeGroupId, turnaroundTimeSetId
@@ -137,11 +145,13 @@ This pattern was already used for `ProductImage` (line 61 and 81) but was missin
 - Confirms product can be edited successfully
 
 **Run Command:**
+
 ```bash
 node test-product-edit.js
 ```
 
 **Expected Output (After Fix):**
+
 ```
 ✅ Product fetched: Test Product 1760623817062
 
@@ -216,6 +226,7 @@ This fix extends the pattern from the previous session:
 ### Architecture Notes
 
 **Data Flow:**
+
 ```
 1. Admin Edit Page
    ↓
@@ -239,6 +250,7 @@ This fix extends the pattern from the previous session:
 ```
 
 **Key Components:**
+
 - **API Route:** `/src/app/api/products/[id]/route.ts` (GET) - Returns product with all relations
 - **Transformer:** `/src/lib/data-transformers.ts` - Converts API response to frontend format
 - **Edit Page:** `/src/app/admin/products/[id]/edit/page.tsx` - Displays edit form with dropdowns
@@ -270,6 +282,7 @@ This fix extends the pattern from the previous session:
 ### 1. Prisma Relation Name Casing is Consistent
 
 Prisma **always** uses PascalCase for relation names in query results:
+
 - Schema: `ProductPaperStockSet` → API: `ProductPaperStockSet`
 - Schema: `ProductQuantityGroup` → API: `ProductQuantityGroup`
 - Schema: `ProductSizeGroup` → API: `ProductSizeGroup`
@@ -279,10 +292,12 @@ This is true for **ALL** relations, not just some.
 ### 2. Transformer Must Handle Both Cases
 
 The data transformer must check for both:
+
 - `product.camelCase` - for backward compatibility
 - `(product as any).PascalCase` - for Prisma's actual response
 
 Pattern to use:
+
 ```typescript
 camelCaseProperty: product.camelCase || (product as any).PascalCase
 ```
@@ -294,6 +309,7 @@ When a fix is applied to one relation (like `ProductImage`), it should be applie
 ### 4. Test Database vs API Response
 
 When data "disappears" between database and frontend:
+
 1. ✅ Check database directly (SQL query)
 2. ✅ Check API response (curl or test script)
 3. ✅ Check transformer logic
@@ -306,12 +322,14 @@ The issue is often in step 3 (transformer).
 ## 🎯 Impact
 
 **Before Fix:**
+
 - ❌ Product edit page couldn't load configuration
 - ❌ Dropdowns appeared empty even with data in database
 - ❌ Couldn't save any updates to products
 - ❌ Admin workflow completely blocked
 
 **After Fix:**
+
 - ✅ Product edit page loads all configuration correctly
 - ✅ All dropdowns show current selections
 - ✅ Can save updates to products
@@ -329,6 +347,7 @@ This fix completes the data transformation consistency work:
 3. **Session 3 (This fix):** Extended PascalCase fallbacks to ALL group-based relations
 
 **Now Working:**
+
 - ✅ Image upload (single and multiple)
 - ✅ Image persistence during product create/edit
 - ✅ Image display on all pages (listing, create, edit)
@@ -345,12 +364,14 @@ This fix completes the data transformation consistency work:
 If product edit page stops working:
 
 1. **Check API Response:**
+
    ```bash
    curl -s 'https://gangrunprinting.com/api/products/[PRODUCT_ID]' | jq '.data | keys'
    # Check if response has PascalCase or camelCase properties
    ```
 
 2. **Run Test Script:**
+
    ```bash
    node test-product-edit.js
    # Should output: ✅ Product can be edited successfully
@@ -367,6 +388,7 @@ If product edit page stops working:
    - Check Network tab for API response structure
 
 5. **Verify Environment:**
+
    ```bash
    docker logs --tail=50 gangrunprinting_app
    # Should show: ✓ Ready in XXXms

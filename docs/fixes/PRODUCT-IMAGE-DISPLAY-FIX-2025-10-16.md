@@ -18,6 +18,7 @@ Product images were not displaying on the product listing page at `/admin/produc
 The data transformer (`/src/lib/data-transformers.ts`) was only checking for lowercase `productImages` and `images` properties, but the Prisma API routes were returning the PascalCase `ProductImage` relation name.
 
 **API Response Structure:**
+
 ```typescript
 {
   Product: {
@@ -37,8 +38,9 @@ The data transformer (`/src/lib/data-transformers.ts`) was only checking for low
 ```
 
 **Transformer Was Looking For:**
+
 ```typescript
-product.productImages || product.images  // ← camelCase only
+product.productImages || product.images // ← camelCase only
 ```
 
 **Result:** Empty `ProductImages` array in frontend, no images displayed.
@@ -50,11 +52,13 @@ product.productImages || product.images  // ← camelCase only
 ### File: `/src/lib/data-transformers.ts`
 
 **Line 60-62 (Before):**
+
 ```typescript
 ProductImages: transformImagesForFrontend(product.productImages || product.images || []),
 ```
 
 **Line 60-62 (After):**
+
 ```typescript
 ProductImages: transformImagesForFrontend(
   product.productImages || product.images || (product as any).ProductImage || []
@@ -62,11 +66,13 @@ ProductImages: transformImagesForFrontend(
 ```
 
 **Line 81 (Before):**
+
 ```typescript
 productImages: product.productImages,
 ```
 
 **Line 81 (After):**
+
 ```typescript
 productImages: product.productImages || (product as any).ProductImage,
 ```
@@ -74,6 +80,7 @@ productImages: product.productImages || (product as any).ProductImage,
 ### Why This Works
 
 The transformer now checks for **three** possible property names in order:
+
 1. `product.productImages` (camelCase) - backward compatibility
 2. `product.images` (short form) - backward compatibility
 3. `(product as any).ProductImage` (PascalCase) - **NEW** - matches Prisma relation name
@@ -99,17 +106,20 @@ This ensures compatibility with all API response formats while fixing the immedi
 **Purpose:** Automated testing to verify image transformation works correctly
 
 **What It Tests:**
+
 - Fetches product with known images from API
 - Verifies both `ProductImages` (PascalCase) and `productImages` (camelCase) are populated
 - Confirms image URLs are correctly formatted
 - Displays full image data structure for debugging
 
 **Run Command:**
+
 ```bash
 node test-image-transform.js
 ```
 
 **Expected Output:**
+
 ```
 ✅ SUCCESS: Images found!
 📊 Total images: 1
@@ -154,6 +164,7 @@ Image 1:
 ### Previous Session Work
 
 This fix builds on the previous session's work where we fixed:
+
 1. **Product image upload persistence** - Images no longer disappear after upload
 2. **Multi-image upload race conditions** - Multiple simultaneous uploads work correctly
 3. **Database CRUD operations** - Images save correctly when creating/editing products
@@ -164,6 +175,7 @@ This fix builds on the previous session's work where we fixed:
 ### Architecture Notes
 
 **Data Flow:**
+
 ```
 1. Prisma Query (API Route)
    ↓
@@ -179,6 +191,7 @@ This fix builds on the previous session's work where we fixed:
 ```
 
 **Key Components:**
+
 - **API Route:** `/src/app/api/products/route.ts` (GET) - Returns product list with images
 - **API Route:** `/src/app/api/products/[id]/route.ts` (GET) - Returns single product with images
 - **Transformer:** `/src/lib/data-transformers.ts` - Converts API response to frontend format
@@ -209,18 +222,21 @@ This fix builds on the previous session's work where we fixed:
 ### 1. Prisma Relation Name Casing
 
 Prisma uses **PascalCase** for relation names in the schema, which are preserved in query results:
+
 - Schema: `ProductImage` → API: `ProductImage`
 - Schema: `ProductCategory` → API: `ProductCategory`
 
 ### 2. Frontend Conventions
 
 The frontend expects **PascalCase** for display properties:
+
 - API transforms to: `ProductImages`, `ProductCategory`, `Name`, `Url`
 - Components use: `product.ProductImages`, `product.Name`
 
 ### 3. Backward Compatibility
 
 Always include fallbacks when adding new property checks:
+
 ```typescript
 product.newProp || product.oldProp || product.fallbackProp || defaultValue
 ```
@@ -228,6 +244,7 @@ product.newProp || product.oldProp || product.fallbackProp || defaultValue
 ### 4. Testing Strategy
 
 For data transformation issues:
+
 1. Check API response structure first (curl or test script)
 2. Verify transformer handles all possible property names
 3. Test in browser with DevTools Network tab
@@ -238,11 +255,13 @@ For data transformation issues:
 ## 🎯 Impact
 
 **Before Fix:**
+
 - ❌ No images visible on product listing page
 - ❌ Harder to identify products at a glance
 - ❌ Incomplete admin interface
 
 **After Fix:**
+
 - ✅ All product images display correctly
 - ✅ Consistent visual experience across admin pages
 - ✅ Complete product management workflow
@@ -256,11 +275,13 @@ For data transformation issues:
 **Commit Message:** "✅ FIX: Product images now display on listing page - Data transformer fix"
 
 **Files Changed:**
+
 - `/src/lib/data-transformers.ts` (2 lines modified)
 - `/root/websites/gangrunprinting/test-image-transform.js` (1 file created)
 - `/root/websites/gangrunprinting/PRODUCT-IMAGE-DISPLAY-FIX-2025-10-16.md` (1 file created)
 
 **Related Documentation:**
+
 - See `/root/websites/gangrunprinting/IMAGE-UPLOAD-TESTING-GUIDE.md` for complete image upload testing procedures
 - See previous commit `20c175c7` for image persistence fix
 
@@ -274,6 +295,7 @@ This fix completes the image functionality work:
 2. **Session 2 (This fix):** Fixed image display on product listing page
 
 **Now Working:**
+
 - ✅ Image upload (single and multiple)
 - ✅ Image persistence during product create
 - ✅ Image persistence during product edit
@@ -291,11 +313,13 @@ This fix completes the image functionality work:
 If images stop displaying:
 
 1. **Check API Response:**
+
    ```bash
    curl -s 'https://gangrunprinting.com/api/products/[PRODUCT_ID]' | jq '.data.ProductImages'
    ```
 
 2. **Run Test Script:**
+
    ```bash
    node test-image-transform.js
    ```
@@ -306,6 +330,7 @@ If images stop displaying:
    - Verify image URLs include `/minio/` prefix
 
 4. **Verify Environment:**
+
    ```bash
    docker exec gangrunprinting_app env | grep MINIO_PUBLIC
    # Should show: MINIO_PUBLIC_ENDPOINT=https://gangrunprinting.com/minio

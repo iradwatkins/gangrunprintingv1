@@ -223,8 +223,7 @@ export function useSizeModule({
   // Ultra-independent error handling for this module instance
   const moduleErrors = useModuleErrors({
     moduleType: ModuleType.SIZE,
-    onError: (error) => {
-    },
+    onError: (error) => {},
   })
 
   // Find selected size

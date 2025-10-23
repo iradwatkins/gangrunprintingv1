@@ -76,7 +76,7 @@ export function ExportButton({ data, disabled = false }: ExportButtonProps) {
   const handleExportCSV = async () => {
     setIsExporting(true)
     try {
-      const csvRankings: KeywordRankingCSV[] = data.rankings.map(r => ({
+      const csvRankings: KeywordRankingCSV[] = data.rankings.map((r) => ({
         keyword: r.keyword,
         position: r.position,
         clicks: r.clicks,
@@ -86,14 +86,10 @@ export function ExportButton({ data, disabled = false }: ExportButtonProps) {
         clicksChange: r.clicksChange,
       }))
 
-      downloadSEOReportCSV(
-        csvRankings,
-        undefined,
-        {
-          productName: data.productName,
-          dateRange: data.dateRange,
-        }
-      )
+      downloadSEOReportCSV(csvRankings, undefined, {
+        productName: data.productName,
+        dateRange: data.dateRange,
+      })
     } catch (error) {
       console.error('Failed to export CSV:', error)
     } finally {
@@ -116,9 +112,10 @@ export function ExportButton({ data, disabled = false }: ExportButtonProps) {
           avgPosition: data.summary.avgPosition,
           totalClicks: data.summary.totalClicks,
           totalImpressions: data.summary.totalImpressions,
-          avgCTR: data.summary.totalImpressions > 0
-            ? (data.summary.totalClicks / data.summary.totalImpressions) * 100
-            : 0,
+          avgCTR:
+            data.summary.totalImpressions > 0
+              ? (data.summary.totalClicks / data.summary.totalImpressions) * 100
+              : 0,
         },
         rankings: data.rankings,
         alerts: data.alerts || [],

@@ -5,10 +5,7 @@ import { Readable } from 'stream'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
@@ -43,7 +40,10 @@ export async function GET(
     // Set response headers for download
     const headers = new Headers()
     headers.set('Content-Type', 'application/zip')
-    headers.set('Content-Disposition', `attachment; filename="order-${order.orderNumber}-files.zip"`)
+    headers.set(
+      'Content-Disposition',
+      `attachment; filename="order-${order.orderNumber}-files.zip"`
+    )
 
     // Handle archive errors
     archive.on('error', (err) => {
@@ -99,9 +99,6 @@ export async function GET(
     return new NextResponse(readableStream, { headers })
   } catch (error) {
     console.error('[Download Files API] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to download files' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to download files' }, { status: 500 })
   }
 }

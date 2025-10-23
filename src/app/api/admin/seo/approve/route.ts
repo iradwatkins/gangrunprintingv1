@@ -27,8 +27,7 @@ export async function POST(request: NextRequest) {
     console.error('[API] Error approving SEO content:', error)
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : 'Failed to approve SEO content',
+        error: error instanceof Error ? error.message : 'Failed to approve SEO content',
       },
       { status: 500 }
     )

@@ -310,8 +310,14 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
     )
   } catch (error) {
     console.error('[Orders Page] Error loading orders:', error)
-    console.error('[Orders Page] Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-    console.error('[Orders Page] Error message:', error instanceof Error ? error.message : String(error))
+    console.error(
+      '[Orders Page] Error stack:',
+      error instanceof Error ? error.stack : 'No stack trace'
+    )
+    console.error(
+      '[Orders Page] Error message:',
+      error instanceof Error ? error.message : String(error)
+    )
 
     return (
       <div className="space-y-8">

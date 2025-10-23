@@ -11,6 +11,7 @@
 **URL:** https://gangrunprinting.com/admin/marketing
 
 **Navigation Path:**
+
 ```
 Admin Dashboard → Sidebar → Marketing
 ```
@@ -18,6 +19,7 @@ Admin Dashboard → Sidebar → Marketing
 ### Marketing Subsections
 
 **1. Automation** 📧
+
 - **URL:** `/admin/marketing/automation`
 - **Purpose:** View and manage automation workflows
 - **What you'll see:**
@@ -27,6 +29,7 @@ Admin Dashboard → Sidebar → Marketing
   - Last triggered timestamps
 
 **2. Create New Workflow**
+
 - **URL:** `/admin/marketing/automation/new`
 - **Purpose:** Create new automation workflows
 - **Note:** This is the UI-based workflow builder (database-driven)
@@ -34,6 +37,7 @@ Admin Dashboard → Sidebar → Marketing
   - Visual workflow editor for non-technical users
 
 **3. Analytics** 📊
+
 - **URL:** `/admin/marketing/analytics`
 - **Purpose:** View marketing performance metrics
 - **Metrics to track:**
@@ -43,15 +47,18 @@ Admin Dashboard → Sidebar → Marketing
   - Revenue from campaigns
 
 **4. Campaigns** 📢
+
 - **URL:** `/admin/marketing/campaigns`
 - **Purpose:** Manage marketing campaigns
 
 **5. Segments** 👥
+
 - **URL:** `/admin/marketing/segments`
 - **Purpose:** Customer segmentation
 - **Connected to:** `CustomerSegment` database table
 
 **6. Email Builder** ✉️
+
 - **URL:** `/admin/marketing/email-builder`
 - **Purpose:** Custom email template builder
 
@@ -64,6 +71,7 @@ All new API endpoints are live at `https://gangrunprinting.com/api/marketing/`
 ### Cart Tracking
 
 **Track Cart Sessions:**
+
 ```
 POST https://gangrunprinting.com/api/marketing/carts/track
 
@@ -79,6 +87,7 @@ Body:
 ```
 
 **Fetch Abandoned Carts:**
+
 ```
 GET https://gangrunprinting.com/api/marketing/carts/abandoned?minHours=3&maxHours=72
 
@@ -93,6 +102,7 @@ Response:
 ### Customer Data
 
 **Fetch Anniversaries:**
+
 ```
 GET https://gangrunprinting.com/api/marketing/customers/anniversaries?type=first_purchase&daysAgo=365
 
@@ -105,6 +115,7 @@ Response:
 ```
 
 **Fetch Inactive Customers:**
+
 ```
 GET https://gangrunprinting.com/api/marketing/customers/inactive?minDays=60&maxDays=90
 
@@ -119,6 +130,7 @@ Response:
 ### Coupons
 
 **Generate Coupon:**
+
 ```
 POST https://gangrunprinting.com/api/marketing/coupons/generate
 
@@ -143,6 +155,7 @@ Response:
 ```
 
 **Validate Coupon:**
+
 ```
 GET https://gangrunprinting.com/api/marketing/coupons/validate?code=CART12345678
 
@@ -162,6 +175,7 @@ Response:
 ### Email Rendering
 
 **Render and Send Email:**
+
 ```
 POST https://gangrunprinting.com/api/marketing/emails/render
 
@@ -196,16 +210,19 @@ Response:
 **URL:** https://n8n.agistaffers.com
 
 **Login Credentials:**
+
 - Check your N8N admin credentials
 - Usually the same as your admin user
 
 ### Where to Create Workflows
 
 **Step 1: Log in to N8N**
+
 - Go to https://n8n.agistaffers.com
 - Enter credentials
 
 **Step 2: Create New Workflow**
+
 - Click "+ New Workflow" (top right)
 - Give it a descriptive name
 
@@ -267,6 +284,7 @@ Response:
 ### New Tables Created
 
 **CartSession**
+
 ```sql
 -- View abandoned carts
 SELECT * FROM "CartSession"
@@ -282,6 +300,7 @@ WHERE abandoned = true;
 ```
 
 **Coupon**
+
 ```sql
 -- View active coupons
 SELECT * FROM "Coupon"
@@ -304,6 +323,7 @@ ORDER BY "createdAt" DESC;
 ```
 
 **N8NWebhook**
+
 ```sql
 -- View registered webhooks
 SELECT
@@ -318,6 +338,7 @@ ORDER BY "triggerCount" DESC;
 ```
 
 **N8NWebhookLog**
+
 ```sql
 -- View webhook execution logs
 SELECT
@@ -376,6 +397,7 @@ ORDER BY failure_count DESC;
 ### Test API Endpoints
 
 **Using curl:**
+
 ```bash
 # Test abandoned carts API
 curl -X GET "https://gangrunprinting.com/api/marketing/carts/abandoned?minHours=3&maxHours=72"
@@ -419,26 +441,31 @@ curl -X POST "https://gangrunprinting.com/api/marketing/emails/render" \
 ### GangRun Admin Dashboard
 
 **Analytics Page:**
+
 - URL: https://gangrunprinting.com/admin/marketing/analytics
 - Shows: Campaign performance, email metrics
 
 **Automation Page:**
+
 - URL: https://gangrunprinting.com/admin/marketing/automation
 - Shows: Workflow list, execution counts
 
 ### N8N Dashboard
 
 **Executions:**
+
 - URL: https://n8n.agistaffers.com/executions
 - Shows: All workflow executions, success/failure
 
 **Workflows:**
+
 - URL: https://n8n.agistaffers.com/workflows
 - Shows: All workflows, active/inactive status
 
 ### Resend Dashboard
 
 **Email Logs:**
+
 - URL: https://resend.com/emails
 - Shows: All sent emails, delivery status, opens, clicks
 
@@ -480,12 +507,14 @@ curl -X POST "https://gangrunprinting.com/api/marketing/emails/render" \
 ## 📞 Support
 
 **Documentation:**
+
 - Setup Guide: `/docs/N8N-MARKETING-AUTOMATION-SETUP.md`
 - Implementation: `/docs/MARKETING-AUTOMATION-COMPLETE.md`
 - Deployment: `/docs/DEPLOYMENT-SUMMARY-2025-10-20.md`
 - This Guide: `/docs/WHERE-IS-MARKETING-AUTOMATION.md`
 
 **Key URLs:**
+
 - Admin: https://gangrunprinting.com/admin/marketing
 - N8N: https://n8n.agistaffers.com
 - Resend: https://resend.com/emails

@@ -179,6 +179,7 @@ Telegram: "✅ Decision executed! Option B applied."
 ## Database Schema
 
 ### ProductCampaignQueue
+
 Tracks each product's 200-city campaign
 
 ```sql
@@ -196,6 +197,7 @@ CREATE TABLE "ProductCampaignQueue" (
 ```
 
 ### CityLandingPage
+
 Individual city page content
 
 ```sql
@@ -217,6 +219,7 @@ CREATE TABLE "CityLandingPage" (
 ```
 
 ### CityWinnerPattern
+
 Extracted patterns from top performers
 
 ```sql
@@ -238,6 +241,7 @@ CREATE TABLE "CityWinnerPattern" (
 ```
 
 ### SEOBrainDecision
+
 User decisions awaiting approval
 
 ```sql
@@ -259,6 +263,7 @@ CREATE TABLE "SEOBrainDecision" (
 ```
 
 ### CityPerformanceSnapshot
+
 Daily performance tracking
 
 ```sql
@@ -276,6 +281,7 @@ CREATE TABLE "CityPerformanceSnapshot" (
 ```
 
 ### SEOBrainAlert
+
 Telegram notification log
 
 ```sql
@@ -311,6 +317,7 @@ function calculatePerformanceScore(metrics: {
 ```
 
 **Weights:**
+
 - Conversions: 50% (most important)
 - Views: 30% (traffic quality)
 - Revenue: 20% (business impact)

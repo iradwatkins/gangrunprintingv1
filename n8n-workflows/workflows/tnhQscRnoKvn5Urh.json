@@ -1,1 +1,135 @@
-{"createdAt":"2025-10-20T23:00:00.534Z","updatedAt":"2025-10-20T23:00:00.534Z","id":"tnhQscRnoKvn5Urh","name":"GangRun - Abandoned Cart (24hr)","active":false,"isArchived":false,"nodes":[{"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"0 * * * *"}]}},"name":"Every Hour","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.1,"position":[250,300],"id":"bc49b49f-28fc-45c9-a0e4-6bc4ff9e16dc"},{"parameters":{"url":"https://gangrunprinting.com/api/marketing/carts/abandoned","sendQuery":true,"queryParameters":{"parameters":[{"name":"minHours","value":"24"},{"name":"maxHours","value":"25"}]},"options":{}},"name":"Fetch 24hr Abandoned Carts","type":"n8n-nodes-base.httpRequest","typeVersion":4.1,"position":[470,300],"id":"e6f91649-c06c-423c-8e39-228286f2d94f"},{"parameters":{"batchSize":1,"options":{}},"name":"Split Into Batches","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[690,300],"id":"9f0e80d7-2cbf-4f43-8b7a-3cbb40f7fb0e"},{"parameters":{"url":"https://gangrunprinting.com/api/marketing/coupons/generate","authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth","sendBody":true,"bodyParameters":{"parameters":[{"name":"type","value":"PERCENTAGE"},{"name":"value","value":"10"},{"name":"userId","value":"={{ $json.userId }}"},{"name":"campaign","value":"abandoned_cart"},{"name":"expiresInDays","value":"7"}]},"options":{}},"name":"Generate 10% Coupon","type":"n8n-nodes-base.httpRequest","typeVersion":4.1,"position":[910,300],"id":"ab8a2330-66eb-495d-bbf9-1c92d3146af0"},{"parameters":{"url":"https://gangrunprinting.com/api/marketing/emails/render","authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth","sendBody":true,"bodyParameters":{"parameters":[{"name":"template","value":"abandoned_cart"},{"name":"to","value":"={{ $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].email }}"},{"name":"subject","value":"Still Thinking It Over? Here's 10% OFF! 💭"},{"name":"data","value":"={{ JSON.stringify({\n  customerName: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].User?.name || 'Valued Customer',\n  items: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].items,\n  subtotal: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].subtotal,\n  total: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].total,\n  cartUrl: 'https://gangrunprinting.com/checkout?session=' + $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].sessionId,\n  couponCode: $node['Generate 10% Coupon'].json.coupon.code,\n  couponValue: 10,\n  hoursSinceAbandonment: 24\n}) }}"}]},"options":{}},"name":"Send Email","type":"n8n-nodes-base.httpRequest","typeVersion":4.1,"position":[1130,300],"id":"e04e4d04-32dd-43af-9a06-d911e0af4f8c"}],"connections":{"Every Hour":{"main":[[{"node":"Fetch 24hr Abandoned Carts","type":"main","index":0}]]},"Fetch 24hr Abandoned Carts":{"main":[[{"node":"Split Into Batches","type":"main","index":0}]]},"Split Into Batches":{"main":[[{"node":"Generate 10% Coupon","type":"main","index":0}]]},"Generate 10% Coupon":{"main":[[{"node":"Send Email","type":"main","index":0}]]},"Send Email":{"main":[[{"node":"Split Into Batches","type":"main","index":0}]]}},"settings":{"timezone":"America/Chicago"},"staticData":null,"meta":null,"pinData":null,"versionId":null,"triggerCount":0,"tags":[],"shared":[{"createdAt":"2025-10-20T23:00:00.535Z","updatedAt":"2025-10-20T23:00:00.535Z","role":"workflow:owner","workflowId":"tnhQscRnoKvn5Urh","projectId":"tFB2q6JWkfPj6FdL","project":{"createdAt":"2025-09-11T20:13:27.250Z","updatedAt":"2025-09-11T20:14:08.507Z","id":"tFB2q6JWkfPj6FdL","name":"Ira Watkins <iradwatkins@gmail.com>","type":"personal","icon":null,"description":null}}]}
+{
+  "createdAt": "2025-10-20T23:00:00.534Z",
+  "updatedAt": "2025-10-20T23:00:00.534Z",
+  "id": "tnhQscRnoKvn5Urh",
+  "name": "GangRun - Abandoned Cart (24hr)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 * * * *" }] }
+      },
+      "name": "Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "id": "bc49b49f-28fc-45c9-a0e4-6bc4ff9e16dc"
+    },
+    {
+      "parameters": {
+        "url": "https://gangrunprinting.com/api/marketing/carts/abandoned",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "minHours", "value": "24" },
+            { "name": "maxHours", "value": "25" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Fetch 24hr Abandoned Carts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [470, 300],
+      "id": "e6f91649-c06c-423c-8e39-228286f2d94f"
+    },
+    {
+      "parameters": { "batchSize": 1, "options": {} },
+      "name": "Split Into Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [690, 300],
+      "id": "9f0e80d7-2cbf-4f43-8b7a-3cbb40f7fb0e"
+    },
+    {
+      "parameters": {
+        "url": "https://gangrunprinting.com/api/marketing/coupons/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "type", "value": "PERCENTAGE" },
+            { "name": "value", "value": "10" },
+            { "name": "userId", "value": "={{ $json.userId }}" },
+            { "name": "campaign", "value": "abandoned_cart" },
+            { "name": "expiresInDays", "value": "7" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Generate 10% Coupon",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [910, 300],
+      "id": "ab8a2330-66eb-495d-bbf9-1c92d3146af0"
+    },
+    {
+      "parameters": {
+        "url": "https://gangrunprinting.com/api/marketing/emails/render",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "template", "value": "abandoned_cart" },
+            {
+              "name": "to",
+              "value": "={{ $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].email }}"
+            },
+            { "name": "subject", "value": "Still Thinking It Over? Here's 10% OFF! 💭" },
+            {
+              "name": "data",
+              "value": "={{ JSON.stringify({\n  customerName: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].User?.name || 'Valued Customer',\n  items: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].items,\n  subtotal: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].subtotal,\n  total: $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].total,\n  cartUrl: 'https://gangrunprinting.com/checkout?session=' + $node['Fetch 24hr Abandoned Carts'].json.carts[$node['Split Into Batches'].json.index].sessionId,\n  couponCode: $node['Generate 10% Coupon'].json.coupon.code,\n  couponValue: 10,\n  hoursSinceAbandonment: 24\n}) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Send Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1130, 300],
+      "id": "e04e4d04-32dd-43af-9a06-d911e0af4f8c"
+    }
+  ],
+  "connections": {
+    "Every Hour": {
+      "main": [[{ "node": "Fetch 24hr Abandoned Carts", "type": "main", "index": 0 }]]
+    },
+    "Fetch 24hr Abandoned Carts": {
+      "main": [[{ "node": "Split Into Batches", "type": "main", "index": 0 }]]
+    },
+    "Split Into Batches": {
+      "main": [[{ "node": "Generate 10% Coupon", "type": "main", "index": 0 }]]
+    },
+    "Generate 10% Coupon": { "main": [[{ "node": "Send Email", "type": "main", "index": 0 }]] },
+    "Send Email": { "main": [[{ "node": "Split Into Batches", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "timezone": "America/Chicago" },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": null,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-10-20T23:00:00.535Z",
+      "updatedAt": "2025-10-20T23:00:00.535Z",
+      "role": "workflow:owner",
+      "workflowId": "tnhQscRnoKvn5Urh",
+      "projectId": "tFB2q6JWkfPj6FdL",
+      "project": {
+        "createdAt": "2025-09-11T20:13:27.250Z",
+        "updatedAt": "2025-09-11T20:14:08.507Z",
+        "id": "tFB2q6JWkfPj6FdL",
+        "name": "Ira Watkins <iradwatkins@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

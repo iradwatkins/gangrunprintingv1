@@ -3,27 +3,20 @@
  * Sent to customer when admin uploads a proof file
  */
 
-import {
-  Button,
-  Heading,
-  Hr,
-  Link,
-  Section,
-  Text,
-} from '@react-email/components';
-import * as React from 'react';
-import { EmailLayout } from './email-layout';
+import { Button, Heading, Hr, Link, Section, Text } from '@react-email/components'
+import * as React from 'react'
+import { EmailLayout } from './email-layout'
 
 interface ProofReadyEmailProps {
-  customerName?: string;
-  orderNumber: string;
-  proofLabel: string;
-  proofUrl: string;
-  trackingUrl: string;
-  adminMessage?: string;
-  approveUrl?: string;
-  rejectUrl?: string;
-  hasAttachment?: boolean;
+  customerName?: string
+  orderNumber: string
+  proofLabel: string
+  proofUrl: string
+  trackingUrl: string
+  adminMessage?: string
+  approveUrl?: string
+  rejectUrl?: string
+  hasAttachment?: boolean
 }
 
 export const ProofReadyEmail = ({
@@ -47,9 +40,7 @@ export const ProofReadyEmail = ({
 
       {/* Main Content */}
       <Section style={mainSection}>
-        <Text style={greeting}>
-          {customerName ? `Hi ${customerName}` : 'Hello'},
-        </Text>
+        <Text style={greeting}>{customerName ? `Hi ${customerName}` : 'Hello'},</Text>
 
         <Text style={paragraph}>
           Great news! Your proof is ready for review. Please take a moment to check it carefully
@@ -58,7 +49,8 @@ export const ProofReadyEmail = ({
 
         {hasAttachment && (
           <Text style={attachmentNotice}>
-            📎 <strong>Your proof file is attached to this email</strong> for easy viewing. You can also download it from the link below.
+            📎 <strong>Your proof file is attached to this email</strong> for easy viewing. You can
+            also download it from the link below.
           </Text>
         )}
 
@@ -69,7 +61,8 @@ export const ProofReadyEmail = ({
           </Text>
           {adminMessage && (
             <Text style={proofMessage}>
-              <strong>Message from our team:</strong><br />
+              <strong>Message from our team:</strong>
+              <br />
               {adminMessage}
             </Text>
           )}
@@ -102,9 +95,7 @@ export const ProofReadyEmail = ({
         {/* Important Info */}
         <Section style={infoBox}>
           <Text style={infoHeading}>⚠️ Important</Text>
-          <Text style={infoText}>
-            Please review your proof carefully and check for:
-          </Text>
+          <Text style={infoText}>Please review your proof carefully and check for:</Text>
           <ul style={infoList}>
             <li>Spelling and grammar</li>
             <li>Colors and image quality</li>
@@ -131,8 +122,8 @@ export const ProofReadyEmail = ({
         </Text>
       </Section>
     </EmailLayout>
-  );
-};
+  )
+}
 
 // Styles
 const heroBanner = {
@@ -141,50 +132,50 @@ const heroBanner = {
   borderRadius: '8px',
   textAlign: 'center' as const,
   marginBottom: '24px',
-};
+}
 
 const heroHeading = {
   color: '#ffffff',
   fontSize: '28px',
   fontWeight: '700',
   margin: '0 0 8px',
-};
+}
 
 const heroSubtext = {
   color: '#dbeafe',
   fontSize: '18px',
   margin: '0',
-};
+}
 
 const mainSection = {
   padding: '0',
-};
+}
 
 const greeting = {
   fontSize: '16px',
   lineHeight: '24px',
   marginBottom: '16px',
-};
+}
 
 const paragraph = {
   fontSize: '16px',
   lineHeight: '24px',
   color: '#374151',
   marginBottom: '24px',
-};
+}
 
 const proofBox = {
   backgroundColor: '#f3f4f6',
   padding: '20px',
   borderRadius: '8px',
   marginBottom: '24px',
-};
+}
 
 const proofLabel = {
   fontSize: '14px',
   margin: '0 0 12px',
   color: '#1f2937',
-};
+}
 
 const proofMessage = {
   fontSize: '14px',
@@ -193,12 +184,12 @@ const proofMessage = {
   backgroundColor: '#e5e7eb',
   padding: '12px',
   borderRadius: '6px',
-};
+}
 
 const buttonContainer = {
   textAlign: 'center' as const,
   marginBottom: '32px',
-};
+}
 
 const primaryButton = {
   backgroundColor: '#10b981',
@@ -210,12 +201,12 @@ const primaryButton = {
   textAlign: 'center' as const,
   display: 'inline-block',
   padding: '12px 32px',
-};
+}
 
 const divider = {
   borderColor: '#e5e7eb',
   margin: '32px 0',
-};
+}
 
 const infoBox = {
   backgroundColor: '#fef3c7',
@@ -223,21 +214,21 @@ const infoBox = {
   borderRadius: '8px',
   border: '2px solid #fbbf24',
   marginBottom: '24px',
-};
+}
 
 const infoHeading = {
   fontSize: '16px',
   fontWeight: '700',
   margin: '0 0 12px',
   color: '#92400e',
-};
+}
 
 const infoText = {
   fontSize: '14px',
   lineHeight: '20px',
   color: '#78350f',
   margin: '0 0 8px',
-};
+}
 
 const infoList = {
   fontSize: '14px',
@@ -245,19 +236,19 @@ const infoList = {
   color: '#78350f',
   paddingLeft: '20px',
   margin: '8px 0',
-};
+}
 
 const footerNote = {
   fontSize: '14px',
   lineHeight: '20px',
   color: '#6b7280',
   marginBottom: '12px',
-};
+}
 
 const link = {
   color: '#3b82f6',
   textDecoration: 'underline',
-};
+}
 
 const attachmentNotice = {
   fontSize: '14px',
@@ -268,7 +259,7 @@ const attachmentNotice = {
   borderRadius: '6px',
   marginBottom: '20px',
   border: '1px solid #34d399',
-};
+}
 
 const approveButton = {
   backgroundColor: '#10b981',
@@ -282,7 +273,7 @@ const approveButton = {
   padding: '12px 24px',
   marginRight: '12px',
   marginBottom: '8px',
-};
+}
 
 const rejectButton = {
   backgroundColor: '#f59e0b',
@@ -296,7 +287,7 @@ const rejectButton = {
   padding: '12px 24px',
   marginLeft: '12px',
   marginBottom: '8px',
-};
+}
 
 const secondaryButton = {
   backgroundColor: '#6b7280',
@@ -309,7 +300,7 @@ const secondaryButton = {
   display: 'inline-block',
   padding: '10px 20px',
   marginTop: '12px',
-};
+}
 
 const orText = {
   textAlign: 'center' as const,
@@ -317,6 +308,6 @@ const orText = {
   color: '#6b7280',
   margin: '8px 0',
   display: 'block',
-};
+}
 
-export default ProofReadyEmail;
+export default ProofReadyEmail

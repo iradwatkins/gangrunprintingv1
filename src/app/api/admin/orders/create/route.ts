@@ -7,11 +7,11 @@
  * Supports both existing customers and creating new customer accounts.
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { validateRequest } from '@/lib/auth';
-import { randomBytes } from 'crypto';
-import { z } from 'zod';
+import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
+import { randomBytes } from 'crypto'
+import { z } from 'zod'
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -27,7 +27,7 @@ const shippingAddressSchema = z.object({
   zipCode: z.string(),
   country: z.string().default('United States'),
   phone: z.string().optional(),
-});
+})
 
 const orderItemSchema = z.object({
   productId: z.string(),
@@ -48,7 +48,7 @@ const orderItemSchema = z.object({
       })
     )
     .optional(),
-});
+})
 
 const createOrderSchema = z.object({
   // Customer info - either existing or new
@@ -82,9 +82,9 @@ const createOrderSchema = z.object({
   customerNotes: z.string().optional(),
   rushOrder: z.boolean().optional(),
   priorityLevel: z.number().int().min(1).max(5).optional(),
-});
+})
 
-type CreateOrderInput = z.infer<typeof createOrderSchema>;
+type CreateOrderInput = z.infer<typeof createOrderSchema>
 
 // ============================================================================
 // API HANDLER
@@ -93,49 +93,49 @@ type CreateOrderInput = z.infer<typeof createOrderSchema>;
 export async function POST(request: NextRequest) {
   try {
     // Validate authentication and admin role
-    const { user } = await validateRequest();
+    const { user } = await validateRequest()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 })
     }
 
     // Parse and validate request body
-    const body = await request.json();
-    const validated = createOrderSchema.parse(body);
+    const body = await request.json()
+    const validated = createOrderSchema.parse(body)
 
     // Validate customer info - must provide either customerId or newCustomer
     if (!validated.customerId && !validated.newCustomer) {
       return NextResponse.json(
         { error: 'Either customerId or newCustomer must be provided' },
         { status: 400 }
-      );
+      )
     }
 
     if (validated.customerId && validated.newCustomer) {
       return NextResponse.json(
         { error: 'Cannot provide both customerId and newCustomer' },
         { status: 400 }
-      );
+      )
     }
 
     // Handle customer creation or lookup
-    let customerId: string;
-    let customerEmail: string;
+    let customerId: string
+    let customerEmail: string
 
     if (validated.newCustomer) {
       // Check if customer with this email already exists
       const existingCustomer = await prisma.user.findUnique({
         where: { email: validated.newCustomer.email },
-      });
+      })
 
       if (existingCustomer) {
         // Use existing customer instead of creating new one
-        customerId = existingCustomer.id;
-        customerEmail = existingCustomer.email;
+        customerId = existingCustomer.id
+        customerEmail = existingCustomer.email
       } else {
         // Create new customer account
         const newCustomer = await prisma.user.create({
@@ -147,27 +147,27 @@ export async function POST(request: NextRequest) {
             role: 'CUSTOMER',
             emailVerified: false,
           },
-        });
+        })
 
-        customerId = newCustomer.id;
-        customerEmail = newCustomer.email;
+        customerId = newCustomer.id
+        customerEmail = newCustomer.email
       }
     } else {
       // Use existing customer
       const customer = await prisma.user.findUnique({
         where: { id: validated.customerId },
-      });
+      })
 
       if (!customer) {
-        return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Customer not found' }, { status: 404 })
       }
 
-      customerId = customer.id;
-      customerEmail = customer.email;
+      customerId = customer.id
+      customerEmail = customer.email
     }
 
     // Generate order number
-    const orderNumber = await generateOrderNumber();
+    const orderNumber = await generateOrderNumber()
 
     // Create order with items
     const order = await prisma.order.create({
@@ -252,7 +252,7 @@ export async function POST(request: NextRequest) {
         User: true,
         StatusHistory: true,
       },
-    });
+    })
 
     return NextResponse.json(
       {
@@ -269,9 +269,9 @@ export async function POST(request: NextRequest) {
         message: 'Order created successfully',
       },
       { status: 201 }
-    );
+    )
   } catch (error) {
-    console.error('Error creating admin order:', error);
+    console.error('Error creating admin order:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -280,7 +280,7 @@ export async function POST(request: NextRequest) {
           details: error.issues,
         },
         { status: 400 }
-      );
+      )
     }
 
     return NextResponse.json(
@@ -289,7 +289,7 @@ export async function POST(request: NextRequest) {
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
-    );
+    )
   }
 }
 
@@ -303,11 +303,11 @@ export async function POST(request: NextRequest) {
  * Example: GR-20251012-0123
  */
 async function generateOrderNumber(): Promise<string> {
-  const date = new Date();
-  const dateStr = date.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
+  const date = new Date()
+  const dateStr = date.toISOString().split('T')[0].replace(/-/g, '') // YYYYMMDD
 
   // Find last order for today
-  const prefix = `GR-${dateStr}-`;
+  const prefix = `GR-${dateStr}-`
 
   const lastOrder = await prisma.order.findFirst({
     where: {
@@ -321,14 +321,14 @@ async function generateOrderNumber(): Promise<string> {
     select: {
       orderNumber: true,
     },
-  });
+  })
 
-  let sequence = 1;
+  let sequence = 1
 
   if (lastOrder) {
-    const lastSequence = parseInt(lastOrder.orderNumber.split('-')[2], 10);
-    sequence = lastSequence + 1;
+    const lastSequence = parseInt(lastOrder.orderNumber.split('-')[2], 10)
+    sequence = lastSequence + 1
   }
 
-  return `${prefix}${sequence.toString().padStart(4, '0')}`;
+  return `${prefix}${sequence.toString().padStart(4, '0')}`
 }

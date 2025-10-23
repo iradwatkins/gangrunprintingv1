@@ -37,14 +37,11 @@ export function getRedisClient(): Redis {
       console.error('Redis Client Error:', error)
     })
 
-    redisClient.on('connect', () => {
-    })
+    redisClient.on('connect', () => {})
 
-    redisClient.on('ready', () => {
-    })
+    redisClient.on('ready', () => {})
 
-    redisClient.on('reconnecting', () => {
-    })
+    redisClient.on('reconnecting', () => {})
   }
 
   return redisClient

@@ -9,11 +9,7 @@
 import { useState } from 'react'
 import { Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format, subDays, subMonths, subYears } from 'date-fns'
 
 export interface DateRange {
@@ -30,14 +26,17 @@ const PRESETS = [
   { label: 'Last 7 days', getValue: () => ({ start: subDays(new Date(), 7), end: new Date() }) },
   { label: 'Last 30 days', getValue: () => ({ start: subDays(new Date(), 30), end: new Date() }) },
   { label: 'Last 90 days', getValue: () => ({ start: subDays(new Date(), 90), end: new Date() }) },
-  { label: 'Last 6 months', getValue: () => ({ start: subMonths(new Date(), 6), end: new Date() }) },
+  {
+    label: 'Last 6 months',
+    getValue: () => ({ start: subMonths(new Date(), 6), end: new Date() }),
+  },
   { label: 'Last year', getValue: () => ({ start: subYears(new Date(), 1), end: new Date() }) },
 ]
 
 export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const handlePresetSelect = (preset: typeof PRESETS[0]) => {
+  const handlePresetSelect = (preset: (typeof PRESETS)[0]) => {
     onChange(preset.getValue())
     setIsOpen(false)
   }

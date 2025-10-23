@@ -21,10 +21,7 @@ export async function GET(request: NextRequest) {
     // Validate admin authentication
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
 
     // Parse date range from query params
@@ -187,9 +184,7 @@ export async function GET(request: NextRequest) {
     }))
 
     // 8. Time series data (orders created by day for the date range)
-    const dailyOrderCounts = await prisma.$queryRaw<
-      Array<{ date: Date; count: bigint }>
-    >`
+    const dailyOrderCounts = await prisma.$queryRaw<Array<{ date: Date; count: bigint }>>`
       SELECT
         DATE_TRUNC('day', "createdAt") as date,
         COUNT(*)::bigint as count
@@ -222,7 +217,8 @@ export async function GET(request: NextRequest) {
         activeStatuses,
         totalStatuses: statuses.length,
         avgProcessingTimeMs: avgOrderProcessingTime,
-        avgProcessingTimeDays: Math.round((avgOrderProcessingTime / (1000 * 60 * 60 * 24)) * 100) / 100,
+        avgProcessingTimeDays:
+          Math.round((avgOrderProcessingTime / (1000 * 60 * 60 * 24)) * 100) / 100,
       },
       statusAnalytics,
       bottlenecks,

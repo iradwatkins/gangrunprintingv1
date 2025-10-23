@@ -236,10 +236,5 @@ export const validateSizeDimensions = (width: number, height: number, unit: stri
   }
 
   // Reasonable limits: 0.5" to 48" (poster size)
-  return (
-    widthInches >= 0.5 &&
-    widthInches <= 48 &&
-    heightInches >= 0.5 &&
-    heightInches <= 48
-  )
+  return widthInches >= 0.5 && widthInches <= 48 && heightInches >= 0.5 && heightInches <= 48
 }

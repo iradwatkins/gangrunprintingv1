@@ -9,22 +9,27 @@ Southwest Cargo pricing has been **corrected** to match the actual WooCommerce r
 ## ✅ What Was Fixed
 
 ### 1. **Corrected Rate Configuration**
+
 **File:** `src/lib/shipping/config.ts` lines 108-156
 
 **PICKUP** (Airport Pickup - Cheaper, Slower):
+
 - 0-50 lbs: $80 flat
 - 51-100 lbs: $102 + ($1.75/lb)
 - 101+ lbs: $133 + ($1.75/lb) + $10 handling
 
 **DASH** (Next Available Flight - Faster, Premium):
+
 - 0-50 lbs: $85 + $10 handling = $95
 - 51-100 lbs: $133 + $10 handling = $143
 - 101+ lbs: $133 + ($1.75/lb) + $10 handling
 
 ### 2. **Simplified Calculation Logic**
+
 **File:** `src/lib/shipping/providers/southwest-cargo.ts`
 
 Both `calculatePickupRate()` and `calculateDashRate()` now use the same simple formula:
+
 ```typescript
 baseRate + (weight × additionalPerPound) + handlingFee
 ```
@@ -32,7 +37,9 @@ baseRate + (weight × additionalPerPound) + handlingFee
 No more complex conditional logic - just straightforward tier matching.
 
 ### 3. **Added 5% Markup**
+
 All rates include the configured 5% markup:
+
 - Configured in `southwestCargoConfig.markupPercentage = 5`
 - Applied after base calculation: `rate × 1.05`
 
@@ -41,18 +48,21 @@ All rates include the configured 5% markup:
 ## 📊 Verified Test Results
 
 ### Test 1: 5.4 lbs (Tier 1)
+
 ```
 ✅ Pickup: $80 × 1.05 = $84.00
 ✅ Dash: $95 × 1.05 = $99.75
 ```
 
 ### Test 2: 108 lbs (Tier 3 - over 100 lbs)
+
 ```
 ✅ Pickup: ($133 + 108×$1.75 + $10) × 1.05 = $352.28
 ✅ Dash: ($133 + 108×$1.75 + $10) × 1.05 = $352.28
 ```
 
 ### Test 3: 216 lbs (Tier 3 - heavy)
+
 ```
 ✅ Pickup: ($133 + 216×$1.75 + $10) × 1.05 = $553.48
 ✅ Dash: ($133 + 216×$1.75 + $10) × 1.05 = $553.48
@@ -63,9 +73,11 @@ All rates include the configured 5% markup:
 ## 🔍 Reference Documentation
 
 ### Source: WooCommerce Screenshots
+
 **Location:** `/root/websites/gangrunprinting/.aaaaaa/cargo/*.png`
 
 The pricing tiers were extracted from actual WooCommerce Advanced Shipping configuration screenshots showing:
+
 - Weight-based conditional rules
 - Base shipping costs
 - Per-weight-unit charges
@@ -76,6 +88,7 @@ The pricing tiers were extracted from actual WooCommerce Advanced Shipping confi
 ## 📋 Complete Pricing Formulas
 
 ### Pickup (Airport Pickup)
+
 ```
 IF weight ≤ 50 lbs:
   price = ($80 + 0 + 0) × 1.05 = $84.00
@@ -88,6 +101,7 @@ IF weight > 100 lbs:
 ```
 
 ### Dash (Next Available Flight)
+
 ```
 IF weight ≤ 50 lbs:
   price = ($85 + 0 + $10) × 1.05 = $99.75
@@ -104,16 +118,19 @@ IF weight > 100 lbs:
 ## 🧪 Testing
 
 ### Automated Test Script
+
 **Location:** `/root/websites/gangrunprinting/test-southwest-weights.js`
 
 **Run:** `node test-southwest-weights.js`
 
 Tests three weight tiers:
+
 - 5.9 lbs (Tier 1: 0-50)
 - 75 lbs (Tier 2: 51-100)
 - 150 lbs (Tier 3: 101+)
 
 ### Manual Browser Testing
+
 1. Add product to cart
 2. Go to checkout
 3. Enter Dallas, TX address (guaranteed service area)
@@ -165,6 +182,7 @@ Tests three weight tiers:
 ## 📞 Support
 
 If rates appear incorrect:
+
 1. Check PM2 logs: `pm2 logs gangrunprinting | grep Southwest`
 2. Verify weight calculation in shipping API logs
 3. Confirm markup percentage in config (should be 5%)

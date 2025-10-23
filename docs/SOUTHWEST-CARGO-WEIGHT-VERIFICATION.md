@@ -1,4 +1,5 @@
 # Southwest Cargo Weight-Based Shipping - Verification Report
+
 **Date:** October 18, 2025
 **Status:** ✅ WORKING CORRECTLY - Weight-based calculation already implemented
 
@@ -17,6 +18,7 @@
 ## Tax/Pricing Rounding Clarification
 
 **User Guidance:**
+
 > "For taxes and pricing customer see it will be .00. Note: paper stock price and weight. Decimal point pricing is very important to come up with the correct pricing but after that, it can be rounded to the .00"
 
 **Implementation Status:** ✅ **CORRECT**
@@ -24,6 +26,7 @@
 ### Current Implementation
 
 **Internal Calculations (Decimal Precision):**
+
 ```typescript
 // Paper stock weight calculation (full precision)
 const weight = paperStockWeight × areaInSquareInches × quantity
@@ -35,6 +38,7 @@ const itemPrice = pricePerSqInch × areaInSquareInches × quantity
 ```
 
 **Customer-Facing Display (Rounded to .00):**
+
 ```typescript
 // Tax calculation - ROUNDED to whole dollars
 const tax = Math.round(subtotal * 0.0825)
@@ -88,11 +92,13 @@ const dashRate = this.calculateDashRate(billableWeight)
 ### Calculation Formula
 
 **Southwest Cargo Rate:**
+
 ```
 finalRate = (baseRate + (weight × additionalPerPound) + handlingFee) × markup
 ```
 
 **Example: 75 lbs Pickup:**
+
 ```
 Tier: 51-100 lbs
 Base: $102.00
@@ -124,6 +130,7 @@ model PaperStock {
 **Weight Data:** ✅ Each paper stock has `weight` field (lbs per square inch)
 
 **Examples:**
+
 - 60lb Offset: ~0.0009 lbs/sq.in
 - 80lb Text: ~0.0012 lbs/sq.in
 - 100lb Cover: ~0.0015 lbs/sq.in (default)
@@ -151,6 +158,7 @@ export function calculateWeight(params: WeightCalculationParams): number {
 ```
 
 **Example:**
+
 - Paper: 100lb Cover (0.0015 lbs/sq.in)
 - Size: 8.5" × 11" = 93.5 sq.in
 - Quantity: 500 pieces
@@ -160,7 +168,7 @@ export function calculateWeight(params: WeightCalculationParams): number {
 
 ```typescript
 // Round to 1 decimal place (carrier standard)
-const roundedWeight = roundWeight(totalWeight, 1)  // 70.1 lbs
+const roundedWeight = roundWeight(totalWeight, 1) // 70.1 lbs
 
 // Ensure minimum billable weight (1 lb)
 const billableWeight = ensureMinimumWeight(roundedWeight, 1.0)
@@ -189,6 +197,7 @@ const withMarkup = 224.68 × 1.05 = $235.91
 **File:** `/src/app/api/shipping/calculate/route.ts`
 
 **Weight Calculation (lines 118-163):**
+
 ```typescript
 for (const item of items) {
   let weight = 0
@@ -209,7 +218,7 @@ for (const item of items) {
     })
     if (paperStock) {
       weight = calculateWeight({
-        paperStockWeight: paperStock.weight,  // ✅ Uses DB weight
+        paperStockWeight: paperStock.weight, // ✅ Uses DB weight
         width: item.width,
         height: item.height,
         quantity: item.quantity,
@@ -231,13 +240,14 @@ for (const item of items) {
 ```
 
 **Provider Selection (lines 221-240):**
+
 ```typescript
 const registry = getShippingRegistry()
 const enabledModules = registry.getEnabledModules()
 
 // Both FedEx and Southwest Cargo get the same packages array
-const ratePromises = modulesToUse.map(module =>
-  module.provider.getRates(shipFrom, toAddress, packages)  // ✅ Same weight data
+const ratePromises = modulesToUse.map(
+  (module) => module.provider.getRates(shipFrom, toAddress, packages) // ✅ Same weight data
 )
 ```
 
@@ -245,14 +255,14 @@ const ratePromises = modulesToUse.map(module =>
 
 ## FedEx vs Southwest Cargo Comparison
 
-| Aspect | FedEx Enhanced | Southwest Cargo | Match? |
-|--------|---------------|-----------------|--------|
-| **Weight Source** | `packages[].weight` | `packages[].weight` | ✅ |
-| **Weight Calculation** | `paperStockWeight × area × qty` | `paperStockWeight × area × qty` | ✅ |
-| **Rounding** | `roundWeight(weight, 1)` | `roundWeight(weight, 1)` | ✅ |
-| **Minimum Weight** | `ensureMinimumWeight(1.0)` | `ensureMinimumWeight(1.0)` | ✅ |
-| **Rate Structure** | API-based (live rates) | Tier-based (config file) | Different |
-| **Markup** | Configurable % | 5% default | Different |
+| Aspect                 | FedEx Enhanced                  | Southwest Cargo                 | Match?    |
+| ---------------------- | ------------------------------- | ------------------------------- | --------- |
+| **Weight Source**      | `packages[].weight`             | `packages[].weight`             | ✅        |
+| **Weight Calculation** | `paperStockWeight × area × qty` | `paperStockWeight × area × qty` | ✅        |
+| **Rounding**           | `roundWeight(weight, 1)`        | `roundWeight(weight, 1)`        | ✅        |
+| **Minimum Weight**     | `ensureMinimumWeight(1.0)`      | `ensureMinimumWeight(1.0)`      | ✅        |
+| **Rate Structure**     | API-based (live rates)          | Tier-based (config file)        | Different |
+| **Markup**             | Configurable %                  | 5% default                      | Different |
 
 **Conclusion:** Both use **identical weight calculation logic** from the same source (paper stock weight).
 
@@ -263,6 +273,7 @@ const ratePromises = modulesToUse.map(module =>
 ### Test Case 1: Business Cards (Standard Weight)
 
 **Input:**
+
 - Product: Business Cards
 - Paper: 14pt C2S (100lb Cover) = 0.0015 lbs/sq.in
 - Size: 3.5" × 2" = 7 sq.in
@@ -270,6 +281,7 @@ const ratePromises = modulesToUse.map(module =>
 - Destination: Dallas, TX (has Southwest airport)
 
 **Expected Weight:**
+
 ```
 Weight = 0.0015 × 7 × 500 = 5.25 lbs
 Rounded = 5.3 lbs (1 decimal)
@@ -277,6 +289,7 @@ Billable = 5.3 lbs (above 1 lb minimum)
 ```
 
 **Expected Southwest Cargo Pickup Rate:**
+
 ```
 Tier: 0-50 lbs
 Base: $80.00
@@ -288,6 +301,7 @@ Final: $84.00 ✅
 ```
 
 **Expected FedEx Rate:**
+
 - Live API call with 5.3 lbs
 - Actual carrier rate + markup
 
@@ -296,6 +310,7 @@ Final: $84.00 ✅
 ### Test Case 2: Heavy Order (Multiple Boxes)
 
 **Input:**
+
 - Product: Flyers
 - Paper: 80lb Text = 0.0012 lbs/sq.in
 - Size: 8.5" × 11" = 93.5 sq.in
@@ -303,6 +318,7 @@ Final: $84.00 ✅
 - Destination: Los Angeles, CA
 
 **Expected Weight:**
+
 ```
 Weight = 0.0012 × 93.5 × 5000 = 561 lbs
 Rounded = 561.0 lbs
@@ -316,6 +332,7 @@ Box 15: 21 lbs
 ```
 
 **Expected Southwest Cargo Dash Rate (per box ~36 lbs):**
+
 ```
 Tier: 0-50 lbs
 Base: $85.00
@@ -333,20 +350,23 @@ Total (15 boxes): $99.75 × 15 = $1,496.25 ✅
 ### Possible Issues (User Reports)
 
 **1. No Airports in Destination State**
+
 ```typescript
 // Southwest only serves 82 airports
 const hasAirport = await isStateAvailable(toAddress.state)
 if (!hasAirport) {
-  return []  // No rates returned
+  return [] // No rates returned
 }
 ```
 
 **Solution:** Run airport seeding script:
+
 ```bash
 npx tsx src/scripts/seed-southwest-airports.ts
 ```
 
 **2. Module Not Enabled**
+
 ```typescript
 // Check if Southwest Cargo module is enabled
 const registry = getShippingRegistry()
@@ -355,14 +375,16 @@ const enabledModules = registry.getEnabledModules()
 ```
 
 **Solution:** Verify in module-registry.ts:
+
 ```typescript
 export const SOUTHWEST_CARGO_CONFIG = {
-  enabled: true,  // ✅ Must be true
+  enabled: true, // ✅ Must be true
   priority: 2,
 }
 ```
 
 **3. Vendor Not Supporting Southwest Cargo**
+
 ```typescript
 // Product's vendor must support Southwest Cargo carrier
 const supportedCarriers = product.ProductCategory.Vendor.supportedCarriers
@@ -376,6 +398,7 @@ const supportedCarriers = product.ProductCategory.Vendor.supportedCarriers
 ## Status Check Commands
 
 ### 1. Check Southwest Cargo Module Status
+
 ```typescript
 // In browser console on shipping page:
 const response = await fetch('/api/shipping/calculate', {
@@ -383,19 +406,22 @@ const response = await fetch('/api/shipping/calculate', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     toAddress: { state: 'TX', city: 'Dallas', zipCode: '75201' },
-    items: [{
-      width: 8.5,
-      height: 11,
-      quantity: 500,
-      paperStockWeight: 0.0015
-    }]
-  })
+    items: [
+      {
+        width: 8.5,
+        height: 11,
+        quantity: 500,
+        paperStockWeight: 0.0015,
+      },
+    ],
+  }),
 })
 const data = await response.json()
 console.log('Rates:', data.rates)
 ```
 
 ### 2. Check Airport Availability
+
 ```bash
 # Check database for Southwest airports
 psql $DATABASE_URL -c "SELECT COUNT(*) FROM \"SouthwestAirport\";"
@@ -404,6 +430,7 @@ psql $DATABASE_URL -c "SELECT COUNT(*) FROM \"SouthwestAirport\";"
 Expected: 82 airports
 
 ### 3. Check Module Registry
+
 ```bash
 # Check if Southwest Cargo is registered
 grep -A 5 "southwest" src/lib/shipping/module-registry.ts
@@ -414,6 +441,7 @@ grep -A 5 "southwest" src/lib/shipping/module-registry.ts
 ## Recommendations
 
 ### ✅ Confirmed Working
+
 1. Weight calculation from paper stock ✅
 2. Southwest Cargo tier-based pricing ✅
 3. FedEx API integration ✅
@@ -425,6 +453,7 @@ grep -A 5 "southwest" src/lib/shipping/module-registry.ts
 If Southwest Cargo rates still not showing:
 
 1. **Check Airport Data:**
+
    ```bash
    npx tsx src/scripts/seed-southwest-airports.ts
    ```
@@ -449,6 +478,7 @@ If Southwest Cargo rates still not showing:
 **Southwest Cargo Status:** ✅ **WORKING AS DESIGNED**
 
 **Implementation:**
+
 - ✅ Weight-based calculation using paper stock weight
 - ✅ Tier-based pricing (0-50, 51-100, 101+ lbs)
 - ✅ Two service levels (Pickup, Dash)
@@ -457,11 +487,13 @@ If Southwest Cargo rates still not showing:
 - ✅ Same weight calculation as FedEx
 
 **Tax/Pricing:** ✅ **WORKING AS DESIGNED**
+
 - ✅ Decimal precision for internal calculations
 - ✅ Rounded to `.00` for customer-facing totals
 - ✅ `Math.round()` applied to tax calculation
 
 **Next Steps:**
+
 - If Southwest Cargo rates not showing, investigate airport availability
 - If FedEx showing but Southwest not, check supported carriers
 - Both systems using correct weight-based calculations
@@ -469,6 +501,7 @@ If Southwest Cargo rates still not showing:
 ---
 
 **Files Referenced:**
+
 - [southwest-cargo/provider.ts](../src/lib/shipping/modules/southwest-cargo/provider.ts)
 - [southwest-cargo/config.ts](../src/lib/shipping/modules/southwest-cargo/config.ts)
 - [weight-calculator.ts](../src/lib/shipping/weight-calculator.ts)

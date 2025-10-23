@@ -181,7 +181,8 @@ function SortableComponent({
               <img
                 alt={component.content.alt}
                 className="max-w-full h-auto"
-                loading="lazy" src={component.content.src}
+                loading="lazy"
+                src={component.content.src}
                 style={{ width: component.content.width }}
               />
             ) : (
@@ -900,8 +901,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
       {selectedComponent && (
         <div className="w-80 bg-white border-l p-4 overflow-y-auto">
           <h3 className="font-semibold mb-4">
-            Edit{' '}
-            {selectedComponent.type.charAt(0).toUpperCase() + selectedComponent.type.slice(1)}
+            Edit {selectedComponent.type.charAt(0).toUpperCase() + selectedComponent.type.slice(1)}
           </h3>
           <ComponentEditor
             component={selectedComponent}

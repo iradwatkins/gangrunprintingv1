@@ -9,6 +9,7 @@
 ## 🎯 What You're Building
 
 An autonomous AI system that:
+
 1. Creates 1 master product (e.g., "5000 4x6 Flyers - $179")
 2. Generates **200 city landing pages** automatically
 3. Each page gets:
@@ -54,6 +55,7 @@ npx tsx src/scripts/seo-brain/setup-telegram.ts
 ```
 
 **Follow the instructions to:**
+
 1. Message @userinfobot on Telegram
 2. Get your Chat ID
 3. Add it to `.env`
@@ -78,6 +80,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ```
 
 **You'll be prompted for:**
+
 - Product name: `5000 4x6 Flyers 9pt Cardstock`
 - Quantity: `5000`
 - Size: `4x6`
@@ -87,6 +90,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 - Keywords: `flyer printing, club flyers, event flyers`
 
 **Then it will:**
+
 1. Generate main product image (30 seconds)
 2. Generate 200 city pages with unique content (6-7 hours)
 3. Generate 200 city hero images (parallel processing)
@@ -98,6 +102,7 @@ npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ## 📬 What You'll Receive on Telegram
 
 ### During Generation:
+
 ```
 🤖 SEO Brain Started
 
@@ -111,6 +116,7 @@ You'll be notified when complete.
 ```
 
 ### After Completion:
+
 ```
 ✅ Campaign Complete: 5000 4x6 Flyers
 
@@ -125,6 +131,7 @@ Next: Wait 7-14 days for Google indexing
 ```
 
 ### When Optimization Needed (Conservative Mode):
+
 ```
 🟡 Decision Needed: Los Angeles, CA
 
@@ -159,12 +166,15 @@ Reply with: A, B, or C
 ## 🎛️ How to Respond to Decisions
 
 ### Via Telegram:
+
 Simply reply to the message with your choice:
+
 - `A` - Apply NYC Winner Pattern
 - `B` - Generate Custom LA Content
 - `C` - Wait 7 More Days
 
 ### Via Admin Dashboard (Coming Soon):
+
 Navigate to `/admin/seo-brain/decisions` to review and approve in bulk
 
 ---
@@ -172,6 +182,7 @@ Navigate to `/admin/seo-brain/decisions` to review and approve in bulk
 ## 📊 Monitoring Your Campaigns
 
 ### View Active Campaigns:
+
 ```bash
 # Check campaign status
 npx prisma studio
@@ -184,6 +195,7 @@ npx prisma studio
 ```
 
 ### View City Performance:
+
 ```bash
 # Navigate to: CityLandingPage
 # Filter by: landingPageSetId = your_campaign_id
@@ -191,6 +203,7 @@ npx prisma studio
 ```
 
 ### View Decision History:
+
 ```bash
 # Navigate to: SEOBrainDecision
 # See all decisions made, your responses, outcomes
@@ -201,6 +214,7 @@ npx prisma studio
 ## 🔧 Troubleshooting
 
 ### "Telegram not sending messages"
+
 ```bash
 # Check connection
 npx tsx src/scripts/seo-brain/setup-telegram.ts
@@ -212,6 +226,7 @@ npx tsx src/scripts/seo-brain/setup-telegram.ts
 ```
 
 ### "Ollama not generating content"
+
 ```bash
 # Test Ollama connection
 curl http://localhost:11434/api/generate -d '{
@@ -225,6 +240,7 @@ curl http://localhost:11434/api/generate -d '{
 ```
 
 ### "Google AI images failing"
+
 ```bash
 # Check existing Google AI setup
 # Verify env variables for Google AI
@@ -232,6 +248,7 @@ curl http://localhost:11434/api/generate -d '{
 ```
 
 ### "City pages not generating"
+
 ```bash
 # Check logs during generation
 # Verify database connection
@@ -254,16 +271,19 @@ curl http://localhost:11434/api/generate -d '{
 ## 🎓 Key Concepts
 
 ### Conservative Mode (Current):
+
 - ✅ You approve EVERY change
 - SEO Brain never acts without permission
 - Best for learning how it works
 
 ### Semi-Autonomous Mode (Future):
+
 - SEO Brain auto-applies "safe" changes
 - Asks for approval on major decisions
 - Upgrade after you trust the system
 
 ### Fully Autonomous Mode (Future):
+
 - SEO Brain makes all decisions
 - Only sends summary reports
 - For Month 3+ when proven
@@ -285,11 +305,13 @@ After setup complete:
 ## 🚀 You're Ready!
 
 Run your first campaign:
+
 ```bash
 npx tsx src/scripts/seo-brain/start-product-campaign.ts
 ```
 
 Questions? Check:
+
 - `/docs/seo-brain/01-FAQ.md`
 - `/docs/seo-brain/02-TROUBLESHOOTING.md`
 - Message @iradwatkins on Telegram

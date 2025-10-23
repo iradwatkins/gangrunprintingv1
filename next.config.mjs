@@ -306,9 +306,9 @@ const nextConfig = {
           },
           // Increase chunk size limits to create fewer chunks
           maxInitialRequests: 10, // Down from default 30
-          maxAsyncRequests: 10,   // Down from default 30
-          minSize: 40000,         // 40KB minimum (up from 20KB default)
-          maxSize: 244000,        // 244KB maximum chunks
+          maxAsyncRequests: 10, // Down from default 30
+          minSize: 40000, // 40KB minimum (up from 20KB default)
+          maxSize: 244000, // 244KB maximum chunks
         },
       }
     }

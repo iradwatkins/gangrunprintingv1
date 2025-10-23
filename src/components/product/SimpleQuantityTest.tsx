@@ -87,7 +87,6 @@ export default function SimpleQuantityTest({
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]) // Track selected addon IDs
 
   useEffect(() => {
-
     // If we have initial configuration from server, use it immediately
     if (initialConfiguration) {
       const data = initialConfiguration
@@ -105,7 +104,8 @@ export default function SimpleQuantityTest({
       setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
       setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
       // Set default design option (first one marked as default, or first in list)
-      const defaultOption = data.designOptions?.find((opt: any) => opt.isDefault) || data.designOptions?.[0]
+      const defaultOption =
+        data.designOptions?.find((opt: any) => opt.isDefault) || data.designOptions?.[0]
       setSelectedDesignOption(defaultOption?.id || '')
 
       setLoading(false)
@@ -125,14 +125,15 @@ export default function SimpleQuantityTest({
     const timeoutId = setTimeout(() => {
       if (mounted && loading) {
         console.error('[SimpleQuantityTest] TIMEOUT - fetch took too long')
-        setError('Request timed out after 10 seconds. The server may be experiencing high load. Please try again.')
+        setError(
+          'Request timed out after 10 seconds. The server may be experiencing high load. Please try again.'
+        )
         setLoading(false)
       }
     }, 10000) // 10 second timeout
 
     async function fetchData() {
       try {
-
         const controller = new AbortController()
         const fetchTimeout = setTimeout(() => controller.abort(), 8000)
 
@@ -140,7 +141,6 @@ export default function SimpleQuantityTest({
           signal: controller.signal,
         })
         clearTimeout(fetchTimeout)
-
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`)
@@ -163,7 +163,8 @@ export default function SimpleQuantityTest({
         setSelectedSides(data.defaults?.sides || data.paperStocks?.[0]?.sides?.[0]?.id || '')
         setSelectedTurnaround(data.defaults?.turnaround || data.turnaroundTimes?.[0]?.id || '')
         // Set default design option (first one marked as default, or first in list)
-        const defaultOption = data.designOptions?.find((opt: any) => opt.isDefault) || data.designOptions?.[0]
+        const defaultOption =
+          data.designOptions?.find((opt: any) => opt.isDefault) || data.designOptions?.[0]
         setSelectedDesignOption(defaultOption?.id || '')
 
         setLoading(false)
@@ -209,20 +210,33 @@ export default function SimpleQuantityTest({
   const memoizedTurnaroundTimes = useMemo(() => turnaroundTimes, [turnaroundTimes.length])
 
   if (loading) {
-    return <div className="p-4 text-gray-500" data-testid="product-configuration-loading">Loading quantities...</div>
+    return (
+      <div className="p-4 text-gray-500" data-testid="product-configuration-loading">
+        Loading quantities...
+      </div>
+    )
   }
 
   if (error) {
     return (
-      <div className="p-6 border border-red-200 rounded-lg bg-red-50" data-testid="product-configuration-error">
+      <div
+        className="p-6 border border-red-200 rounded-lg bg-red-50"
+        data-testid="product-configuration-error"
+      >
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">
             <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-              <path clipRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fillRule="evenodd" />
+              <path
+                clipRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                fillRule="evenodd"
+              />
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-medium text-red-800">Unable to Load Product Configuration</h3>
+            <h3 className="text-sm font-medium text-red-800">
+              Unable to Load Product Configuration
+            </h3>
             <p className="mt-1 text-sm text-red-700">{error}</p>
             <div className="mt-2 text-xs text-red-600">
               {error.includes('timed out') && (
@@ -245,7 +259,12 @@ export default function SimpleQuantityTest({
               }}
             >
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
+                <path
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                />
               </svg>
               Try Again
             </button>
@@ -351,8 +370,8 @@ export default function SimpleQuantityTest({
     let addonTotal = 0
     const basePrice = calculatedPrice
 
-    selectedAddons.forEach(addonId => {
-      const addon = addonsList.find(a => a.id === addonId)
+    selectedAddons.forEach((addonId) => {
+      const addon = addonsList.find((a) => a.id === addonId)
       if (!addon) return
 
       if (addon.pricingModel === 'FIXED_FEE') {
@@ -368,7 +387,6 @@ export default function SimpleQuantityTest({
   // Calculate design option price
   const calculateDesignPrice = (design: any) => {
     if (!design) return 0
-
 
     // FREE design option
     if (design.pricingType === 'FREE') {
@@ -422,7 +440,6 @@ export default function SimpleQuantityTest({
     const basePrice = calculatedPrice
     const addonPrice = calculateAddonPrice()
     const designPrice = getSelectedDesignPrice()
-
 
     // If no turnaround time selected, return base + addons + design
     if (!selectedTurnaroundObj) {
@@ -525,14 +542,14 @@ export default function SimpleQuantityTest({
       paperStockWeight: paperWeight,
       image: imageUrl,
       // Artwork files
-      artworkFiles: uploadedFiles.map(file => ({
+      artworkFiles: uploadedFiles.map((file) => ({
         id: file.id,
         name: file.file.name,
         preview: file.preview,
         url: file.url,
         type: file.file.type,
-        size: file.file.size
-      }))
+        size: file.file.size,
+      })),
     }
 
     try {
@@ -756,14 +773,14 @@ export default function SimpleQuantityTest({
                       <span>{label}</span>
                       {/* Don't show price labels - all prices are either in option label or sub-dropdown */}
                       {option.id !== 'design_minor_changes' &&
-                       option.id !== 'design_major_changes' &&
-                       option.id !== 'design_standard' &&
-                       option.id !== 'design_rush' &&
-                       option.id !== 'design_upload_own' && (
-                        <span className="ml-2 font-semibold text-primary">
-                          {price > 0 ? `+$${price.toFixed(2)}` : 'FREE'}
-                        </span>
-                      )}
+                        option.id !== 'design_major_changes' &&
+                        option.id !== 'design_standard' &&
+                        option.id !== 'design_rush' &&
+                        option.id !== 'design_upload_own' && (
+                          <span className="ml-2 font-semibold text-primary">
+                            {price > 0 ? `+$${price.toFixed(2)}` : 'FREE'}
+                          </span>
+                        )}
                     </div>
                   </SelectItem>
                 )
@@ -775,16 +792,15 @@ export default function SimpleQuantityTest({
           {requiresSideSelection() && (
             <div className="ml-6 space-y-2 mt-3 p-3 border rounded-lg bg-gray-50">
               <Label className="text-sm font-medium">Select Sides *</Label>
-              <Select
-                value={selectedDesignSide}
-                onValueChange={handleDesignSideChange}
-              >
+              <Select value={selectedDesignSide} onValueChange={handleDesignSideChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose number of sides..." />
                 </SelectTrigger>
                 <SelectContent>
                   {(() => {
-                    const selectedDesign = designOptions.find((d: any) => d.id === selectedDesignOption)
+                    const selectedDesign = designOptions.find(
+                      (d: any) => d.id === selectedDesignOption
+                    )
                     if (selectedDesign?.sideOptions) {
                       return (
                         <>
@@ -792,7 +808,8 @@ export default function SimpleQuantityTest({
                             One Side Price ($) {selectedDesign.sideOptions.oneSide.price.toFixed(0)}
                           </SelectItem>
                           <SelectItem value="twoSides">
-                            Two Sides Price ($) {selectedDesign.sideOptions.twoSides.price.toFixed(0)}
+                            Two Sides Price ($){' '}
+                            {selectedDesign.sideOptions.twoSides.price.toFixed(0)}
                           </SelectItem>
                         </>
                       )

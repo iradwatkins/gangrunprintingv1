@@ -8,9 +8,11 @@
 ## ✅ COMPLETED - Phase 1: Core Backend Infrastructure
 
 ### 1. Database Schema ✅
+
 **File:** `prisma/schema.prisma`
 
 **Changes Made:**
+
 - Added `createdByAdminId` to Order model (tracks which admin created the order)
 - Added `invoiceNumber` (unique, format: INV-2025-001234)
 - Added `invoiceId` (unique UUID for public payment links)
@@ -23,6 +25,7 @@
 - Added 8 indexes for performance
 
 **New Enum:**
+
 ```prisma
 enum PaymentMethodType {
   SQUARE_CHECKOUT      // Normal customer checkout
@@ -41,11 +44,13 @@ enum PaymentMethodType {
 ---
 
 ### 2. Invoice Service ✅
+
 **File:** `src/lib/services/invoice-service.ts` (570 lines)
 
 **Functions Implemented:**
 
 #### Core Functions:
+
 - `generateInvoiceNumber()` - Creates sequential invoice numbers (INV-2025-000123)
 - `generateInvoiceId()` - Generates UUID v4 for public links
 - `createInvoice(params)` - Creates invoice for order, sets due date
@@ -54,20 +59,24 @@ enum PaymentMethodType {
 - `recordPayment(params)` - Marks invoice as paid, records payment method
 
 #### Query Helpers:
+
 - `getUnpaidInvoices()` - Returns all unpaid invoices
 - `getOverdueInvoices()` - Returns invoices past due date
 - `getInvoicesByAdmin(adminId)` - Returns invoices created by specific admin
 
 #### Status Functions:
+
 - `isInvoiceOverdue(order)` - Checks if invoice is overdue
 - `getInvoiceStatus(order)` - Returns: pending | viewed | paid | overdue
 
 #### Utility Functions:
+
 - `buildInvoiceDetails()` - Constructs invoice data object
 - `formatCurrency(amount)` - Formats numbers as USD
 - `formatDate(date)` - Formats dates for display
 
 **TypeScript Interfaces:**
+
 - `CreateInvoiceParams`
 - `InvoiceDetails`
 - `RecordPaymentParams`
@@ -75,11 +84,13 @@ enum PaymentMethodType {
 ---
 
 ### 3. Admin Order Creation API ✅
+
 **File:** `src/app/api/admin/orders/create/route.ts`
 
 **Endpoint:** `POST /api/admin/orders/create`
 
 **Features:**
+
 - ✅ ADMIN role validation (403 if not admin)
 - ✅ Create order for existing customer (via customerId)
 - ✅ Create order + new customer account (via newCustomer)
@@ -93,6 +104,7 @@ enum PaymentMethodType {
 - ✅ Comprehensive input validation with Zod
 
 **Request Schema:**
+
 ```typescript
 {
   customerId?: string,              // OR
@@ -147,6 +159,7 @@ enum PaymentMethodType {
 ```
 
 **Response:**
+
 ```typescript
 {
   success: true,
@@ -166,11 +179,13 @@ enum PaymentMethodType {
 ---
 
 ### 4. Send Invoice API ✅
+
 **File:** `src/app/api/admin/orders/[id]/send-invoice/route.ts`
 
 **Endpoint:** `POST /api/admin/orders/[id]/send-invoice`
 
 **Features:**
+
 - ✅ ADMIN role validation
 - ✅ Generate invoice number and ID
 - ✅ Set payment due date (default: 7 days)
@@ -179,6 +194,7 @@ enum PaymentMethodType {
 - ✅ Return invoice details and payment link
 
 **Request Schema:**
+
 ```typescript
 {
   paymentDueDate?: string (ISO 8601),    // Optional, defaults to +7 days
@@ -187,6 +203,7 @@ enum PaymentMethodType {
 ```
 
 **Response:**
+
 ```typescript
 {
   success: true,
@@ -206,31 +223,34 @@ enum PaymentMethodType {
 ## 🟡 IN PROGRESS - Phase 2: Email & Frontend
 
 ### 5. Invoice Email Service (Next Task)
+
 **File:** `src/lib/email/invoice-email.ts` (TO BE CREATED)
 
 **Required Functions:**
+
 ```typescript
 export async function sendInvoiceEmail(params: {
-  to: string;
-  customerName: string;
-  invoiceNumber: string;
-  orderNumber: string;
+  to: string
+  customerName: string
+  invoiceNumber: string
+  orderNumber: string
   items: Array<{
-    productName: string;
-    quantity: number;
-    price: number;
-  }>;
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  total: number;
-  paymentDueDate: Date;
-  paymentLink: string;
-  customMessage?: string;
-}): Promise<void>;
+    productName: string
+    quantity: number
+    price: number
+  }>
+  subtotal: number
+  tax: number
+  shipping: number
+  total: number
+  paymentDueDate: Date
+  paymentLink: string
+  customMessage?: string
+}): Promise<void>
 ```
 
 **Email Template:** HTML email with:
+
 - GangRun Printing branding
 - Invoice number and order number
 - Line items table
@@ -247,6 +267,7 @@ export async function sendInvoiceEmail(params: {
 ## ⏳ PENDING - Phase 3: Remaining API Endpoints
 
 ### 6. Take Payment API (TO BE CREATED)
+
 **File:** `src/app/api/admin/orders/[id]/take-payment/route.ts`
 
 **Endpoint:** `POST /api/admin/orders/[id]/take-payment`
@@ -254,6 +275,7 @@ export async function sendInvoiceEmail(params: {
 **Purpose:** Admin takes payment immediately (phone orders, in-person)
 
 **Request Schema:**
+
 ```typescript
 {
   paymentMethod: PaymentMethodType,
@@ -268,6 +290,7 @@ export async function sendInvoiceEmail(params: {
 ---
 
 ### 7. Public Invoice View API (TO BE CREATED)
+
 **File:** `src/app/api/invoices/[invoiceId]/route.ts`
 
 **Endpoint:** `GET /api/invoices/[invoiceId]`
@@ -275,6 +298,7 @@ export async function sendInvoiceEmail(params: {
 **Purpose:** Customer views invoice (no authentication required)
 
 **Features:**
+
 - Track invoice view (first view only)
 - Return full invoice details
 - Return Square payment link
@@ -282,6 +306,7 @@ export async function sendInvoiceEmail(params: {
 ---
 
 ### 8. Invoice Payment API (TO BE CREATED)
+
 **File:** `src/app/api/invoices/[invoiceId]/pay/route.ts`
 
 **Endpoint:** `POST /api/invoices/[invoiceId]/pay`
@@ -289,9 +314,10 @@ export async function sendInvoiceEmail(params: {
 **Purpose:** Process customer payment via Square
 
 **Request Schema:**
+
 ```typescript
 {
-  paymentSourceId: string       // Square payment source ID
+  paymentSourceId: string // Square payment source ID
 }
 ```
 
@@ -300,9 +326,11 @@ export async function sendInvoiceEmail(params: {
 ## ⏳ PENDING - Phase 4: Frontend UI
 
 ### 9. Customer Search/Create Component (TO BE CREATED)
+
 **File:** `src/components/admin/orders/customer-selector.tsx`
 
 **Features:**
+
 - Search existing customers by email/name
 - Display customer details (name, email, broker status)
 - "Create New Customer" form
@@ -311,9 +339,11 @@ export async function sendInvoiceEmail(params: {
 ---
 
 ### 10. Admin Order Creation Page (TO BE CREATED)
+
 **File:** `src/app/admin/orders/create/page.tsx`
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────────────┐
 │ Create Order for Customer               │
@@ -343,9 +373,11 @@ export async function sendInvoiceEmail(params: {
 ---
 
 ### 11. Public Invoice View Page (TO BE CREATED)
+
 **File:** `src/app/invoice/[invoiceId]/page.tsx`
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────────────┐
 │ GangRun Printing                        │
@@ -368,9 +400,11 @@ export async function sendInvoiceEmail(params: {
 ---
 
 ### 12. Admin Invoice Management Dashboard (TO BE CREATED)
+
 **File:** `src/app/admin/invoices/page.tsx`
 
 **Features:**
+
 - List all invoices (with filters)
 - Show unpaid invoices
 - Show overdue invoices
@@ -381,20 +415,20 @@ export async function sendInvoiceEmail(params: {
 
 ## 📊 Progress Summary
 
-| Component | Status | Lines of Code |
-|-----------|--------|---------------|
-| Database Schema | ✅ Complete | ~50 lines |
-| Invoice Service | ✅ Complete | 570 lines |
-| Admin Order API | ✅ Complete | 280 lines |
-| Send Invoice API | ✅ Complete | 108 lines |
-| Email Service | 🟡 Next Task | ~200 lines |
-| Take Payment API | ⏳ Pending | ~150 lines |
-| Public Invoice View API | ⏳ Pending | ~80 lines |
-| Invoice Payment API | ⏳ Pending | ~120 lines |
-| Customer Selector Component | ⏳ Pending | ~200 lines |
-| Admin Order Page | ⏳ Pending | ~500 lines |
-| Public Invoice Page | ⏳ Pending | ~300 lines |
-| Invoice Dashboard | ⏳ Pending | ~400 lines |
+| Component                   | Status       | Lines of Code |
+| --------------------------- | ------------ | ------------- |
+| Database Schema             | ✅ Complete  | ~50 lines     |
+| Invoice Service             | ✅ Complete  | 570 lines     |
+| Admin Order API             | ✅ Complete  | 280 lines     |
+| Send Invoice API            | ✅ Complete  | 108 lines     |
+| Email Service               | 🟡 Next Task | ~200 lines    |
+| Take Payment API            | ⏳ Pending   | ~150 lines    |
+| Public Invoice View API     | ⏳ Pending   | ~80 lines     |
+| Invoice Payment API         | ⏳ Pending   | ~120 lines    |
+| Customer Selector Component | ⏳ Pending   | ~200 lines    |
+| Admin Order Page            | ⏳ Pending   | ~500 lines    |
+| Public Invoice Page         | ⏳ Pending   | ~300 lines    |
+| Invoice Dashboard           | ⏳ Pending   | ~400 lines    |
 
 **Total Progress:** 30% Complete (Core backend done, email & frontend remaining)
 
@@ -417,16 +451,19 @@ export async function sendInvoiceEmail(params: {
 ## 🔧 Testing Strategy
 
 ### Unit Tests (To Be Created):
+
 - `invoice-service.test.ts` - Test all invoice functions
 - `generate-invoice-number.test.ts` - Test number generation
 - `invoice-status.test.ts` - Test status logic
 
 ### Integration Tests (To Be Created):
+
 - `create-order.test.ts` - Test full order creation flow
 - `send-invoice.test.ts` - Test invoice generation + email
 - `payment-flow.test.ts` - Test payment processing
 
 ### E2E Tests (To Be Created):
+
 - Admin creates order → Sends invoice → Customer pays → Order moves to PAID
 - Admin creates order → Takes payment immediately → Order moves to PAID
 - Customer views invoice → Clicks pay → Square checkout → Payment confirmation
@@ -476,6 +513,7 @@ export async function sendInvoiceEmail(params: {
 ## 📧 Contact
 
 For questions or issues, refer to the user (Ira Watkins) or check:
+
 - Main documentation: `/docs/CLAUDE.md`
 - Pricing system: `/docs/PRICING-REFERENCE.md`
 - API documentation: `/docs/api/`

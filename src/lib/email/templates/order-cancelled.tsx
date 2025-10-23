@@ -38,7 +38,10 @@ export const OrderCancelledEmail = ({
         <Heading style={heading}>🚫 Order Cancelled</Heading>
         <Text style={paragraph}>
           {customerName ? `Hi ${customerName}, ` : 'Hi, '}
-          {isByCustomer ? 'your cancellation request has been processed' : 'your order has been cancelled'}.
+          {isByCustomer
+            ? 'your cancellation request has been processed'
+            : 'your order has been cancelled'}
+          .
         </Text>
       </Section>
 

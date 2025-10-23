@@ -7,6 +7,7 @@ Successfully implemented a **modular shipping architecture** with enable/disable
 ## ✅ What Was Fixed
 
 ### 1. **Southwest Cargo Integration**
+
 - **Problem**: API route used simple weight calculation instead of proper tier-based pricing
 - **Solution**: Integrated full `SouthwestCargoProvider` class with:
   - Weight-based tier pricing (0-50 lbs, 50-100 lbs, 100+ lbs)
@@ -15,6 +16,7 @@ Successfully implemented a **modular shipping architecture** with enable/disable
   - Proper markup application (5%)
 
 ### 2. **FedEx API Integration**
+
 - **Problem**: May have incomplete credentials, no test mode fallback visibility
 - **Solution**: Enhanced `FedExProviderEnhanced` with:
   - 30+ service types (Express, Ground, Freight, SmartPost, International)
@@ -23,6 +25,7 @@ Successfully implemented a **modular shipping architecture** with enable/disable
   - OAuth2 authentication with auto-refresh
 
 ### 3. **Modular Architecture**
+
 - **Created**: `ShippingModuleRegistry` (`src/lib/shipping/module-registry.ts`)
 - **Features**:
   - Centralized provider management
@@ -32,6 +35,7 @@ Successfully implemented a **modular shipping architecture** with enable/disable
   - Singleton pattern for performance
 
 ### 4. **API Refactoring**
+
 - **Updated**: `/api/shipping/rates` to use module registry
 - **Benefits**:
   - Automatic provider discovery
@@ -40,6 +44,7 @@ Successfully implemented a **modular shipping architecture** with enable/disable
   - Metadata reporting
 
 ### 5. **Admin Controls**
+
 - **Created**: `/api/admin/shipping/modules` endpoint
 - **Features**:
   - GET: View all modules and their status
@@ -50,11 +55,13 @@ Successfully implemented a **modular shipping architecture** with enable/disable
 ## 📁 Files Created/Modified
 
 ### New Files:
+
 1. **`src/lib/shipping/module-registry.ts`** - Core module registry system
 2. **`src/app/api/admin/shipping/modules/route.ts`** - Admin control API
 3. **`test-shipping-modules.js`** - Comprehensive test script
 
 ### Modified Files:
+
 1. **`src/app/api/shipping/rates/route.ts`** - Refactored to use registry
 2. **`src/lib/shipping/providers/southwest-cargo.ts`** - Already working correctly
 3. **`src/lib/shipping/providers/fedex.ts`** - Already working correctly (enhanced version)
@@ -64,6 +71,7 @@ Successfully implemented a **modular shipping architecture** with enable/disable
 Test script: `node test-shipping-modules.js`
 
 **Successful Test (Illinois - Local):**
+
 ```
 ✅ Received 12 rates
 
@@ -84,12 +92,14 @@ Test script: `node test-shipping-modules.js`
 ## 🎛️ Module Management
 
 ### View Module Status
+
 ```bash
 curl http://localhost:3020/api/admin/shipping/modules \
   -H "Cookie: auth_session=YOUR_SESSION"
 ```
 
 ### Enable/Disable a Module
+
 ```bash
 curl -X PATCH http://localhost:3020/api/admin/shipping/modules \
   -H "Content-Type: application/json" \
@@ -98,6 +108,7 @@ curl -X PATCH http://localhost:3020/api/admin/shipping/modules \
 ```
 
 ### Update Module Priority
+
 ```bash
 curl -X PATCH http://localhost:3020/api/admin/shipping/modules \
   -H "Content-Type: application/json" \
@@ -128,6 +139,7 @@ curl -X PATCH http://localhost:3020/api/admin/shipping/modules \
    - `SouthwestCargoProvider` registered with ID `southwest-cargo`
 
 2. **Rate Calculation Flow**:
+
    ```
    API Request → Get Registry → Filter Enabled Modules →
    For Each Module:
@@ -150,6 +162,7 @@ curl -X PATCH http://localhost:3020/api/admin/shipping/modules \
 ## 🔧 Configuration
 
 ### Environment Variables (FedEx):
+
 ```bash
 FEDEX_API_KEY=your_api_key
 FEDEX_SECRET_KEY=your_secret_key
@@ -158,6 +171,7 @@ FEDEX_TEST_MODE=true  # Optional, defaults to false
 ```
 
 ### Southwest Cargo (No API Keys Needed):
+
 - Uses configuration from `src/lib/shipping/config.ts`
 - Tier-based pricing defined in `SOUTHWEST_CARGO_RATES`
 - State availability in `CARRIER_AVAILABILITY`
@@ -165,6 +179,7 @@ FEDEX_TEST_MODE=true  # Optional, defaults to false
 ## 📝 Usage Examples
 
 ### Customer Checkout Flow:
+
 ```javascript
 // Automatically gets rates from all enabled modules
 const response = await fetch('/api/shipping/rates', {
@@ -177,21 +192,26 @@ const response = await fetch('/api/shipping/rates', {
     },
     package: {
       weight: 5,
-      dimensions: { length: 12, width: 9, height: 2 }
-    }
-  })
+      dimensions: { length: 12, width: 9, height: 2 },
+    },
+  }),
 })
 ```
 
 ### Specific Providers Only:
+
 ```javascript
 const response = await fetch('/api/shipping/rates', {
   method: 'POST',
   body: JSON.stringify({
-    destination: { /* ... */ },
-    package: { /* ... */ },
-    providers: ['fedex']  // Only FedEx rates
-  })
+    destination: {
+      /* ... */
+    },
+    package: {
+      /* ... */
+    },
+    providers: ['fedex'], // Only FedEx rates
+  }),
 })
 ```
 

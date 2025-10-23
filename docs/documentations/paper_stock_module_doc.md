@@ -5,9 +5,9 @@
 **Module Name:** Paper Stock Selector  
 **Priority Level:** 5 (Fifth Module)  
 **Status:** [ ] Not Started [ ] In Progress [ ] Complete  
-**BMAD Agent Assigned:** ******\_\_\_******  
-**Date Started:** ******\_\_\_******  
-**Date Completed:** ******\_\_\_******  
+**BMAD Agent Assigned:** **\*\***\_\_\_**\*\***  
+**Date Started:** **\*\***\_\_\_**\*\***  
+**Date Completed:** **\*\***\_\_\_**\*\***  
 **Prerequisites:** ALL previous 4 modules MUST be 100% complete
 
 ---
@@ -57,11 +57,11 @@ The Paper Stock Module must function as a completely independent component. A pr
 
 Document available stock types:
 
-- [ ] Paper types count: ******\_\_\_******
-- [ ] Weight options count: ******\_\_\_******
-- [ ] Finish options count: ******\_\_\_******
-- [ ] Coating options count: ******\_\_\_******
-- [ ] Color options count: ******\_\_\_******
+- [ ] Paper types count: **\*\***\_\_\_**\*\***
+- [ ] Weight options count: **\*\***\_\_\_**\*\***
+- [ ] Finish options count: **\*\***\_\_\_**\*\***
+- [ ] Coating options count: **\*\***\_\_\_**\*\***
+- [ ] Color options count: **\*\***\_\_\_**\*\***
 
 ---
 
@@ -135,19 +135,19 @@ Main Categories:
 
 Test each real paper type:
 
-- [ ] 20# Bond: ******\_\_\_******
-- [ ] 70# Text: ******\_\_\_******
-- [ ] 80# Cover: ******\_\_\_******
-- [ ] 100# Cover: ******\_\_\_******
-- [ ] 14pt Cardstock: ******\_\_\_******
+- [ ] 20# Bond: **\*\***\_\_\_**\*\***
+- [ ] 70# Text: **\*\***\_\_\_**\*\***
+- [ ] 80# Cover: **\*\***\_\_\_**\*\***
+- [ ] 100# Cover: **\*\***\_\_\_**\*\***
+- [ ] 14pt Cardstock: **\*\***\_\_\_**\*\***
 
 #### Premium Papers
 
-- [ ] Pearl Metallic: ******\_\_\_******
-- [ ] Linen Textured: ******\_\_\_******
-- [ ] Cotton Paper: ******\_\_\_******
-- [ ] Kraft Paper: ******\_\_\_******
-- [ ] Recycled Stock: ******\_\_\_******
+- [ ] Pearl Metallic: **\*\***\_\_\_**\*\***
+- [ ] Linen Textured: **\*\***\_\_\_**\*\***
+- [ ] Cotton Paper: **\*\***\_\_\_**\*\***
+- [ ] Kraft Paper: **\*\***\_\_\_**\*\***
+- [ ] Recycled Stock: **\*\***\_\_\_**\*\***
 
 #### Weight Testing
 
@@ -493,10 +493,10 @@ Integration Test Plan: _______________
 
 ### Paper Inventory Report
 
-- Total paper types: ******\_\_\_******
-- In-stock items: ******\_\_\_******
-- Low stock alerts: ******\_\_\_******
-- Special order items: ******\_\_\_******
+- Total paper types: **\*\***\_\_\_**\*\***
+- In-stock items: **\*\***\_\_\_**\*\***
+- Low stock alerts: **\*\***\_\_\_**\*\***
+- Special order items: **\*\***\_\_\_**\*\***
 
 ### Related Files
 

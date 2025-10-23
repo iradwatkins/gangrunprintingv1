@@ -201,7 +201,9 @@ export default function OrderStatusAnalyticsPage() {
         <CardContent>
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
-              <Label className="text-sm text-muted-foreground" htmlFor="startDate">From:</Label>
+              <Label className="text-sm text-muted-foreground" htmlFor="startDate">
+                From:
+              </Label>
               <Input
                 className="w-[180px]"
                 id="startDate"
@@ -211,7 +213,9 @@ export default function OrderStatusAnalyticsPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <Label className="text-sm text-muted-foreground" htmlFor="endDate">To:</Label>
+              <Label className="text-sm text-muted-foreground" htmlFor="endDate">
+                To:
+              </Label>
               <Input
                 className="w-[180px]"
                 id="endDate"
@@ -288,7 +292,9 @@ export default function OrderStatusAnalyticsPage() {
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.summary.avgProcessingTimeDays.toFixed(1)}</div>
+            <div className="text-2xl font-bold">
+              {data.summary.avgProcessingTimeDays.toFixed(1)}
+            </div>
             <p className="text-xs text-muted-foreground">Days per order</p>
           </CardContent>
         </Card>
@@ -413,7 +419,10 @@ export default function OrderStatusAnalyticsPage() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer height={300} width="100%">
-            <LineChart data={data.timeSeriesData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart
+              data={data.timeSeriesData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="date"

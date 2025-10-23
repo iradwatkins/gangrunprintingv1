@@ -4,20 +4,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  ImageIcon,
-  FileText,
-  Download,
-  ZoomIn,
-  Upload as UploadIcon,
-} from 'lucide-react'
+import { ImageIcon, FileText, Download, ZoomIn, Upload as UploadIcon } from 'lucide-react'
 import Image from 'next/image'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface OrderFile {
   id: string
@@ -170,11 +159,7 @@ export function CustomerUploadsGallery({ orderId }: Props) {
                           <ZoomIn className="h-4 w-4" />
                         </Button>
                       )}
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => handleDownload(file)}
-                      >
+                      <Button size="sm" variant="secondary" onClick={() => handleDownload(file)}>
                         <Download className="h-4 w-4" />
                       </Button>
                     </div>
@@ -186,9 +171,7 @@ export function CustomerUploadsGallery({ orderId }: Props) {
                     </p>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>{formatFileSize(file.fileSize)}</span>
-                      {isImage(file) && (
-                        <ImageIcon className="h-3 w-3" />
-                      )}
+                      {isImage(file) && <ImageIcon className="h-3 w-3" />}
                     </div>
                   </div>
                 </div>
@@ -214,9 +197,7 @@ export function CustomerUploadsGallery({ orderId }: Props) {
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>
-              {selectedFile?.label || selectedFile?.filename}
-            </DialogTitle>
+            <DialogTitle>{selectedFile?.label || selectedFile?.filename}</DialogTitle>
           </DialogHeader>
           {selectedFile && getThumbnail(selectedFile) && (
             <div className="relative w-full" style={{ minHeight: '500px' }}>

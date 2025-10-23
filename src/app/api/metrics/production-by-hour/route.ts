@@ -81,9 +81,6 @@ export async function GET() {
     return NextResponse.json(responseData)
   } catch (error) {
     console.error('[GET /api/metrics/production-by-hour] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch production metrics' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch production metrics' }, { status: 500 })
   }
 }

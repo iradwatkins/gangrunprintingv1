@@ -32,7 +32,6 @@ export class SEOBrainOrchestrator {
    * Analyze all active city landing pages and make decisions
    */
   async analyzeAndDecide(): Promise<void> {
-
     // Get all active campaigns
     const activeCampaigns = await prisma.productCampaignQueue.findMany({
       where: {
@@ -45,7 +44,6 @@ export class SEOBrainOrchestrator {
     for (const campaign of activeCampaigns) {
       await this.analyzeCampaign(campaign.id)
     }
-
   }
 
   /**
@@ -73,7 +71,6 @@ export class SEOBrainOrchestrator {
       },
     })
 
-
     // Calculate performance metrics
     const performances = cityPages.map((page) => ({
       id: page.id,
@@ -88,8 +85,10 @@ export class SEOBrainOrchestrator {
     }))
 
     // Calculate averages
-    const avgScore = performances.reduce((sum, p) => sum + p.performanceScore, 0) / performances.length
-    const avgConversions = performances.reduce((sum, p) => sum + p.conversions, 0) / performances.length
+    const avgScore =
+      performances.reduce((sum, p) => sum + p.performanceScore, 0) / performances.length
+    const avgConversions =
+      performances.reduce((sum, p) => sum + p.conversions, 0) / performances.length
     const avgRevenue = performances.reduce((sum, p) => sum + p.revenue, 0) / performances.length
 
     // Identify winners (top 20%)
@@ -100,7 +99,6 @@ export class SEOBrainOrchestrator {
     // Identify losers (bottom 20%)
     const bottomCount = Math.max(10, Math.floor(performances.length * 0.2))
     const losers = sortedByScore.slice(-bottomCount)
-
 
     // Process winners
     await this.processWinners(winners, campaign.productName)
@@ -134,14 +132,15 @@ export class SEOBrainOrchestrator {
   private async processWinners(winners: any[], productName: string): Promise<void> {
     if (winners.length === 0) return
 
-
     // Send alert about top performers
     const top3 = winners.slice(0, 3)
     await sendWinnerAlert({
       city: top3.map((w) => w.city).join(', '),
       product: productName,
       metrics: {
-        avgScore: Math.round(winners.reduce((sum, w) => sum + w.performanceScore, 0) / winners.length),
+        avgScore: Math.round(
+          winners.reduce((sum, w) => sum + w.performanceScore, 0) / winners.length
+        ),
         totalRevenue: `$${winners.reduce((sum, w) => sum + w.revenue, 0).toFixed(0)}`,
         totalConversions: winners.reduce((sum, w) => sum + w.conversions, 0),
       },
@@ -165,7 +164,6 @@ export class SEOBrainOrchestrator {
     averages: { avgScore: number; avgConversions: number; avgRevenue: number }
   ): Promise<void> {
     if (losers.length === 0) return
-
 
     // For each loser, create a decision request
     for (const loser of losers.slice(0, 5)) {
@@ -253,13 +251,12 @@ export class SEOBrainOrchestrator {
           views: loser.views,
           conversions: loser.conversions,
           revenue: `$${loser.revenue}`,
-          vsAverage: `${Math.round(((loser.performanceScore / averages.avgScore - 1) * 100))}%`,
+          vsAverage: `${Math.round((loser.performanceScore / averages.avgScore - 1) * 100)}%`,
         },
         options,
         entityType: 'CityLandingPage',
         entityId: cityPage.id,
       })
-
 
       // Only send 5 decisions per cycle to avoid overwhelming user
       await new Promise((resolve) => setTimeout(resolve, 1000)) // 1 second delay between alerts
@@ -288,7 +285,9 @@ export class SEOBrainOrchestrator {
 
     // Check ranking
     if (loser.googleRanking > 20 || loser.googleRanking === 999) {
-      issues.push(`Poor ranking: ${loser.googleRanking === 999 ? 'Not indexed' : `#${loser.googleRanking}`}`)
+      issues.push(
+        `Poor ranking: ${loser.googleRanking === 999 ? 'Not indexed' : `#${loser.googleRanking}`}`
+      )
     }
 
     // Check bounce rate
@@ -296,7 +295,7 @@ export class SEOBrainOrchestrator {
       issues.push(`High bounce rate: ${loser.bounceRate}%`)
     }
 
-    const summary = `This page is underperforming by ${Math.round(((topWinner.performanceScore / loser.performanceScore - 1) * 100))}% compared to top performer. ${issues.length} issues detected.`
+    const summary = `This page is underperforming by ${Math.round((topWinner.performanceScore / loser.performanceScore - 1) * 100)}% compared to top performer. ${issues.length} issues detected.`
 
     return { summary, issues }
   }
@@ -353,7 +352,6 @@ export class SEOBrainOrchestrator {
       return
     }
 
-
     // Update decision record
     await prisma.sEOBrainDecision.update({
       where: { id: decisionId },
@@ -375,7 +373,6 @@ export class SEOBrainOrchestrator {
 
     // TODO: Implement actual execution logic based on option
     // This will call the appropriate optimizer/generator functions
-
 
     // Update decision status
     await prisma.sEOBrainDecision.update({

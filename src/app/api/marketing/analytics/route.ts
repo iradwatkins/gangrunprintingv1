@@ -50,7 +50,9 @@ export async function GET(request: Request) {
     // Aggregate campaign metrics
     const totalCampaigns = campaigns.length
     const sentCampaigns = campaigns.filter((c) => c.sentAt !== null).length
-    const activeCampaigns = campaigns.filter((c) => c.status === 'SENDING' || c.status === 'SCHEDULED').length
+    const activeCampaigns = campaigns.filter(
+      (c) => c.status === 'SENDING' || c.status === 'SCHEDULED'
+    ).length
 
     let totalSent = 0
     let totalDelivered = 0
@@ -87,10 +89,7 @@ export async function GET(request: Request) {
 
     const totalWorkflows = workflows.length
     const activeWorkflows = workflows.filter((w) => w.isActive).length
-    const totalExecutions = workflows.reduce(
-      (sum, w) => sum + w.WorkflowExecution.length,
-      0
-    )
+    const totalExecutions = workflows.reduce((sum, w) => sum + w.WorkflowExecution.length, 0)
     const completedExecutions = workflows.reduce(
       (sum, w) => sum + w.WorkflowExecution.filter((e) => e.status === 'COMPLETED').length,
       0
@@ -145,9 +144,6 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error('[GET /api/marketing/analytics] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch marketing analytics' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch marketing analytics' }, { status: 500 })
   }
 }

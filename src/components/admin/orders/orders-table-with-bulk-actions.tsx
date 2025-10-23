@@ -133,25 +133,36 @@ export function OrdersTableWithBulkActions({
                       <Checkbox
                         checked={selectedOrderIds.includes(order.id)}
                         className="ml-2"
-                        onCheckedChange={(checked) => handleSelectOrder(order.id, checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          handleSelectOrder(order.id, checked as boolean)
+                        }
                       />
                     </TableCell>
 
                     {/* Order */}
                     <TableCell className="font-medium">
-                      <Link className="hover:underline text-blue-600" href={`/admin/orders/${order.id}`}>
+                      <Link
+                        className="hover:underline text-blue-600"
+                        href={`/admin/orders/${order.id}`}
+                      >
                         {order.orderNumber}
                       </Link>
                       <div className="text-xs text-muted-foreground mt-1">
                         {order.email && (
-                          <a className="hover:underline text-blue-600" href={`mailto:${order.email}`}>
+                          <a
+                            className="hover:underline text-blue-600"
+                            href={`mailto:${order.email}`}
+                          >
                             {order.email}
                           </a>
                         )}
                         {order.phone && (
                           <>
                             <br />
-                            <a className="hover:underline text-green-600" href={`tel:${order.phone}`}>
+                            <a
+                              className="hover:underline text-green-600"
+                              href={`tel:${order.phone}`}
+                            >
                               {order.phone}
                             </a>
                           </>
@@ -188,14 +199,10 @@ export function OrdersTableWithBulkActions({
                     </TableCell>
 
                     {/* Total Spent (subtotal before tax/shipping) */}
-                    <TableCell className="font-medium">
-                      ${order.subtotal.toFixed(2)}
-                    </TableCell>
+                    <TableCell className="font-medium">${order.subtotal.toFixed(2)}</TableCell>
 
                     {/* Total (final amount) */}
-                    <TableCell className="font-bold">
-                      ${order.total.toFixed(2)}
-                    </TableCell>
+                    <TableCell className="font-bold">${order.total.toFixed(2)}</TableCell>
 
                     {/* Uploads (customer files) */}
                     <TableCell>
@@ -239,11 +246,8 @@ export function OrdersTableWithBulkActions({
 
                     {/* Origin (traffic source) */}
                     <TableCell>
-                      <span className="text-xs">
-                        {order.carrier || 'Direct'}
-                      </span>
+                      <span className="text-xs">{order.carrier || 'Direct'}</span>
                     </TableCell>
-
 
                     {/* Actions */}
                     <TableCell>

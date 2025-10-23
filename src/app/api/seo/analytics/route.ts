@@ -40,10 +40,7 @@ export async function GET(request: NextRequest) {
 
     // Check if GA4 is configured
     if (!isGA4Configured()) {
-      return NextResponse.json(
-        { error: 'Google Analytics 4 not configured' },
-        { status: 503 }
-      )
+      return NextResponse.json({ error: 'Google Analytics 4 not configured' }, { status: 503 })
     }
 
     const searchParams = request.nextUrl.searchParams
@@ -115,9 +112,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data, cached: false })
   } catch (error) {
     console.error('Analytics API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -6,9 +6,9 @@
  * Creates Square payment link for invoice payment
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { createSquareCheckout } from '@/lib/square';
+import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { createSquareCheckout } from '@/lib/square'
 
 // ============================================================================
 // API HANDLER
@@ -19,17 +19,13 @@ export async function POST(
   { params }: { params: Promise<{ invoiceId: string }> }
 ) {
   try {
-    const { invoiceId } = await params;
+    const { invoiceId } = await params
 
     // Validate invoice ID format (UUID)
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
     if (!uuidRegex.test(invoiceId)) {
-      return NextResponse.json(
-        { error: 'Invalid invoice ID format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid invoice ID format' }, { status: 400 })
     }
 
     // Get order with invoice details
@@ -39,13 +35,10 @@ export async function POST(
         OrderItem: true,
         User: true,
       },
-    });
+    })
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Invoice not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
     }
 
     // Check if already paid
@@ -56,11 +49,11 @@ export async function POST(
           paidAt: order.paidAt,
         },
         { status: 400 }
-      );
+      )
     }
 
     // Check if invoice is overdue
-    const isOverdue = order.paymentDueDate && order.paymentDueDate < new Date();
+    const isOverdue = order.paymentDueDate && order.paymentDueDate < new Date()
 
     // Prepare line items for Square
     const squareLineItems = order.OrderItem.map((item) => ({
@@ -70,7 +63,7 @@ export async function POST(
         amount: BigInt(item.price),
         currency: 'USD',
       },
-    }));
+    }))
 
     // Add shipping as line item
     if (order.shipping > 0) {
@@ -81,7 +74,7 @@ export async function POST(
           amount: BigInt(order.shipping),
           currency: 'USD',
         },
-      });
+      })
     }
 
     // Add tax as line item
@@ -93,7 +86,7 @@ export async function POST(
           amount: BigInt(order.tax),
           currency: 'USD',
         },
-      });
+      })
     }
 
     // Create Square payment link
@@ -102,10 +95,10 @@ export async function POST(
       orderNumber: order.orderNumber,
       email: order.email,
       items: squareLineItems,
-    });
+    })
 
     if (!checkoutResult.url) {
-      throw new Error('Failed to create payment link');
+      throw new Error('Failed to create payment link')
     }
 
     // Update order with Square payment link details
@@ -114,7 +107,7 @@ export async function POST(
       data: {
         squareOrderId: checkoutResult.orderId || order.squareOrderId,
       },
-    });
+    })
 
     return NextResponse.json({
       success: true,
@@ -133,9 +126,9 @@ export async function POST(
       message: isOverdue
         ? 'This invoice is overdue. Please pay as soon as possible.'
         : 'Payment link created successfully',
-    });
+    })
   } catch (error) {
-    console.error('Error creating invoice payment:', error);
+    console.error('Error creating invoice payment:', error)
 
     return NextResponse.json(
       {
@@ -143,6 +136,6 @@ export async function POST(
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
-    );
+    )
   }
 }

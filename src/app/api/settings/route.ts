@@ -48,10 +48,7 @@ export async function POST(request: Request) {
     const { key, value, category, description, isEncrypted } = body
 
     if (!key || !category) {
-      return NextResponse.json(
-        { error: 'Missing required fields: key, category' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required fields: key, category' }, { status: 400 })
     }
 
     // Upsert setting

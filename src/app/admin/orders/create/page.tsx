@@ -23,7 +23,11 @@ import {
   X,
 } from 'lucide-react'
 import Link from 'next/link'
-import { CustomerSelector, type Customer, type NewCustomerData } from '@/components/admin/orders/customer-selector'
+import {
+  CustomerSelector,
+  type Customer,
+  type NewCustomerData,
+} from '@/components/admin/orders/customer-selector'
 import { AddressForm, type AddressFormData } from '@/components/admin/orders/address-form'
 import { toast } from 'sonner'
 
@@ -62,13 +66,15 @@ export default function CreateOrderPage() {
   })
 
   // Order items state (simplified for now)
-  const [orderItems, setOrderItems] = useState<Array<{
-    id: string
-    productName: string
-    productSku: string
-    quantity: number
-    price: number
-  }>>([])
+  const [orderItems, setOrderItems] = useState<
+    Array<{
+      id: string
+      productName: string
+      productSku: string
+      quantity: number
+      price: number
+    }>
+  >([])
 
   // Order notes
   const [adminNotes, setAdminNotes] = useState('')
@@ -83,7 +89,7 @@ export default function CreateOrderPage() {
   const [isTakingPayment, setIsTakingPayment] = useState(false)
 
   // Calculate order totals
-  const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = 0 // Will be calculated based on address
   const tax = Math.round(subtotal * 0.0875) // 8.75% tax (example)
   const total = subtotal + shipping + tax
@@ -94,7 +100,13 @@ export default function CreateOrderPage() {
       toast.error('Please select or create a customer')
       return false
     }
-    if (!shippingAddress.name || !shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode) {
+    if (
+      !shippingAddress.name ||
+      !shippingAddress.street ||
+      !shippingAddress.city ||
+      !shippingAddress.state ||
+      !shippingAddress.zipCode
+    ) {
       toast.error('Please complete the shipping address')
       return false
     }
@@ -198,8 +210,9 @@ export default function CreateOrderPage() {
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          <strong>Send Invoice:</strong> Creates order and emails invoice to customer for online payment.{' '}
-          <strong>Take Payment:</strong> Record immediate payment (phone order, in-person, manual methods).
+          <strong>Send Invoice:</strong> Creates order and emails invoice to customer for online
+          payment. <strong>Take Payment:</strong> Record immediate payment (phone order, in-person,
+          manual methods).
         </AlertDescription>
       </Alert>
 
@@ -224,11 +237,7 @@ export default function CreateOrderPage() {
               <CardDescription>Where should we ship this order?</CardDescription>
             </CardHeader>
             <CardContent>
-              <AddressForm
-                data={shippingAddress}
-                title="shipping"
-                onChange={setShippingAddress}
-              />
+              <AddressForm data={shippingAddress} title="shipping" onChange={setShippingAddress} />
             </CardContent>
           </Card>
 
@@ -253,11 +262,7 @@ export default function CreateOrderPage() {
             </CardHeader>
             {!useSameAddress && (
               <CardContent>
-                <AddressForm
-                  data={billingAddress}
-                  title="billing"
-                  onChange={setBillingAddress}
-                />
+                <AddressForm data={billingAddress} title="billing" onChange={setBillingAddress} />
               </CardContent>
             )}
           </Card>
@@ -365,7 +370,9 @@ export default function CreateOrderPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
-                  <span>{shipping === 0 ? 'Calculated at checkout' : `$${(shipping / 100).toFixed(2)}`}</span>
+                  <span>
+                    {shipping === 0 ? 'Calculated at checkout' : `$${(shipping / 100).toFixed(2)}`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Tax</span>

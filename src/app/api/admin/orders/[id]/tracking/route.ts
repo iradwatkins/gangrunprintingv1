@@ -1,38 +1,38 @@
-import { type NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { validateRequest } from '@/lib/auth';
-import { z } from 'zod';
-import { withApiHandler, ApiError, createSuccessResponse } from '@/lib/api/error-handler';
-import { ShipmentTrackingEmailService } from '@/lib/email/shipment-tracking-email-service';
-import { logger } from '@/lib/logger-safe';
+import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
+import { z } from 'zod'
+import { withApiHandler, ApiError, createSuccessResponse } from '@/lib/api/error-handler'
+import { ShipmentTrackingEmailService } from '@/lib/email/shipment-tracking-email-service'
+import { logger } from '@/lib/logger-safe'
 
 const updateTrackingSchema = z.object({
   trackingNumber: z.string().min(1, 'Tracking number is required'),
   carrier: z.string().optional(),
-});
+})
 
 export const PATCH = withApiHandler(
   async (request: NextRequest, context, params: { id: string }) => {
-    const { user } = await validateRequest();
-    const { id: orderId } = params;
+    const { user } = await validateRequest()
+    const { id: orderId } = params
 
     if (!user) {
-      throw ApiError.authentication();
+      throw ApiError.authentication()
     }
 
     // Only admins can update tracking information
     if (user.role !== 'ADMIN') {
-      throw ApiError.authorization('Only administrators can update tracking information');
+      throw ApiError.authorization('Only administrators can update tracking information')
     }
 
     // Parse and validate request body
-    const body = await request.json();
-    const data = updateTrackingSchema.parse(body);
+    const body = await request.json()
+    const data = updateTrackingSchema.parse(body)
 
     // Validate tracking number format
-    const validation = ShipmentTrackingEmailService.validateTrackingNumber(data.trackingNumber);
+    const validation = ShipmentTrackingEmailService.validateTrackingNumber(data.trackingNumber)
     if (!validation.isValid) {
-      throw ApiError.validation(validation.error || 'Invalid tracking number format');
+      throw ApiError.validation(validation.error || 'Invalid tracking number format')
     }
 
     // Get the current order with related data
@@ -40,17 +40,17 @@ export const PATCH = withApiHandler(
       where: { id: orderId },
       include: {
         User: {
-          select: { name: true }
-        }
+          select: { name: true },
+        },
       },
-    });
+    })
 
     if (!order) {
-      throw ApiError.notFound('Order');
+      throw ApiError.notFound('Order')
     }
 
     // Detect carrier if not provided
-    const carrier = data.carrier || validation.carrier || 'OTHER';
+    const carrier = data.carrier || validation.carrier || 'OTHER'
 
     logger.info('Updating tracking information', {
       orderId,
@@ -60,7 +60,7 @@ export const PATCH = withApiHandler(
       currentStatus: order.status,
       adminId: user.id,
       requestId: context.requestId,
-    });
+    })
 
     try {
       // Start transaction to ensure data consistency
@@ -76,13 +76,13 @@ export const PATCH = withApiHandler(
           },
           include: {
             User: {
-              select: { name: true }
-            }
-          }
-        });
+              select: { name: true },
+            },
+          },
+        })
 
-        return updatedOrder;
-      });
+        return updatedOrder
+      })
 
       // Send shipment notification email (async, don't block response)
       if (result.email && result.shippingAddress) {
@@ -95,19 +95,19 @@ export const PATCH = withApiHandler(
             trackingNumber: result.trackingNumber,
             carrier: result.carrier,
             shippingAddress: result.shippingAddress,
-            User: result.User
+            User: result.User,
           },
           {
             trackingNumber: data.trackingNumber,
-            carrier
+            carrier,
           }
-        ).catch(emailError => {
+        ).catch((emailError) => {
           logger.error('Failed to send shipment notification email', {
             orderId,
             error: emailError instanceof Error ? emailError.message : String(emailError),
             requestId: context.requestId,
-          });
-        });
+          })
+        })
       }
 
       logger.info('Tracking information updated successfully', {
@@ -118,7 +118,7 @@ export const PATCH = withApiHandler(
         newStatus: result.status,
         adminId: user.id,
         requestId: context.requestId,
-      });
+      })
 
       return createSuccessResponse(
         {
@@ -127,21 +127,20 @@ export const PATCH = withApiHandler(
           carrier: result.carrier,
           status: result.status,
           carrierDisplayName: ShipmentTrackingEmailService.getCarrierDisplayName(carrier),
-          message: 'Tracking information updated and customer notified'
+          message: 'Tracking information updated and customer notified',
         },
         200,
         'Tracking information updated successfully'
-      );
-
+      )
     } catch (error) {
       logger.error('Failed to update tracking information', {
         orderId,
         trackingNumber: data.trackingNumber,
         error: error instanceof Error ? error.message : String(error),
         requestId: context.requestId,
-      });
+      })
 
-      throw ApiError.internal('Failed to update tracking information. Please try again.');
+      throw ApiError.internal('Failed to update tracking information. Please try again.')
     }
   },
   {
@@ -152,4 +151,4 @@ export const PATCH = withApiHandler(
       windowMs: 60 * 1000, // 1 minute
     },
   }
-);
+)

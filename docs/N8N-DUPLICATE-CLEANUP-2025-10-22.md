@@ -16,6 +16,7 @@ Successfully cleaned up duplicate and test workflows in n8n, reducing from **24 
 ## Before Cleanup (24 workflows)
 
 **GangRun Workflows (with duplicates):**
+
 - Abandoned Cart (3hr) - **3 copies**
 - Abandoned Cart (24hr) - **3 copies**
 - Abandoned Cart (72hr) - **3 copies**
@@ -27,11 +28,13 @@ Successfully cleaned up duplicate and test workflows in n8n, reducing from **24 
 - Order Notifications - 1 copy
 
 **VPS Workflows (with duplicates):**
+
 - Daily Health Report - **2 copies**
 - Website Downtime Alert - **2 copies**
 - Weekly Summary Report - 1 copy
 
 **Test Workflows:**
+
 - My workflow
 - My workflow 2
 
@@ -40,6 +43,7 @@ Successfully cleaned up duplicate and test workflows in n8n, reducing from **24 
 ## After Cleanup (12 workflows)
 
 **GangRun Workflows (9 - all unique):**
+
 1. GangRun - Abandoned Cart (3hr)
 2. GangRun - Abandoned Cart (24hr)
 3. GangRun - Abandoned Cart (72hr)
@@ -50,25 +54,25 @@ Successfully cleaned up duplicate and test workflows in n8n, reducing from **24 
 8. GangRun - Review Collection
 9. GangRun Printing - Order Notifications
 
-**VPS Workflows (3 - all unique):**
-10. VPS - Daily Health Report
-11. VPS - Website Downtime Alert
-12. VPS - Weekly Summary Report
+**VPS Workflows (3 - all unique):** 10. VPS - Daily Health Report 11. VPS - Website Downtime Alert 12. VPS - Weekly Summary Report
 
 ---
 
 ## Cleanup Process
 
 ### Step 1: Export and Identify Duplicates
+
 ```bash
 docker exec RT-002-N8N-container n8n export:workflow --all --separate --output=/home/node/workflows
 docker cp RT-002-N8N-container:/home/node/workflows n8n-workflows
 ```
 
 ### Step 2: Identify Workflow IDs
+
 Created script to list all GangRun workflows and found 16 duplicates (each workflow had 3 copies, kept the first).
 
 ### Step 3: Database Cleanup
+
 ```bash
 # Install sqlite3
 apt-get install -y sqlite3
@@ -86,6 +90,7 @@ docker start RT-002-N8N-container
 ```
 
 ### Step 4: Verification
+
 ```bash
 docker exec RT-002-N8N-container n8n export:workflow --all --output=/tmp/final-result
 # Result: 12 workflows (all unique, no duplicates)
@@ -96,6 +101,7 @@ docker exec RT-002-N8N-container n8n export:workflow --all --output=/tmp/final-r
 ## Deleted Workflow IDs
 
 **GangRun Duplicates (8):**
+
 - tnhQscRnoKvn5Urh - Abandoned Cart (24hr) duplicate
 - Ol5KypbWIdPYibha - Abandoned Cart (3hr) duplicate
 - VcH7XwlmUZ1btfVr - Abandoned Cart (72hr) duplicate
@@ -106,10 +112,12 @@ docker exec RT-002-N8N-container n8n export:workflow --all --output=/tmp/final-r
 - 0SVCkZg03r6RR4qW - Review Collection duplicate
 
 **VPS Duplicates (2):**
+
 - kGyEbTHbRPordSEL - Daily VPS Health Report (bad naming)
 - HHf4MAeOPLgJ7vWA - Website Downtime Alerts (bad naming)
 
 **Test Workflows (2):**
+
 - wWgY5xOuTXQ2Tbeh - My workflow
 - Fv5kix36ylG3PpOC - My workflow 2
 
@@ -122,6 +130,7 @@ docker exec RT-002-N8N-container n8n export:workflow --all --output=/tmp/final-r
 **NEVER CREATE DUPLICATE WORKFLOWS**
 
 When a workflow doesn't work:
+
 1. ✅ **UPDATE** the existing workflow in n8n UI
 2. ✅ **DELETE** the broken workflow and rebuild from scratch
 3. ❌ **NEVER** create a new workflow with the same name
@@ -139,18 +148,21 @@ This rule has been added to CLAUDE.md as a permanent memory instruction to preve
 ## Verification Commands
 
 **Count workflows:**
+
 ```bash
 docker exec RT-002-N8N-container n8n export:workflow --all --output=/tmp/count && \
 docker exec RT-002-N8N-container sh -c 'node -pe "JSON.parse(require(\"fs\").readFileSync(\"/tmp/count\", \"utf8\")).length"'
 ```
 
 **List all workflows:**
+
 ```bash
 docker exec RT-002-N8N-container n8n export:workflow --all --output=/tmp/list && \
 docker exec RT-002-N8N-container sh -c 'node -pe "JSON.parse(require(\"fs\").readFileSync(\"/tmp/list\", \"utf8\")).map(w => w.name).sort().join(\"\\n\")"'
 ```
 
 **Check for duplicates:**
+
 ```bash
 docker exec RT-002-N8N-container n8n export:workflow --all --output=/tmp/dups && \
 docker exec RT-002-N8N-container sh -c 'node -pe "const wf = JSON.parse(require(\"fs\").readFileSync(\"/tmp/dups\", \"utf8\")); const names = wf.map(w => w.name); const dups = names.filter((n, i) => names.indexOf(n) !== i); dups.length > 0 ? \"❌ Duplicates found: \" + [...new Set(dups)].join(\", \") : \"✅ No duplicates\""'
@@ -161,11 +173,13 @@ docker exec RT-002-N8N-container sh -c 'node -pe "const wf = JSON.parse(require(
 ## Database Backup
 
 **Original database backed up to:**
+
 - `/tmp/n8n-database.sqlite` (before any changes)
 - `/tmp/n8n-fixed.sqlite` (after GangRun cleanup)
 - `/tmp/n8n-final.sqlite` (after VPS cleanup - currently in use)
 
 **Restore from backup if needed:**
+
 ```bash
 docker stop RT-002-N8N-container
 docker cp /tmp/n8n-final.sqlite RT-002-N8N-container:/home/node/.n8n/database.sqlite

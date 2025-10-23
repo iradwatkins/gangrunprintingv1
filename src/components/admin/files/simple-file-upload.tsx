@@ -68,19 +68,19 @@ export function SimpleFileUpload({ orderId, onSuccess }: Props) {
       // Upload file to temporary storage first, then associate with order
       const formData = new FormData()
       formData.append('file', file)
-      
+
       const uploadResponse = await fetch('/api/upload/temporary', {
         method: 'POST',
         body: formData,
       })
-      
+
       if (!uploadResponse.ok) {
         throw new Error('File upload failed')
       }
-      
+
       const uploadData = await uploadResponse.json()
       const uploadedFile = uploadData.files[0]
-      
+
       // Use the file URL from the upload response
       const fileUrl = `/api/upload/temporary/${uploadedFile.fileId}`
       const thumbnailUrl = uploadedFile.thumbnailUrl
@@ -145,11 +145,7 @@ export function SimpleFileUpload({ orderId, onSuccess }: Props) {
         onChange={handleFileSelect}
       />
 
-      <Button
-        disabled={uploading}
-        size="sm"
-        onClick={handleButtonClick}
-      >
+      <Button disabled={uploading} size="sm" onClick={handleButtonClick}>
         {uploading ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -172,9 +168,7 @@ export function SimpleFileUpload({ orderId, onSuccess }: Props) {
         <div className="space-y-1">
           <Progress className="h-2" value={uploadProgress} />
           <p className="text-xs text-muted-foreground">
-            {uploadProgress < 100
-              ? `Uploading... ${uploadProgress}%`
-              : 'Processing...'}
+            {uploadProgress < 100 ? `Uploading... ${uploadProgress}%` : 'Processing...'}
           </p>
         </div>
       )}

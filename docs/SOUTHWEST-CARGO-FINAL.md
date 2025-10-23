@@ -13,12 +13,12 @@
 
 **Zone 2 (Chicago) → Zone B**
 
-| Weight Range | Base Rate | Additional Cost | Example |
-|--------------|-----------|-----------------|---------|
-| **0-25 lbs** | $100 | None | 10 lbs = **$100** |
-| **26-50 lbs** | $117 | None | 40 lbs = **$117** |
-| **51-100 lbs** | $148 | None | 75 lbs = **$148** |
-| **101+ lbs** | $148 | +$1.90/lb over 100 | 150 lbs = $148 + (50×$1.90) = **$243** |
+| Weight Range   | Base Rate | Additional Cost    | Example                                |
+| -------------- | --------- | ------------------ | -------------------------------------- |
+| **0-25 lbs**   | $100      | None               | 10 lbs = **$100**                      |
+| **26-50 lbs**  | $117      | None               | 40 lbs = **$117**                      |
+| **51-100 lbs** | $148      | None               | 75 lbs = **$148**                      |
+| **101+ lbs**   | $148      | +$1.90/lb over 100 | 150 lbs = $148 + (50×$1.90) = **$243** |
 
 ### Pricing Formula
 
@@ -31,16 +31,16 @@ if (weight > 100) return $148 + ((weight - 100) × $1.90)
 
 ### With 5% Markup (Customer Pricing)
 
-| Weight | Base Rate | With Markup | Customer Pays |
-|--------|-----------|-------------|---------------|
-| 10 lbs | $100.00 | ×1.05 | **$105.00** |
-| 25 lbs | $100.00 | ×1.05 | **$105.00** |
-| 50 lbs | $117.00 | ×1.05 | **$122.85** |
-| 75 lbs | $148.00 | ×1.05 | **$155.40** |
-| 100 lbs | $148.00 | ×1.05 | **$155.40** |
-| 101 lbs | $149.90 | ×1.05 | **$157.40** |
-| 150 lbs | $243.00 | ×1.05 | **$255.15** |
-| 200 lbs | $338.00 | ×1.05 | **$354.90** |
+| Weight  | Base Rate | With Markup | Customer Pays |
+| ------- | --------- | ----------- | ------------- |
+| 10 lbs  | $100.00   | ×1.05       | **$105.00**   |
+| 25 lbs  | $100.00   | ×1.05       | **$105.00**   |
+| 50 lbs  | $117.00   | ×1.05       | **$122.85**   |
+| 75 lbs  | $148.00   | ×1.05       | **$155.40**   |
+| 100 lbs | $148.00   | ×1.05       | **$155.40**   |
+| 101 lbs | $149.90   | ×1.05       | **$157.40**   |
+| 150 lbs | $243.00   | ×1.05       | **$255.15**   |
+| 200 lbs | $338.00   | ×1.05       | **$354.90**   |
 
 ## Service Details
 
@@ -77,6 +77,7 @@ AL, AR, AZ, CA, CO, CT, DC, FL, GA, HI, IN, KY, LA, MA, MD, MI, MO, NC, NE, NH, 
 ## Airport Selection
 
 When customer selects Southwest Cargo:
+
 1. Dropdown appears showing all airports in their state
 2. Customer chooses pickup location
 3. Order confirmation includes airport details and pickup instructions
@@ -86,10 +87,12 @@ When customer selects Southwest Cargo:
 ### Files Modified
 
 **Configuration:**
+
 - `/src/lib/shipping/modules/southwest-cargo/config.ts` - DASH pricing tiers
 - `/src/lib/shipping/modules/southwest-cargo/provider.ts` - Rate calculation logic
 
 **Key Changes:**
+
 - Removed PICKUP service completely
 - Updated DASH to use official NFG Zone B rates
 - Applied "over 100" logic for 101+ lbs tier
@@ -120,11 +123,13 @@ private calculateDashRate(weight: number): number {
 ## Testing
 
 ### Automated Test
+
 ```bash
 npx tsx scripts/test-southwest-dash-only.ts
 ```
 
 **Expected Output:**
+
 - All weight tiers calculated correctly
 - Pricing matches official NFG rates exactly
 - 5% markup applied correctly
@@ -168,6 +173,7 @@ npx tsx scripts/test-southwest-dash-only.ts
 ### Value Proposition
 
 **Why choose Southwest Cargo?**
+
 - ✈️ Next available flight delivery
 - 💰 Competitive pricing for 51-100 lbs
 - 🎯 Guaranteed delivery time
@@ -194,6 +200,7 @@ To update Southwest Cargo rates:
 ### Adding/Removing Airports
 
 Airports stored in database (`Airport` table):
+
 ```bash
 # View airports
 docker exec gangrunprinting-postgres psql -U gangrun_user -d gangrun_db \

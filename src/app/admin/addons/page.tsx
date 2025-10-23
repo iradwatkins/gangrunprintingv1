@@ -226,9 +226,7 @@ export default function AddOnsPage() {
                     <TableCell>
                       <Badge variant="outline">{addon.pricingModel}</Badge>
                     </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {getPricingDisplay(addon)}
-                    </TableCell>
+                    <TableCell className="font-mono text-sm">{getPricingDisplay(addon)}</TableCell>
                     <TableCell>
                       {addon.additionalTurnaroundDays > 0 ? (
                         <span className="text-orange-600">

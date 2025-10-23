@@ -1,9 +1,11 @@
 # 🚀 Deploy Southwest Cargo Airports - Production
 
 ## Problem
+
 Southwest Cargo shipping options don't appear on checkout because the 82 airports aren't in the production database yet.
 
 ## Solution
+
 Run the airport seed script on production server.
 
 ## Steps
@@ -66,16 +68,19 @@ await prisma.\$disconnect();
 ## Troubleshooting
 
 ### "Can't reach database server"
+
 - Verify DATABASE_URL in .env is correct
 - Check database is running: `docker ps | grep postgres` (on production server)
 - Test connection: `psql $DATABASE_URL -c "SELECT 1"`
 
 ### "Airports imported but not showing on checkout"
+
 - Clear cache: Restart Next.js app
 - Check browser console for errors
 - Verify address is in supported state (IL is supported)
 
 ## Files Involved
+
 - Seed script: `/src/scripts/seed-southwest-airports.ts`
 - Provider: `/src/lib/shipping/modules/southwest-cargo/provider.ts`
 - Config: `/src/lib/shipping/modules/southwest-cargo/config.ts`

@@ -9,13 +9,17 @@ Product Page → Upload Artwork → Cart → Checkout
 ## 📍 URL Flow (Working Links)
 
 ### Step 1: Product Configuration
+
 **URL:** `http://gangrunprinting.com/products/[product-slug]`
+
 - Customer configures product (quantity, size, paper, coating, turnaround, addons)
 - Clicks "Add to Cart" button
 - **Redirects to:** `/upload-artwork`
 
 ### Step 2: Upload Artwork (Standalone Page)
+
 **URL:** `http://gangrunprinting.com/upload-artwork`
+
 - Dedicated upload page (accessible BEFORE cart)
 - Drag & drop file upload zone
 - Supports: PDF, JPG, PNG, AI, PSD, EPS, SVG
@@ -26,7 +30,9 @@ Product Page → Upload Artwork → Cart → Checkout
   - Click "Skip & Continue to Cart" → `/cart`
 
 ### Step 3: Shopping Cart
+
 **URL:** `http://gangrunprinting.com/cart`
+
 - Review configured product
 - Review uploaded artwork files
 - Apply promo codes
@@ -35,7 +41,9 @@ Product Page → Upload Artwork → Cart → Checkout
 - **Redirects to:** `/checkout`
 
 ### Step 4: Checkout
+
 **URL:** `http://gangrunprinting.com/checkout`
+
 - Multi-step checkout:
   1. Order Summary
   2. Shipping Method (enter address, select shipping)
@@ -48,21 +56,28 @@ Product Page → Upload Artwork → Cart → Checkout
 ## 🔧 Changes Made (October 19, 2025)
 
 ### File: `src/components/product/AddToCartSection.tsx`
+
 **Line 86:**
+
 - ❌ Before: `router.push('/cart/upload-artwork')`
 - ✅ After: `router.push('/upload-artwork')`
 
 ### File: `src/components/product/SimpleQuantityTest.tsx`
+
 **Line 521:**
+
 - ❌ Before: `router.push('/cart/upload-artwork')`
 - ✅ After: `router.push('/upload-artwork')`
 
 ### File: `src/app/(customer)/cart/page.tsx`
+
 **Line 52:**
+
 - ❌ Before: `router.push('/cart/upload-artwork')`
 - ✅ After: `router.push('/checkout')`
 
 **Line 197-205:** Updated button text and messaging
+
 - ❌ Before: "Next: Upload Your Design Files"
 - ✅ After: "Proceed to Checkout"
 - ❌ Before: "Next step: Upload your artwork files (drag & drop)"
@@ -73,21 +88,25 @@ Product Page → Upload Artwork → Cart → Checkout
 ## 📁 Two Upload Pages Architecture
 
 ### 1. Standalone Upload Page (Primary)
+
 **Path:** `/src/app/(customer)/upload-artwork/page.tsx`
 **URL:** `http://gangrunprinting.com/upload-artwork`
 **Purpose:** Upload files BEFORE viewing cart
 **Flow:** Product → Upload → Cart
 **Features:**
+
 - Works without cart items (independent)
 - Simple, focused interface
 - Stores files in sessionStorage
 
 ### 2. Cart-Embedded Upload Page (Fallback)
+
 **Path:** `/src/app/(customer)/cart/upload-artwork/page.tsx`
 **URL:** `http://gangrunprinting.com/cart/upload-artwork`
 **Purpose:** Upload files AFTER cart (if customer skips first upload)
 **Flow:** Product → Cart → Upload (if needed) → Checkout
 **Features:**
+
 - Requires cart items to exist
 - Multi-item upload support
 - Progress tracking

@@ -54,11 +54,13 @@ export default function MonitoringProvider({ children }: { children: React.React
         const id = button?.id
 
         // Log important actions
-        if (text?.toLowerCase().includes('login') ||
-            text?.toLowerCase().includes('sign') ||
-            text?.toLowerCase().includes('cart') ||
-            text?.toLowerCase().includes('checkout') ||
-            text?.toLowerCase().includes('pay')) {
+        if (
+          text?.toLowerCase().includes('login') ||
+          text?.toLowerCase().includes('sign') ||
+          text?.toLowerCase().includes('cart') ||
+          text?.toLowerCase().includes('checkout') ||
+          text?.toLowerCase().includes('pay')
+        ) {
           monitor.action('button-click', {
             text,
             id,

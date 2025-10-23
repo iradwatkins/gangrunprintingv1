@@ -37,15 +37,17 @@ export const addressSchema = z.object({
 /**
  * Product options schema
  */
-export const productOptionsSchema = z.object({
-  size: z.string().optional(),
-  paperStock: z.string().optional(),
-  paperStockId: z.string().uuid().optional(),
-  coating: z.string().optional(),
-  sides: z.string().optional(),
-  turnaround: z.string().optional(),
-  turnaroundId: z.string().uuid().optional(),
-}).catchall(z.string()) // Allow additional string properties
+export const productOptionsSchema = z
+  .object({
+    size: z.string().optional(),
+    paperStock: z.string().optional(),
+    paperStockId: z.string().uuid().optional(),
+    coating: z.string().optional(),
+    sides: z.string().optional(),
+    turnaround: z.string().optional(),
+    turnaroundId: z.string().uuid().optional(),
+  })
+  .catchall(z.string()) // Allow additional string properties
 
 /**
  * Cart item dimensions schema
@@ -116,13 +118,7 @@ export const checkoutDataSchema = z.object({
 /**
  * Payment method schema
  */
-export const paymentMethodSchema = z.enum([
-  'test_cash',
-  'square',
-  'paypal',
-  'card',
-  'stripe',
-])
+export const paymentMethodSchema = z.enum(['test_cash', 'square', 'paypal', 'card', 'stripe'])
 
 /**
  * PayPal order details schema

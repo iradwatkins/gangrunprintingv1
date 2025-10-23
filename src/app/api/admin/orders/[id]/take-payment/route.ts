@@ -6,11 +6,11 @@
  * Allows admin to record immediate payment for an order (phone orders, in-person, manual methods)
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { validateRequest } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
-import { randomBytes } from 'crypto';
+import { type NextRequest, NextResponse } from 'next/server'
+import { validateRequest } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+import { randomBytes } from 'crypto'
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -18,12 +18,12 @@ import { randomBytes } from 'crypto';
 
 const takePaymentSchema = z.object({
   paymentMethod: z.enum([
-    'SQUARE_TERMINAL',    // Card swiped in person
-    'SQUARE_VIRTUAL',     // Card entered by phone
-    'PAY_LATER',          // Trusted customer payment
-    'CHECK',              // Check payment
-    'WIRE_TRANSFER',      // Bank transfer
-    'CASH',               // Cash payment
+    'SQUARE_TERMINAL', // Card swiped in person
+    'SQUARE_VIRTUAL', // Card entered by phone
+    'PAY_LATER', // Trusted customer payment
+    'CHECK', // Check payment
+    'WIRE_TRANSFER', // Bank transfer
+    'CASH', // Cash payment
   ]),
 
   // Square Terminal fields
@@ -42,33 +42,30 @@ const takePaymentSchema = z.object({
   amount: z.number().positive().optional(), // Optional, defaults to order total
   paymentDate: z.string().datetime().optional(), // Optional, defaults to now
   notes: z.string().optional(),
-});
+})
 
 // ============================================================================
 // API HANDLER
 // ============================================================================
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Validate authentication and admin role
-    const { user } = await validateRequest();
+    const { user } = await validateRequest()
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 })
     }
 
     // Parse and validate request body
-    const body = await request.json();
-    const validated = takePaymentSchema.parse(body);
+    const body = await request.json()
+    const validated = takePaymentSchema.parse(body)
 
-    const { id: orderId } = await params;
+    const { id: orderId } = await params
 
     // Get order
     const order = await prisma.order.findUnique({
@@ -77,22 +74,19 @@ export async function POST(
         User: true,
         OrderItem: true,
       },
-    });
+    })
 
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
     // Check if order is already paid
     if (order.paidAt) {
-      return NextResponse.json(
-        { error: 'Order has already been paid' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Order has already been paid' }, { status: 400 })
     }
 
     // Validate amount (if provided, must match order total)
-    const paymentAmount = validated.amount || order.total;
+    const paymentAmount = validated.amount || order.total
     if (paymentAmount !== order.total) {
       return NextResponse.json(
         {
@@ -101,36 +95,34 @@ export async function POST(
           received: paymentAmount,
         },
         { status: 400 }
-      );
+      )
     }
 
     // Determine payment date
-    const paymentDate = validated.paymentDate
-      ? new Date(validated.paymentDate)
-      : new Date();
+    const paymentDate = validated.paymentDate ? new Date(validated.paymentDate) : new Date()
 
     // Build payment notes based on method
-    let paymentNotes = validated.notes || '';
+    let paymentNotes = validated.notes || ''
 
     switch (validated.paymentMethod) {
       case 'SQUARE_TERMINAL':
-        paymentNotes = `Card payment via Square Terminal${validated.squareTerminalId ? ` (Terminal: ${validated.squareTerminalId})` : ''}. ${paymentNotes}`;
-        break;
+        paymentNotes = `Card payment via Square Terminal${validated.squareTerminalId ? ` (Terminal: ${validated.squareTerminalId})` : ''}. ${paymentNotes}`
+        break
       case 'SQUARE_VIRTUAL':
-        paymentNotes = `Card payment via phone${validated.cardLast4 ? ` (Card ending in ${validated.cardLast4})` : ''}${validated.cardBrand ? ` - ${validated.cardBrand}` : ''}. ${paymentNotes}`;
-        break;
+        paymentNotes = `Card payment via phone${validated.cardLast4 ? ` (Card ending in ${validated.cardLast4})` : ''}${validated.cardBrand ? ` - ${validated.cardBrand}` : ''}. ${paymentNotes}`
+        break
       case 'CHECK':
-        paymentNotes = `Check payment${validated.checkNumber ? ` (Check #${validated.checkNumber})` : ''}. ${paymentNotes}`;
-        break;
+        paymentNotes = `Check payment${validated.checkNumber ? ` (Check #${validated.checkNumber})` : ''}. ${paymentNotes}`
+        break
       case 'WIRE_TRANSFER':
-        paymentNotes = `Wire transfer${validated.wireReferenceNumber ? ` (Ref: ${validated.wireReferenceNumber})` : ''}. ${paymentNotes}`;
-        break;
+        paymentNotes = `Wire transfer${validated.wireReferenceNumber ? ` (Ref: ${validated.wireReferenceNumber})` : ''}. ${paymentNotes}`
+        break
       case 'CASH':
-        paymentNotes = `Cash payment. ${paymentNotes}`;
-        break;
+        paymentNotes = `Cash payment. ${paymentNotes}`
+        break
       case 'PAY_LATER':
-        paymentNotes = `Pay later arrangement (trusted customer). ${paymentNotes}`;
-        break;
+        paymentNotes = `Pay later arrangement (trusted customer). ${paymentNotes}`
+        break
     }
 
     // Update order with payment information
@@ -161,7 +153,7 @@ export async function POST(
           take: 1,
         },
       },
-    });
+    })
 
     return NextResponse.json({
       success: true,
@@ -174,9 +166,9 @@ export async function POST(
         total: updatedOrder.total,
       },
       message: `Payment of $${(paymentAmount / 100).toFixed(2)} recorded successfully via ${validated.paymentMethod}`,
-    });
+    })
   } catch (error) {
-    console.error('Error taking payment:', error);
+    console.error('Error taking payment:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -185,7 +177,7 @@ export async function POST(
           details: error.issues,
         },
         { status: 400 }
-      );
+      )
     }
 
     return NextResponse.json(
@@ -194,6 +186,6 @@ export async function POST(
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
-    );
+    )
   }
 }

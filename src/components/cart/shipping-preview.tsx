@@ -33,7 +33,11 @@ interface ShippingPreviewProps {
   selectedShipping: ShippingRate | null
 }
 
-export function ShippingPreview({ cartItems, onShippingSelected, selectedShipping }: ShippingPreviewProps) {
+export function ShippingPreview({
+  cartItems,
+  onShippingSelected,
+  selectedShipping,
+}: ShippingPreviewProps) {
   const [zipCode, setZipCode] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [rates, setRates] = useState<ShippingRate[]>([])
@@ -135,25 +139,15 @@ export function ShippingPreview({ cartItems, onShippingSelected, selectedShippin
               }
             }}
           />
-          <Button
-            disabled={isLoading || !zipCode}
-            variant="outline"
-            onClick={calculateShipping}
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              'Calculate'
-            )}
+          <Button disabled={isLoading || !zipCode} variant="outline" onClick={calculateShipping}>
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Calculate'}
           </Button>
         </div>
       </div>
 
       {/* Error State */}
       {error && (
-        <div className="text-sm text-destructive bg-destructive/10 rounded-md p-3">
-          {error}
-        </div>
+        <div className="text-sm text-destructive bg-destructive/10 rounded-md p-3">{error}</div>
       )}
 
       {/* Shipping Options */}
@@ -161,7 +155,11 @@ export function ShippingPreview({ cartItems, onShippingSelected, selectedShippin
         <div className="space-y-2">
           <Label>Select Shipping Method</Label>
           <RadioGroup
-            value={selectedShipping ? rates.findIndex(r => r.serviceType === selectedShipping.serviceType).toString() : undefined}
+            value={
+              selectedShipping
+                ? rates.findIndex((r) => r.serviceType === selectedShipping.serviceType).toString()
+                : undefined
+            }
             onValueChange={(value) => handleShippingSelect(parseInt(value))}
           >
             {rates.map((rate, index) => (

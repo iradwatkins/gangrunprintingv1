@@ -3,10 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // GET /api/marketing/templates/[id] - Get single template
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -29,10 +26,7 @@ export async function GET(
 }
 
 // PUT /api/marketing/templates/[id] - Update template
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -60,10 +54,7 @@ export async function PUT(
 }
 
 // DELETE /api/marketing/templates/[id] - Delete template
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {

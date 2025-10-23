@@ -27,20 +27,25 @@ git grep "CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION"
 **Severity**: P0 (Complete checkout blockage)
 
 ### Symptoms
+
 - Customers see "Invalid request" on `/checkout/shipping`
 - Browser console: `POST /api/shipping/rates 400 (Bad Request)`
 - Docker logs: `Validation failed: expected number, received undefined`
 
 ### Root Cause
+
 Cart items contain `dimensions: { length: undefined, width: undefined, height: undefined }` which fails backend validation.
 
 ### Solution
+
 Conditional validation in `/src/app/(customer)/checkout/shipping/page.tsx`:
+
 - Only include dimensions if ALL values are valid numbers
 - Use `typeof === 'number'` type checking
 - Omit dimensions entirely if incomplete
 
 ### Quick Fix Verification
+
 ```bash
 # 1. Check if fix exists in code
 grep "CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION" \
@@ -56,6 +61,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/rates \
 ```
 
 ### Full Documentation
+
 See: `/docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md`
 
 ---
@@ -68,16 +74,20 @@ See: `/docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md`
 **Severity**: P1 (Missing shipping option)
 
 ### Symptoms
+
 - Residential addresses only show FEDEX_GROUND
 - Missing GROUND_HOME_DELIVERY option
 - Business addresses show correct options
 
 ### Solution
+
 Conditional service generation in `/src/lib/shipping/providers/fedex-enhanced.ts`:
+
 - Use `GROUND_HOME_DELIVERY` for residential addresses
 - Use `FEDEX_GROUND` for business addresses
 
 ### Documentation
+
 See: `/docs/FEDEX-DUPLICATE-RATES-FIX-2025-10-21.md`
 
 ---
@@ -87,16 +97,19 @@ See: `/docs/FEDEX-DUPLICATE-RATES-FIX-2025-10-21.md`
 ### If Checkout Is Broken:
 
 1. **Search git history**:
+
    ```bash
    git log --all --grep="FEDEX" --oneline
    ```
 
 2. **Find related commits**:
+
    ```bash
    git log --all -S "FEDEX-DIMENSIONS-VALIDATION" --source --all
    ```
 
 3. **View commit details**:
+
    ```bash
    git show <commit-hash>
    ```

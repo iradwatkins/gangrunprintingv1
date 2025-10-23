@@ -30,7 +30,7 @@
 **8 Complete Workflows:**
 
 1. **1-abandoned-cart-3hr.json**
-   - Triggers: Every hour (0 * * * *)
+   - Triggers: Every hour (0 \* \* \* \*)
    - Fetches carts abandoned 3-4 hours ago
    - Generates 10% discount coupon
    - Sends abandoned cart email
@@ -48,18 +48,18 @@
    - Final reminder email
 
 4. **4-winback-campaign.json**
-   - Triggers: Daily at 10 AM (0 10 * * *)
+   - Triggers: Daily at 10 AM (0 10 \* \* \*)
    - Fetches customers inactive 60-90 days
    - Generates 20% discount coupon
    - Sends win-back email
 
 5. **5-order-anniversaries.json**
-   - Triggers: Daily at 9 AM (0 9 * * *)
+   - Triggers: Daily at 9 AM (0 9 \* \* \*)
    - Fetches order anniversaries (1yr, 2yr, etc.)
    - Sends celebration email (no discount)
 
 6. **6-review-collection.json**
-   - Triggers: Daily at 2 PM (0 14 * * *)
+   - Triggers: Daily at 2 PM (0 14 \* \* \*)
    - Fetches orders delivered 3 days ago
    - Sends review request email
 
@@ -80,17 +80,20 @@
 **File:** `/src/lib/services/webhook-service.ts`
 
 **Integrated Into:**
+
 - `/src/app/api/webhooks/square/route.ts`
 
 **Triggers Added:**
 
 **Line 122:** After order payment succeeds:
+
 ```typescript
 // Trigger post-purchase thank you email via N8N
 await WebhookService.triggerOrderCreated(order.id)
 ```
 
 **Lines 249-252:** After order status updated to DELIVERED:
+
 ```typescript
 // Trigger webhook for order delivered status
 if (newStatus === 'DELIVERED') {
@@ -106,12 +109,13 @@ if (newStatus === 'DELIVERED') {
 
 **Seeded Webhooks:**
 
-| Name | URL | Trigger | Status |
-|------|-----|---------|--------|
-| Post-Purchase Thank You | http://localhost:5678/webhook/gangrun-order-created | order.created | ✅ Active |
+| Name                           | URL                                                   | Trigger         | Status    |
+| ------------------------------ | ----------------------------------------------------- | --------------- | --------- |
+| Post-Purchase Thank You        | http://localhost:5678/webhook/gangrun-order-created   | order.created   | ✅ Active |
 | Order Delivered Review Request | http://localhost:5678/webhook/gangrun-order-delivered | order.delivered | ✅ Active |
 
 **Verification:**
+
 ```sql
 SELECT * FROM "N8NWebhook";
 -- Returns 2 active webhooks
@@ -126,11 +130,13 @@ SELECT * FROM "N8NWebhook";
 **Purpose:** Fetch orders delivered N days ago for review collection
 
 **Example:**
+
 ```bash
 GET /api/orders/delivered?daysAgo=3
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -183,6 +189,7 @@ GET /api/orders/delivered?daysAgo=3
 **Follow:** `/docs/N8N-WORKFLOW-IMPORT-INSTRUCTIONS.md`
 
 **Quick Import:**
+
 1. Go to https://n8n.agistaffers.com
 2. For each of the 8 JSON files:
    - Click "New Workflow"
@@ -194,23 +201,27 @@ GET /api/orders/delivered?daysAgo=3
 ### Step 2: Verify Webhook URLs
 
 **Check webhook paths match database:**
+
 ```sql
 SELECT name, url, trigger FROM "N8NWebhook";
 ```
 
 **Update if needed:**
+
 - Post-Purchase: `http://localhost:5678/webhook/gangrun-order-created`
 - Order Delivered: `http://localhost:5678/webhook/gangrun-order-delivered`
 
 ### Step 3: Test All Workflows
 
 **Manual Testing:**
+
 1. Open each workflow in N8N
 2. Click "Execute Workflow"
 3. Verify no errors
 4. Check email delivery in Resend
 
 **Live Testing:**
+
 1. Create test order
 2. Mark as PAID
 3. Verify thank you email received
@@ -294,23 +305,27 @@ SELECT name, url, trigger FROM "N8NWebhook";
 ## Configuration Summary
 
 **Timing:**
+
 - Abandoned cart emails: 3hr → 24hr → 72hr
 - Review requests: 3 days after delivery
 - Win-back campaign: 60-90 days inactive
 - Anniversaries: Exact 365-day intervals
 
 **Discounts:**
+
 - Abandoned cart (3hr/24hr): 10% OFF
 - Abandoned cart (72hr final): 15% OFF
 - Win-back campaign: 20% OFF
 - Anniversary emails: No discount (appreciation only)
 
 **Email Delivery:**
+
 - Provider: Resend
 - From: GangRun Printing <orders@gangrunprinting.com>
 - Templates: React Email (professional, mobile-responsive)
 
 **Timezone:**
+
 - All workflows: America/Chicago (CST/CDT)
 
 ---
@@ -318,12 +333,14 @@ SELECT name, url, trigger FROM "N8NWebhook";
 ## Monitoring & Troubleshooting
 
 ### N8N Dashboard
+
 - **Executions:** https://n8n.agistaffers.com/executions
 - **Workflows:** https://n8n.agistaffers.com/workflows
 
 ### Database Queries
 
 **Check webhook execution:**
+
 ```sql
 SELECT
   w.name,
@@ -335,6 +352,7 @@ ORDER BY "lastTriggered" DESC;
 ```
 
 **Check for webhook errors:**
+
 ```sql
 SELECT
   w.name,
@@ -349,6 +367,7 @@ LIMIT 20;
 ```
 
 **Check abandoned cart recovery rate:**
+
 ```sql
 SELECT
   COUNT(*) FILTER (WHERE recovered = true) * 100.0 / COUNT(*) as recovery_rate_percent
@@ -357,6 +376,7 @@ WHERE abandoned = true;
 ```
 
 ### Resend Dashboard
+
 - **Email Logs:** https://resend.com/emails
 - Monitor: delivery rates, bounces, opens, clicks
 
@@ -365,21 +385,25 @@ WHERE abandoned = true;
 ## Expected Results (30-Day Projection)
 
 **Abandoned Cart Recovery:**
+
 - Recovery rate: 15-25%
 - Average recovered value: $150-250
 - Monthly revenue: $2,000-5,000
 
 **Customer Re-engagement:**
+
 - Win-back conversion: 5-10%
 - Re-engaged customers: 10-20/month
 - Monthly revenue: $1,500-3,000
 
 **Review Generation:**
+
 - Submission rate: 20-30%
 - New reviews: 15-25/month
 - Improved SEO and social proof
 
 **Operational Efficiency:**
+
 - Zero manual email sending
 - Automated coupon generation
 - Real-time automation execution
@@ -388,20 +412,21 @@ WHERE abandoned = true;
 
 ## Documentation Index
 
-| Document | Purpose |
-|----------|---------|
-| **N8N-WORKFLOW-IMPORT-INSTRUCTIONS.md** | How to import workflows into N8N |
-| **N8N-CONFIGURATION-COMPLETE.md** | This document - Configuration summary |
-| **N8N-MARKETING-AUTOMATION-SETUP.md** | Original setup guide with node configurations |
-| **WHERE-IS-MARKETING-AUTOMATION.md** | Location guide for all components |
-| **MARKETING-AUTOMATION-COMPLETE.md** | Implementation details and architecture |
-| **DEPLOYMENT-SUMMARY-2025-10-20.md** | Production deployment verification |
+| Document                                | Purpose                                       |
+| --------------------------------------- | --------------------------------------------- |
+| **N8N-WORKFLOW-IMPORT-INSTRUCTIONS.md** | How to import workflows into N8N              |
+| **N8N-CONFIGURATION-COMPLETE.md**       | This document - Configuration summary         |
+| **N8N-MARKETING-AUTOMATION-SETUP.md**   | Original setup guide with node configurations |
+| **WHERE-IS-MARKETING-AUTOMATION.md**    | Location guide for all components             |
+| **MARKETING-AUTOMATION-COMPLETE.md**    | Implementation details and architecture       |
+| **DEPLOYMENT-SUMMARY-2025-10-20.md**    | Production deployment verification            |
 
 ---
 
 ## Critical Files Modified
 
 **New Files:**
+
 - `/n8n-workflows/*.json` (8 workflow files)
 - `/src/app/api/orders/delivered/route.ts`
 - `/src/scripts/seed-n8n-webhooks.ts`
@@ -409,6 +434,7 @@ WHERE abandoned = true;
 - `/docs/N8N-CONFIGURATION-COMPLETE.md`
 
 **Modified Files:**
+
 - `/src/app/api/webhooks/square/route.ts` (Added webhook triggers)
 
 ---

@@ -36,8 +36,8 @@ export const PaymentFailedEmail = ({
           <strong>#{orderNumber}</strong>.
         </Text>
         <Text style={paragraph}>
-          <strong>This is not a decline</strong> – there was a temporary processing error on our
-          end or with the payment processor.
+          <strong>This is not a decline</strong> – there was a temporary processing error on our end
+          or with the payment processor.
         </Text>
       </Section>
 

@@ -33,9 +33,7 @@ export function initSentry() {
     },
 
     // Integrations - Console logging
-    integrations: [
-      Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
-    ],
+    integrations: [Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] })],
 
     // Error filtering
     beforeSend(event, hint) {

@@ -1,4 +1,5 @@
 # Cache Invalidation Guide
+
 **Date**: October 22, 2025
 **Project**: GangRun Printing
 
@@ -17,6 +18,7 @@ The cache invalidation system ensures cached data is refreshed when underlying d
 **Authentication**: Admin only
 
 **Request Body**:
+
 ```json
 {
   "patterns": ["products:*", "categories:*"]
@@ -24,6 +26,7 @@ The cache invalidation system ensures cached data is refreshed when underlying d
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -47,6 +50,7 @@ Returns documentation of all available cache patterns with descriptions and exam
 ## Cache Patterns
 
 ### Product Data
+
 - `products:*` - All product caches
 - `products:simple:list` - Simple product list
 - `products:category:*` - Products by category
@@ -54,6 +58,7 @@ Returns documentation of all available cache patterns with descriptions and exam
 - `categories:active:list` - Active categories
 
 ### Configuration Options
+
 - `coating:options:list` - Coating options
 - `sides:options:list` - Sides options
 - `turnaround:times:list` - Turnaround times
@@ -62,20 +67,24 @@ Returns documentation of all available cache patterns with descriptions and exam
 - `paper:stocks:list` - Paper stocks
 
 ### Theme Settings
+
 - `themes:*` - All theme caches
 - `themes:list` - Theme list
 - `themes:active` - Active theme
 
 ### Design & Addon Sets
+
 - `design:set:*` - All design sets
 - `design:set:{id}` - Specific design set
 - `addon:set:*` - All addon sets
 - `addon:set:{id}` - Specific addon set
 
 ### Shipping
+
 - `shipping:rates:*` - All shipping rate calculations
 
 ### Metrics
+
 - `metrics:*` - All metrics
 - `metrics:production:*` - Production metrics
 - `metrics:system` - System health metrics
@@ -125,6 +134,7 @@ curl -X POST https://gangrunprinting.com/api/cache/invalidate \
 ### Using Admin Panel (Future)
 
 Create an admin UI for cache management:
+
 - View cached keys and sizes
 - Clear specific patterns
 - Clear all caches
@@ -162,19 +172,24 @@ export async function POST(request: NextRequest) {
 ### Recommended Patterns by Operation
 
 **Product CRUD**:
+
 - Clear: `products:*`, `categories:*`
 
 **Category CRUD**:
+
 - Clear: `categories:*`, `products:*`
 
 **Configuration Changes (coatings, sides, paper stocks, etc.)**:
+
 - Clear specific pattern: `coating:*`, `sides:*`, `paper:*`
 
 **Design/Addon Set Changes**:
+
 - Clear specific set: `design:set:{id}` or `addon:set:{id}`
 - Or clear all: `design:set:*` or `addon:set:*`
 
 **Theme Changes**:
+
 - Clear: `themes:*`
 
 ---
@@ -201,6 +216,7 @@ TTL "products:simple:list"
 ### Performance Metrics
 
 **Target Metrics**:
+
 - Cache hit rate: >85%
 - Cached response time: <10ms
 - Uncached response time: <150ms
@@ -213,12 +229,14 @@ TTL "products:simple:list"
 ### Cache Not Clearing
 
 **Check Redis Connection**:
+
 ```bash
 docker ps | grep redis
 docker logs gangrunprinting-redis
 ```
 
 **Verify Pattern Match**:
+
 ```bash
 docker exec -it gangrunprinting-redis redis-cli KEYS "products:*"
 ```
@@ -226,6 +244,7 @@ docker exec -it gangrunprinting-redis redis-cli KEYS "products:*"
 ### Stale Data in Cache
 
 **Manual Clear**:
+
 ```bash
 # Clear specific pattern
 docker exec -it gangrunprinting-redis redis-cli --eval "return redis.call('del', unpack(redis.call('keys', ARGV[1])))" , "products:*"
@@ -237,12 +256,14 @@ docker exec -it gangrunprinting-redis redis-cli FLUSHDB
 ### High Cache Miss Rate
 
 **Possible Causes**:
+
 1. Cache keys not matching patterns
 2. TTL too short
 3. Frequent data updates triggering invalidation
 4. Redis memory limit reached
 
 **Solutions**:
+
 1. Review cache key generation
 2. Adjust TTL values (currently 3600s for config, 300s for shipping, 900s for metrics)
 3. Implement more granular invalidation (specific IDs instead of wildcards)

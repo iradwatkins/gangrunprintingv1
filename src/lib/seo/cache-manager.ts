@@ -151,7 +151,7 @@ export class SEOCacheManager {
       // Clear from localStorage
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i)
-        if (key && prefixes.some(prefix => key.startsWith(prefix))) {
+        if (key && prefixes.some((prefix) => key.startsWith(prefix))) {
           localStorage.removeItem(key)
         }
       }
@@ -159,7 +159,7 @@ export class SEOCacheManager {
       // Clear from sessionStorage
       for (let i = 0; i < sessionStorage.length; i++) {
         const key = sessionStorage.key(i)
-        if (key && prefixes.some(prefix => key.startsWith(prefix))) {
+        if (key && prefixes.some((prefix) => key.startsWith(prefix))) {
           sessionStorage.removeItem(key)
         }
       }

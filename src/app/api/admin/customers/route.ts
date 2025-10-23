@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
 
     // Validation
     if (!name || !email) {
-      return NextResponse.json(
-        { error: 'Name and email are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Name and email are required' }, { status: 400 })
     }
 
     // Check if user already exists
@@ -63,9 +60,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error creating customer:', error)
-    return NextResponse.json(
-      { error: 'Failed to create customer' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create customer' }, { status: 500 })
   }
 }

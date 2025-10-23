@@ -20,6 +20,7 @@ The script is capturing and analyzing:
 ## What to Do Now
 
 ### Step 1: Perform Your Actions
+
 Go ahead and test the system:
 
 1. **Create a Product**
@@ -95,26 +96,31 @@ Once you stop the monitor, you'll get an **automatic diagnostic report** showing
 ## Quick Commands
 
 ### View Live Logs
+
 ```bash
 tail -f product-activity-detailed-*.log
 ```
 
 ### View Latest 50 Events
+
 ```bash
 tail -50 product-activity-detailed-*.log
 ```
 
 ### Search for Errors
+
 ```bash
 grep -i "error" product-activity-detailed-*.log
 ```
 
 ### Search for Image Upload Events
+
 ```bash
 grep -i "image" product-activity-detailed-*.log
 ```
 
 ### Stop Monitoring
+
 ```bash
 pkill -f "monitor-product-detailed"
 ```
@@ -135,6 +141,7 @@ pkill -f "monitor-product-detailed"
 The monitor will capture everything that happens and help us identify exactly where and why things are failing.
 
 When you're done, let me know and I'll:
+
 1. Stop the monitor
 2. Generate the diagnostic report
 3. Analyze the errors

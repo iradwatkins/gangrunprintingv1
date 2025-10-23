@@ -7,6 +7,7 @@
 ## Architecture Overview
 
 **Hybrid System:**
+
 - **N8N** - Execution engine (scheduling, cron jobs, error handling)
 - **Next.js** - Business logic (API endpoints, email templates, database)
 - **PostgreSQL** - Single source of truth (CartSession, Coupon, Order, User)
@@ -185,6 +186,7 @@
 **Trigger:** Webhook
 
 **Setup:**
+
 1. Create webhook node in N8N → Copy webhook URL
 2. Add to database:
    ```sql
@@ -302,6 +304,7 @@ for (const webhook of webhooks) {
 ## Monitoring & Maintenance
 
 **N8N Dashboard:**
+
 - View all workflow executions
 - Check success/failure rates
 - View error logs
@@ -332,6 +335,7 @@ LIMIT 20;
 ## Configuration Summary
 
 **Timing:**
+
 - Abandoned Cart Email #1: 3 hours after abandonment
 - Abandoned Cart Email #2: 24 hours after abandonment
 - Abandoned Cart Email #3: 72 hours after abandonment
@@ -340,12 +344,14 @@ LIMIT 20;
 - Anniversaries: Exactly 365 days (1 year)
 
 **Discounts:**
+
 - Abandoned Cart (standard): 10% off
 - Abandoned Cart (tiered): 5% / 10% / 15% based on cart value
 - Win-back: 20% off
 - All coupons expire in 7 days
 
 **Email Sending:**
+
 - All emails sent via Resend
 - From: GangRun Printing <orders@gangrunprinting.com>
 - Templates: React Email (brand-consistent, professional)

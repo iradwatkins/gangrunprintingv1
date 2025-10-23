@@ -6,7 +6,16 @@
 
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export interface SEOMetricsDataPoint {
@@ -59,16 +68,14 @@ export function SEOMetricsChart({
         <ResponsiveContainer height={300} width="100%">
           <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid className="stroke-muted" strokeDasharray="3 3" />
-            <XAxis
-              className="text-xs"
-              dataKey="date"
-              tick={{ fill: 'currentColor' }}
-            />
+            <XAxis className="text-xs" dataKey="date" tick={{ fill: 'currentColor' }} />
             <YAxis
               className="text-xs"
               domain={showPosition ? [0, 100] : undefined}
               hide={!showPosition}
-              label={showPosition ? { value: 'Position', angle: -90, position: 'insideLeft' } : undefined}
+              label={
+                showPosition ? { value: 'Position', angle: -90, position: 'insideLeft' } : undefined
+              }
               reversed={showPosition}
               tick={{ fill: 'currentColor' }}
               yAxisId="position"
@@ -76,7 +83,11 @@ export function SEOMetricsChart({
             <YAxis
               className="text-xs"
               hide={!showClicks && !showImpressions}
-              label={showClicks || showImpressions ? { value: 'Traffic', angle: 90, position: 'insideRight' } : undefined}
+              label={
+                showClicks || showImpressions
+                  ? { value: 'Traffic', angle: 90, position: 'insideRight' }
+                  : undefined
+              }
               orientation="right"
               tick={{ fill: 'currentColor' }}
               yAxisId="traffic"

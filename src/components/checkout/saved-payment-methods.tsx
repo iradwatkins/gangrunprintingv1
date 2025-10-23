@@ -62,7 +62,7 @@ export function SavedPaymentMethods({
           // Auto-select default payment method if none selected
           if (!selectedId && data.paymentMethods.length > 0) {
             const defaultPM =
-              data.paymentMethods.find((pm: SavedPaymentMethod) => pm.isDefault) || 
+              data.paymentMethods.find((pm: SavedPaymentMethod) => pm.isDefault) ||
               data.paymentMethods[0]
             setSelectedId(defaultPM.id)
             onSelectPaymentMethod(defaultPM)
@@ -102,7 +102,9 @@ export function SavedPaymentMethods({
   }
 
   if (loading) {
-    return <div className="py-8 text-center text-muted-foreground">Loading saved payment methods...</div>
+    return (
+      <div className="py-8 text-center text-muted-foreground">Loading saved payment methods...</div>
+    )
   }
 
   if (!userId || paymentMethods.length === 0) {
@@ -158,7 +160,8 @@ export function SavedPaymentMethods({
                       <div className="flex items-center gap-1 mt-1">
                         <MapPin className="h-3 w-3" />
                         <span className="text-xs">
-                          {paymentMethod.BillingAddress.label} - {paymentMethod.BillingAddress.street}, {paymentMethod.BillingAddress.city}
+                          {paymentMethod.BillingAddress.label} -{' '}
+                          {paymentMethod.BillingAddress.street}, {paymentMethod.BillingAddress.city}
                         </span>
                       </div>
                     )}

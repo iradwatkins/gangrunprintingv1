@@ -63,7 +63,6 @@ export async function PUT(request: NextRequest, { params }: { params: { carrier:
       },
     })
 
-
     return NextResponse.json({
       success: true,
       settings: updated,

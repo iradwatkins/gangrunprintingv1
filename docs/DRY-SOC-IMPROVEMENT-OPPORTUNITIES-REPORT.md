@@ -1,4 +1,5 @@
 # DRY + SoC Improvement Opportunities Report
+
 **Date:** October 18, 2025
 **Analyst:** B-MAD Agent
 **Codebase:** GangRun Printing (Next.js 15 E-commerce)
@@ -11,18 +12,21 @@
 This report identifies where applying **DRY (Don't Repeat Yourself)** and **SoC (Separation of Concerns)** principles would provide the greatest benefit to the GangRun Printing codebase.
 
 **Key Findings:**
+
 - **3,475+ lines of duplicated code** (DRY violations)
 - **31 API routes** with direct database access (SoC violations)
 - **9 monolithic files** over 400 lines mixing multiple concerns
 - **Critical business logic** (pricing) duplicated across 5+ files
 
 **Impact:**
+
 - High maintenance burden (fixes must be applied in multiple places)
 - Difficult to test business logic (tightly coupled to HTTP layer)
 - Inconsistent implementations (pricing calculated 3 different ways)
 - Developer confusion (which file/pattern to use?)
 
 **ROI Estimate:**
+
 - **Phase 1 (High Priority):** 2,000+ lines eliminated, 80% reduction in pricing bugs
 - **Phase 2 (Medium Priority):** 1,475+ lines eliminated, 50% faster API route development
 - **Phase 3 (Low Priority):** Improved code organization, easier onboarding
@@ -36,6 +40,7 @@ This report identifies where applying **DRY (Don't Repeat Yourself)** and **SoC 
 #### 1.1 Pricing Engine Duplication - **HIGHEST PRIORITY**
 
 **Files with Duplicate Pricing Logic:**
+
 1. `/src/lib/pricing-engine.ts` (496 lines) - "Unified" pricing engine
 2. `/src/lib/pricing-calculator.ts` (290 lines) - Alternative pricing calculator
 3. `/src/lib/price-utils.ts` - Utility functions
@@ -48,6 +53,7 @@ This report identifies where applying **DRY (Don't Repeat Yourself)** and **SoC 
 **Estimated Duplicated Code:** ~800 lines
 
 **Current State:**
+
 ```typescript
 // THREE different pricing calculation approaches:
 
@@ -65,18 +71,21 @@ const total = subtotal + tax + shipping
 ```
 
 **Why Critical:**
+
 - Pricing is business-critical (per CLAUDE.md: [PRICING-REFERENCE.md](../PRICING-REFERENCE.md))
 - Multiple implementations = risk of calculation errors
 - Changes must be synchronized across 5+ files
 - Tests cannot cover all variations
 
 **Impact of Consolidation:**
+
 - ✅ Single source of truth for pricing
 - ✅ Easier to fix bugs (one place)
 - ✅ Consistent pricing across all features
 - ✅ Easier to test
 
 **Recommended Solution:**
+
 ```
 Create: /src/services/PricingService.ts
 - Consolidate all pricing logic
@@ -99,12 +108,14 @@ Delete/Deprecate:
 #### 1.2 API Response Handler Duplication
 
 **Files:**
+
 - `/src/lib/api-response.ts` (254 lines)
 - `/src/lib/api/responses.ts` (98 lines)
 
 **Estimated Duplicated Code:** ~200 lines
 
 **Overlap:**
+
 ```typescript
 // api-response.ts
 export function createErrorResponse(message: string, status: number) {
@@ -120,17 +131,20 @@ export function errorResponse(message: string, code: number) {
 ```
 
 **Additional Duplicates:**
+
 - Success response creators
 - Unauthorized/Forbidden helpers
 - Validation error formatters
 - Database error handlers
 
 **Impact:**
+
 - Developers don't know which to import
 - Inconsistent error formats across APIs
 - Bug fixes must be applied to both files
 
 **Recommended Solution:**
+
 ```
 Keep: /src/lib/api/responses.ts (better organization)
 Delete: /src/lib/api-response.ts
@@ -147,6 +161,7 @@ Update: 47 API routes to import from correct file
 #### 2.1 CRUD Route Pattern Duplication
 
 **Files with Identical CRUD Patterns:**
+
 1. `/src/app/api/sizes/route.ts` (134 lines)
 2. `/src/app/api/quantities/route.ts` (105 lines)
 3. `/src/app/api/addons/route.ts` (123 lines)
@@ -158,6 +173,7 @@ Update: 47 API routes to import from correct file
 **Estimated Duplicated Code:** ~600 lines
 
 **Pattern Repeated 15+ Times:**
+
 ```typescript
 // ALL routes follow this exact pattern:
 
@@ -170,7 +186,7 @@ export async function GET(request: NextRequest) {
 
   // 2. Fetch data
   const items = await prisma.modelName.findMany({
-    orderBy: { name: 'asc' }
+    orderBy: { name: 'asc' },
   })
 
   // 3. Return
@@ -194,7 +210,7 @@ export async function POST(request: NextRequest) {
 
   // 4. Check duplicate
   const existing = await prisma.modelName.findUnique({
-    where: { name: data.name }
+    where: { name: data.name },
   })
   if (existing) {
     return NextResponse.json({ error: 'Already exists' }, { status: 409 })
@@ -206,7 +222,7 @@ export async function POST(request: NextRequest) {
       id: randomUUID(),
       name: data.name,
       // ... more fields
-    }
+    },
   })
 
   // 6. Handle errors
@@ -222,12 +238,14 @@ export async function POST(request: NextRequest) {
 ```
 
 **Problems:**
+
 - Adding new CRUD endpoint = copy-paste entire file
 - Bug fix must be applied to 15+ files
 - Inconsistent error messages across routes
 - No DRY principle applied
 
 **Recommended Solution:**
+
 ```typescript
 // Create: /src/lib/api/crud-factory.ts
 
@@ -252,7 +270,7 @@ export function createCRUDRoutes<T>(config: {
 export const { GET, POST } = createCRUDRoutes({
   model: prisma.size,
   requiredFields: ['name'],
-  uniqueFields: ['name']
+  uniqueFields: ['name'],
 })
 ```
 
@@ -264,12 +282,14 @@ export const { GET, POST } = createCRUDRoutes({
 #### 2.2 API Hook Duplication
 
 **Files:**
+
 - `/src/hooks/use-api.ts` (249 lines)
 - `/src/hooks/useApi.ts` (223 lines)
 
 **Estimated Duplicated Code:** ~400 lines
 
 **Issue:**
+
 ```typescript
 // use-api.ts (kebab-case)
 export function useApi() {
@@ -287,12 +307,14 @@ export function useApi() {
 ```
 
 **Problems:**
+
 - Two hooks with same export name `useApi`
 - Developers confused about which to import
 - Features split across two implementations
 - Both maintained separately
 
 **Recommended Solution:**
+
 ```
 Keep: /src/hooks/use-api.ts (more features)
 Migrate: All imports to use-api.ts
@@ -308,6 +330,7 @@ Add: JSDoc explaining usage
 #### 2.3 Image Upload Component Duplication
 
 **Files:**
+
 1. `/src/components/admin/product-image-upload.tsx`
 2. `/src/components/admin/product-form/product-image-upload.tsx`
 3. `/src/components/ui/image-upload.tsx`
@@ -316,6 +339,7 @@ Add: JSDoc explaining usage
 **Estimated Duplicated Code:** ~450 lines
 
 **Similar Logic:**
+
 - File validation (size, type, dimensions)
 - Preview generation
 - Upload progress tracking
@@ -323,6 +347,7 @@ Add: JSDoc explaining usage
 - MinIO integration
 
 **Recommended Solution:**
+
 ```typescript
 // Create: /src/components/ui/image-upload.tsx (unified)
 
@@ -354,6 +379,7 @@ export function ImageUpload({
 #### 2.4 Image Display Component Duplication
 
 **Files:**
+
 1. `/src/components/cart/cart-item-images.tsx`
 2. `/src/components/checkout/checkout-item-images.tsx`
 3. `/src/components/product/ProductImageGallery.tsx`
@@ -363,6 +389,7 @@ export function ImageUpload({
 **Estimated Duplicated Code:** ~350 lines
 
 **Similar Features:**
+
 - Thumbnail generation
 - Lightbox/modal display
 - Image lazy loading
@@ -370,6 +397,7 @@ export function ImageUpload({
 - Responsive sizing
 
 **Recommended Solution:**
+
 ```
 Create: /src/components/ui/image-gallery.tsx
 - Handles all image display scenarios
@@ -388,12 +416,14 @@ Create: /src/components/ui/image-gallery.tsx
 #### 3.1 Validation Schema Duplication
 
 **Files:**
+
 - `/src/lib/validation.ts`
 - `/src/lib/forms/validation.ts`
 
 **Estimated Duplicated Code:** ~75 lines
 
 **Overlap:**
+
 - Email validation (Zod schema)
 - Password validation (regex patterns)
 - Phone number validation
@@ -401,6 +431,7 @@ Create: /src/components/ui/image-gallery.tsx
 - SKU/slug validation
 
 **Recommended Solution:**
+
 ```
 Merge into: /src/lib/validation.ts
 Delete: /src/lib/forms/validation.ts
@@ -415,6 +446,7 @@ Export: Organized schemas by domain
 #### 3.2 Authentication Check Duplication
 
 **Pattern Found in 114+ API Routes:**
+
 ```typescript
 const { user } = await validateRequest()
 if (!user || user.role !== 'ADMIN') {
@@ -425,6 +457,7 @@ if (!user || user.role !== 'ADMIN') {
 **Estimated Duplicated Code:** ~300 lines
 
 **Recommended Solution:**
+
 ```typescript
 // Create: /src/middleware/auth.ts
 
@@ -454,11 +487,13 @@ export const GET = requireAdmin(async (request) => {
 #### 3.3 Database Transform Pattern Duplication
 
 **Files:**
+
 - `/src/app/api/sizes/route.ts`
 - `/src/app/api/quantities/route.ts`
 - `/src/app/api/paper-stocks/route.ts`
 
 **Duplicated Pattern:**
+
 ```typescript
 // Transform comma-separated values to array
 const processedGroups = groups.map((group) => ({
@@ -472,11 +507,15 @@ const processedGroups = groups.map((group) => ({
 ```
 
 **Recommended Solution:**
+
 ```typescript
 // Create: /src/lib/utils/data-transforms.ts
 
 export function parseCommaSeparatedValues(value: string): string[] {
-  return value.split(',').map(v => v.trim()).filter(Boolean)
+  return value
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean)
 }
 
 export function checkCustomOption(values: string): boolean {
@@ -492,6 +531,7 @@ export function checkCustomOption(values: string): boolean {
 #### 3.4 ID Generation Inconsistency
 
 **Current State:**
+
 ```typescript
 // Pattern 1: randomUUID() - used in 40+ files
 import { randomUUID } from 'crypto'
@@ -505,6 +545,7 @@ id: cuid()
 ```
 
 **Recommended Solution:**
+
 ```typescript
 // Create: /src/lib/utils/id-generator.ts
 
@@ -528,6 +569,7 @@ id: generateId('coating') // coating_abc-123-def...
 #### 4.1 Custom Hooks Consolidation
 
 **Files with Similar Patterns:**
+
 - `useCustom-selector.ts`
 - `use-toast.ts`
 - `use-order-updates.ts`
@@ -540,6 +582,7 @@ id: generateId('coating') // coating_abc-123-def...
 **Estimated Duplicated Code:** ~200 lines
 
 **Common Patterns:**
+
 - useState for loading/error states
 - useEffect for data fetching
 - Memoization patterns
@@ -558,16 +601,17 @@ id: generateId('coating') // coating_abc-123-def...
 
 **Critical Files:**
 
-| File | Lines | Mixed Concerns | Priority |
-|------|-------|----------------|----------|
-| `/src/app/api/products/[id]/configuration/route.ts` | 648 | HTTP + DB + Transform + Serialize + UI logic | P0 |
-| `/src/app/api/products/route.ts` | 558 | GET/POST + Service layer + Old fallback + Transforms | P0 |
-| `/src/app/api/products/[id]/route.ts` | 478 | CRUD + Image mgmt + Transforms + Deep includes | P1 |
-| `/src/app/api/pricing/calculate-base/route.ts` | 423 | HTTP + Validation + DB + Calculations | P0 |
-| `/src/app/api/webhooks/n8n/route.ts` | 398 | Webhook verify + Event routing + 6 handlers | P1 |
-| `/src/app/(customer)/checkout/page.tsx` | 1000+ | State + Fetch + Validation + UI + Business logic | P0 |
+| File                                                | Lines | Mixed Concerns                                       | Priority |
+| --------------------------------------------------- | ----- | ---------------------------------------------------- | -------- |
+| `/src/app/api/products/[id]/configuration/route.ts` | 648   | HTTP + DB + Transform + Serialize + UI logic         | P0       |
+| `/src/app/api/products/route.ts`                    | 558   | GET/POST + Service layer + Old fallback + Transforms | P0       |
+| `/src/app/api/products/[id]/route.ts`               | 478   | CRUD + Image mgmt + Transforms + Deep includes       | P1       |
+| `/src/app/api/pricing/calculate-base/route.ts`      | 423   | HTTP + Validation + DB + Calculations                | P0       |
+| `/src/app/api/webhooks/n8n/route.ts`                | 398   | Webhook verify + Event routing + 6 handlers          | P1       |
+| `/src/app/(customer)/checkout/page.tsx`             | 1000+ | State + Fetch + Validation + UI + Business logic     | P0       |
 
 **Example Violation:**
+
 ```typescript
 // /src/app/api/products/[id]/configuration/route.ts (648 lines)
 
@@ -618,6 +662,7 @@ export async function GET(request: NextRequest, { params }) {
 ```
 
 **Why This Violates SoC:**
+
 - **Concern 1:** HTTP handling (routing, auth, request parsing)
 - **Concern 2:** Data access (Prisma queries)
 - **Concern 3:** Business logic (data transformations)
@@ -625,12 +670,14 @@ export async function GET(request: NextRequest, { params }) {
 - **Concern 5:** Helper utilities (transformation functions)
 
 **Impact:**
+
 - Cannot test business logic without HTTP mocking
 - Cannot reuse transformation logic elsewhere
 - Changes to UI format require editing route file
 - 648 lines = hard to understand/maintain
 
 **Recommended Solution:**
+
 ```typescript
 // /src/services/ProductConfigurationService.ts
 export class ProductConfigurationService {
@@ -643,7 +690,9 @@ export class ProductConfigurationService {
 // /src/repositories/ProductRepository.ts
 export class ProductRepository {
   async findWithConfiguration(id: string) {
-    return prisma.product.findUnique({ /* complex includes */ })
+    return prisma.product.findUnique({
+      /* complex includes */
+    })
   }
 }
 
@@ -672,6 +721,7 @@ export async function GET(request: NextRequest, { params }) {
 #### 1.2 Missing Service Layer Adoption
 
 **Current State:**
+
 ```
 /src/services/
 ├── ProductService.ts        ✅ EXISTS, partially used
@@ -684,11 +734,11 @@ export async function GET(request: NextRequest, { params }) {
 
 **Problem:**
 
-| Service | Status | API Route Usage |
-|---------|--------|-----------------|
-| ProductService | ✅ Used in GET `/api/products` | ❌ NOT used in POST (creates with Prisma directly) |
-| OrderService | ✅ Fully implemented | ❌ NOT used by `/api/checkout` (does everything inline) |
-| VendorService | ✅ Fully implemented | ❌ NOT used by `/api/vendors` (calls Prisma directly) |
+| Service        | Status                         | API Route Usage                                         |
+| -------------- | ------------------------------ | ------------------------------------------------------- |
+| ProductService | ✅ Used in GET `/api/products` | ❌ NOT used in POST (creates with Prisma directly)      |
+| OrderService   | ✅ Fully implemented           | ❌ NOT used by `/api/checkout` (does everything inline) |
+| VendorService  | ✅ Fully implemented           | ❌ NOT used by `/api/vendors` (calls Prisma directly)   |
 
 **Example - OrderService Exists But Unused:**
 
@@ -721,13 +771,16 @@ export async function POST(request: NextRequest) {
   const total = subtotal + tax + shipping
 
   // Manual order creation
-  const order = await prisma.order.create({ /* ... */ })
+  const order = await prisma.order.create({
+    /* ... */
+  })
 
   // Why not just: const order = await OrderService.createOrder(data)?
 }
 ```
 
 **Impact:**
+
 - Business logic duplicated (checkout API vs OrderService)
 - Cannot reuse order creation logic (admin panel must duplicate)
 - Cannot test order creation without HTTP mocking
@@ -736,6 +789,7 @@ export async function POST(request: NextRequest) {
 **Recommended Solution:**
 
 **Phase 1: Adopt Existing Services**
+
 ```typescript
 // Update /src/app/api/checkout/route.ts
 import { OrderService } from '@/services/OrderService'
@@ -754,6 +808,7 @@ export async function POST(request: NextRequest) {
 ```
 
 **Phase 2: Complete Missing Services**
+
 ```
 Create:
 - /src/services/ShippingService.ts
@@ -772,27 +827,29 @@ Create:
 **31 API Routes with Direct Prisma Calls:**
 
 **Examples:**
+
 ```typescript
 // /src/app/api/vendors/route.ts
 export async function GET() {
   const vendors = await prisma.vendor.findMany({
-    orderBy: { name: 'asc' }
+    orderBy: { name: 'asc' },
   })
   return NextResponse.json(vendors)
 }
 
 // /src/app/api/weight/calculate-base/route.ts
 const paperStock = await prisma.paperStock.findUnique({
-  where: { id: paperStockId }
+  where: { id: paperStockId },
 })
 
 // /src/app/api/products/by-slug/[slug]/route.ts
 const product = await prisma.product.findUnique({
-  where: { slug }
+  where: { slug },
 })
 ```
 
 **Why This Violates SoC:**
+
 - **Data access layer** mixed with **HTTP layer**
 - Cannot mock database for testing
 - Changes to Prisma schema break API routes directly
@@ -805,7 +862,7 @@ const product = await prisma.product.findUnique({
 export class VendorRepository {
   async findAll(): Promise<Vendor[]> {
     return prisma.vendor.findMany({
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     })
   }
 
@@ -826,6 +883,7 @@ export async function GET() {
 ```
 
 **Benefits:**
+
 - Can swap Prisma for another ORM without touching API routes
 - Can mock repository for testing
 - Complex queries have single source of truth
@@ -843,6 +901,7 @@ export async function GET() {
 **File:** `/src/app/(customer)/checkout/page.tsx` (1000+ lines)
 
 **Mixed Concerns:**
+
 ```typescript
 'use client'
 
@@ -904,6 +963,7 @@ export default function CheckoutPage() {
 ```
 
 **Why This Violates SoC:**
+
 - **7 different concerns** in single component
 - Business logic (validation, shipping calc) mixed with UI
 - Data fetching in component (should be server-side or service)
@@ -956,6 +1016,7 @@ export default function CheckoutPage() {
 #### 2.2 Validation Logic Scattered Across Layers
 
 **Current State:**
+
 - API routes have inline validation
 - Client components have inline validation
 - `/src/lib/validation.ts` has schemas but not used consistently
@@ -986,11 +1047,12 @@ const validateInformation = () => {
 // /src/lib/validation.ts
 export const orderSchema = z.object({
   email: z.string().email(),
-  items: z.array(z.any()).min(1)
+  items: z.array(z.any()).min(1),
 })
 ```
 
 **Problems:**
+
 - Validation duplicated across 3+ layers
 - Client and server validation don't match
 - Changing validation rules requires updating multiple files
@@ -1013,10 +1075,7 @@ export function validateRequest<T>(schema: ZodSchema<T>) {
     const result = schema.safeParse(data)
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error.flatten() },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
     }
 
     return result.data
@@ -1070,6 +1129,7 @@ return NextResponse.json({
 ```
 
 **Problems:**
+
 - Inconsistent error formats
 - Some errors logged, some silent
 - Client doesn't know which errors are retryable
@@ -1093,25 +1153,31 @@ export class AppError extends Error {
 // /src/middleware/error-handler.ts
 export function handleError(error: unknown): NextResponse {
   if (error instanceof AppError) {
-    return NextResponse.json({
-      error: {
-        message: error.message,
-        code: error.code,
-        retryable: error.retryable
-      }
-    }, { status: error.statusCode })
+    return NextResponse.json(
+      {
+        error: {
+          message: error.message,
+          code: error.code,
+          retryable: error.retryable,
+        },
+      },
+      { status: error.statusCode }
+    )
   }
 
   // Log unexpected errors
   console.error('Unexpected error:', error)
 
-  return NextResponse.json({
-    error: {
-      message: 'Internal server error',
-      code: 'INTERNAL_ERROR',
-      retryable: false
-    }
-  }, { status: 500 })
+  return NextResponse.json(
+    {
+      error: {
+        message: 'Internal server error',
+        code: 'INTERNAL_ERROR',
+        retryable: false,
+      },
+    },
+    { status: 500 }
+  )
 }
 
 // Usage:
@@ -1132,6 +1198,7 @@ try {
 #### 3.1 Tight Coupling Between API Routes and Prisma Schema
 
 **Example:**
+
 ```typescript
 // /src/app/api/products/[id]/configuration/route.ts
 const product = await prisma.product.findUnique({
@@ -1144,14 +1211,14 @@ const product = await prisma.product.findUnique({
         PaperStockSet: {
           include: {
             PaperStockSetItem: {
-              include: { PaperStock: true }
-            }
-          }
-        }
-      }
+              include: { PaperStock: true },
+            },
+          },
+        },
+      },
     },
     // 8 more deep nested includes...
-  }
+  },
 })
 
 // Entire response structure depends on Prisma relations
@@ -1159,6 +1226,7 @@ return NextResponse.json(product)
 ```
 
 **Problems:**
+
 - If Prisma schema changes, API route breaks
 - Cannot change database structure without breaking API
 - No data transformation layer
@@ -1205,6 +1273,7 @@ return NextResponse.json(dto)
 #### 3.2 Third-Party Service Integration Mixed with Business Logic
 
 **Example:**
+
 ```typescript
 // /src/app/api/checkout/route.ts
 import { createOrUpdateSquareCustomer, createSquareCheckout } from '@/lib/square'
@@ -1216,7 +1285,9 @@ export async function POST(request: NextRequest) {
   squareCustomerId = customerResult.id
 
   // Order creation
-  const order = await prisma.order.create({ /* ... */ })
+  const order = await prisma.order.create({
+    /* ... */
+  })
 
   // N8N logic mixed in
   await N8NWorkflows.trigger('order.created', {
@@ -1225,11 +1296,14 @@ export async function POST(request: NextRequest) {
   })
 
   // Email logic mixed in
-  await sendEmail({ /* ... */ })
+  await sendEmail({
+    /* ... */
+  })
 }
 ```
 
 **Problems:**
+
 - Payment provider logic tightly coupled to checkout
 - Cannot easily swap Square for Stripe
 - Cannot test checkout without mocking Square, N8N, email
@@ -1257,7 +1331,7 @@ export class NotificationService {
   async notifyOrderCreated(order: Order) {
     await Promise.all([
       this.emailService.sendOrderConfirmation(order),
-      this.webhookService.trigger('order.created', order)
+      this.webhookService.trigger('order.created', order),
     ])
   }
 }
@@ -1281,12 +1355,12 @@ export async function POST(request: NextRequest) {
 
 **Priority:** Business-critical fixes
 
-| Task | Effort | Value | Files |
-|------|--------|-------|-------|
-| 1. Consolidate Pricing Engine | 8-12h | VERY HIGH | 5 files → 1 service |
+| Task                                     | Effort | Value     | Files                                 |
+| ---------------------------------------- | ------ | --------- | ------------------------------------- |
+| 1. Consolidate Pricing Engine            | 8-12h  | VERY HIGH | 5 files → 1 service                   |
 | 2. Extract Product Configuration Service | 12-16h | VERY HIGH | 648-line route → 20-line orchestrator |
-| 3. Adopt Existing OrderService | 4-6h | VERY HIGH | Checkout API cleanup |
-| 4. Consolidate API Response Handlers | 2-3h | HIGH | 2 files → 1 file |
+| 3. Adopt Existing OrderService           | 4-6h   | VERY HIGH | Checkout API cleanup                  |
+| 4. Consolidate API Response Handlers     | 2-3h   | HIGH      | 2 files → 1 file                      |
 
 **Total Effort:** 26-37 hours
 **Impact:** Eliminate 2,000+ duplicate lines, fix pricing consistency
@@ -1297,13 +1371,13 @@ export async function POST(request: NextRequest) {
 
 **Priority:** Developer experience improvements
 
-| Task | Effort | Value | Files |
-|------|--------|-------|-------|
-| 5. Create CRUD Route Factory | 6-8h | HIGH | Eliminate 600 lines duplication |
-| 6. Create Repository Layer | 20-24h | HIGH | Separate data access (31 routes) |
-| 7. Extract Checkout Component Logic | 10-14h | HIGH | 1000-line component → modular |
-| 8. Centralize Validation | 6-8h | HIGH | Consistent validation |
-| 9. Consolidate API Hooks | 3-4h | MEDIUM | Remove confusion |
+| Task                                | Effort | Value  | Files                            |
+| ----------------------------------- | ------ | ------ | -------------------------------- |
+| 5. Create CRUD Route Factory        | 6-8h   | HIGH   | Eliminate 600 lines duplication  |
+| 6. Create Repository Layer          | 20-24h | HIGH   | Separate data access (31 routes) |
+| 7. Extract Checkout Component Logic | 10-14h | HIGH   | 1000-line component → modular    |
+| 8. Centralize Validation            | 6-8h   | HIGH   | Consistent validation            |
+| 9. Consolidate API Hooks            | 3-4h   | MEDIUM | Remove confusion                 |
 
 **Total Effort:** 45-58 hours
 **Impact:** 50% faster API development, consistent patterns
@@ -1314,13 +1388,13 @@ export async function POST(request: NextRequest) {
 
 **Priority:** Code organization
 
-| Task | Effort | Value | Files |
-|------|--------|-------|-------|
-| 10. Consolidate Image Upload Components | 4-6h | MEDIUM | 4 files → 1 component |
-| 11. Consolidate Image Display Components | 5-7h | MEDIUM | 5 files → 1 gallery |
-| 12. Create Auth Middleware | 3-4h | MEDIUM | Eliminate 114 duplicates |
-| 13. Extract Payment Service Interfaces | 8-10h | MEDIUM | Decouple Square/PayPal |
-| 14. Centralize Error Handling | 4-6h | MEDIUM | Consistent errors |
+| Task                                     | Effort | Value  | Files                    |
+| ---------------------------------------- | ------ | ------ | ------------------------ |
+| 10. Consolidate Image Upload Components  | 4-6h   | MEDIUM | 4 files → 1 component    |
+| 11. Consolidate Image Display Components | 5-7h   | MEDIUM | 5 files → 1 gallery      |
+| 12. Create Auth Middleware               | 3-4h   | MEDIUM | Eliminate 114 duplicates |
+| 13. Extract Payment Service Interfaces   | 8-10h  | MEDIUM | Decouple Square/PayPal   |
+| 14. Centralize Error Handling            | 4-6h   | MEDIUM | Consistent errors        |
 
 **Total Effort:** 24-33 hours
 **Impact:** Better UX, easier maintenance
@@ -1331,12 +1405,12 @@ export async function POST(request: NextRequest) {
 
 **Priority:** Polish
 
-| Task | Effort | Value | Files |
-|------|--------|-------|-------|
-| 15. Consolidate Validation Schemas | 1-2h | LOW | Merge 2 files |
-| 16. Standardize ID Generation | 2h | LOW | Consistent IDs |
-| 17. Extract Data Transform Utils | 1h | LOW | Reusable transforms |
-| 18. Organize Custom Hooks | 6-8h | LOW | Better structure |
+| Task                               | Effort | Value | Files               |
+| ---------------------------------- | ------ | ----- | ------------------- |
+| 15. Consolidate Validation Schemas | 1-2h   | LOW   | Merge 2 files       |
+| 16. Standardize ID Generation      | 2h     | LOW   | Consistent IDs      |
+| 17. Extract Data Transform Utils   | 1h     | LOW   | Reusable transforms |
+| 18. Organize Custom Hooks          | 6-8h   | LOW   | Better structure    |
 
 **Total Effort:** 10-13 hours
 **Impact:** Code polish, consistency
@@ -1346,6 +1420,7 @@ export async function POST(request: NextRequest) {
 ## TOTAL EFFORT & ROI
 
 **Complete Refactoring:**
+
 - **Total Effort:** 105-141 hours (~3-4 weeks for 1 developer)
 - **Code Reduction:** 3,475+ duplicated lines eliminated
 - **Files Affected:** 100+ files improved
@@ -1353,32 +1428,35 @@ export async function POST(request: NextRequest) {
 
 **ROI Breakdown:**
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Duplicated Code | 3,475 lines | ~500 lines | -85% |
-| API Route Avg Size | 200 lines | 50 lines | -75% |
-| Pricing Bugs | Multiple implementations | 1 source of truth | -80% estimated |
-| Test Coverage | Difficult (coupled) | Easy (decoupled) | +200% testability |
-| New Feature Time | Copy-paste + modify | Reuse services | -50% dev time |
-| Onboarding Time | Confusing patterns | Clear structure | -40% time |
+| Metric             | Before                   | After             | Improvement       |
+| ------------------ | ------------------------ | ----------------- | ----------------- |
+| Duplicated Code    | 3,475 lines              | ~500 lines        | -85%              |
+| API Route Avg Size | 200 lines                | 50 lines          | -75%              |
+| Pricing Bugs       | Multiple implementations | 1 source of truth | -80% estimated    |
+| Test Coverage      | Difficult (coupled)      | Easy (decoupled)  | +200% testability |
+| New Feature Time   | Copy-paste + modify      | Reuse services    | -50% dev time     |
+| Onboarding Time    | Confusing patterns       | Clear structure   | -40% time         |
 
 ---
 
 ## RECOMMENDED APPROACH
 
 ### Option 1: Full Refactoring (Recommended for Long-term)
+
 - **Timeline:** 3-4 weeks
 - **Approach:** Complete all 4 phases
 - **Benefit:** Clean architecture, easy maintenance
 - **Risk:** Requires extensive testing
 
 ### Option 2: Incremental Refactoring (Safer)
+
 - **Timeline:** 8-12 weeks
 - **Approach:** 1 phase per sprint, deploy incrementally
 - **Benefit:** Lower risk, continuous delivery
 - **Risk:** Longer timeline
 
 ### Option 3: Critical Path Only (Quick Wins)
+
 - **Timeline:** 1-2 weeks
 - **Approach:** Phase 1 only (pricing + product config)
 - **Benefit:** Fix business-critical issues fast
@@ -1389,17 +1467,20 @@ export async function POST(request: NextRequest) {
 ## CONCLUSION
 
 The GangRun Printing codebase shows signs of **rapid development without refactoring cycles**:
+
 - Features were added quickly (good for business)
 - Code was copy-pasted for speed (normal in early stage)
 - Patterns were duplicated (natural evolution)
 
 **Now is the ideal time to apply DRY + SoC principles:**
+
 - ✅ Product is working (stable foundation)
 - ✅ Patterns are clear (know what to consolidate)
 - ✅ Team knows pain points (developer experience)
 - ✅ Business logic is defined (pricing, checkout)
 
 **Biggest Wins:**
+
 1. **Pricing consolidation** (eliminates business risk)
 2. **Service layer adoption** (unlocks testability)
 3. **CRUD factory** (50% faster API development)

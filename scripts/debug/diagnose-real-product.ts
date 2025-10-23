@@ -9,10 +9,7 @@ async function diagnoseProduct() {
   // Step 1: Find product by slug
   const product = await prisma.product.findFirst({
     where: {
-      OR: [
-        { slug: slug },
-        { sku: slug }
-      ]
+      OR: [{ slug: slug }, { sku: slug }],
     },
     select: {
       id: true,
@@ -20,7 +17,7 @@ async function diagnoseProduct() {
       slug: true,
       sku: true,
       isActive: true,
-    }
+    },
   })
 
   if (!product) {
@@ -32,8 +29,8 @@ async function diagnoseProduct() {
         OR: [
           { slug: { contains: '4x6' } },
           { name: { contains: '4x6' } },
-          { name: { contains: 'flyer' } }
-        ]
+          { name: { contains: 'flyer' } },
+        ],
       },
       select: {
         id: true,
@@ -41,7 +38,7 @@ async function diagnoseProduct() {
         slug: true,
         isActive: true,
       },
-      take: 10
+      take: 10,
     })
 
     console.log(`Found ${similarProducts.length} similar products:`)
@@ -69,8 +66,8 @@ async function diagnoseProduct() {
   const productQuantityGroups = await prisma.productQuantityGroup.findMany({
     where: { productId: product.id },
     include: {
-      QuantityGroup: true
-    }
+      QuantityGroup: true,
+    },
   })
 
   if (productQuantityGroups.length === 0) {
@@ -90,8 +87,8 @@ async function diagnoseProduct() {
   const productSizeGroups = await prisma.productSizeGroup.findMany({
     where: { productId: product.id },
     include: {
-      SizeGroup: true
-    }
+      SizeGroup: true,
+    },
   })
 
   if (productSizeGroups.length === 0) {
@@ -113,12 +110,12 @@ async function diagnoseProduct() {
         include: {
           PaperStockSetItem: {
             include: {
-              PaperStock: true
-            }
-          }
-        }
-      }
-    }
+              PaperStock: true,
+            },
+          },
+        },
+      },
+    },
   })
 
   if (productPaperStockSets.length === 0) {
@@ -149,9 +146,10 @@ async function diagnoseProduct() {
 
     return group.values.split(',').map((value: string) => ({
       id: `${group.id}_${value.trim()}`,
-      label: value.trim() === 'custom'
-        ? `Custom (${group.customMin || 1}-${group.customMax || 100000})`
-        : value.trim(),
+      label:
+        value.trim() === 'custom'
+          ? `Custom (${group.customMin || 1}-${group.customMax || 100000})`
+          : value.trim(),
       value: value.trim(),
       groupId: group.id,
       groupName: group.name,
@@ -161,7 +159,7 @@ async function diagnoseProduct() {
 
   console.log(`API would return ${quantities.length} quantity options`)
   if (quantities.length === 0) {
-    console.log('❌ THIS IS WHY DROPDOWNS DON\'T APPEAR!')
+    console.log("❌ THIS IS WHY DROPDOWNS DON'T APPEAR!")
   } else {
     console.log('Quantity options:')
     quantities.forEach((q, idx) => {
@@ -185,7 +183,7 @@ async function diagnoseProduct() {
         name: true,
         values: true,
         defaultValue: true,
-      }
+      },
     })
 
     allQuantityGroups.forEach((qg, idx) => {

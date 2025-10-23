@@ -103,7 +103,6 @@ export default function ProductsPage() {
         credentials: 'include', // CRITICAL: Send auth cookies with request
       })
 
-
       if (response.ok) {
         toast.success('Product deleted')
         fetchProducts()
@@ -290,7 +289,8 @@ export default function ProductsPage() {
                           <img
                             alt={product.ProductImages[0].AltText || product.Name}
                             className="w-10 h-10 rounded object-cover bg-gray-100"
-                            loading="lazy" src={
+                            loading="lazy"
+                            src={
                               product.ProductImages[0].ThumbnailUrl || product.ProductImages[0].Url
                             }
                             onError={(e) => {

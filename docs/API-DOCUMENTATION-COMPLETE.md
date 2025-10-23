@@ -9,6 +9,7 @@
 ## ✅ What's Been Created
 
 ### 1. Interactive Swagger UI
+
 - **URL:** https://gangrunprinting.com/api-docs
 - **Features:**
   - Browse all API endpoints
@@ -17,12 +18,14 @@
   - Copy code examples
 
 ### 2. OpenAPI 3.0 Specification
+
 - **File:** `/public/api/openapi.json`
 - **Standard:** OpenAPI 3.0.0
 - **Documented Endpoints:** 9 major endpoints
 - **Schemas:** 12 data models
 
 ### 3. API Endpoint
+
 - **URL:** `/api/openapi.json`
 - **Purpose:** Serves the OpenAPI spec
 - **Caching:** 1 hour cache for performance
@@ -32,23 +35,29 @@
 ## 📚 Documented Endpoints
 
 ### **Products API**
+
 - `GET /api/products` - List all products
 - `GET /api/products/{id}` - Get product details
 - `GET /api/products/{id}/configuration` - Get product options
 
 ### **Categories API**
+
 - `GET /api/categories` - List all categories
 
 ### **Pricing API**
+
 - `POST /api/pricing/calculate` - Calculate product price
 
 ### **Shipping API**
+
 - `POST /api/shipping/calculate` - Get shipping rates
 
 ### **Checkout API**
+
 - `POST /api/checkout/process-square-payment` - Process payment
 
 ### **Orders API**
+
 - `GET /api/orders/{id}` - Get order details
 
 ---
@@ -65,6 +74,7 @@
 6. See the response!
 
 **Example: Get All Products**
+
 ```
 1. Go to /api-docs
 2. Find "GET /api/products"
@@ -76,6 +86,7 @@
 ### Method 2: Code Integration
 
 **JavaScript/TypeScript:**
+
 ```typescript
 // Get all products
 const response = await fetch('https://gangrunprinting.com/api/products')
@@ -89,13 +100,14 @@ const pricing = await fetch('https://gangrunprinting.com/api/pricing/calculate',
     productId: 'prod_123',
     quantity: 500,
     sizeId: 'size_35x2',
-    addons: ['addon_lamination']
-  })
+    addons: ['addon_lamination'],
+  }),
 })
 const price = await pricing.json()
 ```
 
 **cURL:**
+
 ```bash
 # Get products
 curl https://gangrunprinting.com/api/products
@@ -118,6 +130,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/calculate \
 ## 📖 Data Models
 
 ### Product
+
 ```json
 {
   "id": "prod_123",
@@ -130,6 +143,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/calculate \
 ```
 
 ### Product Configuration
+
 ```json
 {
   "sizes": [...],
@@ -140,6 +154,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/calculate \
 ```
 
 ### Pricing Request
+
 ```json
 {
   "productId": "prod_123",
@@ -152,6 +167,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/calculate \
 ```
 
 ### Shipping Request
+
 ```json
 {
   "items": [
@@ -184,6 +200,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/calculate \
    Edit `/public/api/openapi.json`
 
 2. **Add the endpoint path:**
+
 ```json
 {
   "paths": {
@@ -203,6 +220,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/calculate \
 ```
 
 3. **Define schemas:**
+
 ```json
 {
   "components": {
@@ -224,6 +242,7 @@ curl -X POST https://gangrunprinting.com/api/shipping/calculate \
 ### Validation
 
 OpenAPI spec can be used for:
+
 - ✅ Automatic request validation
 - ✅ Response type checking
 - ✅ API client generation
@@ -234,16 +253,20 @@ OpenAPI spec can be used for:
 ## 🎨 Customization
 
 ### Change Theme
+
 Edit `/src/app/api-docs/page.tsx`:
+
 ```typescript
-<SwaggerUI 
+<SwaggerUI
   spec={spec}
   theme="dark" // or "light"
 />
 ```
 
 ### Add Authentication
+
 If you add auth to your API:
+
 ```json
 {
   "components": {
@@ -267,18 +290,21 @@ If you add auth to your API:
 ## 📊 Benefits
 
 ### For You (Developer):
+
 - ✅ Test APIs without Postman
 - ✅ Debug issues faster
 - ✅ See all endpoints in one place
 - ✅ Copy working code examples
 
 ### For Your Team:
+
 - ✅ Onboard developers faster
 - ✅ Consistent API documentation
 - ✅ Reduced support questions
 - ✅ Professional image
 
 ### For Integrations:
+
 - ✅ Partners can self-serve
 - ✅ Clear API contracts
 - ✅ Automatic client generation
@@ -289,6 +315,7 @@ If you add auth to your API:
 ## 🚦 API Status
 
 Currently documented:
+
 - ✅ Products (3 endpoints)
 - ✅ Categories (1 endpoint)
 - ✅ Pricing (1 endpoint)
@@ -299,10 +326,11 @@ Currently documented:
 **Total:** 9 endpoints documented
 
 ### Not Yet Documented:
-- Admin endpoints (/api/admin/*)
-- Marketing endpoints (/api/marketing/*)
-- File upload endpoints (/api/upload/*)
-- Webhook endpoints (/api/webhooks/*)
+
+- Admin endpoints (/api/admin/\*)
+- Marketing endpoints (/api/marketing/\*)
+- File upload endpoints (/api/upload/\*)
+- Webhook endpoints (/api/webhooks/\*)
 
 **Add these as needed!**
 
@@ -310,12 +338,12 @@ Currently documented:
 
 ## 🎯 Quick Reference
 
-| What | URL |
-|------|-----|
-| **Interactive Docs** | https://gangrunprinting.com/api-docs |
-| **OpenAPI Spec** | https://gangrunprinting.com/api/openapi.json |
-| **Base API URL** | https://gangrunprinting.com/api |
-| **Dev Server** | http://localhost:3020/api |
+| What                 | URL                                          |
+| -------------------- | -------------------------------------------- |
+| **Interactive Docs** | https://gangrunprinting.com/api-docs         |
+| **OpenAPI Spec**     | https://gangrunprinting.com/api/openapi.json |
+| **Base API URL**     | https://gangrunprinting.com/api              |
+| **Dev Server**       | http://localhost:3020/api                    |
 
 ---
 
@@ -337,11 +365,13 @@ Currently documented:
 **Your API now has professional, interactive documentation!**
 
 This is the same quality as:
+
 - ✅ Stripe API docs
 - ✅ Twilio API docs
 - ✅ SendGrid API docs
 
 **Next steps:**
+
 1. Wait for build to finish
 2. Visit https://gangrunprinting.com/api-docs
 3. Try the "Try it out" button!

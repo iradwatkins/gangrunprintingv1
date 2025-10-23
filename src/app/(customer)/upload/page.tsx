@@ -234,7 +234,8 @@ export default function UploadPage() {
                       <div className="mt-2">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs text-gray-600">
-                            {formatFileSize(file.uploadedBytes || 0)} / {formatFileSize(file.size)} • {calculateTimeRemaining(file)}
+                            {formatFileSize(file.uploadedBytes || 0)} / {formatFileSize(file.size)}{' '}
+                            • {calculateTimeRemaining(file)}
                           </span>
                           <span className="text-xs font-medium text-primary">{file.progress}%</span>
                         </div>

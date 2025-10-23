@@ -147,14 +147,16 @@ export function BrokerDiscountModal({
     }
   }
 
-  const activeDiscountCount = Object.keys(discounts).filter(key => key !== '_default').length
+  const activeDiscountCount = Object.keys(discounts).filter((key) => key !== '_default').length
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Master Discount Pricing Configuration</DialogTitle>
-          <DialogDescription>Set default and category-specific discounts for {customerName}</DialogDescription>
+          <DialogDescription>
+            Set default and category-specific discounts for {customerName}
+          </DialogDescription>
         </DialogHeader>
 
         {error && (

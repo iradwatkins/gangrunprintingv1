@@ -1,13 +1,13 @@
 /**
  * E2E Test Runner for File Approval System
- * 
+ *
  * Comprehensive test runner that validates the entire file approval
  * workflow with proper setup, teardown, and reporting
  */
 
-const { spawn } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { spawn } = require('child_process')
+const fs = require('fs')
+const path = require('path')
 
 class FileApprovalTestRunner {
   constructor() {
@@ -18,30 +18,30 @@ class FileApprovalTestRunner {
       errors: [],
       startTime: null,
       endTime: null,
-    };
+    }
   }
 
   async setup() {
-    console.log('🚀 Setting up File Approval System E2E Tests');
-    
+    console.log('🚀 Setting up File Approval System E2E Tests')
+
     // Create test fixtures directory if it doesn't exist
-    const fixturesDir = path.join(__dirname, 'fixtures');
+    const fixturesDir = path.join(__dirname, 'fixtures')
     if (!fs.existsSync(fixturesDir)) {
-      fs.mkdirSync(fixturesDir, { recursive: true });
+      fs.mkdirSync(fixturesDir, { recursive: true })
     }
-    
+
     // Generate test files
-    await this.generateTestFiles(fixturesDir);
-    
+    await this.generateTestFiles(fixturesDir)
+
     // Verify test environment
-    await this.verifyEnvironment();
-    
-    console.log('✅ Setup complete');
+    await this.verifyEnvironment()
+
+    console.log('✅ Setup complete')
   }
 
   async generateTestFiles(fixturesDir) {
-    console.log('📁 Generating test fixture files...');
-    
+    console.log('📁 Generating test fixture files...')
+
     // Create test PDF (mock)
     const pdfContent = `%PDF-1.4
 1 0 obj
@@ -63,173 +63,179 @@ trailer
 << /Size 4 /Root 1 0 R >>
 startxref
 181
-%%EOF`;
-    
-    fs.writeFileSync(path.join(fixturesDir, 'test-business-card.pdf'), pdfContent);
-    
+%%EOF`
+
+    fs.writeFileSync(path.join(fixturesDir, 'test-business-card.pdf'), pdfContent)
+
     // Create test image (1x1 pixel JPEG)
     const jpegBytes = Buffer.from([
-      0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01,
-      0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43,
-      0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08, 0x07, 0x07, 0x07, 0x09,
-      0x09, 0x08, 0x0A, 0x0C, 0x14, 0x0D, 0x0C, 0x0B, 0x0B, 0x0C, 0x19, 0x12,
-      0x13, 0x0F, 0x14, 0x1D, 0x1A, 0x1F, 0x1E, 0x1D, 0x1A, 0x1C, 0x1C, 0x20,
-      0x24, 0x2E, 0x27, 0x20, 0x22, 0x2C, 0x23, 0x1C, 0x1C, 0x28, 0x37, 0x29,
-      0x2C, 0x30, 0x31, 0x34, 0x34, 0x34, 0x1F, 0x27, 0x39, 0x3D, 0x38, 0x32,
-      0x3C, 0x2E, 0x33, 0x34, 0x32, 0xFF, 0xC0, 0x00, 0x11, 0x08, 0x00, 0x01,
-      0x00, 0x01, 0x01, 0x01, 0x11, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11, 0x01,
-      0xFF, 0xC4, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xFF, 0xC4,
-      0x00, 0x14, 0x10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xDA, 0x00, 0x0C,
-      0x03, 0x01, 0x00, 0x02, 0x11, 0x03, 0x11, 0x00, 0x3F, 0x00, 0x8A, 0xFF, 0xD9
-    ]);
-    
-    fs.writeFileSync(path.join(fixturesDir, 'test-logo.jpg'), jpegBytes);
-    
+      0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x01, 0x00,
+      0x48, 0x00, 0x48, 0x00, 0x00, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x08, 0x06, 0x06, 0x07, 0x06,
+      0x05, 0x08, 0x07, 0x07, 0x07, 0x09, 0x09, 0x08, 0x0a, 0x0c, 0x14, 0x0d, 0x0c, 0x0b, 0x0b,
+      0x0c, 0x19, 0x12, 0x13, 0x0f, 0x14, 0x1d, 0x1a, 0x1f, 0x1e, 0x1d, 0x1a, 0x1c, 0x1c, 0x20,
+      0x24, 0x2e, 0x27, 0x20, 0x22, 0x2c, 0x23, 0x1c, 0x1c, 0x28, 0x37, 0x29, 0x2c, 0x30, 0x31,
+      0x34, 0x34, 0x34, 0x1f, 0x27, 0x39, 0x3d, 0x38, 0x32, 0x3c, 0x2e, 0x33, 0x34, 0x32, 0xff,
+      0xc0, 0x00, 0x11, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00, 0x02, 0x11, 0x01,
+      0x03, 0x11, 0x01, 0xff, 0xc4, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xff, 0xc4, 0x00, 0x14, 0x10,
+      0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0xff, 0xda, 0x00, 0x0c, 0x03, 0x01, 0x00, 0x02, 0x11, 0x03, 0x11, 0x00, 0x3f,
+      0x00, 0x8a, 0xff, 0xd9,
+    ])
+
+    fs.writeFileSync(path.join(fixturesDir, 'test-logo.jpg'), jpegBytes)
+
     // Create large test file (simulated)
-    const largeImageData = Buffer.alloc(5 * 1024 * 1024, 0xFF); // 5MB
-    fs.writeFileSync(path.join(fixturesDir, 'large-image.jpg'), largeImageData);
-    
+    const largeImageData = Buffer.alloc(5 * 1024 * 1024, 0xff) // 5MB
+    fs.writeFileSync(path.join(fixturesDir, 'large-image.jpg'), largeImageData)
+
     // Create malicious file for security testing
-    fs.writeFileSync(path.join(fixturesDir, 'malicious.exe'), 'MZ\x90\x00FAKE_EXE_CONTENT');
-    
-    console.log('✅ Test fixture files generated');
+    fs.writeFileSync(path.join(fixturesDir, 'malicious.exe'), 'MZ\x90\x00FAKE_EXE_CONTENT')
+
+    console.log('✅ Test fixture files generated')
   }
 
   async verifyEnvironment() {
-    console.log('🔍 Verifying test environment...');
-    
+    console.log('🔍 Verifying test environment...')
+
     // Check if application is running
     try {
-      const response = await fetch(process.env.TEST_BASE_URL || 'http://localhost:3020/api/health');
+      const response = await fetch(process.env.TEST_BASE_URL || 'http://localhost:3020/api/health')
       if (!response.ok) {
-        throw new Error('Application health check failed');
+        throw new Error('Application health check failed')
       }
-      console.log('✅ Application is running');
+      console.log('✅ Application is running')
     } catch (error) {
-      console.error('❌ Application is not accessible:', error.message);
-      process.exit(1);
+      console.error('❌ Application is not accessible:', error.message)
+      process.exit(1)
     }
-    
+
     // Check database connection
     try {
-      const response = await fetch((process.env.TEST_BASE_URL || 'http://localhost:3020') + '/api/test/db-health');
+      const response = await fetch(
+        (process.env.TEST_BASE_URL || 'http://localhost:3020') + '/api/test/db-health'
+      )
       if (response.ok) {
-        console.log('✅ Database connection verified');
+        console.log('✅ Database connection verified')
       }
     } catch (error) {
-      console.warn('⚠️ Could not verify database connection');
+      console.warn('⚠️ Could not verify database connection')
     }
-    
+
     // Check required environment variables
     const requiredEnvVars = [
       'TEST_ADMIN_EMAIL',
-      'TEST_ADMIN_PASSWORD', 
+      'TEST_ADMIN_PASSWORD',
       'TEST_CUSTOMER_EMAIL',
-      'TEST_CUSTOMER_PASSWORD'
-    ];
-    
-    const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+      'TEST_CUSTOMER_PASSWORD',
+    ]
+
+    const missingVars = requiredEnvVars.filter((varName) => !process.env[varName])
     if (missingVars.length > 0) {
-      console.warn('⚠️ Missing environment variables:', missingVars.join(', '));
-      console.log('Using default test credentials');
+      console.warn('⚠️ Missing environment variables:', missingVars.join(', '))
+      console.log('Using default test credentials')
     }
   }
 
   async runTests() {
-    console.log('🧪 Running File Approval System E2E Tests');
-    this.testResults.startTime = new Date();
-    
+    console.log('🧪 Running File Approval System E2E Tests')
+    this.testResults.startTime = new Date()
+
     return new Promise((resolve, reject) => {
-      const playwrightProcess = spawn('npx', ['playwright', 'test', 'tests/e2e/file-approval-system.test.js'], {
-        stdio: ['inherit', 'pipe', 'pipe'],
-        cwd: process.cwd()
-      });
-      
-      let output = '';
-      let errorOutput = '';
-      
-      playwrightProcess.stdout.on('data', (data) => {
-        const text = data.toString();
-        output += text;
-        console.log(text);
-        
-        // Parse test results
-        this.parseTestOutput(text);
-      });
-      
-      playwrightProcess.stderr.on('data', (data) => {
-        const text = data.toString();
-        errorOutput += text;
-        console.error(text);
-      });
-      
-      playwrightProcess.on('close', (code) => {
-        this.testResults.endTime = new Date();
-        
-        if (code === 0) {
-          console.log('✅ All tests completed successfully');
-          resolve(this.testResults);
-        } else {
-          console.error('❌ Tests failed with exit code:', code);
-          this.testResults.errors.push(`Process exited with code ${code}`);
-          reject(this.testResults);
+      const playwrightProcess = spawn(
+        'npx',
+        ['playwright', 'test', 'tests/e2e/file-approval-system.test.js'],
+        {
+          stdio: ['inherit', 'pipe', 'pipe'],
+          cwd: process.cwd(),
         }
-      });
-      
+      )
+
+      let output = ''
+      let errorOutput = ''
+
+      playwrightProcess.stdout.on('data', (data) => {
+        const text = data.toString()
+        output += text
+        console.log(text)
+
+        // Parse test results
+        this.parseTestOutput(text)
+      })
+
+      playwrightProcess.stderr.on('data', (data) => {
+        const text = data.toString()
+        errorOutput += text
+        console.error(text)
+      })
+
+      playwrightProcess.on('close', (code) => {
+        this.testResults.endTime = new Date()
+
+        if (code === 0) {
+          console.log('✅ All tests completed successfully')
+          resolve(this.testResults)
+        } else {
+          console.error('❌ Tests failed with exit code:', code)
+          this.testResults.errors.push(`Process exited with code ${code}`)
+          reject(this.testResults)
+        }
+      })
+
       playwrightProcess.on('error', (error) => {
-        console.error('❌ Failed to start test process:', error);
-        this.testResults.errors.push(error.message);
-        reject(this.testResults);
-      });
-    });
+        console.error('❌ Failed to start test process:', error)
+        this.testResults.errors.push(error.message)
+        reject(this.testResults)
+      })
+    })
   }
 
   parseTestOutput(output) {
     // Parse Playwright test output to extract results
-    const lines = output.split('\n');
-    
+    const lines = output.split('\n')
+
     for (const line of lines) {
       if (line.includes('✓') || line.includes('PASSED')) {
-        this.testResults.passed++;
-        this.testResults.total++;
+        this.testResults.passed++
+        this.testResults.total++
       } else if (line.includes('✗') || line.includes('FAILED')) {
-        this.testResults.failed++;
-        this.testResults.total++;
-        this.testResults.errors.push(line);
+        this.testResults.failed++
+        this.testResults.total++
+        this.testResults.errors.push(line)
       }
     }
   }
 
   generateReport() {
-    const duration = this.testResults.endTime - this.testResults.startTime;
-    const durationMinutes = Math.round(duration / 1000 / 60 * 100) / 100;
-    
-    console.log('\n📊 FILE APPROVAL SYSTEM E2E TEST REPORT');
-    console.log('==========================================');
-    console.log(`🕐 Duration: ${durationMinutes} minutes`);
-    console.log(`📈 Total Tests: ${this.testResults.total}`);
-    console.log(`✅ Passed: ${this.testResults.passed}`);
-    console.log(`❌ Failed: ${this.testResults.failed}`);
-    console.log(`📊 Success Rate: ${Math.round((this.testResults.passed / this.testResults.total) * 100)}%`);
-    
+    const duration = this.testResults.endTime - this.testResults.startTime
+    const durationMinutes = Math.round((duration / 1000 / 60) * 100) / 100
+
+    console.log('\n📊 FILE APPROVAL SYSTEM E2E TEST REPORT')
+    console.log('==========================================')
+    console.log(`🕐 Duration: ${durationMinutes} minutes`)
+    console.log(`📈 Total Tests: ${this.testResults.total}`)
+    console.log(`✅ Passed: ${this.testResults.passed}`)
+    console.log(`❌ Failed: ${this.testResults.failed}`)
+    console.log(
+      `📊 Success Rate: ${Math.round((this.testResults.passed / this.testResults.total) * 100)}%`
+    )
+
     if (this.testResults.errors.length > 0) {
-      console.log('\n❌ Errors:');
+      console.log('\n❌ Errors:')
       this.testResults.errors.forEach((error, index) => {
-        console.log(`  ${index + 1}. ${error}`);
-      });
+        console.log(`  ${index + 1}. ${error}`)
+      })
     }
-    
-    console.log('\n🔍 Test Coverage:');
-    console.log('  ✅ Complete approval workflow (customer → admin → customer)');
-    console.log('  ✅ File upload security validation');
-    console.log('  ✅ Email notification system');
-    console.log('  ✅ Mobile responsiveness');
-    console.log('  ✅ Database state verification');
-    console.log('  ✅ Rate limiting enforcement');
-    console.log('  ✅ Performance under load');
-    
+
+    console.log('\n🔍 Test Coverage:')
+    console.log('  ✅ Complete approval workflow (customer → admin → customer)')
+    console.log('  ✅ File upload security validation')
+    console.log('  ✅ Email notification system')
+    console.log('  ✅ Mobile responsiveness')
+    console.log('  ✅ Database state verification')
+    console.log('  ✅ Rate limiting enforcement')
+    console.log('  ✅ Performance under load')
+
     // Save report to file
     const reportData = {
       timestamp: new Date().toISOString(),
@@ -238,78 +244,78 @@ startxref
       environment: {
         baseURL: process.env.TEST_BASE_URL || 'http://localhost:3020',
         nodeVersion: process.version,
-        platform: process.platform
-      }
-    };
-    
-    fs.writeFileSync(
-      path.join(__dirname, 'test-report.json'),
-      JSON.stringify(reportData, null, 2)
-    );
-    
-    console.log('\n💾 Detailed report saved to test-report.json');
+        platform: process.platform,
+      },
+    }
+
+    fs.writeFileSync(path.join(__dirname, 'test-report.json'), JSON.stringify(reportData, null, 2))
+
+    console.log('\n💾 Detailed report saved to test-report.json')
   }
 
   async cleanup() {
-    console.log('🧹 Cleaning up test environment...');
-    
+    console.log('🧹 Cleaning up test environment...')
+
     // Clean up test files
-    const fixturesDir = path.join(__dirname, 'fixtures');
+    const fixturesDir = path.join(__dirname, 'fixtures')
     if (fs.existsSync(fixturesDir)) {
-      fs.rmSync(fixturesDir, { recursive: true, force: true });
+      fs.rmSync(fixturesDir, { recursive: true, force: true })
     }
-    
+
     // Clean up test data in database (if needed)
     try {
-      const response = await fetch((process.env.TEST_BASE_URL || 'http://localhost:3020') + '/api/test/cleanup', {
-        method: 'POST'
-      });
+      const response = await fetch(
+        (process.env.TEST_BASE_URL || 'http://localhost:3020') + '/api/test/cleanup',
+        {
+          method: 'POST',
+        }
+      )
       if (response.ok) {
-        console.log('✅ Test data cleaned up');
+        console.log('✅ Test data cleaned up')
       }
     } catch (error) {
-      console.warn('⚠️ Could not clean up test data:', error.message);
+      console.warn('⚠️ Could not clean up test data:', error.message)
     }
-    
-    console.log('✅ Cleanup complete');
+
+    console.log('✅ Cleanup complete')
   }
 }
 
 // Main execution
 async function main() {
-  const runner = new FileApprovalTestRunner();
-  
+  const runner = new FileApprovalTestRunner()
+
   try {
-    await runner.setup();
-    await runner.runTests();
-    runner.generateReport();
-    
+    await runner.setup()
+    await runner.runTests()
+    runner.generateReport()
+
     // Exit with success if all tests passed
     if (runner.testResults.failed === 0) {
-      process.exit(0);
+      process.exit(0)
     } else {
-      process.exit(1);
+      process.exit(1)
     }
   } catch (error) {
-    console.error('💥 Test runner failed:', error);
-    runner.generateReport();
-    process.exit(1);
+    console.error('💥 Test runner failed:', error)
+    runner.generateReport()
+    process.exit(1)
   } finally {
-    await runner.cleanup();
+    await runner.cleanup()
   }
 }
 
 // Handle process termination
 process.on('SIGINT', async () => {
-  console.log('\n🛑 Test runner interrupted');
-  const runner = new FileApprovalTestRunner();
-  await runner.cleanup();
-  process.exit(1);
-});
+  console.log('\n🛑 Test runner interrupted')
+  const runner = new FileApprovalTestRunner()
+  await runner.cleanup()
+  process.exit(1)
+})
 
 // Run if this file is executed directly
 if (require.main === module) {
-  main();
+  main()
 }
 
-module.exports = { FileApprovalTestRunner };
+module.exports = { FileApprovalTestRunner }

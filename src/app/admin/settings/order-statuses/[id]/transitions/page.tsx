@@ -382,16 +382,16 @@ export default function TransitionsPage({ params }: { params: Promise<{ id: stri
         </CardHeader>
         <CardContent className="text-sm space-y-2">
           <p>
-            <strong>Workflow Engine:</strong> Only transitions defined here are allowed. Attempts to change to other
-            statuses will be rejected.
+            <strong>Workflow Engine:</strong> Only transitions defined here are allowed. Attempts to
+            change to other statuses will be rejected.
           </p>
           <p>
-            <strong>Requirements:</strong> If a transition requires payment, it can only be executed if the order is
-            paid. Admin-required transitions can only be executed by administrators.
+            <strong>Requirements:</strong> If a transition requires payment, it can only be executed
+            if the order is paid. Admin-required transitions can only be executed by administrators.
           </p>
           <p>
-            <strong>Bidirectional:</strong> Transitions are one-way. If you want to allow going back, create a reverse
-            transition.
+            <strong>Bidirectional:</strong> Transitions are one-way. If you want to allow going
+            back, create a reverse transition.
           </p>
         </CardContent>
       </Card>

@@ -9,6 +9,7 @@
 ## ✅ What's Now Active
 
 ### 1. **3 Marketing Workflows - ACTIVE**
+
 ```
 ✓ Welcome Series
   - Triggers: When user registers
@@ -27,6 +28,7 @@
 ```
 
 ### 2. **Automated Cron Jobs - RUNNING**
+
 ```
 Hourly:
 ✓ Abandoned Cart Check (every hour on the hour)
@@ -40,6 +42,7 @@ Daily:
 ```
 
 ### 3. **Order Integration - LIVE**
+
 ```
 ✓ Checkout Integration
   Location: /src/app/api/checkout/route.ts:192-200
@@ -48,6 +51,7 @@ Daily:
 ```
 
 ### 4. **Email Templates - READY** (24 Total)
+
 ```
 Transactional (16):
 - order-confirmation, order-shipped, order-delivered
@@ -72,22 +76,28 @@ Proactive (3):
 ## 📊 System Status
 
 **Database:**
+
 ```sql
 -- Check workflows
 SELECT id, name, "isActive" FROM "MarketingWorkflow";
 ```
+
 Result: 3 workflows, all ACTIVE
 
 **Cron Jobs:**
+
 ```bash
 crontab -l | grep workflow
 ```
+
 Result: 2 cron jobs scheduled
 
 **Log File:**
+
 ```bash
 tail -f /var/log/workflow-crons.log
 ```
+
 Result: Log file created and ready
 
 ---
@@ -95,12 +105,14 @@ Result: Log file created and ready
 ## 🧪 Testing Results
 
 **Cron Jobs Tested:**
+
 ```bash
 ✅ Abandoned Cart Check: Working (0 found - expected)
 ✅ Inactive Customer Check: Working (0 found - expected)
 ```
 
 **What This Means:**
+
 - System is scanning correctly
 - No errors in database queries
 - Ready to process real customers when they exist
@@ -110,6 +122,7 @@ Result: Log file created and ready
 ## 🔍 How to Monitor
 
 ### Check Workflow Executions
+
 ```sql
 SELECT
   we.id,
@@ -124,6 +137,7 @@ LIMIT 10;
 ```
 
 ### Check Email Sends
+
 ```sql
 SELECT
   cs."recipientEmail",
@@ -137,6 +151,7 @@ LIMIT 10;
 ```
 
 ### Check Cron Logs
+
 ```bash
 # Real-time monitoring
 tail -f /var/log/workflow-crons.log
@@ -153,6 +168,7 @@ grep -i error /var/log/workflow-crons.log
 ## 🎯 What Happens Next
 
 ### When a User Registers:
+
 1. User creates account
 2. Welcome Series workflow triggers immediately
 3. Welcome email sent via Resend
@@ -160,12 +176,14 @@ grep -i error /var/log/workflow-crons.log
 5. Onboarding tips email sent
 
 ### When a User Places an Order:
+
 1. Order created in checkout
 2. FunnelKit workflow triggered (if logged in)
 3. Order data passed to workflow engine
 4. Future: Post-purchase workflows can trigger
 
 ### Every Hour (Abandoned Carts):
+
 1. Cron job scans CartSession table
 2. Finds carts abandoned > 1 hour
 3. Checks user hasn't ordered since
@@ -173,6 +191,7 @@ grep -i error /var/log/workflow-crons.log
 5. Email sent after 1 hour wait
 
 ### Every Day (Inactive Customers):
+
 1. Cron job scans all users with orders
 2. Finds users with last order 90+ days ago
 3. Triggers win-back workflow
@@ -183,15 +202,18 @@ grep -i error /var/log/workflow-crons.log
 ## 🚨 Important Notes
 
 ### Email Opt-In Respected
+
 - Marketing emails (abandoned cart, win-back) only sent if `user.marketingOptIn = true`
 - Transactional emails (order confirmations) always sent
 - SMS workflows check `user.smsOptIn` and `user.phoneNumber`
 
 ### Architecture
+
 - **n8n**: Vendor notifications + daily admin reports (minimal, backend only)
 - **FunnelKit**: All customer emails + analytics (primary, customer-facing)
 
 ### Error Handling
+
 - Workflow failures logged to `WorkflowExecution.errorMessage`
 - Doesn't crash order creation if workflow fails
 - Check logs regularly for issues
@@ -201,15 +223,18 @@ grep -i error /var/log/workflow-crons.log
 ## 📚 Documentation
 
 **Setup Docs:**
+
 - `/docs/WEEK-1-EMAIL-AUTOMATION-COMPLETE.md` - Implementation details
 - `/cron-setup.md` - Cron job configuration
 
 **Scripts:**
+
 - `/src/scripts/initialize-workflows.ts` - Creates workflows
 - `/src/scripts/activate-all-workflows.ts` - Activates workflows
 - `/src/scripts/workflow-cron-jobs.ts` - Automated checks
 
 **Integration:**
+
 - `/src/lib/marketing/workflow-events.ts` - Event triggers
 - `/src/lib/marketing/workflow-engine.ts` - Workflow engine
 - `/src/app/api/checkout/route.ts` - Checkout integration

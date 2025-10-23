@@ -24,11 +24,7 @@ export function EditCustomerButton({ customer }: EditCustomerButtonProps) {
         Edit Profile
       </Button>
 
-      <EditCustomerModal
-        customer={customer}
-        open={showModal}
-        onOpenChange={setShowModal}
-      />
+      <EditCustomerModal customer={customer} open={showModal} onOpenChange={setShowModal} />
     </>
   )
 }

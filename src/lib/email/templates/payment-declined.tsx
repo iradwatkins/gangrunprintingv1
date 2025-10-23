@@ -92,8 +92,8 @@ export const PaymentDeclinedEmail = ({
         <Text style={supportText}>
           <strong>Need Help?</strong>
           <br />
-          Our team is here to assist you. Call us at <strong>1-877-GANGRUN</strong> or reply to
-          this email.
+          Our team is here to assist you. Call us at <strong>1-877-GANGRUN</strong> or reply to this
+          email.
         </Text>
       </Section>
     </EmailLayout>

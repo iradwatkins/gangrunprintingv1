@@ -5,9 +5,9 @@
 **Module Name:** Size Selector  
 **Priority Level:** 2 (Second Module)  
 **Status:** [ ] Not Started [ ] In Progress [ ] Complete  
-**BMAD Agent Assigned:** ******\_\_\_******  
-**Date Started:** ******\_\_\_******  
-**Date Completed:** ******\_\_\_******  
+**BMAD Agent Assigned:** **\*\***\_\_\_**\*\***  
+**Date Started:** **\*\***\_\_\_**\*\***  
+**Date Completed:** **\*\***\_\_\_**\*\***  
 **Prerequisite:** Quantity Module MUST be 100% complete
 
 ---
@@ -122,11 +122,11 @@ Document all size input types in system:
 
 Test with real system sizes:
 
-- [ ] Business Card: ******\_\_\_******
-- [ ] Postcard: ******\_\_\_******
-- [ ] Letter/A4: ******\_\_\_******
-- [ ] Poster sizes: ******\_\_\_******
-- [ ] Banner sizes: ******\_\_\_******
+- [ ] Business Card: **\*\***\_\_\_**\*\***
+- [ ] Postcard: **\*\***\_\_\_**\*\***
+- [ ] Letter/A4: **\*\***\_\_\_**\*\***
+- [ ] Poster sizes: **\*\***\_\_\_**\*\***
+- [ ] Banner sizes: **\*\***\_\_\_**\*\***
 
 #### Custom Size Input
 
@@ -338,8 +338,8 @@ Comments: _______________
 
 **Size Module Status:** [ ] COMPLETE  
 **Authorization to proceed to Turnaround Time Module:** [ ] GRANTED  
-**Authorized By:** ******\_\_\_******  
-**Date:** ******\_\_\_******
+**Authorized By:** **\*\***\_\_\_**\*\***  
+**Date:** **\*\***\_\_\_**\*\***
 
 ---
 

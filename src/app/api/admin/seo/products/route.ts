@@ -63,9 +63,6 @@ export async function GET() {
     })
   } catch (error) {
     console.error('[API] Error fetching products for SEO:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch products' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
   }
 }

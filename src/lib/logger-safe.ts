@@ -11,8 +11,7 @@ class SafeLogger {
     }
   }
 
-  info(message: string, meta?: any) {
-  }
+  info(message: string, meta?: any) {}
 
   warn(message: string, meta?: any) {
     console.warn(`[WARN] ${new Date().toISOString()} ${message}`, meta ? JSON.stringify(meta) : '')
@@ -30,8 +29,7 @@ class SafeLogger {
     }
   }
 
-  log(level: string, message: string, meta?: any) {
-  }
+  log(level: string, message: string, meta?: any) {}
 
   child(meta?: any) {
     return this

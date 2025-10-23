@@ -57,10 +57,7 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error('Error triggering aggregation:', error)
-    return NextResponse.json(
-      { error: 'Failed to trigger aggregation' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to trigger aggregation' }, { status: 500 })
   }
 }
 
@@ -78,7 +75,9 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'orders'
-    const startDate = new Date(searchParams.get('startDate') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+    const startDate = new Date(
+      searchParams.get('startDate') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    )
     const endDate = new Date(searchParams.get('endDate') || new Date())
 
     let result
@@ -111,9 +110,6 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error('Error calculating metrics:', error)
-    return NextResponse.json(
-      { error: 'Failed to calculate metrics' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to calculate metrics' }, { status: 500 })
   }
 }

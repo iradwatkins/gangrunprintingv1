@@ -47,12 +47,62 @@ export const stateCodeSchema = z
   .refine(
     (val) => {
       const validStates = [
-        'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-        'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-        'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-        'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-        'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
-        'DC', 'PR', 'VI', 'GU', 'AS', 'MP'
+        'AL',
+        'AK',
+        'AZ',
+        'AR',
+        'CA',
+        'CO',
+        'CT',
+        'DE',
+        'FL',
+        'GA',
+        'HI',
+        'ID',
+        'IL',
+        'IN',
+        'IA',
+        'KS',
+        'KY',
+        'LA',
+        'ME',
+        'MD',
+        'MA',
+        'MI',
+        'MN',
+        'MS',
+        'MO',
+        'MT',
+        'NE',
+        'NV',
+        'NH',
+        'NJ',
+        'NM',
+        'NY',
+        'NC',
+        'ND',
+        'OH',
+        'OK',
+        'OR',
+        'PA',
+        'RI',
+        'SC',
+        'SD',
+        'TN',
+        'TX',
+        'UT',
+        'VT',
+        'VA',
+        'WA',
+        'WV',
+        'WI',
+        'WY',
+        'DC',
+        'PR',
+        'VI',
+        'GU',
+        'AS',
+        'MP',
       ]
       return validStates.includes(val)
     },
@@ -110,13 +160,14 @@ export const slugSchema = z
 /**
  * Date range validation
  */
-export const dateRangeSchema = z.object({
-  from: z.date(),
-  to: z.date(),
-}).refine(
-  (data) => data.from <= data.to,
-  { message: 'Start date must be before or equal to end date' }
-)
+export const dateRangeSchema = z
+  .object({
+    from: z.date(),
+    to: z.date(),
+  })
+  .refine((data) => data.from <= data.to, {
+    message: 'Start date must be before or equal to end date',
+  })
 
 /**
  * Pagination parameters validation
@@ -203,10 +254,7 @@ export type ValidationResult<T> =
 /**
  * Helper function to safely validate data
  */
-export function safeValidate<T>(
-  schema: z.ZodSchema<T>,
-  data: unknown
-): ValidationResult<T> {
+export function safeValidate<T>(schema: z.ZodSchema<T>, data: unknown): ValidationResult<T> {
   const result = schema.safeParse(data)
 
   if (result.success) {

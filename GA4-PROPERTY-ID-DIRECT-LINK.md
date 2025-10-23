@@ -1,6 +1,7 @@
 # 🎯 Direct Link to Find Your GA4 Property ID
 
 ## Step 1: Click This Link
+
 👉 **https://analytics.google.com/analytics/web/#/a505254829/admin/property/settings**
 
 This will take you directly to your property settings (using the ID 505254829 you provided).
@@ -10,10 +11,12 @@ This will take you directly to your property settings (using the ID 505254829 yo
 Once the page loads, you'll see one of two things:
 
 ### Scenario A: You're in GA4 ✅
+
 - You'll see **Property ID** with format: `G-XXXXXXXXXX`
 - **Copy that ID** - that's what you need!
 
 ### Scenario B: You're in Universal Analytics (Old) ❌
+
 - The page shows "Universal Analytics" or older interface
 - Property ID is just numbers (no "G-" prefix)
 - **You need to upgrade to GA4**
@@ -38,6 +41,7 @@ Look for a property with a 🔥 flame icon or "GA4" label.
 👉 https://analytics.google.com/analytics/web/#/provision/SignUp
 
 Fill out:
+
 - Property name: "gangrunprinting.com"
 - Time zone: America/Chicago
 - Currency: USD
@@ -60,6 +64,7 @@ Your GA4 tracking code might already be installed on your site.
 5. That `G-XXXXXXXXXX` is your Property ID!
 
 **Or check with this command:**
+
 ```bash
 curl -s https://gangrunprinting.com | grep -oP "G-[A-Z0-9]{10}" | head -1
 ```
@@ -80,6 +85,7 @@ Example: `G-ABC123DEF4`
 👉 https://analytics.google.com/analytics/web/#/property-list
 
 This shows ALL properties you have access to. Look for:
+
 - Property name: gangrunprinting.com (or similar)
 - Type: "Google Analytics 4" or has flame icon 🔥
 - Click it → Admin → Property Settings → Copy Property ID
@@ -99,7 +105,7 @@ This shows ALL properties you have access to. Look for:
 **🚨 Quick Answer Needed:**
 
 Just tell me:
+
 1. Do you see a Property ID starting with `G-` anywhere in Google Analytics?
    - YES → Tell me the ID
    - NO → We'll create a new GA4 property (takes 2 minutes)
-

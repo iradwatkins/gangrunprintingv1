@@ -5,7 +5,8 @@
  * Bot: Micheal (SEO LLM Landing Page Master)
  */
 
-const TELEGRAM_BOT_TOKEN = process.env.SEO_BRAIN_TELEGRAM_BOT_TOKEN || '7510262123:AAFiInboeGKrhovu8hcmDvZsDgEpS3W1yWs'
+const TELEGRAM_BOT_TOKEN =
+  process.env.SEO_BRAIN_TELEGRAM_BOT_TOKEN || '7510262123:AAFiInboeGKrhovu8hcmDvZsDgEpS3W1yWs'
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID // You'll need to add this
 
 const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`
@@ -33,7 +34,9 @@ export interface DecisionOption {
 /**
  * Send alert to Telegram
  */
-export async function sendTelegramAlert(alert: TelegramAlert): Promise<{ success: boolean; messageId?: string }> {
+export async function sendTelegramAlert(
+  alert: TelegramAlert
+): Promise<{ success: boolean; messageId?: string }> {
   try {
     if (!TELEGRAM_CHAT_ID) {
       console.warn('[Telegram] TELEGRAM_ADMIN_CHAT_ID not configured')
@@ -314,7 +317,11 @@ export async function sendCampaignCompleteAlert(params: {
 /**
  * Test Telegram connection
  */
-export async function testTelegramConnection(): Promise<{ success: boolean; chatId?: string; error?: string }> {
+export async function testTelegramConnection(): Promise<{
+  success: boolean
+  chatId?: string
+  error?: string
+}> {
   try {
     if (!TELEGRAM_CHAT_ID) {
       return {

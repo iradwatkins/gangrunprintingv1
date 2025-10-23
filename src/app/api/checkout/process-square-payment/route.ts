@@ -16,10 +16,8 @@ if (!SQUARE_LOCATION_ID) {
 
 // Determine environment with fallback to sandbox
 // SquareEnvironment provides full base URLs: Production or Sandbox
-const squareEnvironment = SQUARE_ENVIRONMENT === 'production'
-  ? SquareEnvironment.Production
-  : SquareEnvironment.Sandbox
-
+const squareEnvironment =
+  SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox
 
 // Initialize Square client
 // NOTE: Square SDK v43+ uses 'token' parameter (not 'accessToken')

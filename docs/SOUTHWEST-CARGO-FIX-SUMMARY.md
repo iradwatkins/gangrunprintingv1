@@ -7,9 +7,11 @@ Successfully verified and corrected Southwest Cargo shipping implementation to m
 ## Issue Found & Fixed
 
 ### Problem
+
 The **Southwest Cargo Pickup** service had **3 weight tiers** instead of the **2 tiers** configured in WooCommerce.
 
 **Incorrect Implementation (Before Fix):**
+
 ```typescript
 pickup: {
   weightTiers: [
@@ -21,6 +23,7 @@ pickup: {
 ```
 
 **Correct Implementation (After Fix):**
+
 ```typescript
 pickup: {
   weightTiers: [
@@ -34,39 +37,46 @@ pickup: {
 
 Heavy packages (101+ lbs) were being overcharged:
 
-| Weight | Before Fix | After Fix | Difference |
-|--------|-----------|-----------|------------|
-| 50 lbs | $80.00 | $80.00 | No change ✅ |
-| 100 lbs | $277.00 | $277.00 | No change ✅ |
-| 101 lbs | $319.75 | $278.75 | **-$41.00** ✅ |
-| 150 lbs | $405.50 | $364.50 | **-$41.00** ✅ |
+| Weight  | Before Fix | After Fix | Difference     |
+| ------- | ---------- | --------- | -------------- |
+| 50 lbs  | $80.00     | $80.00    | No change ✅   |
+| 100 lbs | $277.00    | $277.00   | No change ✅   |
+| 101 lbs | $319.75    | $278.75   | **-$41.00** ✅ |
+| 150 lbs | $405.50    | $364.50   | **-$41.00** ✅ |
 
 **Note:** Prices shown are base rates (before 5% markup).
 
 ## Files Changed
 
 ### 1. Configuration Updated
+
 **File:** `/src/lib/shipping/modules/southwest-cargo/config.ts`
+
 - Removed third weight tier for Pickup service
 - Added comments referencing WooCommerce source
 
 ### 2. Documentation Created
 
 **Analysis Document:**
+
 - `/docs/SOUTHWEST-CARGO-PRICING-ANALYSIS.md` - Detailed analysis of WooCommerce vs Next.js pricing
 
 **Implementation Guide:**
+
 - `/docs/SOUTHWEST-CARGO-IMPLEMENTATION.md` - Complete guide with pricing tables, testing, and troubleshooting
 
 **Fix Summary:**
+
 - `/docs/SOUTHWEST-CARGO-FIX-SUMMARY.md` - This file
 
 ### 3. Test Scripts Created
 
 **Pricing Verification:**
+
 - `/scripts/test-southwest-pricing.ts` - Compares current implementation against WooCommerce config
 
 **Checkout Flow Test:**
+
 - `/scripts/test-southwest-checkout.ts` - End-to-end test with 7 weight scenarios
 
 ## Verification Results
@@ -84,6 +94,7 @@ Ran comprehensive checkout flow test with 7 different weight scenarios:
 ```
 
 **Test Coverage:**
+
 - 10 lbs (light package)
 - 50 lbs (tier boundary)
 - 51 lbs (medium start)
@@ -119,6 +130,7 @@ Ran comprehensive checkout flow test with 7 different weight scenarios:
 ## How to Test
 
 ### Quick Verification
+
 ```bash
 # Run pricing verification
 npx tsx scripts/test-southwest-pricing.ts
@@ -128,6 +140,7 @@ npx tsx scripts/test-southwest-checkout.ts
 ```
 
 ### Manual Testing
+
 1. Add product to cart (try 10 lbs, 51 lbs, 150 lbs)
 2. Go to checkout
 3. Enter shipping address in serviced state (TX, CA, NY, FL, etc.)
@@ -138,11 +151,11 @@ npx tsx scripts/test-southwest-checkout.ts
 
 ### Expected Pricing (with 5% markup)
 
-| Weight | Pickup | Dash |
-|--------|--------|------|
-| 10 lbs | $84.00 | $99.75 |
-| 50 lbs | $84.00 | $99.75 |
-| 51 lbs | $200.81 | $150.15 |
+| Weight  | Pickup  | Dash    |
+| ------- | ------- | ------- |
+| 10 lbs  | $84.00  | $99.75  |
+| 50 lbs  | $84.00  | $99.75  |
+| 51 lbs  | $200.81 | $150.15 |
 | 100 lbs | $290.85 | $150.15 |
 | 101 lbs | $292.69 | $335.74 |
 | 150 lbs | $382.73 | $425.78 |
@@ -150,31 +163,38 @@ npx tsx scripts/test-southwest-checkout.ts
 ## Key Takeaways
 
 ### 1. **Keep It Simple**
+
 The original WooCommerce configuration was simple and correct. Over-engineering with additional tiers caused pricing errors.
 
 ### 2. **Always Reference Source**
+
 When migrating from one platform to another, always have the original configuration as reference. The WooCommerce screenshots (`.aaaaaa/southwest/*.png`) were essential for verifying correctness.
 
 ### 3. **Test Thoroughly**
+
 Automated tests caught the discrepancy immediately. The comprehensive test suite ensures pricing stays correct.
 
 ### 4. **Document Everything**
+
 Complete documentation makes future maintenance easy. Anyone can now understand and modify Southwest Cargo pricing.
 
 ## Maintenance
 
 ### To Update Pricing
+
 1. Edit `/src/lib/shipping/modules/southwest-cargo/config.ts`
 2. Modify weight tiers as needed
 3. Run tests: `npx tsx scripts/test-southwest-pricing.ts`
 4. Restart application
 
 ### To Add Airports
+
 1. Add to database via Prisma
 2. Seed script available: `npx tsx src/scripts/seed-southwest-airports.ts`
 3. Cache clears automatically after 1 hour
 
 ### To Adjust Markup
+
 Edit `SOUTHWEST_CARGO_CONFIG.markupPercentage` in config file.
 
 ## Conclusion

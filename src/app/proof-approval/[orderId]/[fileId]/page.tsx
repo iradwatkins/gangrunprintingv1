@@ -1,16 +1,16 @@
-import { notFound, redirect } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { ProofApprovalInterface } from '@/components/customer/proof-approval-interface';
+import { notFound, redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import { ProofApprovalInterface } from '@/components/customer/proof-approval-interface'
 
 interface PageProps {
   params: Promise<{
-    orderId: string;
-    fileId: string;
-  }>;
+    orderId: string
+    fileId: string
+  }>
   searchParams: Promise<{
-    action?: 'approve' | 'reject';
-    token?: string;
-  }>;
+    action?: 'approve' | 'reject'
+    token?: string
+  }>
 }
 
 async function getProofData(orderId: string, fileId: string) {
@@ -23,14 +23,14 @@ async function getProofData(orderId: string, fileId: string) {
           select: { name: true, email: true },
         },
       },
-    });
+    })
 
     if (!order) {
-      return null;
+      return null
     }
 
     const file = await prisma.orderFile.findUnique({
-      where: { 
+      where: {
         id: fileId,
         orderId: orderId, // Ensure file belongs to this order
       },
@@ -41,42 +41,42 @@ async function getProofData(orderId: string, fileId: string) {
           take: 10,
         },
       },
-    });
+    })
 
     if (!file) {
-      return null;
+      return null
     }
 
     // Only allow approval for admin proofs that are waiting
     if (file.fileType !== 'ADMIN_PROOF' || file.approvalStatus !== 'WAITING') {
-      return null;
+      return null
     }
 
     return {
       order,
       file,
-    };
+    }
   } catch (error) {
-    console.error('Error fetching proof data:', error);
-    return null;
+    console.error('Error fetching proof data:', error)
+    return null
   }
 }
 
 export default async function ProofApprovalPage({ params, searchParams }: PageProps) {
-  const { orderId, fileId } = await params;
-  const { action } = await searchParams;
+  const { orderId, fileId } = await params
+  const { action } = await searchParams
 
-  const proofData = await getProofData(orderId, fileId);
+  const proofData = await getProofData(orderId, fileId)
 
   if (!proofData) {
-    notFound();
+    notFound()
   }
 
-  const { order, file } = proofData;
+  const { order, file } = proofData
 
   // If the file has already been approved or rejected, redirect to completion page
   if (file.approvalStatus !== 'WAITING') {
-    redirect(`/proof-approval/${orderId}/${fileId}/complete?status=${file.approvalStatus}`);
+    redirect(`/proof-approval/${orderId}/${fileId}/complete?status=${file.approvalStatus}`)
   }
 
   return (
@@ -86,9 +86,7 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Proof Approval Required
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">Proof Approval Required</h1>
               <p className="text-gray-600 mt-1">
                 Order #{order.orderNumber} • {order.User?.name || 'Customer'}
               </p>
@@ -119,7 +117,7 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
             fileSize: file.fileSize || undefined,
             approvalStatus: file.approvalStatus,
             createdAt: file.createdAt,
-            messages: file.FileMessage.map(msg => ({
+            messages: file.FileMessage.map((msg) => ({
               id: msg.id,
               message: msg.message,
               authorName: msg.authorName,
@@ -131,21 +129,25 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
         />
       </div>
     </div>
-  );
+  )
 }
 
 // Generate metadata for better SEO and social sharing
-export async function generateMetadata({ params }: { params: Promise<{ orderId: string; fileId: string }> }) {
-  const { orderId } = await params;
-  
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orderId: string; fileId: string }>
+}) {
+  const { orderId } = await params
+
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     select: { orderNumber: true },
-  });
+  })
 
   return {
     title: `Proof Approval - Order ${order?.orderNumber || orderId} | GangRun Printing`,
     description: 'Review and approve your proof before we begin production.',
     robots: 'noindex, nofollow', // Private customer pages shouldn't be indexed
-  };
+  }
 }

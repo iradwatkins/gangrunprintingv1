@@ -38,7 +38,6 @@ async function getAvailableStates(): Promise<Set<string>> {
     cachedStates = new Set(airports.map((airport) => airport.state.toUpperCase()))
     cacheTimestamp = now
 
-
     return cachedStates
   } catch (error) {
     console.error('[Southwest Cargo] Failed to load airport states from database:', error)
@@ -57,7 +56,6 @@ export async function isStateAvailable(state: string): Promise<boolean> {
 
   const availableStates = await getAvailableStates()
   const isAvailable = availableStates.has(state.toUpperCase())
-
 
   return isAvailable
 }

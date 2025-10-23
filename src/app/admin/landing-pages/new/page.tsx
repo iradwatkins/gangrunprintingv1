@@ -44,9 +44,11 @@ export default function NewLandingPageSetPage() {
     addOnSetId: '',
     turnaroundTimeSetId: '',
     titleTemplate: 'Professional [PRODUCT] Printing in [CITY], [STATE] | GangRun Printing',
-    metaDescTemplate: 'Order premium [PRODUCT] in [CITY], [STATE]. Fast printing, [POPULATION_FORMATTED] satisfied customers. Free shipping on orders over $50.',
+    metaDescTemplate:
+      'Order premium [PRODUCT] in [CITY], [STATE]. Fast printing, [POPULATION_FORMATTED] satisfied customers. Free shipping on orders over $50.',
     h1Template: 'Professional [PRODUCT] Printing in [CITY], [STATE]',
-    contentTemplate: 'Welcome to professional [PRODUCT] printing services in [CITY], [STATE]. Serving [POPULATION_FORMATTED] residents across [NEIGHBORHOODS].',
+    contentTemplate:
+      'Welcome to professional [PRODUCT] printing services in [CITY], [STATE]. Serving [POPULATION_FORMATTED] residents across [NEIGHBORHOODS].',
     generateIntro: true,
     generateBenefits: true,
     generateFAQs: true,
@@ -56,7 +58,7 @@ export default function NewLandingPageSetPage() {
     urgencyEnabled: true,
     discountEnabled: false,
     discountPercent: 0,
-    chatWidgetEnabled: true
+    chatWidgetEnabled: true,
   })
 
   useEffect(() => {
@@ -71,7 +73,7 @@ export default function NewLandingPageSetPage() {
         fetch('/api/quantity-groups?isActive=true'),
         fetch('/api/size-groups?isActive=true'),
         fetch('/api/addon-sets?isActive=true'),
-        fetch('/api/turnaround-time-sets?isActive=true')
+        fetch('/api/turnaround-time-sets?isActive=true'),
       ])
 
       if (paperRes.ok) setPaperStockSets(await paperRes.json())
@@ -91,7 +93,12 @@ export default function NewLandingPageSetPage() {
     e.preventDefault()
 
     // Validate required fields
-    if (!formData.name || !formData.paperStockSetId || !formData.quantityGroupId || !formData.sizeGroupId) {
+    if (
+      !formData.name ||
+      !formData.paperStockSetId ||
+      !formData.quantityGroupId ||
+      !formData.sizeGroupId
+    ) {
       toast.error('Please fill in all required fields')
       return
     }
@@ -101,7 +108,7 @@ export default function NewLandingPageSetPage() {
       const response = await fetch('/api/landing-page-sets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       })
 
       if (!response.ok) {
@@ -120,16 +127,25 @@ export default function NewLandingPageSetPage() {
     }
   }
 
-  const insertVariable = (field: 'titleTemplate' | 'metaDescTemplate' | 'h1Template' | 'contentTemplate', variable: string) => {
-    setFormData(prev => ({
+  const insertVariable = (
+    field: 'titleTemplate' | 'metaDescTemplate' | 'h1Template' | 'contentTemplate',
+    variable: string
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: prev[field] + ` ${variable}`
+      [field]: prev[field] + ` ${variable}`,
     }))
   }
 
   const variables = [
-    '[CITY]', '[STATE]', '[STATE_CODE]', '[POPULATION_FORMATTED]',
-    '[NEIGHBORHOODS]', '[LANDMARK]', '[EVENT]', '[BUSINESS_COUNT]'
+    '[CITY]',
+    '[STATE]',
+    '[STATE_CODE]',
+    '[POPULATION_FORMATTED]',
+    '[NEIGHBORHOODS]',
+    '[LANDMARK]',
+    '[EVENT]',
+    '[BUSINESS_COUNT]',
   ]
 
   if (loadingConfig) {
@@ -195,7 +211,9 @@ export default function NewLandingPageSetPage() {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Product Configuration</CardTitle>
-          <CardDescription>Select existing product options (shared across all 200 cities)</CardDescription>
+          <CardDescription>
+            Select existing product options (shared across all 200 cities)
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -209,7 +227,9 @@ export default function NewLandingPageSetPage() {
               </SelectTrigger>
               <SelectContent>
                 {paperStockSets.map((set) => (
-                  <SelectItem key={set.id} value={set.id}>{set.name}</SelectItem>
+                  <SelectItem key={set.id} value={set.id}>
+                    {set.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -226,7 +246,9 @@ export default function NewLandingPageSetPage() {
               </SelectTrigger>
               <SelectContent>
                 {quantityGroups.map((group) => (
-                  <SelectItem key={group.id} value={group.id}>{group.name}</SelectItem>
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -243,7 +265,9 @@ export default function NewLandingPageSetPage() {
               </SelectTrigger>
               <SelectContent>
                 {sizeGroups.map((group) => (
-                  <SelectItem key={group.id} value={group.id}>{group.name}</SelectItem>
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -261,7 +285,9 @@ export default function NewLandingPageSetPage() {
               <SelectContent>
                 <SelectItem value="">None - No add-ons</SelectItem>
                 {addOnSets.map((set) => (
-                  <SelectItem key={set.id} value={set.id}>{set.name}</SelectItem>
+                  <SelectItem key={set.id} value={set.id}>
+                    {set.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -279,7 +305,9 @@ export default function NewLandingPageSetPage() {
               <SelectContent>
                 <SelectItem value="">None - No turnaround options</SelectItem>
                 {turnaroundTimeSets.map((set) => (
-                  <SelectItem key={set.id} value={set.id}>{set.name}</SelectItem>
+                  <SelectItem key={set.id} value={set.id}>
+                    {set.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -299,7 +327,10 @@ export default function NewLandingPageSetPage() {
             <p className="text-sm font-medium text-blue-900 mb-2">Available Variables:</p>
             <div className="flex flex-wrap gap-2">
               {variables.map((variable) => (
-                <code key={variable} className="text-xs bg-white px-2 py-1 rounded border border-blue-300">
+                <code
+                  key={variable}
+                  className="text-xs bg-white px-2 py-1 rounded border border-blue-300"
+                >
                   {variable}
                 </code>
               ))}
@@ -364,7 +395,9 @@ export default function NewLandingPageSetPage() {
             <Checkbox
               checked={formData.generateIntro}
               id="generateIntro"
-              onCheckedChange={(checked) => setFormData({ ...formData, generateIntro: checked as boolean })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, generateIntro: checked as boolean })
+              }
             />
             <Label htmlFor="generateIntro">Generate unique introduction (200 words per city)</Label>
           </div>
@@ -372,7 +405,9 @@ export default function NewLandingPageSetPage() {
             <Checkbox
               checked={formData.generateBenefits}
               id="generateBenefits"
-              onCheckedChange={(checked) => setFormData({ ...formData, generateBenefits: checked as boolean })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, generateBenefits: checked as boolean })
+              }
             />
             <Label htmlFor="generateBenefits">Generate benefits section</Label>
           </div>
@@ -380,7 +415,9 @@ export default function NewLandingPageSetPage() {
             <Checkbox
               checked={formData.generateFAQs}
               id="generateFAQs"
-              onCheckedChange={(checked) => setFormData({ ...formData, generateFAQs: checked as boolean })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, generateFAQs: checked as boolean })
+              }
             />
             <Label htmlFor="generateFAQs">Generate city-specific FAQs (5 questions)</Label>
           </div>
@@ -388,7 +425,9 @@ export default function NewLandingPageSetPage() {
             <Checkbox
               checked={formData.generateCaseStudy}
               id="generateCaseStudy"
-              onCheckedChange={(checked) => setFormData({ ...formData, generateCaseStudy: checked as boolean })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, generateCaseStudy: checked as boolean })
+              }
             />
             <Label htmlFor="generateCaseStudy">Generate case studies (optional)</Label>
           </div>
@@ -397,11 +436,7 @@ export default function NewLandingPageSetPage() {
 
       {/* Bottom Actions */}
       <div className="flex justify-between items-center">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push('/admin/landing-pages')}
-        >
+        <Button type="button" variant="outline" onClick={() => router.push('/admin/landing-pages')}>
           Cancel
         </Button>
         <Button disabled={loading} type="submit">

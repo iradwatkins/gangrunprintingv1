@@ -462,9 +462,13 @@ export default function PaperStocksPage() {
 
                       {/* Vendor Pricing & Markup Section */}
                       <div className="border-t pt-4 space-y-4">
-                        <h4 className="font-semibold text-sm text-gray-700">Vendor Pricing & Markup (Optional)</h4>
+                        <h4 className="font-semibold text-sm text-gray-700">
+                          Vendor Pricing & Markup (Optional)
+                        </h4>
                         <div className="space-y-2">
-                          <Label htmlFor="vendorPricePerSqInch">Vendor Price per Square Inch ($)</Label>
+                          <Label htmlFor="vendorPricePerSqInch">
+                            Vendor Price per Square Inch ($)
+                          </Label>
                           <Input
                             id="vendorPricePerSqInch"
                             min="0"
@@ -497,9 +501,7 @@ export default function PaperStocksPage() {
                               <option value="PERCENTAGE">Percentage (%)</option>
                               <option value="FLAT">Flat Amount ($)</option>
                             </select>
-                            <p className="text-xs text-muted-foreground">
-                              How to calculate markup
-                            </p>
+                            <p className="text-xs text-muted-foreground">How to calculate markup</p>
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="markupValue">
@@ -512,7 +514,10 @@ export default function PaperStocksPage() {
                               type="number"
                               value={formData.markupValue}
                               onChange={(e) =>
-                                setFormData({ ...formData, markupValue: parseFloat(e.target.value) || 0 })
+                                setFormData({
+                                  ...formData,
+                                  markupValue: parseFloat(e.target.value) || 0,
+                                })
                               }
                             />
                             <p className="text-xs text-muted-foreground">
@@ -524,7 +529,9 @@ export default function PaperStocksPage() {
                         </div>
                         {formData.vendorPricePerSqInch > 0 && formData.markupValue > 0 && (
                           <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                            <p className="text-sm font-medium text-blue-900">Price Calculation Preview:</p>
+                            <p className="text-sm font-medium text-blue-900">
+                              Price Calculation Preview:
+                            </p>
                             <p className="text-xs text-blue-700 mt-1">
                               Vendor Price: ${formData.vendorPricePerSqInch.toFixed(7)} →{' '}
                               {formData.markupType === 'PERCENTAGE'
@@ -539,7 +546,10 @@ export default function PaperStocksPage() {
                             <p className="text-xs text-blue-700 mt-1">
                               Profit Margin: $
                               {formData.markupType === 'PERCENTAGE'
-                                ? (formData.vendorPricePerSqInch * (formData.markupValue / 100)).toFixed(7)
+                                ? (
+                                    formData.vendorPricePerSqInch *
+                                    (formData.markupValue / 100)
+                                  ).toFixed(7)
                                 : formData.markupValue.toFixed(7)}{' '}
                               per square inch
                             </p>

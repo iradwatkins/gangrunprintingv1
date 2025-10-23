@@ -111,13 +111,19 @@ export async function getRealtimeTraffic(): Promise<GA4RealtimeData | null> {
     const rows = response.data.rows || []
 
     // Calculate active users for different time windows
-    const activeUsers1Minute = rows.find(r => r.dimensionValues?.[0]?.value === '0')?.metricValues?.[0]?.value || '0'
-    const activeUsers5Minutes = rows.filter(r => {
-      const minutes = parseInt(r.dimensionValues?.[0]?.value || '999')
-      return minutes <= 5
-    }).reduce((sum, r) => sum + parseInt(r.metricValues?.[0]?.value || '0'), 0)
+    const activeUsers1Minute =
+      rows.find((r) => r.dimensionValues?.[0]?.value === '0')?.metricValues?.[0]?.value || '0'
+    const activeUsers5Minutes = rows
+      .filter((r) => {
+        const minutes = parseInt(r.dimensionValues?.[0]?.value || '999')
+        return minutes <= 5
+      })
+      .reduce((sum, r) => sum + parseInt(r.metricValues?.[0]?.value || '0'), 0)
 
-    const activeUsers30Minutes = rows.reduce((sum, r) => sum + parseInt(r.metricValues?.[0]?.value || '0'), 0)
+    const activeUsers30Minutes = rows.reduce(
+      (sum, r) => sum + parseInt(r.metricValues?.[0]?.value || '0'),
+      0
+    )
 
     return {
       activeUsers: activeUsers30Minutes,
@@ -137,7 +143,10 @@ export async function getRealtimeTraffic(): Promise<GA4RealtimeData | null> {
  * @param startDate - Start date in YYYY-MM-DD format
  * @param endDate - End date in YYYY-MM-DD format
  */
-export async function getTrafficData(startDate: string, endDate: string): Promise<GA4TrafficData | null> {
+export async function getTrafficData(
+  startDate: string,
+  endDate: string
+): Promise<GA4TrafficData | null> {
   try {
     const client = await getAnalyticsClient()
     if (!client) return null
@@ -189,7 +198,10 @@ export async function getTrafficData(startDate: string, endDate: string): Promis
  * @param startDate - Start date in YYYY-MM-DD format
  * @param endDate - End date in YYYY-MM-DD format
  */
-export async function getTrafficSources(startDate: string, endDate: string): Promise<GA4TrafficSource[]> {
+export async function getTrafficSources(
+  startDate: string,
+  endDate: string
+): Promise<GA4TrafficSource[]> {
   try {
     const client = await getAnalyticsClient()
     if (!client) return []
@@ -200,23 +212,20 @@ export async function getTrafficSources(startDate: string, endDate: string): Pro
       property: `properties/${propertyId}`,
       requestBody: {
         dateRanges: [{ startDate, endDate }],
-        dimensions: [
-          { name: 'sessionSource' },
-          { name: 'sessionMedium' },
-        ],
-        metrics: [
-          { name: 'sessions' },
-          { name: 'totalUsers' },
-        ],
+        dimensions: [{ name: 'sessionSource' }, { name: 'sessionMedium' }],
+        metrics: [{ name: 'sessions' }, { name: 'totalUsers' }],
         orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
         limit: 10,
       },
     })
 
     const rows = response.data.rows || []
-    const totalSessions = rows.reduce((sum, r) => sum + parseInt(r.metricValues?.[0]?.value || '0'), 0)
+    const totalSessions = rows.reduce(
+      (sum, r) => sum + parseInt(r.metricValues?.[0]?.value || '0'),
+      0
+    )
 
-    return rows.map(row => {
+    return rows.map((row) => {
       const sessions = parseInt(row.metricValues?.[0]?.value || '0')
       return {
         source: row.dimensionValues?.[0]?.value || '(unknown)',
@@ -238,7 +247,10 @@ export async function getTrafficSources(startDate: string, endDate: string): Pro
  * @param startDate - Start date in YYYY-MM-DD format
  * @param endDate - End date in YYYY-MM-DD format
  */
-export async function getDeviceBreakdown(startDate: string, endDate: string): Promise<GA4DeviceData | null> {
+export async function getDeviceBreakdown(
+  startDate: string,
+  endDate: string
+): Promise<GA4DeviceData | null> {
   try {
     const client = await getAnalyticsClient()
     if (!client) return null
@@ -261,7 +273,7 @@ export async function getDeviceBreakdown(startDate: string, endDate: string): Pr
       tablet: 0,
     }
 
-    rows.forEach(row => {
+    rows.forEach((row) => {
       const device = row.dimensionValues?.[0]?.value?.toLowerCase()
       const sessions = parseInt(row.metricValues?.[0]?.value || '0')
 

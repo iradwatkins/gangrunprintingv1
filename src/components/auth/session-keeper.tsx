@@ -84,8 +84,7 @@ export function SessionKeeper() {
           //   `Session still valid: ${Math.ceil(timeUntilExpiry / (24 * 60 * 60 * 1000))} days left`
           // )
         }
-      } catch (error) {
-      }
+      } catch (error) {}
     }
 
     // Initial check after a short delay

@@ -137,11 +137,7 @@ export default function CartPage() {
                           </div>
                         )}
                       </div>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => removeItem(item.id)}
-                      >
+                      <Button size="icon" variant="ghost" onClick={() => removeItem(item.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
@@ -150,15 +146,9 @@ export default function CartPage() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm text-muted-foreground">
-                          Qty: {item.quantity}
-                        </span>
+                        <span className="text-sm text-muted-foreground">Qty: {item.quantity}</span>
                         {item.productSlug && (
-                          <Button
-                            asChild
-                            size="sm"
-                            variant="ghost"
-                          >
+                          <Button asChild size="sm" variant="ghost">
                             <Link href={`/products/${item.productSlug}`}>
                               <Edit className="h-3 w-3 mr-1" />
                               Edit
@@ -187,11 +177,7 @@ export default function CartPage() {
                 </p>
               </CardHeader>
               <CardContent>
-                <ArtworkUpload
-                  maxFiles={10}
-                  maxSizeMB={50}
-                  onFilesChange={handleFilesChange}
-                />
+                <ArtworkUpload maxFiles={10} maxSizeMB={50} onFilesChange={handleFilesChange} />
 
                 {/* File Preview/Thumbnails */}
                 {uploadedFiles.length > 0 && (
@@ -258,11 +244,7 @@ export default function CartPage() {
                 </div>
 
                 {/* Continue to Payment Button */}
-                <Button
-                  className="w-full"
-                  size="lg"
-                  onClick={handleContinueToPayment}
-                >
+                <Button className="w-full" size="lg" onClick={handleContinueToPayment}>
                   Continue to Payment
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

@@ -16,27 +16,21 @@ export async function GET(request: NextRequest) {
 
     const addons = await prisma.addOn.findMany({
       where,
-      orderBy: [
-        { sortOrder: 'asc' },
-        { name: 'asc' }
-      ],
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
       include: {
         _count: {
           select: {
             AddOnSetItem: true,
             ProductAddOn: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     return NextResponse.json(addons)
   } catch (error) {
     console.error('[GET /api/addons] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch addons' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch addons' }, { status: 500 })
   }
 }
 
@@ -72,14 +66,11 @@ export async function POST(request: NextRequest) {
 
     // Check for duplicate name
     const existing = await prisma.addOn.findUnique({
-      where: { name }
+      where: { name },
     })
 
     if (existing) {
-      return NextResponse.json(
-        { error: 'An addon with this name already exists' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'An addon with this name already exists' }, { status: 400 })
     }
 
     const addon = await prisma.addOn.create({
@@ -104,16 +95,13 @@ export async function POST(request: NextRequest) {
 
     // Handle unique constraint violations
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'An addon with this name already exists' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'An addon with this name already exists' }, { status: 400 })
     }
 
     return NextResponse.json(
       {
         error: 'Failed to create addon',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )

@@ -19,22 +19,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     where: { slug: `${params.productSlug}-${params.citySlug}` },
     include: {
       City: true,
-      LandingPageSet: true
-    }
+      LandingPageSet: true,
+    },
   })
 
   if (!cityLandingPage) {
     return {
       title: 'Page Not Found | GangRun Printing',
-      description: 'The page you are looking for could not be found.'
+      description: 'The page you are looking for could not be found.',
     }
   }
 
-  const robotsValue = cityLandingPage.LandingPageSet?.robotsIndex && cityLandingPage.LandingPageSet?.robotsFollow
-    ? 'index, follow'
-    : cityLandingPage.LandingPageSet?.robotsIndex
-    ? 'index, nofollow'
-    : 'noindex, nofollow'
+  const robotsValue =
+    cityLandingPage.LandingPageSet?.robotsIndex && cityLandingPage.LandingPageSet?.robotsFollow
+      ? 'index, follow'
+      : cityLandingPage.LandingPageSet?.robotsIndex
+        ? 'index, nofollow'
+        : 'noindex, nofollow'
 
   return {
     title: cityLandingPage.title,
@@ -45,16 +46,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: cityLandingPage.metaDesc,
       type: 'website',
       locale: 'en_US',
-      siteName: 'GangRun Printing'
+      siteName: 'GangRun Printing',
     },
     twitter: {
       card: 'summary_large_image',
       title: cityLandingPage.title,
-      description: cityLandingPage.metaDesc
+      description: cityLandingPage.metaDesc,
     },
     alternates: {
-      canonical: cityLandingPage.LandingPageSet?.canonicalUrl || `https://gangrunprinting.com/${params.productSlug}/${params.citySlug}`
-    }
+      canonical:
+        cityLandingPage.LandingPageSet?.canonicalUrl ||
+        `https://gangrunprinting.com/${params.productSlug}/${params.citySlug}`,
+    },
   }
 }
 
@@ -74,62 +77,62 @@ export default async function CityLandingPage({ params }: PageProps) {
             include: {
               PaperStockSetItem: {
                 include: {
-                  PaperStock: true
-                }
-              }
-            }
+                  PaperStock: true,
+                },
+              },
+            },
           },
           QuantityGroup: {
             include: {
               QuantityGroupItem: {
                 include: {
-                  Quantity: true
+                  Quantity: true,
                 },
                 orderBy: {
-                  sortOrder: 'asc'
-                }
-              }
-            }
+                  sortOrder: 'asc',
+                },
+              },
+            },
           },
           SizeGroup: {
             include: {
               SizeGroupItem: {
                 include: {
-                  Size: true
+                  Size: true,
                 },
                 orderBy: {
-                  sortOrder: 'asc'
-                }
-              }
-            }
+                  sortOrder: 'asc',
+                },
+              },
+            },
           },
           AddOnSet: {
             include: {
               AddOnSetItem: {
                 include: {
-                  AddOn: true
+                  AddOn: true,
                 },
                 orderBy: {
-                  sortOrder: 'asc'
-                }
-              }
-            }
+                  sortOrder: 'asc',
+                },
+              },
+            },
           },
           TurnaroundTimeSet: {
             include: {
               TurnaroundTimeSetItem: {
                 include: {
-                  TurnaroundTime: true
+                  TurnaroundTime: true,
                 },
                 orderBy: {
-                  sortOrder: 'asc'
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                  sortOrder: 'asc',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   })
 
   // 404 if not found or not published
@@ -139,17 +142,19 @@ export default async function CityLandingPage({ params }: PageProps) {
 
   // Track view (increment organicViews)
   // Note: In production, use Redis or queue to avoid blocking render
-  await prisma.cityLandingPage.update({
-    where: { id: cityLandingPage.id },
-    data: {
-      organicViews: {
-        increment: 1
-      }
-    }
-  }).catch(err => {
-    // Don't block page render if analytics update fails
-    console.error('Failed to track view:', err)
-  })
+  await prisma.cityLandingPage
+    .update({
+      where: { id: cityLandingPage.id },
+      data: {
+        organicViews: {
+          increment: 1,
+        },
+      },
+    })
+    .catch((err) => {
+      // Don't block page render if analytics update fails
+      console.error('Failed to track view:', err)
+    })
 
   // Generate schema markup (7 types for maximum SEO)
   const schemaMarkup = generateSchemaMarkup(cityLandingPage)
@@ -191,14 +196,14 @@ function generateSchemaMarkup(cityLandingPage: any) {
         url: 'https://gangrunprinting.com',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://gangrunprinting.com/logo.png'
+          url: 'https://gangrunprinting.com/logo.png',
         },
         contactPoint: {
           '@type': 'ContactPoint',
           telephone: '+1-555-PRINT-NOW',
           contactType: 'Customer Service',
-          areaServed: 'US'
-        }
+          areaServed: 'US',
+        },
       },
 
       // 2. LocalBusiness
@@ -211,12 +216,12 @@ function generateSchemaMarkup(cityLandingPage: any) {
           '@type': 'PostalAddress',
           addressLocality: city.name,
           addressRegion: city.stateCode,
-          addressCountry: 'US'
+          addressCountry: 'US',
         },
         geo: {
           '@type': 'GeoCoordinates',
           latitude: city.latitude,
-          longitude: city.longitude
+          longitude: city.longitude,
         },
         url: `https://gangrunprinting.com/${cityLandingPage.slug}`,
         telephone: '+1-555-PRINT-NOW',
@@ -224,8 +229,8 @@ function generateSchemaMarkup(cityLandingPage: any) {
         aggregateRating: {
           '@type': 'AggregateRating',
           ratingValue: '4.8',
-          reviewCount: '127'
-        }
+          reviewCount: '127',
+        },
       },
 
       // 3. Product
@@ -236,7 +241,7 @@ function generateSchemaMarkup(cityLandingPage: any) {
         description: cityLandingPage.metaDesc,
         brand: {
           '@type': 'Brand',
-          name: 'GangRun Printing'
+          name: 'GangRun Printing',
         },
         offers: {
           '@type': 'AggregateOffer',
@@ -245,13 +250,13 @@ function generateSchemaMarkup(cityLandingPage: any) {
           highPrice: '499.99',
           offerCount: '50',
           availability: 'https://schema.org/InStock',
-          url: `https://gangrunprinting.com/${cityLandingPage.slug}`
+          url: `https://gangrunprinting.com/${cityLandingPage.slug}`,
         },
         aggregateRating: {
           '@type': 'AggregateRating',
           ratingValue: '4.8',
-          reviewCount: '127'
-        }
+          reviewCount: '127',
+        },
       },
 
       // 4. FAQPage
@@ -263,9 +268,9 @@ function generateSchemaMarkup(cityLandingPage: any) {
           name: faq.question,
           acceptedAnswer: {
             '@type': 'Answer',
-            text: faq.answer
-          }
-        }))
+            text: faq.answer,
+          },
+        })),
       },
 
       // 5. BreadcrumbList
@@ -277,21 +282,21 @@ function generateSchemaMarkup(cityLandingPage: any) {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://gangrunprinting.com'
+            item: 'https://gangrunprinting.com',
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: landingPageSet?.name || 'Products',
-            item: `https://gangrunprinting.com/${cityLandingPage.slug.split('-')[0]}`
+            item: `https://gangrunprinting.com/${cityLandingPage.slug.split('-')[0]}`,
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: `${city.name}, ${city.stateCode}`,
-            item: `https://gangrunprinting.com/${cityLandingPage.slug}`
-          }
-        ]
+            item: `https://gangrunprinting.com/${cityLandingPage.slug}`,
+          },
+        ],
       },
 
       // 6. WebPage
@@ -302,11 +307,11 @@ function generateSchemaMarkup(cityLandingPage: any) {
         name: cityLandingPage.title,
         description: cityLandingPage.metaDesc,
         isPartOf: {
-          '@id': 'https://gangrunprinting.com/#website'
+          '@id': 'https://gangrunprinting.com/#website',
         },
         breadcrumb: {
-          '@id': `https://gangrunprinting.com/${cityLandingPage.slug}#breadcrumb`
-        }
+          '@id': `https://gangrunprinting.com/${cityLandingPage.slug}#breadcrumb`,
+        },
       },
 
       // 7. HowTo (Ordering Process)
@@ -319,29 +324,29 @@ function generateSchemaMarkup(cityLandingPage: any) {
             '@type': 'HowToStep',
             position: 1,
             name: 'Choose Your Options',
-            text: 'Select paper stock, quantity, size, and turnaround time'
+            text: 'Select paper stock, quantity, size, and turnaround time',
           },
           {
             '@type': 'HowToStep',
             position: 2,
             name: 'Upload Your Design',
-            text: 'Upload your print-ready files or use our design services'
+            text: 'Upload your print-ready files or use our design services',
           },
           {
             '@type': 'HowToStep',
             position: 3,
             name: 'Review and Checkout',
-            text: 'Review your order details and complete secure payment'
+            text: 'Review your order details and complete secure payment',
           },
           {
             '@type': 'HowToStep',
             position: 4,
             name: 'Fast Delivery',
-            text: `Receive your order delivered to ${city.name}, ${city.stateCode}`
-          }
-        ]
-      }
-    ]
+            text: `Receive your order delivered to ${city.name}, ${city.stateCode}`,
+          },
+        ],
+      },
+    ],
   }
 }
 
@@ -368,24 +373,24 @@ export async function generateStaticParams() {
         published: true,
         City: {
           rank: {
-            lte: 50
-          }
-        }
+            lte: 50,
+          },
+        },
       },
       select: {
-        slug: true
+        slug: true,
       },
-      take: 50
+      take: 50,
     })
 
-    return topCityPages.map(page => {
+    return topCityPages.map((page) => {
       const parts = page.slug.split('-')
       const citySlug = parts.slice(-2).join('-') // last 2 parts: "new-york" or "los-angeles"
       const productSlug = parts.slice(0, -2).join('-') // everything before city
 
       return {
         productSlug,
-        citySlug
+        citySlug,
       }
     })
   } catch (error) {

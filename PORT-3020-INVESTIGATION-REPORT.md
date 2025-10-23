@@ -17,9 +17,11 @@
 ## Investigation Findings
 
 ### Initial Hypothesis
+
 Port 3020 was being used instead of 3002 due to "auto-restart conflicts" mentioned in documentation, but this wasn't verified.
 
 ### Test Performed
+
 1. ✅ Backed up working configuration (3020:3002 mapping)
 2. ✅ Changed docker-compose.yml to use `3002:3002` mapping
 3. ✅ Changed nginx to proxy to `localhost:3002`
@@ -29,6 +31,7 @@ Port 3020 was being used instead of 3002 due to "auto-restart conflicts" mention
 ### Observed Behavior
 
 **With Port 3002 Mapping** (`3002:3002`):
+
 ```
 Container Status: Exited (0) after 10-15 seconds
 Exit Code: 0 (clean exit, not a crash)
@@ -38,6 +41,7 @@ Website: 502 Bad Gateway
 ```
 
 **With Port 3020 Mapping** (`3020:3002`):
+
 ```
 Container Status: Running (healthy)
 Health Check: ✅ Passed
@@ -50,6 +54,7 @@ Uptime: Stable (hours/days)
 **Unknown process conflict on host port 3002** causes Docker containers to exit cleanly (status 0) shortly after starting.
 
 **Evidence**:
+
 - No visible process using port 3002 (`netstat`, `lsof` show nothing)
 - Port-lock service exists but is inactive
 - Container logs show successful startup before exit
@@ -65,12 +70,14 @@ Uptime: Stable (hours/days)
 ### Industry Standards
 
 **When to use different external/internal ports:**
+
 - ✅ **Proven port conflict** (this case)
 - ✅ Load balancing multiple containers
 - ✅ Security isolation requirements
 - ✅ Legacy migration scenarios
 
 **When to use matching ports:**
+
 - Standard case with no conflicts
 - Simpler mental model
 - Easier debugging
@@ -78,6 +85,7 @@ Uptime: Stable (hours/days)
 ### This Case: Exception is Justified
 
 **Port 3020 is NOT a violation of best practices** because:
+
 1. **Real technical constraint** - Port 3002 doesn't work (verified)
 2. **Documented reason** - Clear explanation in CLAUDE.md
 3. **Stable solution** - Works reliably in production
@@ -90,6 +98,7 @@ Uptime: Stable (hours/days)
 ### 🛑 DO NOT Change Port Mapping
 
 **NEVER attempt to change `3020:3002` to `3002:3002`** unless:
+
 1. The root cause of port 3002 conflict is identified and resolved
 2. Extensive testing proves 3002 works stably
 3. Documentation is updated with new findings
@@ -97,6 +106,7 @@ Uptime: Stable (hours/days)
 ### ✅ Current Configuration is Correct
 
 The existing setup is:
+
 - **Working** - Production-stable
 - **Documented** - Clearly explained
 - **Justified** - Based on real technical constraint
@@ -105,6 +115,7 @@ The existing setup is:
 ### 📋 Documentation Updates
 
 Updated `/root/websites/gangrunprinting/CLAUDE.md` with:
+
 - Clear warning about port 3002 conflict
 - Verification date (Oct 20, 2025)
 - Explicit instruction NOT to change mapping
@@ -117,12 +128,14 @@ Updated `/root/websites/gangrunprinting/CLAUDE.md` with:
 ### Configuration Files
 
 **docker-compose.yml** (Line 77):
+
 ```yaml
 ports:
-  - '3020:3002'  # External port 3020, internal port 3002
+  - '3020:3002' # External port 3020, internal port 3002
 ```
 
 **nginx config** (/etc/nginx/sites-enabled/gangrunprinting):
+
 ```nginx
 location / {
     proxy_pass http://localhost:3020;  # Proxy to Docker external port
@@ -131,10 +144,10 @@ location / {
 
 ### Port Allocation
 
-| Port | Binding | Service | Status |
-|------|---------|---------|--------|
-| 3020 | Host (0.0.0.0) | gangrunprinting proxy | ✅ REQUIRED |
-| 3002 | Container only | Next.js app | ✅ Internal use only |
+| Port | Binding        | Service               | Status               |
+| ---- | -------------- | --------------------- | -------------------- |
+| 3020 | Host (0.0.0.0) | gangrunprinting proxy | ✅ REQUIRED          |
+| 3002 | Container only | Next.js app           | ✅ Internal use only |
 
 ---
 
@@ -150,6 +163,7 @@ location / {
 ## Conclusion
 
 **Port 3020→3002 mapping is:**
+
 - ✅ **Necessary** - Required for stable operation
 - ✅ **Correct** - Follows best practices (exception justified)
 - ✅ **Documented** - Clearly explained with technical justification

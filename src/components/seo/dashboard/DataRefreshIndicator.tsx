@@ -26,12 +26,7 @@ export function DataRefreshIndicator({
       <div className="flex items-center gap-2">
         <span>Last updated: {formatTimeAgo(lastUpdate)}</span>
       </div>
-      <Button
-        disabled={isLoading}
-        size="sm"
-        variant="ghost"
-        onClick={onRefresh}
-      >
+      <Button disabled={isLoading} size="sm" variant="ghost" onClick={onRefresh}>
         <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
       </Button>
     </div>
