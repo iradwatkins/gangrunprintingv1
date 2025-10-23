@@ -1,0 +1,168 @@
+<!doctype html>  
+<!--[if IE 6 ]><html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]><html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	
+	<title>WooCommerce File Approval</title>
+	
+	<meta name="description" content="">
+	<meta name="author" content="Lagudi Domenico">
+	<meta name="copyright" content="Lagudi Domenico">
+	<meta name="generator" content="Documenter v2.0 http://rxa.li/documenter">
+	<meta name="date" content="2019-10-25T00:00:00+02:00">
+	
+	<link rel="stylesheet" href="assets/css/documenter_style.css" media="all">
+	
+	
+	
+	<script src="assets/js/jquery.js"></script>
+	
+	<script src="assets/js/jquery.scrollTo.js"></script>
+	<script src="assets/js/jquery.easing.js"></script>
+	
+	<script>document.createElement('section');var duration='500',easing='swing';</script>
+	<script src="assets/js/script.js"></script>
+	
+	<style>
+		html{background-color:#FFFFFF;color:#383838;}
+		::-moz-selection{background:#444444;color:#DDDDDD;}
+		::selection{background:#444444;color:#DDDDDD;}
+		#documenter_sidebar #documenter_logo{background-image:url();}
+		a{color:#0000FF;}
+		.btn {
+			border-radius:3px;
+		}
+		.btn-primary {
+			  background-image: -moz-linear-gradient(top, #0088CC, #0044CC);
+			  background-image: -ms-linear-gradient(top, #0088CC, #0044CC);
+			  background-image: -webkit-gradient(linear, 0 0, 0 0088CC%, from(#DDDDDD), to(#0044CC));
+			  background-image: -webkit-linear-gradient(top, #0088CC, #0044CC);
+			  background-image: -o-linear-gradient(top, #0088CC, #0044CC);
+			  background-image: linear-gradient(top, #0088CC, #0044CC);
+			  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0088CC', endColorstr='#0044CC', GradientType=0);
+			  border-color: #0044CC #0044CC #bfbfbf;
+			  color:#FFFFFF;
+		}
+		.btn-primary:hover,
+		.btn-primary:active,
+		.btn-primary.active,
+		.btn-primary.disabled,
+		.btn-primary[disabled] {
+		  border-color: #0088CC #0088CC #bfbfbf;
+		  background-color: #0044CC;
+		}
+		hr{border-top:1px solid #EBEBEB;border-bottom:1px solid #FFFFFF;}
+		#documenter_sidebar, #documenter_sidebar ul a{background-color:#DDDDDD;color:#222222;}
+		#documenter_sidebar ul a{-webkit-text-shadow:1px 1px 0px #EEEEEE;-moz-text-shadow:1px 1px 0px #EEEEEE;text-shadow:1px 1px 0px #EEEEEE;}
+		#documenter_sidebar ul{border-top:1px solid #AAAAAA;}
+		#documenter_sidebar ul a{border-top:1px solid #EEEEEE;border-bottom:1px solid #AAAAAA;color:#444444;}
+		#documenter_sidebar ul a:hover{background:#444444;color:#DDDDDD;border-top:1px solid #444444;}
+		#documenter_sidebar ul a.current{background:#444444;color:#DDDDDD;border-top:1px solid #444444;}
+		#documenter_copyright{display:block !important;visibility:visible !important;}
+	</style>
+	
+</head>
+<body class="documenter-project">
+	<div id="documenter_sidebar">
+		<a href="#documenter_cover" id="documenter_logo"></a>
+		<ul id="documenter_nav">
+			<li><a class="current" href="#documenter_cover">Start</a></li>
+				
+			<li><a href="#installation" title="Installation">Installation</a></li>
+			<li><a href="#configuration" title="Configuration">Configuration</a></li>			
+			<li><a href="#approval_workflow" title="Configuration">Approval workflow</a></li>			
+			<li><a href="#order_statuses" title="Order statuses">Note on order statuses</a></li>			
+			<li><a href="#email_notification" title="Email notificaitons">Email notifications</a></li>			
+			<li><a href="#frontend" title="Frontend">Frontend integration</a></li>
+		
+			
+
+		</ul>
+		<div id="documenter_copyright">Copyright Lagudi Domenico 2020
+		</div>
+	</div>
+	<div id="documenter_content">
+	<section id="documenter_cover">
+	<h1>WooCommerce File Approval</h1>
+	
+	<div id="documenter_buttons">
+		
+	</div>
+	<hr>
+	<ul>
+	<li>created: 01/05/2020</li>
+	<li>latest update: 01/05/2020</li>
+	<li>by: Lagudi Domenico</li>
+	</ul>
+	<p></p>
+	</section>
+	
+	<section id="installation">
+	<div class="page-header"><h3>Installation</h3><hr class="notop"></div>
+		<div>
+			First download the plugin file zip file, then there are two ways for installing:</div>
+		<div>
+			&nbsp;</div>
+		<div>
+			1) The best way to install is via the Plugins &gt; Add New Plugins section in the Wordpress Backend.</div>
+		<div>
+			&nbsp;</div>
+		<div>
+			2) You can also manually bu unzipping plugin file in /wp-content/plugins directory</div>
+		<div>
+			&nbsp;</div>
+		<div>
+			Once the plugin is installed please activate.</div>
+		<div>
+			</div>
+	</section>
+	
+	<section id="configuration">
+	<div class="page-header"><h3>Configuration</h3><hr class="notop"></div>
+		<p>Through the <strong>WooCommerce File Approval -> Settings</strong> menu you can set different options like some visual adjustments and email notifications.</p>
+		<p>Through the <strong>WooCommerce File Approval -> Email texts</strong> menu you can customize and translate (WPML) the text displayed in the notification emails.</p>
+	</section>
+
+	
+	<section id="approval_workflow">
+		<div class="page-header"><h3>Approval workflow</h3><hr class="notop"></div>
+		<p>The process is straightforward:</p>
+		<p>
+			<ol>
+			<li>The admin, through the order details page, attaches one or more file. For each of them, he can optionally leave a message. Once saved, a notification email is sent to the user</li>
+			<li>The user, through the order details page, can approve or reject the attachment. Optionally can leave a message. Once don, a notification is sent to the admin</li>
+			<li>The admin can eventually re-attach a new file or simply post a message to have further info (so the process cycles again trough step 1)</li>
+			</ol>
+		</p>
+		<p><img alt="" src="assets/images/image_0.jpg" width="70%"></p>
+	</section>
+	
+	<section id="email_notification">
+		<div class="page-header"><h3>Email notifications</h3><hr class="notop"></div>
+		<p>
+			Every time the admin edit the attachments (so the user needs to re approve/reject it) or posts a message, The customer receives an email notification. Same things happens when the customer 
+			approves / rejects an attachments or if he posts a mesage. Email texts can be configured (and eventually translated via WPML) via the special Email texts menu.
+		</p>
+		<p><img alt="" src="assets/images/image_1.jpg" width="70%"></p>
+		<p><img alt="" src="assets/images/image_2.jpg" width="70%"></p>
+		
+	</section>
+	
+	<section id="frontend">
+		<div class="page-header"><h3>Frontend integration</h3><hr class="notop"></div>
+		<p>
+		 The approva area can be accessed through the order details page. The user can then approve / reject and optionally leave a message (according the attachments settings set by the admin). By defult,
+		 the user won't be able to post any further message after the approval / rejections. However, this behaviour can be changed any by the special option the admin finds in the attachment option area
+		</p>
+		<p><img alt="" src="assets/images/image_3.jpg" width="70%"></p>
+		<p><img alt="" src="assets/images/image_4.jpg" width="70%"></p>
+	</section>
+
+
+	</div>
+</body>
+</html>

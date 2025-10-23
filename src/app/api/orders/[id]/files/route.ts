@@ -2,15 +2,18 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateRequest } from '@/lib/auth';
 import { z } from 'zod';
+import { withApiHandler, ApiError, createSuccessResponse } from '@/lib/api/error-handler';
+import { logger } from '@/lib/logger-safe';
 
 // GET - List all files for an order
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
+export const GET = withApiHandler(
+  async (request: NextRequest, context, params: { id: string }) => {
     const { user } = await validateRequest();
     const orderId = params.id;
+
+    if (!user) {
+      throw ApiError.authentication();
+    }
 
     // Verify order exists and user has access
     const order = await prisma.order.findUnique({
@@ -21,22 +24,24 @@ export async function GET(
     });
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      );
+      throw ApiError.notFound('Order');
     }
 
     // Check permissions
-    const isAdmin = session?.user?.role === 'ADMIN';
-    const isOwner = session?.user?.email === order.email;
+    const isAdmin = user.role === 'ADMIN';
+    const isOwner = user.email === order.email || 
+                   (order.userId && order.userId === user.id);
 
     if (!isAdmin && !isOwner) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+      throw ApiError.authorization('You do not have access to this order');
     }
+
+    logger.info('Fetching order files', {
+      orderId,
+      userId: user.id,
+      userRole: user.role,
+      requestId: context.requestId,
+    });
 
     // Get all files for the order
     const files = await prisma.orderFile.findMany({
@@ -46,6 +51,7 @@ export async function GET(
       },
       include: {
         FileMessage: {
+          where: isAdmin ? {} : { isInternal: false }, // Hide internal messages from customers
           orderBy: {
             createdAt: 'desc',
           },
@@ -62,18 +68,20 @@ export async function GET(
       ? files
       : files.filter((file) => file.notifyCustomer || file.uploadedByRole === 'CUSTOMER');
 
-    return NextResponse.json({
+    logger.info('Order files fetched successfully', {
+      orderId,
+      totalFiles: files.length,
+      visibleFiles: visibleFiles.length,
+      userId: user.id,
+      requestId: context.requestId,
+    });
+
+    return createSuccessResponse({
       files: visibleFiles,
       count: visibleFiles.length,
     });
-  } catch (error) {
-    console.error('Error fetching order files:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch files' },
-      { status: 500 }
-    );
   }
-}
+);
 
 // POST - Upload a new file
 const uploadSchema = z.object({
@@ -88,43 +96,18 @@ const uploadSchema = z.object({
   message: z.string().optional(), // Optional message with upload
 });
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
+export const POST = withApiHandler(
+  async (request: NextRequest, context, params: { id: string }) => {
     const { user } = await validateRequest();
     const orderId = params.id;
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      throw ApiError.authentication();
     }
 
-    // Rate limiting
-    const {
-      checkRateLimit,
-      getRateLimitIdentifier,
-      getClientIp,
-      formatRateLimitError,
-      addRateLimitHeaders,
-      RATE_LIMITS
-    } = await import('@/lib/security/rate-limiter');
-
-    const clientIp = getClientIp(request.headers);
-    const rateLimitId = getRateLimitIdentifier(clientIp, user.id);
-    const rateLimitResult = checkRateLimit(rateLimitId, RATE_LIMITS.FILE_UPLOAD);
-
-    if (!rateLimitResult.allowed) {
-      const errorResponse = NextResponse.json(
-        { error: formatRateLimitError(rateLimitResult) },
-        { status: 429 }
-      );
-      addRateLimitHeaders(errorResponse.headers, rateLimitResult);
-      return errorResponse;
-    }
+    // Parse and validate request body
+    const body = await request.json();
+    const data = uploadSchema.parse(body);
 
     // Verify order exists and user has access
     const order = await prisma.order.findUnique({
@@ -132,50 +115,64 @@ export async function POST(
     });
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      );
+      throw ApiError.notFound('Order');
     }
 
     const isAdmin = user.role === 'ADMIN';
-    const isOwner = user.email === order.email;
+    const isOwner = user.email === order.email || (order.userId && order.userId === user.id);
 
     if (!isAdmin && !isOwner) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+      throw ApiError.authorization('You do not have access to this order');
     }
 
-    const body = await request.json();
-    const data = uploadSchema.parse(body);
-
-    // File validation and sanitization
-    const { validateFile } = await import('@/lib/security/file-validator');
-
+    // Enhanced file validation
     if (data.filename && data.fileSize && data.mimeType) {
-      const validationResult = await validateFile(
+      const { validateFileAdvanced } = await import('@/lib/security/advanced-file-validator');
+      
+      const validationResult = await validateFileAdvanced(
         data.filename,
         data.fileSize,
         data.mimeType,
+        undefined, // No file content for URL-based uploads
         orderId
       );
 
       if (!validationResult.valid) {
-        return NextResponse.json(
-          { error: validationResult.error },
-          { status: 400 }
-        );
+        throw ApiError.fileUpload(validationResult.error!, {
+          threatLevel: validationResult.threatLevel,
+          warnings: validationResult.warnings,
+        });
       }
 
       // Use sanitized filename
       data.filename = validationResult.sanitizedFilename || data.filename;
+      
+      // Log security warnings
+      if (validationResult.threatLevel && validationResult.threatLevel !== 'low') {
+        logger.warn('File upload with security warnings', {
+          filename: data.filename,
+          threatLevel: validationResult.threatLevel,
+          warnings: validationResult.warnings,
+          orderId,
+          userId: user.id,
+          requestId: context.requestId,
+        });
+      }
     }
 
     // Determine upload role and approval status
     const uploadedByRole = isAdmin ? 'ADMIN' : 'CUSTOMER';
     const approvalStatus = data.approvalStatus || (uploadedByRole === 'ADMIN' ? 'WAITING' : 'NOT_REQUIRED');
+
+    logger.info('Creating order file record', {
+      orderId,
+      filename: data.filename,
+      fileType: data.fileType,
+      uploadedByRole,
+      approvalStatus,
+      userId: user.id,
+      requestId: context.requestId,
+    });
 
     // Create the file record
     const orderFile = await prisma.orderFile.create({
@@ -234,30 +231,42 @@ export async function POST(
             },
             data.message
           );
+          
+          logger.info('Proof ready notification sent', {
+            orderId,
+            fileId: orderFile.id,
+            customerEmail: orderWithUser.email,
+            requestId: context.requestId,
+          });
         }
       }
     } catch (emailError) {
-      console.error('Failed to send file upload email:', emailError);
+      logger.error('Failed to send file upload email', {
+        orderId,
+        fileId: orderFile.id,
+        error: emailError instanceof Error ? emailError.message : String(emailError),
+        requestId: context.requestId,
+      });
       // Don't fail the request if email fails
     }
 
-    // Add rate limit headers to response
-    const response = NextResponse.json(orderFile, { status: 201 });
-    addRateLimitHeaders(response.headers, rateLimitResult);
+    logger.info('File uploaded successfully', {
+      orderId,
+      fileId: orderFile.id,
+      filename: data.filename,
+      fileType: data.fileType,
+      userId: user.id,
+      requestId: context.requestId,
+    });
 
-    return response;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
-        { status: 400 }
-      );
-    }
-
-    console.error('Error uploading file:', error);
-    return NextResponse.json(
-      { error: 'Failed to upload file' },
-      { status: 500 }
-    );
+    return createSuccessResponse(orderFile, 201, 'File uploaded successfully');
+  },
+  {
+    validateSchema: uploadSchema,
+    rateLimit: {
+      keyPrefix: 'file_upload',
+      maxRequests: 10,
+      windowMs: 60 * 1000, // 1 minute
+    },
   }
-}
+);

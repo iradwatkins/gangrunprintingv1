@@ -53,12 +53,25 @@ export function FileUploadDialog({ open, onOpenChange, orderId, onSuccess }: Pro
     setUploading(true);
 
     try {
-      // TODO: Upload to MinIO first
-      // For now, we'll use a placeholder URL
-      const fileUrl = `https://minio.gangrunprinting.com/files/${Date.now()}-${selectedFile.name}`;
-      const thumbnailUrl = selectedFile.type.startsWith('image/')
-        ? fileUrl
-        : undefined;
+      // Upload file to temporary storage first, then create order file record
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      
+      const uploadResponse = await fetch('/api/upload/temporary', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error('File upload failed');
+      }
+      
+      const uploadData = await uploadResponse.json();
+      const uploadedFile = uploadData.files[0];
+      
+      // Use the file URL from the upload response
+      const fileUrl = `/api/upload/temporary/${uploadedFile.fileId}`;
+      const thumbnailUrl = uploadedFile.thumbnailUrl;
 
       const response = await fetch(`/api/orders/${orderId}/files`, {
         method: 'POST',

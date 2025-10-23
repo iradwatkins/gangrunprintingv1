@@ -1,0 +1,54 @@
+.wcfa_input_attachment_container {
+  margin-bottom: 3px;
+  padding: 12px;
+  border: 1px #d3d3d3 solid;
+}
+.wcfa_clear_file_button
+{
+	display:none;
+	clear: right;
+	margin-bottom:1px;
+}
+.wcfa_attachment_input
+{
+	display:inline-block;
+	clear:left;
+}
+.wcfa_attachments_label
+{
+	color:black;
+	display:block;
+	clear:both;
+	margin-top: 10px;
+}
+.wcfa_file_name_display_after_upload
+{
+	font-weight: bold;
+	display: block;
+	margin-bottom: 3px;
+}
+.wcfa_file_uploader_container 
+{
+	/* border: 1px solid #dedede;
+	padding: 20px; */
+	margin-top: 10px;
+	margin-bottom: 10px;
+	display: block;
+
+}
+.wcfa_upload_progressbar
+{
+	background-color: grey;
+    display: block;
+    height: 10px;
+    width: 0%;
+}
+.wcfa_upload_progress_status_container
+{
+	display:none;
+	margin-top: 5px;
+}
+button.button.wcfa_file_upload_button, button.button.wcfa_file_tmp_delete_button
+{
+	display:none;
+}

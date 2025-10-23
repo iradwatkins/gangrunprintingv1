@@ -1,0 +1,32 @@
+#wcfa_shortcode_list
+{
+	margin-bottom: 30px;
+}
+#wcfa_shortcode_container 
+{
+	padding: 5px 10px 20px 30px;
+	background: #f8f8f8;
+	border-radius: 3px;
+	margin-bottom: 30px;
+	max-width: 80%;
+}
+.wcfa_subject 
+{
+	display: block;
+	clear: both;
+	min-width: 400px;
+}
+.wcfa_settings_row
+{
+	display: block;
+	margin-bottom: 30px;
+	overflow: hidden;
+}
+.wcfa_editor_container
+{
+	display: inline-block;
+	margin-right: 20px;
+	margin-bottom: 20px;
+	vertical-align: top;
+	min-width: 48%;
+}

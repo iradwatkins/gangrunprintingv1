@@ -65,10 +65,25 @@ export function SimpleFileUpload({ orderId, onSuccess }: Props) {
         })
       }, 100)
 
-      // TODO: In production, upload to MinIO first
-      // For now, using placeholder URL
-      const fileUrl = `https://minio.gangrunprinting.com/files/${Date.now()}-${file.name}`
-      const thumbnailUrl = file.type.startsWith('image/') ? fileUrl : undefined
+      // Upload file to temporary storage first, then associate with order
+      const formData = new FormData()
+      formData.append('file', file)
+      
+      const uploadResponse = await fetch('/api/upload/temporary', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (!uploadResponse.ok) {
+        throw new Error('File upload failed')
+      }
+      
+      const uploadData = await uploadResponse.json()
+      const uploadedFile = uploadData.files[0]
+      
+      // Use the file URL from the upload response
+      const fileUrl = `/api/upload/temporary/${uploadedFile.fileId}`
+      const thumbnailUrl = uploadedFile.thumbnailUrl
 
       const response = await fetch(`/api/orders/${orderId}/files`, {
         method: 'POST',

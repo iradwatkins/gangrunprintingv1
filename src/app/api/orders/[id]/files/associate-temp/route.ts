@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateRequest } from '@/lib/auth';
+import { logger } from '@/lib/logger-safe';
 import { z } from 'zod';
 
 // Helper functions
@@ -97,6 +98,10 @@ export async function POST(
       }
     }
 
+    // Extract session ID from the first temp file path
+    const sessionId = request.headers.get('x-session-id') || 
+      `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     // Create OrderFile records for each temporary upload (with sanitized filenames)
     const createdFiles = await Promise.all(
       validated.tempFiles.map(async (tempFile) => {
@@ -104,11 +109,12 @@ export async function POST(
         const sanitized = sanitizeFilename(tempFile.originalName);
         const filename = sanitized.valid ? sanitized.sanitizedFilename! : tempFile.originalName;
 
-        return prisma.orderFile.create({
+        // Create the database record first with temporary URL
+        const orderFile = await prisma.orderFile.create({
           data: {
             orderId: order.id,
             filename,
-            fileUrl: `/api/upload/temporary/${tempFile.fileId}`, // Temporary URL, should be moved to MinIO
+            fileUrl: `/api/upload/temporary/${tempFile.fileId}`, // Will be updated after migration
             fileSize: tempFile.size,
             mimeType: tempFile.mimeType,
             thumbnailUrl: tempFile.thumbnailUrl,
@@ -119,13 +125,63 @@ export async function POST(
             isVisible: true,
             notifyAdmin: true, // Notify admin of new customer artwork
             notifyCustomer: false,
+            metadata: {
+              tempFileId: tempFile.fileId,
+              sessionId: sessionId,
+              migrationStatus: 'pending',
+            },
           },
           include: {
             FileMessage: true,
           },
-        })
+        });
+
+        return orderFile;
       })
     );
+
+    // Migrate files to permanent storage
+    try {
+      const { FileMigrationService } = await import('@/lib/storage/file-migration');
+      
+      const migrationData = createdFiles.map(file => ({
+        fileId: (file.metadata as any)?.tempFileId || '',
+        sessionId: (file.metadata as any)?.sessionId || sessionId,
+        orderFileId: file.id,
+        fileType: 'CUSTOMER_ARTWORK' as const,
+      }));
+
+      await FileMigrationService.migrateOrderFiles(order.id, migrationData);
+      
+      logger.info('Files migrated to permanent storage successfully', {
+        orderId: order.id,
+        fileCount: createdFiles.length,
+      });
+    } catch (migrationError) {
+      logger.error('File migration failed, files remain in temporary storage', {
+        orderId: order.id,
+        error: migrationError instanceof Error ? migrationError.message : String(migrationError),
+      });
+      
+      // Update file records to indicate migration failure
+      await Promise.all(
+        createdFiles.map(file =>
+          prisma.orderFile.update({
+            where: { id: file.id },
+            data: {
+              metadata: {
+                ...(file.metadata as any),
+                migrationStatus: 'failed',
+                migrationError: migrationError instanceof Error ? migrationError.message : String(migrationError),
+              },
+            },
+          })
+        )
+      );
+      
+      // Don't fail the request - files are still accessible via temporary URLs
+      logger.warn('Continuing with temporary file URLs due to migration failure');
+    }
 
     // Send email notification to admin about uploaded artwork
     try {
