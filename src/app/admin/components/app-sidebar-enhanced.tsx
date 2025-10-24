@@ -212,15 +212,20 @@ const teamsData = [
 
 export function AppSidebarEnhanced({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Get navigation state management
-  const initialState = navItems.reduce((acc, item) => {
-    acc[item.title] = item.isActive || false
-    return acc
-  }, {} as Record<string, boolean>)
+  const initialState = navItems.reduce(
+    (acc, item) => {
+      acc[item.title] = item.isActive || false
+      return acc
+    },
+    {} as Record<string, boolean>
+  )
 
   const { expandAll, collapseAll } = useNavigationState(initialState)
 
   // Get all expandable section titles
-  const expandableSections = navItems.filter((item) => item.items && item.items.length > 0).map((item) => item.title)
+  const expandableSections = navItems
+    .filter((item) => item.items && item.items.length > 0)
+    .map((item) => item.title)
 
   // Keyboard shortcuts
   React.useEffect(() => {
@@ -249,7 +254,7 @@ export function AppSidebarEnhanced({ ...props }: React.ComponentProps<typeof Sid
       <SidebarContent>
         <NavMainEnhanced items={navItems} />
         {/* Toolbar for expand/collapse all */}
-        <NavToolbar onExpandAll={() => expandAll(expandableSections)} onCollapseAll={collapseAll} />
+        <NavToolbar onCollapseAll={collapseAll} onExpandAll={() => expandAll(expandableSections)} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       include: {
         Product: {
           include: {
-            images: true,
+            ProductImage: true,
           },
         },
       },
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       include: {
         Product: {
           include: {
-            images: true,
+            ProductImage: true,
           },
         },
       },

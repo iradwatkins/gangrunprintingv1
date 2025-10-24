@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // GET /api/admin/menus/[id] - Get single menu with all items and sections
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -48,10 +45,7 @@ export async function GET(
 }
 
 // PUT /api/admin/menus/[id] - Update menu
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -83,10 +77,7 @@ export async function PUT(
 }
 
 // DELETE /api/admin/menus/[id] - Delete menu
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {

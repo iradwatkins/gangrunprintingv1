@@ -175,13 +175,13 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
             </div>
 
             <div className="flex flex-col items-end gap-2">
-              <Badge variant="outline" className={cn(statusInfo.color, 'text-xs font-medium')}>
+              <Badge className={cn(statusInfo.color, 'text-xs font-medium')} variant="outline">
                 <StatusIcon className="h-3 w-3 mr-1" />
                 {statusInfo.label}
               </Badge>
 
               {unreadMessages > 0 && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge className="text-xs" variant="secondary">
                   <MessageSquare className="h-3 w-3 mr-1" />
                   {unreadMessages}
                 </Badge>
@@ -193,33 +193,33 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
         <CardContent className="space-y-4">
           {/* Enhanced file preview */}
           <EnhancedFilePreview
-            filename={proof.filename}
-            fileUrl={proof.fileUrl}
-            thumbnailUrl={proof.thumbnailUrl}
-            mimeType={proof.mimeType}
-            fileSize={proof.fileSize}
-            label={proof.label}
-            showFileInfo={false}
             className="border-0 shadow-none bg-transparent"
+            filename={proof.filename}
+            fileSize={proof.fileSize}
+            fileUrl={proof.fileUrl}
+            label={proof.label}
+            mimeType={proof.mimeType}
+            showFileInfo={false}
+            thumbnailUrl={proof.thumbnailUrl}
           />
 
           {/* Quick actions for waiting proofs */}
           {isWaiting && (
             <div className="grid grid-cols-2 gap-2">
               <Button
-                size="sm"
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 disabled={submitting}
+                size="sm"
                 onClick={() => openApprovalDialog('APPROVED')}
               >
                 <ThumbsUp className="h-4 w-4 mr-1" />
                 Approve
               </Button>
               <Button
-                size="sm"
-                variant="outline"
                 className="border-red-300 text-red-700 hover:bg-red-50"
                 disabled={submitting}
+                size="sm"
+                variant="outline"
                 onClick={() => openApprovalDialog('REJECTED')}
               >
                 <ThumbsDown className="h-4 w-4 mr-1" />
@@ -231,7 +231,7 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
           {/* Details trigger */}
           <Sheet open={detailsOpen} onOpenChange={setDetailsOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" className="w-full justify-between" size="sm">
+              <Button className="w-full justify-between" size="sm" variant="outline">
                 <span className="flex items-center gap-2">
                   <Eye className="h-4 w-4" />
                   View Details
@@ -240,7 +240,7 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
               </Button>
             </SheetTrigger>
 
-            <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
+            <SheetContent className="h-[85vh] overflow-y-auto" side="bottom">
               <SheetHeader className="text-left mb-4">
                 <SheetTitle>{proof.label || proof.filename}</SheetTitle>
                 <SheetDescription>
@@ -253,16 +253,16 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                 <div className="aspect-video bg-muted rounded-lg overflow-hidden">
                   {proof.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
                     <img
-                      src={proof.fileUrl}
                       alt={proof.label || proof.filename}
                       className="w-full h-full object-contain"
                       loading="lazy"
+                      src={proof.fileUrl}
                     />
                   ) : proof.fileUrl.match(/\.pdf$/i) ? (
                     <iframe
+                      className="w-full h-full border-0"
                       src={proof.fileUrl}
                       title={proof.label || proof.filename}
-                      className="w-full h-full border-0"
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
@@ -275,14 +275,15 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                 {/* File actions */}
                 <div className="grid grid-cols-2 gap-3">
                   <Button
+                    className="w-full"
                     variant="outline"
                     onClick={() => window.open(proof.fileUrl, '_blank')}
-                    className="w-full"
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     Full Size
                   </Button>
                   <Button
+                    className="w-full"
                     variant="outline"
                     onClick={() => {
                       const a = document.createElement('a')
@@ -290,7 +291,6 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                       a.download = proof.filename
                       a.click()
                     }}
-                    className="w-full"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download
@@ -319,9 +319,9 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                         Approve for Production
                       </Button>
                       <Button
-                        variant="outline"
                         className="w-full border-red-300 text-red-700 hover:bg-red-50 py-3"
                         disabled={submitting}
+                        variant="outline"
                         onClick={() => openApprovalDialog('REJECTED')}
                       >
                         <XCircle className="h-5 w-5 mr-2" />
@@ -342,7 +342,7 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                       {proof.FileMessage.map((msg) => (
                         <div key={msg.id} className="bg-muted rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline" className="text-xs">
+                            <Badge className="text-xs" variant="outline">
                               {msg.authorRole === 'admin' ? '👨‍💼 Team' : '👤 You'}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
@@ -377,12 +377,13 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="message" className="text-sm font-medium">
+              <Label className="text-sm font-medium" htmlFor="message">
                 {approvalAction === 'APPROVED'
                   ? 'Add a comment (optional)'
                   : 'What changes do you need? *'}
               </Label>
               <Textarea
+                className="resize-none text-sm"
                 id="message"
                 placeholder={
                   approvalAction === 'APPROVED'
@@ -393,7 +394,6 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
                 rows={4}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="resize-none text-sm"
               />
               {approvalAction === 'REJECTED' && (
                 <p className="text-xs text-muted-foreground">
@@ -433,8 +433,8 @@ export function MobileProofApprovalCard({ orderId, proof, onApprovalChange }: Pr
             </Button>
 
             <Button
-              variant="outline"
               disabled={submitting}
+              variant="outline"
               onClick={() => setApprovalDialogOpen(false)}
             >
               Cancel

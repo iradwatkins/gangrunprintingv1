@@ -179,33 +179,12 @@ export default function CartPage() {
               <CardContent>
                 <ArtworkUpload maxFiles={10} maxSizeMB={50} onFilesChange={handleFilesChange} />
 
-                {/* File Preview/Thumbnails */}
+                {/* Simple success confirmation */}
                 {uploadedFiles.length > 0 && (
-                  <div className="mt-4">
-                    <p className="text-sm font-medium text-green-600 mb-3">
-                      ✓ {uploadedFiles.length} file{uploadedFiles.length !== 1 ? 's' : ''} uploaded
+                  <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-sm font-medium text-green-700 dark:text-green-400 flex items-center gap-2">
+                      👍 {uploadedFiles.length} file{uploadedFiles.length !== 1 ? 's' : ''} uploaded successfully
                     </p>
-                    <div className="grid grid-cols-3 gap-3">
-                      {uploadedFiles.map((file) => (
-                        <div key={file.id} className="relative group">
-                          <div className="aspect-square rounded-lg overflow-hidden bg-muted border-2 border-green-200">
-                            {file.preview ? (
-                              <img
-                                alt={file.file.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                                src={file.preview}
-                              />
-                            ) : (
-                              <div className="flex items-center justify-center h-full">
-                                <Upload className="h-8 w-8 text-muted-foreground" />
-                              </div>
-                            )}
-                          </div>
-                          <p className="text-xs text-center mt-1 truncate">{file.file.name}</p>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 )}
 

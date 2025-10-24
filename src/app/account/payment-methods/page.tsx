@@ -31,7 +31,7 @@ export default async function PaymentMethodsPage() {
         <h1 className="text-3xl font-bold mb-2">Payment Methods</h1>
         <p className="text-muted-foreground mb-8">Manage your saved payment methods</p>
 
-        <PaymentMethodManager paymentMethods={paymentMethods} addresses={addresses} />
+        <PaymentMethodManager addresses={addresses} paymentMethods={paymentMethods} />
       </div>
     </AccountWrapper>
   )

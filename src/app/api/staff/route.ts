@@ -49,13 +49,16 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         lastLoginAt: true,
         isActive: true,
+        permissions: true, // Include permissions from database
       },
     })
 
-    // Map staff with permissions
+    // Map staff with permissions (use database permissions or fallback to role defaults)
     const staff = allStaff.map((member) => ({
       ...member,
-      permissions: getPermissionsForRole(member.role),
+      permissions: member.permissions && member.permissions.length > 0
+        ? member.permissions
+        : getPermissionsForRole(member.role),
     }))
 
     // Calculate stats
@@ -136,7 +139,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, email, role } = body
+    const { name, email, role, permissions } = body
 
     // Validate required fields
     if (!email || !role) {
@@ -157,6 +160,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 })
     }
 
+    // Use provided permissions or fallback to role defaults
+    const staffPermissions = permissions && permissions.length > 0
+      ? permissions
+      : getPermissionsForRole(role)
+
     // Create new staff member
     const newStaff = await prisma.user.create({
       data: {
@@ -164,6 +172,7 @@ export async function POST(request: NextRequest) {
         email,
         name: name || email.split('@')[0],
         role,
+        permissions: staffPermissions, // Save permissions to database
         emailVerified: null,
         isActive: true,
         updatedAt: new Date(),
@@ -172,10 +181,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      staff: {
-        ...newStaff,
-        permissions: getPermissionsForRole(newStaff.role),
-      },
+      staff: newStaff,
     })
   } catch (error) {
     console.error('Failed to create staff member:', error)

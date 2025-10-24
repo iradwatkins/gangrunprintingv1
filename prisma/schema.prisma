@@ -724,6 +724,7 @@ model Order {
   referenceNumber     String?   @unique
   userId              String?
   vendorId            String?
+  origin              String? // Traffic source (Direct, Facebook, Google, Instagram, etc.) - auto-detected from referrer/UTM
   funnelId            String? // FUNNELKIT: Track which funnel generated this order
   funnelStepId        String? // FUNNELKIT: Track which step converted
   sourceLandingPageId String? // LANDING PAGES: Track which city landing page generated this order
@@ -1719,6 +1720,7 @@ model User {
   role              UserRole            @default(CUSTOMER)
   isBroker          Boolean             @default(false)
   brokerDiscounts   Json?
+  permissions       String[]            @default([]) // Staff permissions array
   marketingOptIn    Boolean             @default(true)
   phoneNumber       String?
   smsOptIn          Boolean             @default(false)

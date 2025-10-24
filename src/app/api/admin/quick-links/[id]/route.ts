@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // PUT /api/admin/quick-links/[id] - Update quick link
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -14,16 +11,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const {
-      label,
-      linkType,
-      linkValue,
-      sortOrder,
-      isActive,
-      iconUrl,
-      badgeText,
-      badgeColor,
-    } = body
+    const { label, linkType, linkValue, sortOrder, isActive, iconUrl, badgeText, badgeColor } = body
 
     const quickLink = await prisma.quickLink.update({
       where: { id: params.id },
@@ -47,10 +35,7 @@ export async function PUT(
 }
 
 // DELETE /api/admin/quick-links/[id] - Delete quick link
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {

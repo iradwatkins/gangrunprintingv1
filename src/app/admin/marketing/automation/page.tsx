@@ -122,6 +122,60 @@ export default function AutomationPage() {
     }
   }
 
+  const createTemplateWorkflow = async (templateType: 'welcome' | 'cart-abandonment' | 'winback') => {
+    const templates = {
+      welcome: {
+        name: 'Welcome Series',
+        description: 'Automated onboarding emails for new customers',
+        trigger: { type: 'event', event: 'user_registered' },
+        steps: [
+          { type: 'wait', duration: 0 },
+          { type: 'email', template: 'welcome', subject: 'Welcome to GangRun Printing!' },
+          { type: 'wait', duration: 24 },
+          { type: 'email', template: 'getting-started', subject: 'Getting started with your first order' },
+        ],
+      },
+      'cart-abandonment': {
+        name: 'Cart Abandonment Recovery',
+        description: 'Recover abandoned carts with automated reminders',
+        trigger: { type: 'event', event: 'cart_abandoned' },
+        steps: [
+          { type: 'wait', duration: 1 },
+          { type: 'email', template: 'cart-reminder', subject: "You left items in your cart" },
+          { type: 'wait', duration: 24 },
+          { type: 'email', template: 'cart-discount', subject: 'Complete your order - 10% off!' },
+        ],
+      },
+      winback: {
+        name: 'Win-back Campaign',
+        description: 'Re-engage customers who haven\'t ordered in 90+ days',
+        trigger: { type: 'condition', condition: { field: 'last_order_days', operator: 'gte', value: 90 } },
+        steps: [
+          { type: 'email', template: 'we-miss-you', subject: 'We miss you! Here\'s 15% off' },
+          { type: 'wait', duration: 72 },
+          { type: 'email', template: 'final-offer', subject: 'Last chance - 20% off your next order' },
+        ],
+      },
+    }
+
+    const template = templates[templateType]
+
+    try {
+      const response = await fetch('/api/marketing/workflows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(template),
+      })
+
+      if (response.ok) {
+        const workflow = await response.json()
+        router.push(`/admin/marketing/automation/${workflow.id}/edit`)
+      }
+    } catch (error) {
+      console.error('Failed to create workflow from template:', error)
+    }
+  }
+
   if (loading) {
     return <div className="p-6">Loading automation workflows...</div>
   }
@@ -132,7 +186,7 @@ export default function AutomationPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Marketing Automation</h1>
-          <p className="text-gray-600 mt-2">Create automated workflows to engage customers</p>
+          <p className="text-muted-foreground mt-2">Create automated workflows to engage customers</p>
         </div>
 
         <Button onClick={() => router.push('/admin/marketing/automation/new')}>
@@ -147,7 +201,7 @@ export default function AutomationPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Workflows</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Workflows</p>
                 <p className="text-3xl font-bold">{workflows.length}</p>
               </div>
               <Zap className="w-8 h-8 text-blue-500" />
@@ -159,7 +213,7 @@ export default function AutomationPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Workflows</p>
+                <p className="text-sm font-medium text-muted-foreground">Active Workflows</p>
                 <p className="text-3xl font-bold">{workflows.filter((w) => w.isActive).length}</p>
               </div>
               <Play className="w-8 h-8 text-green-500" />
@@ -171,7 +225,7 @@ export default function AutomationPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Executions</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Executions</p>
                 <p className="text-3xl font-bold">
                   {workflows.reduce((sum, w) => sum + (w._count?.executions || 0), 0)}
                 </p>
@@ -185,7 +239,7 @@ export default function AutomationPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Avg Steps</p>
+                <p className="text-sm font-medium text-muted-foreground">Avg Steps</p>
                 <p className="text-3xl font-bold">
                   {workflows.length > 0
                     ? Math.round(
@@ -224,8 +278,8 @@ export default function AutomationPage() {
                 <TableRow>
                   <TableCell className="text-center py-8" colSpan={7}>
                     <div className="flex flex-col items-center gap-2">
-                      <Zap className="w-8 h-8 text-gray-400" />
-                      <p className="text-gray-500">No workflows found</p>
+                      <Zap className="w-8 h-8 text-muted-foreground" />
+                      <p className="text-muted-foreground">No workflows found</p>
                       <Button
                         variant="outline"
                         onClick={() => router.push('/admin/marketing/automation/new')}
@@ -242,7 +296,7 @@ export default function AutomationPage() {
                       <div>
                         <div className="font-medium">{workflow.name}</div>
                         {workflow.description && (
-                          <div className="text-sm text-gray-500">{workflow.description}</div>
+                          <div className="text-sm text-muted-foreground">{workflow.description}</div>
                         )}
                       </div>
                     </TableCell>
@@ -256,8 +310,8 @@ export default function AutomationPage() {
                       <Badge
                         className={
                           workflow.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                            : 'bg-muted text-muted-foreground'
                         }
                       >
                         {workflow.isActive ? 'Active' : 'Inactive'}
@@ -339,43 +393,52 @@ export default function AutomationPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => createTemplateWorkflow('welcome')}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Users className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
                     <h4 className="font-medium">Welcome Series</h4>
-                    <p className="text-sm text-gray-600">Onboard new customers</p>
+                    <p className="text-sm text-muted-foreground">Onboard new customers</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => createTemplateWorkflow('cart-abandonment')}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-orange-600" />
+                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
                     <h4 className="font-medium">Cart Abandonment</h4>
-                    <p className="text-sm text-gray-600">Recover lost sales</p>
+                    <p className="text-sm text-muted-foreground">Recover lost sales</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => createTemplateWorkflow('winback')}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-green-600" />
+                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
                     <h4 className="font-medium">Win-back Campaign</h4>
-                    <p className="text-sm text-gray-600">Re-engage dormant customers</p>
+                    <p className="text-sm text-muted-foreground">Re-engage dormant customers</p>
                   </div>
                 </div>
               </CardContent>

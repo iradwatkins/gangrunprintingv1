@@ -299,20 +299,15 @@ export async function POST(request: NextRequest) {
 
 /**
  * Generate unique order number
- * Format: GR-YYYYMMDD-XXXX
- * Example: GR-20251012-0123
+ * Format: GRP-{sequential}
+ * Example: GRP-19712025, GRP-19712026, etc.
+ * Starting number: 19712025
  */
 async function generateOrderNumber(): Promise<string> {
-  const date = new Date()
-  const dateStr = date.toISOString().split('T')[0].replace(/-/g, '') // YYYYMMDD
-
-  // Find last order for today
-  const prefix = `GR-${dateStr}-`
-
   const lastOrder = await prisma.order.findFirst({
     where: {
       orderNumber: {
-        startsWith: prefix,
+        startsWith: 'GRP-',
       },
     },
     orderBy: {
@@ -323,12 +318,14 @@ async function generateOrderNumber(): Promise<string> {
     },
   })
 
-  let sequence = 1
+  let nextNumber = 19712025 // Starting number
 
   if (lastOrder) {
-    const lastSequence = parseInt(lastOrder.orderNumber.split('-')[2], 10)
-    sequence = lastSequence + 1
+    const lastNumber = parseInt(lastOrder.orderNumber.replace('GRP-', ''), 10)
+    if (!isNaN(lastNumber)) {
+      nextNumber = lastNumber + 1
+    }
   }
 
-  return `${prefix}${sequence.toString().padStart(4, '0')}`
+  return `GRP-${nextNumber}`
 }

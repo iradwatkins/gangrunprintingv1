@@ -38,7 +38,7 @@ export class OrderService {
 
       const result = await prisma.$transaction(async (tx) => {
         // Generate order number
-        const orderNumber = this.generateOrderNumber()
+        const orderNumber = await this.generateOrderNumber()
 
         // Calculate totals (use provided totals if available, otherwise calculate)
         const { subtotal, tax, shipping, total } = input.totals
@@ -51,6 +51,7 @@ export class OrderService {
             orderNumber,
             email: input.email,
             userId: input.userId,
+            origin: input.origin || 'Direct', // Auto-detected traffic source
             funnelId: input.funnelId,
             funnelStepId: input.funnelStepId,
             subtotal,
@@ -449,12 +450,23 @@ export class OrderService {
     }
   }
 
-  private generateOrderNumber(): string {
-    const timestamp = Date.now()
-    const random = Math.floor(Math.random() * 1000)
-      .toString()
-      .padStart(3, '0')
-    return `ORD-${timestamp}-${random}`
+  private async generateOrderNumber(): Promise<string> {
+    // Format: GRP-{sequential} starting at 19712025
+    const lastOrder = await prisma.order.findFirst({
+      where: { orderNumber: { startsWith: 'GRP-' } },
+      orderBy: { createdAt: 'desc' },
+      select: { orderNumber: true },
+    })
+
+    let nextNumber = 19712025 // Starting number
+    if (lastOrder) {
+      const lastNumber = parseInt(lastOrder.orderNumber.replace('GRP-', ''), 10)
+      if (!isNaN(lastNumber)) {
+        nextNumber = lastNumber + 1
+      }
+    }
+
+    return `GRP-${nextNumber}`
   }
 
   private async calculateOrderTotals(

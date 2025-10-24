@@ -137,7 +137,7 @@ export function ResponsiveProofApproval({ orderId }: Props) {
             <AlertTitle>Error</AlertTitle>
             <AlertDescription className="mb-4">{error}</AlertDescription>
           </Alert>
-          <Button variant="outline" onClick={() => fetchProofs()} className="w-full">
+          <Button className="w-full" variant="outline" onClick={() => fetchProofs()}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Try Again
           </Button>
@@ -193,10 +193,10 @@ export function ResponsiveProofApproval({ orderId }: Props) {
               <div className="flex items-center gap-2">
                 {refreshing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                 <Button
+                  disabled={refreshing}
                   size="sm"
                   variant="outline"
                   onClick={() => fetchProofs(true)}
-                  disabled={refreshing}
                 >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
@@ -330,10 +330,10 @@ export function ResponsiveProofApproval({ orderId }: Props) {
 
               {refreshing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
               <Button
+                disabled={refreshing}
                 size="sm"
                 variant="outline"
                 onClick={() => fetchProofs(true)}
-                disabled={refreshing}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh

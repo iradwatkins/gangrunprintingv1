@@ -18,9 +18,7 @@ export default function MenuPreview({ menu }: MenuPreviewProps) {
           <Eye className="h-5 w-5" />
           Live Preview
         </CardTitle>
-        <CardDescription>
-          Preview how your menu will look on the website
-        </CardDescription>
+        <CardDescription>Preview how your menu will look on the website</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -58,7 +56,7 @@ export default function MenuPreview({ menu }: MenuPreviewProps) {
                   <div key={section.id} className="bg-gray-50 rounded p-2 text-sm">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{section.title}</span>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge className="text-xs" variant="outline">
                         Col {section.column}
                       </Badge>
                     </div>

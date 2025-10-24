@@ -51,6 +51,7 @@ export interface CreateOrderInput {
   shippingAddress: ShippingAddress
   billingAddress?: ShippingAddress
   shippingMethod?: string
+  origin?: string // Traffic source (Direct, Facebook, Google, etc.)
   totals?: {
     subtotal: number
     tax: number

@@ -58,11 +58,5 @@ export default async function HeaderWrapper() {
     },
   })
 
-  return (
-    <Header
-      menu={headerMenu}
-      quickLinks={quickLinks}
-      fallbackCategories={categories}
-    />
-  )
+  return <Header fallbackCategories={categories} menu={headerMenu} quickLinks={quickLinks} />
 }

@@ -208,7 +208,7 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-medium text-sm">{msg.authorName}</span>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge className="text-xs" variant="outline">
                         {msg.authorRole === 'admin' ? 'Team' : 'Customer'}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
@@ -234,13 +234,13 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
           {/* Action Selection */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Button
-              size="lg"
-              variant={selectedAction === 'approve' ? 'default' : 'outline'}
               className={`h-20 flex-col gap-2 ${
                 selectedAction === 'approve'
                   ? 'bg-green-600 hover:bg-green-700 text-white'
                   : 'border-green-200 hover:bg-green-50'
               }`}
+              size="lg"
+              variant={selectedAction === 'approve' ? 'default' : 'outline'}
               onClick={() => setSelectedAction('approve')}
             >
               <ThumbsUp className="h-6 w-6" />
@@ -249,13 +249,13 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
             </Button>
 
             <Button
-              size="lg"
-              variant={selectedAction === 'reject' ? 'default' : 'outline'}
               className={`h-20 flex-col gap-2 ${
                 selectedAction === 'reject'
                   ? 'bg-orange-600 hover:bg-orange-700 text-white'
                   : 'border-orange-200 hover:bg-orange-50'
               }`}
+              size="lg"
+              variant={selectedAction === 'reject' ? 'default' : 'outline'}
               onClick={() => setSelectedAction('reject')}
             >
               <ThumbsDown className="h-6 w-6" />
@@ -302,9 +302,9 @@ export function ProofApprovalInterface({ order, file, defaultAction }: Props) {
 
           {/* Submit Button */}
           <Button
-            size="lg"
             className="w-full"
             disabled={!selectedAction || isSubmitting}
+            size="lg"
             onClick={handleSubmit}
           >
             {isSubmitting ? (

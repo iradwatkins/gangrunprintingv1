@@ -50,7 +50,7 @@ export const PATCH = withApiHandler(
     }
 
     // Detect carrier if not provided
-    const carrier = data.carrier || validation.carrier || 'OTHER'
+    const carrier = (data.carrier || validation.carrier || null) as 'FEDEX' | 'UPS' | 'SOUTHWEST_CARGO' | null
 
     logger.info('Updating tracking information', {
       orderId,
@@ -95,11 +95,11 @@ export const PATCH = withApiHandler(
             trackingNumber: result.trackingNumber,
             carrier: result.carrier,
             shippingAddress: result.shippingAddress,
-            User: result.User,
+            User: result.User || undefined,
           },
           {
             trackingNumber: data.trackingNumber,
-            carrier,
+            carrier: carrier || undefined,
           }
         ).catch((emailError) => {
           logger.error('Failed to send shipment notification email', {
@@ -126,7 +126,9 @@ export const PATCH = withApiHandler(
           trackingNumber: result.trackingNumber,
           carrier: result.carrier,
           status: result.status,
-          carrierDisplayName: ShipmentTrackingEmailService.getCarrierDisplayName(carrier),
+          carrierDisplayName: carrier
+            ? ShipmentTrackingEmailService.getCarrierDisplayName(carrier)
+            : 'Unknown Carrier',
           message: 'Tracking information updated and customer notified',
         },
         200,

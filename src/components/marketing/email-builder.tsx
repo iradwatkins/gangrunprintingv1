@@ -186,7 +186,7 @@ function SortableComponent({
                 style={{ width: component.content.width }}
               />
             ) : (
-              <div className="bg-gray-100 flex items-center justify-center h-32 text-gray-500">
+              <div className="bg-muted flex items-center justify-center h-32 text-muted-foreground">
                 <Image className="w-8 h-8" />
                 <span className="ml-2">Click to add image</span>
               </div>
@@ -238,7 +238,7 @@ function SortableComponent({
               }}
             >
               {Array.from({ length: component.content.columns }, (_, i) => (
-                <div key={i} className="bg-gray-50 p-4 min-h-[100px] rounded">
+                <div key={i} className="bg-muted/50 p-4 min-h-[100px] rounded">
                   Column {i + 1}
                 </div>
               ))}
@@ -714,9 +714,9 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
   const selectedComponent = currentTemplate.components.find((c) => c.id === selectedComponentId)
 
   return (
-    <div className="flex h-full bg-gray-50">
+    <div className="flex h-full bg-muted/30">
       {/* Left Sidebar - Components */}
-      <div className="w-64 bg-white border-r p-4 overflow-y-auto">
+      <div className="w-64 bg-background border-r p-4 overflow-y-auto">
         <h3 className="font-semibold mb-4">Components</h3>
         <div className="space-y-2">
           {COMPONENT_TYPES.map((componentType) => {
@@ -856,7 +856,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
                     strategy={verticalListSortingStrategy}
                   >
                     {currentTemplate.components.length === 0 ? (
-                      <div className="text-center py-12 text-gray-500">
+                      <div className="text-center py-12 text-muted-foreground">
                         <p>No components yet. Add some from the sidebar!</p>
                       </div>
                     ) : (
@@ -876,7 +876,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
 
                   <DragOverlay>
                     {activeId ? (
-                      <div className="bg-white p-4 rounded shadow-lg">
+                      <div className="bg-background p-4 rounded shadow-lg border">
                         <GripVertical className="w-4 h-4" />
                       </div>
                     ) : null}
@@ -899,7 +899,7 @@ export function EmailBuilder({ template, onSave, onPreview }: EmailBuilderProps)
 
       {/* Right Sidebar - Component Editor (only show when component selected) */}
       {selectedComponent && (
-        <div className="w-80 bg-white border-l p-4 overflow-y-auto">
+        <div className="w-80 bg-background border-l p-4 overflow-y-auto">
           <h3 className="font-semibold mb-4">
             Edit {selectedComponent.type.charAt(0).toUpperCase() + selectedComponent.type.slice(1)}
           </h3>

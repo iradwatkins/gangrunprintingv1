@@ -48,8 +48,12 @@ export function EditableTracking({
     let carrier = 'OTHER'
     if (/^1Z[0-9A-Z]{16}$/.test(cleanNumber)) {
       carrier = 'UPS'
-    } else if (/^(94|93|92|94|95)[0-9]{20}$/.test(cleanNumber) || /^[0-9]{20}$/.test(cleanNumber) || /^[0-9]{13}$/.test(cleanNumber)) {
-      carrier = 'USPS'  
+    } else if (
+      /^(94|93|92|94|95)[0-9]{20}$/.test(cleanNumber) ||
+      /^[0-9]{20}$/.test(cleanNumber) ||
+      /^[0-9]{13}$/.test(cleanNumber)
+    ) {
+      carrier = 'USPS'
     } else if (/^\\d{12}$/.test(cleanNumber) || /^\\d{14}$/.test(cleanNumber)) {
       carrier = 'FEDEX'
     } else if (/^SW[0-9A-Z]{8,12}$/.test(cleanNumber)) {
@@ -150,7 +154,7 @@ export function EditableTracking({
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Tracking Number</span>
           {isEditing && detectedCarrier && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge className="text-xs" variant="secondary">
               <Package className="h-3 w-3 mr-1" />
               {getCarrierDisplayName(detectedCarrier)}
             </Badge>
@@ -239,7 +243,7 @@ export function EditableTracking({
                 </span>
                 {trackingNumber && (detectedCarrier || carrier) && (
                   <div className="flex items-center gap-1 mt-1">
-                    <Badge variant="outline" className="text-xs">
+                    <Badge className="text-xs" variant="outline">
                       {getCarrierDisplayName(detectedCarrier || carrier || '')}
                     </Badge>
                   </div>

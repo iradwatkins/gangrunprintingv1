@@ -69,7 +69,7 @@ export const IssueAlert = ({
 
       {orderTrackingUrl && (
         <Section style={buttonContainer}>
-          <Button style={button} href={orderTrackingUrl}>
+          <Button href={orderTrackingUrl} style={button}>
             View Order Details
           </Button>
         </Section>

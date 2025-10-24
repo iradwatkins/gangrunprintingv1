@@ -16,11 +16,11 @@ export function NavToolbar({ onExpandAll, onCollapseAll }: NavToolbarProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={onExpandAll}
-              className="h-7 w-7 p-0"
               aria-label="Expand all sections"
+              className="h-7 w-7 p-0"
+              size="sm"
+              variant="ghost"
+              onClick={onExpandAll}
             >
               <ChevronsUpDown className="h-4 w-4" />
             </Button>
@@ -34,11 +34,11 @@ export function NavToolbar({ onExpandAll, onCollapseAll }: NavToolbarProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={onCollapseAll}
-              className="h-7 w-7 p-0"
               aria-label="Collapse all sections"
+              className="h-7 w-7 p-0"
+              size="sm"
+              variant="ghost"
+              onClick={onCollapseAll}
             >
               <ChevronsDownUp className="h-4 w-4" />
             </Button>

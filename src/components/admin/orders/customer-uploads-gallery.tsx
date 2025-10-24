@@ -166,9 +166,13 @@ export function CustomerUploadsGallery({ orderId }: Props) {
                   </div>
                   {/* File info */}
                   <div className="p-2 space-y-1">
-                    <p className="text-xs font-medium truncate" title={file.label || file.filename}>
+                    <button
+                      className="text-xs font-medium truncate text-left w-full hover:text-primary hover:underline cursor-pointer"
+                      title={`Click to download: ${file.label || file.filename}`}
+                      onClick={() => handleDownload(file)}
+                    >
                       {file.label || file.filename}
-                    </p>
+                    </button>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>{formatFileSize(file.fileSize)}</span>
                       {isImage(file) && <ImageIcon className="h-3 w-3" />}

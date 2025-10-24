@@ -41,23 +41,23 @@ export async function POST(req: NextRequest) {
     // Render appropriate template
     switch (template) {
       case 'abandoned_cart':
-        emailHtml = render(AbandonedCartEmail(data))
+        emailHtml = await render(AbandonedCartEmail(data))
         break
 
       case 'winback':
-        emailHtml = render(WinbackEmail(data))
+        emailHtml = await render(WinbackEmail(data))
         break
 
       case 'anniversary':
-        emailHtml = render(AnniversaryEmail(data))
+        emailHtml = await render(AnniversaryEmail(data))
         break
 
       case 'review_request':
-        emailHtml = render(ReviewRequestEmail(data))
+        emailHtml = await render(ReviewRequestEmail(data))
         break
 
       case 'thank_you':
-        emailHtml = render(ThankYouEmail(data))
+        emailHtml = await render(ThankYouEmail(data))
         break
 
       default:

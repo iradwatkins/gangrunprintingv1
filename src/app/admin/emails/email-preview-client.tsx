@@ -264,7 +264,7 @@ export default function EmailPreviewClient() {
   const handlePreview = async (template: EmailTemplate) => {
     setSelectedEmail(template)
     try {
-      const html = render(template.component(template.sampleData))
+      const html = await render(template.component(template.sampleData))
       setPreviewHtml(html)
     } catch (error) {
       console.error('Error rendering email:', error)

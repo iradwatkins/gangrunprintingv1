@@ -26,7 +26,7 @@ async function main() {
   const timeframe = process.argv[3]
 
   // Determine which date to aggregate
-  let targetDate = new Date()
+  const targetDate = new Date()
 
   if (timeframe === 'yesterday') {
     targetDate.setDate(targetDate.getDate() - 1)

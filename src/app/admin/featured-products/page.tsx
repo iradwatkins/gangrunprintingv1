@@ -14,7 +14,7 @@ export default async function FeaturedProductsPage() {
     include: {
       Product: {
         include: {
-          images: {
+          ProductImage: {
             take: 1,
             orderBy: { isPrimary: 'desc' },
           },
@@ -27,7 +27,7 @@ export default async function FeaturedProductsPage() {
   const allProducts = await prisma.product.findMany({
     where: { isActive: true },
     include: {
-      images: {
+      ProductImage: {
         take: 1,
         orderBy: { isPrimary: 'desc' },
       },
@@ -44,10 +44,7 @@ export default async function FeaturedProductsPage() {
         </p>
       </div>
 
-      <FeaturedProductsManager
-        featuredProducts={featuredProducts}
-        allProducts={allProducts}
-      />
+      <FeaturedProductsManager allProducts={allProducts} featuredProducts={featuredProducts} />
     </div>
   )
 }

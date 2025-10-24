@@ -224,6 +224,7 @@ import { CashAppPayment } from '@/components/checkout/cash-app-payment'
    - Available immediately when checkout loads
 
 2. **Component Initialization**:
+
    ```typescript
    // Both components wait for SDK
    let attempts = 0

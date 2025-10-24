@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir, readdir, readFile, unlink } from 'fs/promises'
 import path from 'path'
 import { existsSync } from 'fs'
@@ -28,11 +28,7 @@ function getChunkPath(sessionId: string, chunkIndex: number): string {
 }
 
 // Save chunk to temporary storage
-async function saveChunk(
-  sessionId: string,
-  chunkIndex: number,
-  chunkData: Buffer
-): Promise<void> {
+async function saveChunk(sessionId: string, chunkIndex: number, chunkData: Buffer): Promise<void> {
   const sessionDir = getSessionDir(sessionId)
 
   // Ensure session directory exists
@@ -173,9 +169,7 @@ export async function POST(request: NextRequest) {
 
         // Verify file size matches expected
         if (fileSize && mergedFile.length !== fileSize) {
-          console.error(
-            `File size mismatch: expected ${fileSize}, got ${mergedFile.length} bytes`
-          )
+          console.error(`File size mismatch: expected ${fileSize}, got ${mergedFile.length} bytes`)
           await cleanupSession(sessionId)
           return NextResponse.json(
             {
@@ -206,10 +200,7 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         console.error('Error merging chunks:', error)
         await cleanupSession(sessionId)
-        return NextResponse.json(
-          { error: 'Failed to merge chunks' },
-          { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to merge chunks' }, { status: 500 })
       }
     }
 

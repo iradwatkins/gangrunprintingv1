@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useCart } from '@/contexts/cart-context'
 import {
@@ -231,8 +231,8 @@ export default function ShippingPage() {
             {user && !showManualForm && (
               <SavedAddresses
                 userId={user.id}
-                onSelectAddress={handleSavedAddressSelect}
                 onNewAddress={handleNewAddress}
+                onSelectAddress={handleSavedAddressSelect}
               />
             )}
 
@@ -241,24 +241,24 @@ export default function ShippingPage() {
               <ShippingAddressForm
                 address={shippingAddress}
                 errors={errors}
-                onChange={setShippingAddress}
-                user={user}
-                onSaveAddressChange={setShouldSaveAddress}
                 shouldSaveAddress={shouldSaveAddress}
+                user={user}
+                onChange={setShippingAddress}
+                onSaveAddressChange={setShouldSaveAddress}
               />
             )}
 
             {/* Airport Selector (appears BEFORE shipping methods if state has Southwest airports) */}
             {shippingAddress.state && (
               <AirportSelector
-                state={shippingAddress.state}
                 selectedAirportId={selectedAirportId ?? null}
+                state={shippingAddress.state}
                 onAirportSelected={(airportId) => setSelectedAirportId(airportId ?? undefined)}
               />
             )}
 
             {/* Shipping Method Selector */}
-            {shippingAddress.zipCode && shippingAddress.state && shippingAddress.city && (
+            {shippingAddress.zipCode && shippingAddress.state && shippingAddress.city ? (
               <ShippingMethodSelector
                 destination={{
                   street: shippingAddress.street,
@@ -267,10 +267,27 @@ export default function ShippingPage() {
                   zipCode: shippingAddress.zipCode,
                 }}
                 items={shippingItems}
-                selectedMethod={selectedShippingMethod}
                 selectedAirportId={selectedAirportId}
+                selectedMethod={selectedShippingMethod}
                 onSelect={setSelectedShippingMethod}
               />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Truck className="h-5 w-5" />
+                    Shipping Method
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-sm">
+                    Please complete the shipping address above to see available shipping options
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Missing: {!shippingAddress.city && 'City '}{!shippingAddress.state && 'State '}{!shippingAddress.zipCode && 'ZIP Code'}
+                  </p>
+                </CardContent>
+              </Card>
             )}
           </div>
 
@@ -288,10 +305,43 @@ export default function ShippingPage() {
                     <span>Subtotal ({itemCount} items)</span>
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span>{selectedShippingMethod ? `$${shippingCost.toFixed(2)}` : 'TBD'}</span>
-                  </div>
+
+                  {/* Per-Product Shipping Breakdown */}
+                  {selectedShippingMethod?.perProductCosts && selectedShippingMethod.perProductCosts.length > 0 ? (
+                    <div className="space-y-1">
+                      <div className="flex justify-between font-medium text-muted-foreground">
+                        <span>Shipping (by product)</span>
+                      </div>
+                      {selectedShippingMethod.perProductCosts.map((productCost, index) => {
+                        const cartItem = items.find(item => item.productId === productCost.productId)
+                        if (!cartItem) return null
+
+                        return (
+                          <div key={index} className="pl-4 text-xs text-muted-foreground space-y-0.5">
+                            <div className="font-medium">{cartItem.productName}</div>
+                            <div className="pl-2 space-y-0.5">
+                              {cartItem.options.size && <div>Size: {cartItem.options.size}</div>}
+                              {cartItem.quantity && <div>Quantity: {cartItem.quantity}</div>}
+                              {cartItem.options.paperStock && <div>Paper: {cartItem.options.paperStock}</div>}
+                              {cartItem.options.coating && <div>Coating: {cartItem.options.coating}</div>}
+                              {cartItem.options.sides && <div>Sides: {cartItem.options.sides}</div>}
+                              {cartItem.options.turnaround && <div>Turnaround: {cartItem.options.turnaround}</div>}
+                            </div>
+                          </div>
+                        )
+                      })}
+                      <div className="flex justify-between font-medium border-t pt-1 mt-1">
+                        <span>Total Shipping</span>
+                        <span>${shippingCost.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span>Shipping</span>
+                      <span>{selectedShippingMethod ? `$${shippingCost.toFixed(2)}` : 'TBD'}</span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between">
                     <span>Tax (estimated)</span>
                     <span>${tax.toFixed(2)}</span>

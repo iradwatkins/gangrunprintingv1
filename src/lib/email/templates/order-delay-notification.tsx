@@ -66,7 +66,7 @@ export const OrderDelayNotification = ({
 
       {orderTrackingUrl && (
         <Section style={buttonContainer}>
-          <Button style={button} href={orderTrackingUrl}>
+          <Button href={orderTrackingUrl} style={button}>
             Track Your Order
           </Button>
         </Section>

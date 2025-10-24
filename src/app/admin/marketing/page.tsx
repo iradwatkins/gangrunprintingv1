@@ -79,7 +79,7 @@ export default function MarketingOverviewPage() {
                 <CardDescription>{feature.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
+                <Button className="w-full" variant="outline">
                   Open
                 </Button>
               </CardContent>

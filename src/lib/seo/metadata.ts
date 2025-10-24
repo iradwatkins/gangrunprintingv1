@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 
 const SITE_NAME = 'GangRun Printing'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://gangrunprinting.com'

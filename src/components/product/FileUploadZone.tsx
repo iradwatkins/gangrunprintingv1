@@ -304,7 +304,9 @@ export default function FileUploadZone({
                   style={{ width: `${chunkedUpload.progress}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-center text-gray-500">{Math.round(chunkedUpload.progress)}%</p>
+              <p className="text-xs text-center text-gray-500">
+                {Math.round(chunkedUpload.progress)}%
+              </p>
             </div>
           </div>
         ) : (

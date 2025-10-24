@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // PUT /api/admin/menu-items/[id] - Update menu item
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -56,10 +53,7 @@ export async function PUT(
 }
 
 // DELETE /api/admin/menu-items/[id] - Delete menu item
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {

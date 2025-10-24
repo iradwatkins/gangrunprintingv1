@@ -124,12 +124,12 @@ export function HomepageHero() {
         {specials.map((_, index) => (
           <button
             key={index}
+            aria-label={`Go to special ${index + 1}`}
             className={cn(
               'w-2 h-2 rounded-full transition-all',
               index === currentIndex ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/70'
             )}
             onClick={() => setCurrentIndex(index)}
-            aria-label={`Go to special ${index + 1}`}
           />
         ))}
       </div>

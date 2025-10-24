@@ -126,9 +126,10 @@ export async function POST(request: NextRequest) {
     // Create a lookup map for O(1) access
     const paperStockMap = new Map(paperStocksData.map((ps) => [ps.id, ps.weight]))
 
-    // Calculate weight for each item
+    // Calculate weight for each item and track per-product weights
     const packages: ShippingPackage[] = []
     let totalWeight = 0
+    const perProductWeights: { productId: string | undefined; weight: number; quantity: number }[] = []
 
     for (const item of items) {
       let weight = 0
@@ -162,6 +163,11 @@ export async function POST(request: NextRequest) {
       }
 
       totalWeight += weight
+      perProductWeights.push({
+        productId: item.productId,
+        weight,
+        quantity: item.quantity,
+      })
     }
 
     // Split into boxes using standard box dimensions and 36lb max weight
@@ -262,12 +268,61 @@ export async function POST(request: NextRequest) {
       rates = []
     }
 
+    // Calculate per-product shipping breakdown
+    // Each rate gets distributed proportionally by weight
+    interface RateWithProductBreakdown {
+      carrier: string
+      service?: string
+      serviceName?: string
+      serviceCode?: string
+      cost?: number
+      rateAmount?: number
+      currency?: string
+      deliveryDays?: number
+      estimatedDays?: number
+      isGuaranteed?: boolean
+      deliveryDate?: string
+      perProductCosts?: Array<{
+        productId: string | undefined
+        shippingCost: number
+        weight: number
+        percentage: number
+      }>
+    }
+
+    const ratesWithBreakdown: RateWithProductBreakdown[] = rates.map((rate: unknown) => {
+      const r = rate as RateWithProductBreakdown
+      const totalCost = r.cost || r.rateAmount || 0
+
+      // Calculate per-product costs based on weight percentage
+      const perProductCosts = perProductWeights.map((product) => {
+        const weightPercentage = totalWeight > 0 ? product.weight / totalWeight : 0
+        const shippingCost = totalCost * weightPercentage
+
+        return {
+          productId: product.productId,
+          shippingCost: parseFloat(shippingCost.toFixed(2)),
+          weight: parseFloat(product.weight.toFixed(2)),
+          percentage: parseFloat((weightPercentage * 100).toFixed(1)),
+        }
+      })
+
+      return {
+        ...r,
+        perProductCosts,
+      }
+    })
+
     return NextResponse.json({
       success: true,
-      rates,
+      rates: ratesWithBreakdown,
       totalWeight: totalWeight.toFixed(2),
       boxSummary,
       numBoxes: boxes.length,
+      perProductWeights: perProductWeights.map((p) => ({
+        ...p,
+        weight: parseFloat(p.weight.toFixed(2)),
+      })),
     })
   } catch (error) {
     console.error('[Shipping API] Error:', error)

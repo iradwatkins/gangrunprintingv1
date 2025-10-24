@@ -24,17 +24,22 @@ export default async function QuickLinksPage() {
     },
   })
 
-  const products = await prisma.product.findMany({
+  const rawProducts = await prisma.product.findMany({
     where: { isActive: true },
     orderBy: { name: 'asc' },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      categoryId: true,
+    include: {
+      ProductCategory: true,
     },
     take: 100,
   })
+
+  // Transform to match component type: { id, name, slug, Category: { name } | null }
+  const products = rawProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    Category: p.ProductCategory ? { name: p.ProductCategory.name } : null,
+  }))
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -45,11 +50,7 @@ export default async function QuickLinksPage() {
         </p>
       </div>
 
-      <QuickLinksManager
-        quickLinks={quickLinks}
-        categories={categories}
-        products={products}
-      />
+      <QuickLinksManager categories={categories} products={products} quickLinks={quickLinks} />
     </div>
   )
 }

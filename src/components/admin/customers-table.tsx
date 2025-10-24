@@ -235,9 +235,6 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                       >
                         {customer.name}
                       </Link>
-                      <div className="text-xs text-muted-foreground mt-0.5">
-                        ID: {customer.id.substring(0, 8)}
-                      </div>
                     </div>
                   </TableCell>
                   <TableCell>

@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation'
 
 interface Address {
   id: string
-  label: string
+  label: string | null
   name: string
   company?: string | null
   street: string

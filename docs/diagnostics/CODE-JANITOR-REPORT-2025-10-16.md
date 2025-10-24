@@ -340,6 +340,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
    - **Estimate:** 4-6 hours
 
 2. **Update Minor Dependencies**
+
    ```bash
    npm update @aws-sdk/client-s3 @google/genai @playwright/test \
      @react-email/components @tanstack/react-query @sentry/nextjs
@@ -356,6 +357,7 @@ is not assignable to 'ProductImage[]' with 'isPrimary: boolean'
    - **Estimate:** 2-3 hours + regression testing
 
 4. **Remove Backup File**
+
    ```bash
    mv src/lib/shipping/providers/fedex-legacy-backup.ts docs/archive/
    ```

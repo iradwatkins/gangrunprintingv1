@@ -7,8 +7,22 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Plus, GripVertical, Edit, Trash2, Eye, EyeOff, Search } from 'lucide-react'
 import Image from 'next/image'
@@ -19,7 +33,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -39,14 +53,9 @@ interface FeaturedProductsManagerProps {
 }
 
 function SortableFeaturedProduct({ featured, onEdit, onDelete }: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: featured.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: featured.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -54,13 +63,14 @@ function SortableFeaturedProduct({ featured, onEdit, onDelete }: any) {
     opacity: isDragging ? 0.5 : 1,
   }
 
-  const imageUrl = featured.customImageUrl || featured.Product.images[0]?.imageUrl || '/placeholder.png'
+  const imageUrl =
+    featured.customImageUrl || featured.Product.images[0]?.imageUrl || '/placeholder.png'
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className="flex items-center gap-4 p-4 bg-white border rounded-lg hover:bg-gray-50"
+      style={style}
     >
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
         <GripVertical className="h-5 w-5 text-gray-400" />
@@ -68,10 +78,10 @@ function SortableFeaturedProduct({ featured, onEdit, onDelete }: any) {
 
       <div className="relative h-16 w-16 rounded overflow-hidden flex-shrink-0">
         <Image
-          src={imageUrl}
-          alt={featured.customTitle || featured.Product.name}
           fill
+          alt={featured.customTitle || featured.Product.name}
           className="object-cover"
+          src={imageUrl}
         />
       </div>
 
@@ -80,21 +90,26 @@ function SortableFeaturedProduct({ featured, onEdit, onDelete }: any) {
           <span className="font-medium">{featured.customTitle || featured.Product.name}</span>
           {!featured.isActive && <EyeOff className="h-4 w-4 text-gray-400" />}
           {featured.showBadge && featured.badgeText && (
-            <Badge className="text-xs" style={{ backgroundColor: featured.badgeColor || undefined }}>
+            <Badge
+              className="text-xs"
+              style={{ backgroundColor: featured.badgeColor || undefined }}
+            >
               {featured.badgeText}
             </Badge>
           )}
         </div>
         <p className="text-sm text-muted-foreground">
-          {featured.customDescription || featured.Product.description || featured.Product.Category?.name}
+          {featured.customDescription ||
+            featured.Product.description ||
+            featured.Product.Category?.name}
         </p>
       </div>
 
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => onEdit(featured)}>
+        <Button size="sm" variant="outline" onClick={() => onEdit(featured)}>
           <Edit className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="sm" onClick={() => onDelete(featured.id)}>
+        <Button size="sm" variant="outline" onClick={() => onDelete(featured.id)}>
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
@@ -127,9 +142,10 @@ export default function FeaturedProductsManager({
     })
   )
 
-  const filteredProducts = allProducts.filter((product: Product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.Category?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = allProducts.filter(
+    (product: Product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.Category?.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -238,10 +254,10 @@ export default function FeaturedProductsManager({
                   <div className="relative">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
+                      className="pl-9"
+                      placeholder="Search by product name or category..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search by product name or category..."
-                      className="pl-9"
                     />
                   </div>
                 </div>
@@ -254,21 +270,21 @@ export default function FeaturedProductsManager({
                     return (
                       <div
                         key={product.id}
-                        onClick={() => setSelectedProduct(product)}
                         className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-50 border-b last:border-b-0 ${
                           isSelected ? 'bg-blue-50 border-blue-200' : ''
                         }`}
+                        onClick={() => setSelectedProduct(product)}
                       >
                         <div className="relative h-12 w-12 rounded overflow-hidden flex-shrink-0">
-                          <Image src={imageUrl} alt={product.name} fill className="object-cover" />
+                          <Image fill alt={product.name} className="object-cover" src={imageUrl} />
                         </div>
                         <div className="flex-1">
                           <div className="font-medium">{product.name}</div>
-                          <div className="text-sm text-muted-foreground">{product.Category?.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {product.Category?.name}
+                          </div>
                         </div>
-                        {isSelected && (
-                          <Badge variant="default">Selected</Badge>
-                        )}
+                        {isSelected && <Badge variant="default">Selected</Badge>}
                       </div>
                     )
                   })}
@@ -281,28 +297,34 @@ export default function FeaturedProductsManager({
                     <div className="space-y-2">
                       <Label>Custom Title</Label>
                       <Input
-                        value={customization.customTitle}
-                        onChange={(e) => setCustomization({ ...customization, customTitle: e.target.value })}
                         placeholder={selectedProduct.name}
+                        value={customization.customTitle}
+                        onChange={(e) =>
+                          setCustomization({ ...customization, customTitle: e.target.value })
+                        }
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label>Custom Description</Label>
                       <Textarea
-                        value={customization.customDescription}
-                        onChange={(e) => setCustomization({ ...customization, customDescription: e.target.value })}
                         placeholder="Custom description for featured display"
                         rows={2}
+                        value={customization.customDescription}
+                        onChange={(e) =>
+                          setCustomization({ ...customization, customDescription: e.target.value })
+                        }
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label>Custom Image URL</Label>
                       <Input
-                        value={customization.customImageUrl}
-                        onChange={(e) => setCustomization({ ...customization, customImageUrl: e.target.value })}
                         placeholder="https://... (leave empty to use product image)"
+                        value={customization.customImageUrl}
+                        onChange={(e) =>
+                          setCustomization({ ...customization, customImageUrl: e.target.value })
+                        }
                       />
                     </div>
 
@@ -310,7 +332,9 @@ export default function FeaturedProductsManager({
                       <Label>Show Badge</Label>
                       <Switch
                         checked={customization.showBadge}
-                        onCheckedChange={(checked) => setCustomization({ ...customization, showBadge: checked })}
+                        onCheckedChange={(checked) =>
+                          setCustomization({ ...customization, showBadge: checked })
+                        }
                       />
                     </div>
 
@@ -319,9 +343,11 @@ export default function FeaturedProductsManager({
                         <div className="space-y-2">
                           <Label>Badge Text</Label>
                           <Input
-                            value={customization.badgeText}
-                            onChange={(e) => setCustomization({ ...customization, badgeText: e.target.value })}
                             placeholder="NEW, SALE, etc."
+                            value={customization.badgeText}
+                            onChange={(e) =>
+                              setCustomization({ ...customization, badgeText: e.target.value })
+                            }
                           />
                         </div>
 
@@ -330,7 +356,9 @@ export default function FeaturedProductsManager({
                           <Input
                             type="color"
                             value={customization.badgeColor}
-                            onChange={(e) => setCustomization({ ...customization, badgeColor: e.target.value })}
+                            onChange={(e) =>
+                              setCustomization({ ...customization, badgeColor: e.target.value })
+                            }
                           />
                         </div>
                       </div>
@@ -342,7 +370,7 @@ export default function FeaturedProductsManager({
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddFeatured} disabled={!selectedProduct}>
+                <Button disabled={!selectedProduct} onClick={handleAddFeatured}>
                   Add to Featured
                 </Button>
               </DialogFooter>
@@ -361,18 +389,21 @@ export default function FeaturedProductsManager({
           </div>
         ) : (
           <DndContext
-            sensors={sensors}
             collisionDetection={closestCenter}
+            sensors={sensors}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext items={featured.map((item: any) => item.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext
+              items={featured.map((item: any) => item.id)}
+              strategy={verticalListSortingStrategy}
+            >
               <div className="space-y-3">
                 {featured.map((item: any) => (
                   <SortableFeaturedProduct
                     key={item.id}
                     featured={item}
-                    onEdit={(item: any) => console.log('Edit', item)}
                     onDelete={handleDeleteFeatured}
+                    onEdit={(item: any) => console.log('Edit', item)}
                   />
                 ))}
               </div>

@@ -6,8 +6,22 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Plus, GripVertical, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 import {
@@ -17,7 +31,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -39,14 +53,9 @@ interface QuickLinksManagerProps {
 }
 
 function SortableQuickLink({ link, onEdit, onDelete }: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: link.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: link.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -57,8 +66,8 @@ function SortableQuickLink({ link, onEdit, onDelete }: any) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className="flex items-center gap-3 p-4 bg-white border rounded-lg hover:bg-gray-50"
+      style={style}
     >
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
         <GripVertical className="h-5 w-5 text-gray-400" />
@@ -68,7 +77,7 @@ function SortableQuickLink({ link, onEdit, onDelete }: any) {
         <div className="flex items-center gap-2">
           <span className="font-medium">{link.label}</span>
           {!link.isActive && <EyeOff className="h-4 w-4 text-gray-400" />}
-          <Badge variant="outline" className="text-xs">
+          <Badge className="text-xs" variant="outline">
             {link.linkType}
           </Badge>
           {link.badgeText && (
@@ -81,10 +90,10 @@ function SortableQuickLink({ link, onEdit, onDelete }: any) {
       </div>
 
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => onEdit(link)}>
+        <Button size="sm" variant="outline" onClick={() => onEdit(link)}>
           <Edit className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="sm" onClick={() => onDelete(link.id)}>
+        <Button size="sm" variant="outline" onClick={() => onDelete(link.id)}>
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
@@ -216,9 +225,9 @@ export default function QuickLinksManager({
                 <div className="space-y-2">
                   <Label>Label *</Label>
                   <Input
+                    placeholder="Quick link text"
                     value={newLink.label}
                     onChange={(e) => setNewLink({ ...newLink, label: e.target.value })}
-                    placeholder="Quick link text"
                   />
                 </div>
 
@@ -227,7 +236,9 @@ export default function QuickLinksManager({
                     <Label>Link Type *</Label>
                     <Select
                       value={newLink.linkType}
-                      onValueChange={(value) => setNewLink({ ...newLink, linkType: value, linkValue: '' })}
+                      onValueChange={(value) =>
+                        setNewLink({ ...newLink, linkType: value, linkValue: '' })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -279,9 +290,11 @@ export default function QuickLinksManager({
                     )}
                     {(newLink.linkType === 'PAGE' || newLink.linkType === 'EXTERNAL') && (
                       <Input
+                        placeholder={
+                          newLink.linkType === 'EXTERNAL' ? 'https://example.com' : '/page-path'
+                        }
                         value={newLink.linkValue}
                         onChange={(e) => setNewLink({ ...newLink, linkValue: e.target.value })}
-                        placeholder={newLink.linkType === 'EXTERNAL' ? 'https://example.com' : '/page-path'}
                       />
                     )}
                   </div>
@@ -291,9 +304,9 @@ export default function QuickLinksManager({
                   <div className="space-y-2">
                     <Label>Badge Text (Optional)</Label>
                     <Input
+                      placeholder="e.g., NEW, SALE"
                       value={newLink.badgeText}
                       onChange={(e) => setNewLink({ ...newLink, badgeText: e.target.value })}
-                      placeholder="e.g., NEW, SALE"
                     />
                   </div>
 
@@ -310,9 +323,9 @@ export default function QuickLinksManager({
                 <div className="space-y-2">
                   <Label>Icon URL (Optional)</Label>
                   <Input
+                    placeholder="https://..."
                     value={newLink.iconUrl}
                     onChange={(e) => setNewLink({ ...newLink, iconUrl: e.target.value })}
-                    placeholder="https://..."
                   />
                 </div>
 
@@ -328,7 +341,7 @@ export default function QuickLinksManager({
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddLink} disabled={!newLink.label || !newLink.linkValue}>
+                <Button disabled={!newLink.label || !newLink.linkValue} onClick={handleAddLink}>
                   Add Quick Link
                 </Button>
               </DialogFooter>
@@ -347,18 +360,21 @@ export default function QuickLinksManager({
           </div>
         ) : (
           <DndContext
-            sensors={sensors}
             collisionDetection={closestCenter}
+            sensors={sensors}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext items={links.map((link: any) => link.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext
+              items={links.map((link: any) => link.id)}
+              strategy={verticalListSortingStrategy}
+            >
               <div className="space-y-3">
                 {links.map((link: any) => (
                   <SortableQuickLink
                     key={link.id}
                     link={link}
-                    onEdit={(link: any) => console.log('Edit', link)}
                     onDelete={handleDeleteLink}
+                    onEdit={(link: any) => console.log('Edit', link)}
                   />
                 ))}
               </div>

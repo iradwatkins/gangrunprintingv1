@@ -98,7 +98,7 @@ export function AIProductDesigner({
 
   return (
     <>
-      <Button type="button" variant="outline" onClick={() => setOpen(true)} className="gap-2">
+      <Button className="gap-2" type="button" variant="outline" onClick={() => setOpen(true)}>
         <Sparkles className="h-4 w-4 text-purple-600" />
         AI Designer
       </Button>
@@ -119,41 +119,41 @@ export function AIProductDesigner({
               <div>
                 <Label htmlFor="productName">Product Name *</Label>
                 <Input
+                  disabled={loading}
                   id="productName"
                   placeholder="e.g., Business Cards 4x6"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
-                  disabled={loading}
                 />
               </div>
 
               <div>
                 <Label htmlFor="context">Additional Context (Optional)</Label>
                 <Textarea
+                  disabled={loading}
                   id="context"
                   placeholder="e.g., Premium 16pt cardstock, for professionals, luxury feel"
+                  rows={2}
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
-                  rows={2}
-                  disabled={loading}
                 />
               </div>
 
               <div>
                 <Label htmlFor="targetAudience">Target Audience (Optional)</Label>
                 <Input
+                  disabled={loading}
                   id="targetAudience"
                   placeholder="e.g., Small business owners, Professionals"
                   value={targetAudience}
                   onChange={(e) => setTargetAudience(e.target.value)}
-                  disabled={loading}
                 />
               </div>
 
               <Button
-                onClick={handleGenerate}
-                disabled={!productName.trim() || loading}
                 className="w-full"
+                disabled={!productName.trim() || loading}
+                onClick={handleGenerate}
               >
                 {loading ? (
                   <>
@@ -193,10 +193,10 @@ export function AIProductDesigner({
 
                     <div className="flex gap-2">
                       <Button
+                        className="gap-2"
                         size="sm"
                         variant="outline"
                         onClick={handleCopyPrompt}
-                        className="gap-2"
                       >
                         {copied ? (
                           <>
@@ -215,9 +215,9 @@ export function AIProductDesigner({
                     <div className="mt-4">
                       <Label>Paste Claude Code's JSON response here:</Label>
                       <Textarea
+                        className="mt-1 font-mono text-xs"
                         placeholder="Paste JSON from Claude Code here..."
                         rows={8}
-                        className="mt-1 font-mono text-xs"
                         onChange={(e) => {
                           try {
                             const parsed = JSON.parse(e.target.value)
@@ -261,7 +261,7 @@ export function AIProductDesigner({
                       </div>
                     </div>
 
-                    <Button onClick={handleUseContent} className="w-full">
+                    <Button className="w-full" onClick={handleUseContent}>
                       Use This Content
                     </Button>
                   </div>

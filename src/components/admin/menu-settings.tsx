@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Save } from 'lucide-react'
 
@@ -49,7 +55,7 @@ export default function MenuSettings({ menu, onUpdate }: MenuSettingsProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div>
         <h3 className="text-lg font-semibold mb-4">Menu Settings</h3>
       </div>
@@ -57,11 +63,11 @@ export default function MenuSettings({ menu, onUpdate }: MenuSettingsProps) {
       <div className="space-y-2">
         <Label htmlFor="name">Menu Name *</Label>
         <Input
+          required
           id="name"
+          placeholder="e.g., Main Header, Footer, Mobile Menu"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="e.g., Main Header, Footer, Mobile Menu"
-          required
         />
       </div>
 
@@ -88,28 +94,26 @@ export default function MenuSettings({ menu, onUpdate }: MenuSettingsProps) {
         <Label htmlFor="description">Description</Label>
         <Textarea
           id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           placeholder="Optional description for this menu"
           rows={3}
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
         />
       </div>
 
       <div className="flex items-center justify-between p-4 border rounded-lg">
         <div className="space-y-0.5">
           <Label htmlFor="isActive">Active Menu</Label>
-          <p className="text-sm text-muted-foreground">
-            Make this menu visible on your website
-          </p>
+          <p className="text-sm text-muted-foreground">Make this menu visible on your website</p>
         </div>
         <Switch
-          id="isActive"
           checked={formData.isActive}
+          id="isActive"
           onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
         />
       </div>
 
-      <Button type="submit" disabled={loading} className="w-full">
+      <Button className="w-full" disabled={loading} type="submit">
         <Save className="mr-2 h-4 w-4" />
         {loading ? 'Saving...' : 'Save Settings'}
       </Button>

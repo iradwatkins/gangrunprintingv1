@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // PUT /api/admin/featured-products/[id] - Update featured product
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -40,7 +37,7 @@ export async function PUT(
       include: {
         Product: {
           include: {
-            images: true,
+            ProductImage: true,
           },
         },
       },
@@ -54,10 +51,7 @@ export async function PUT(
 }
 
 // DELETE /api/admin/featured-products/[id] - Delete featured product
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {

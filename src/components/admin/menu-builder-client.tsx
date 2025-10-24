@@ -37,7 +37,7 @@ export default function MenuBuilderClient({ menu, categories, products }: MenuBu
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <Link href="/admin/menus">
-            <Button variant="ghost" size="sm">
+            <Button size="sm" variant="ghost">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
@@ -50,10 +50,7 @@ export default function MenuBuilderClient({ menu, categories, products }: MenuBu
           </div>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowPreview(!showPreview)}
-          >
+          <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
             <Eye className="mr-2 h-4 w-4" />
             {showPreview ? 'Hide' : 'Show'} Preview
           </Button>
@@ -71,18 +68,18 @@ export default function MenuBuilderClient({ menu, categories, products }: MenuBu
                   <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="items" className="mt-6">
+                <TabsContent className="mt-6" value="items">
                   <MenuItemsList
-                    menuId={menu.id}
-                    items={menu.items}
-                    sections={menu.sections}
                     categories={categories}
+                    items={menu.items}
+                    menuId={menu.id}
                     products={products}
+                    sections={menu.sections}
                     onUpdate={refreshMenu}
                   />
                 </TabsContent>
 
-                <TabsContent value="sections" className="mt-6">
+                <TabsContent className="mt-6" value="sections">
                   <MenuSectionsList
                     menuId={menu.id}
                     sections={menu.sections}
@@ -90,11 +87,8 @@ export default function MenuBuilderClient({ menu, categories, products }: MenuBu
                   />
                 </TabsContent>
 
-                <TabsContent value="settings" className="mt-6">
-                  <MenuSettings
-                    menu={menu}
-                    onUpdate={refreshMenu}
-                  />
+                <TabsContent className="mt-6" value="settings">
+                  <MenuSettings menu={menu} onUpdate={refreshMenu} />
                 </TabsContent>
               </Tabs>
             </CardContent>

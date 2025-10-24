@@ -65,9 +65,7 @@ export default async function MenusPage() {
             </CardHeader>
             <CardContent>
               {menu.description && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {menu.description}
-                </p>
+                <p className="text-sm text-muted-foreground mb-4">{menu.description}</p>
               )}
 
               <div className="flex gap-4 mb-4 text-sm">
@@ -82,13 +80,13 @@ export default async function MenusPage() {
               </div>
 
               <div className="flex gap-2">
-                <Link href={`/admin/menus/${menu.id}`} className="flex-1">
-                  <Button variant="default" className="w-full">
+                <Link className="flex-1" href={`/admin/menus/${menu.id}`}>
+                  <Button className="w-full" variant="default">
                     <Edit className="mr-2 h-4 w-4" />
                     Edit
                   </Button>
                 </Link>
-                <Button variant="outline" size="icon">
+                <Button size="icon" variant="outline">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

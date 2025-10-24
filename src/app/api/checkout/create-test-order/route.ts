@@ -71,8 +71,22 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Generate order number with TEST prefix
-    const orderNumber = `TEST-${Date.now().toString(36).toUpperCase()}`
+    // Generate order number with GRP prefix (same format as production orders)
+    const lastOrder = await prisma.order.findFirst({
+      where: { orderNumber: { startsWith: 'GRP-' } },
+      orderBy: { createdAt: 'desc' },
+      select: { orderNumber: true },
+    })
+
+    let nextNumber = 19712025
+    if (lastOrder) {
+      const lastNumber = parseInt(lastOrder.orderNumber.replace('GRP-', ''), 10)
+      if (!isNaN(lastNumber)) {
+        nextNumber = lastNumber + 1
+      }
+    }
+
+    const orderNumber = `GRP-${nextNumber}`
 
     // Create order in database with CONFIRMATION status (test orders are pre-paid)
     const orderId = `test_order_${Date.now()}_${Math.random().toString(36).substring(7)}`

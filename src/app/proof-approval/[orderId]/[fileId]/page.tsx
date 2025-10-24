@@ -101,12 +101,7 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
 
         {/* Proof Approval Interface */}
         <ProofApprovalInterface
-          order={{
-            id: order.id,
-            orderNumber: order.orderNumber,
-            email: order.email,
-            customerName: order.User?.name || undefined,
-          }}
+          defaultAction={action}
           file={{
             id: file.id,
             filename: file.filename,
@@ -125,7 +120,12 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
               createdAt: msg.createdAt,
             })),
           }}
-          defaultAction={action}
+          order={{
+            id: order.id,
+            orderNumber: order.orderNumber,
+            email: order.email,
+            customerName: order.User?.name || undefined,
+          }}
         />
       </div>
     </div>

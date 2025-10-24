@@ -295,8 +295,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         <div className="flex items-center gap-2">
           <Button asChild size="sm" variant="outline">
             <a
-              href={`/api/admin/orders/${order.id}/invoice`}
               download
+              href={`/api/admin/orders/${order.id}/invoice`}
               title="Download order invoice"
             >
               <Download className="h-4 w-4 mr-2" />
@@ -456,16 +456,24 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                       <span className="text-sm">
                         Payment: Credit Card
                         {order.status === 'PENDING_PAYMENT' ? (
-                          <Badge variant="secondary" className="ml-2 text-xs">
+                          <Badge className="ml-2 text-xs" variant="secondary">
                             Pending
                           </Badge>
                         ) : (
-                          <Badge variant="default" className="ml-2 text-xs">
+                          <Badge className="ml-2 text-xs" variant="default">
                             Paid
                           </Badge>
                         )}
                       </span>
                     </div>
+                    {order.origin && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span className="text-sm">Origin: {order.origin}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -529,62 +537,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           )}
         </div>
 
-        {/* Right Column - Status and Timeline */}
+        {/* Right Column - Order Management */}
         <div className="space-y-6">
-          {/* Order Status & Timeline */}
-          <CollapsibleSection
-            defaultOpen={true}
-            icon={<CheckCircle className="h-5 w-5" />}
-            title="Order Status & Timeline"
-          >
-            <div className="space-y-6">
-              {/* Editable Status */}
-              <EditableOrderStatus orderId={order.id} currentStatus={order.status} />
-
-              {/* Timeline */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-muted-foreground">Order Timeline</h4>
-                {timeline.map((event, index) => {
-                  const EventIcon = event.icon
-                  return (
-                    <div key={index} className="flex gap-3">
-                      <div className="relative flex flex-col items-center">
-                        <div
-                          className={`rounded-full p-2 ${
-                            event.completed
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-muted-foreground'
-                          }`}
-                        >
-                          <EventIcon className="h-4 w-4" />
-                        </div>
-                        {index < timeline.length - 1 && (
-                          <div
-                            className={`w-0.5 h-16 mt-2 ${
-                              event.completed ? 'bg-primary' : 'bg-muted'
-                            }`}
-                          />
-                        )}
-                      </div>
-                      <div className="flex-1 pt-1">
-                        <p className="font-medium text-sm">{event.status}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{event.description}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(event.date).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </CollapsibleSection>
-
           {/* Vendor Assignment */}
           <CollapsibleSection
             defaultOpen={true}

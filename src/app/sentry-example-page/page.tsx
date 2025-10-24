@@ -20,7 +20,7 @@ export default function SentryExamplePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button onClick={triggerError} size="lg" className="w-full">
+          <Button className="w-full" size="lg" onClick={triggerError}>
             🚨 Trigger Test Error
           </Button>
 
@@ -38,10 +38,10 @@ export default function SentryExamplePage() {
 
           <div className="pt-4 border-t">
             <a
-              href="https://sentry.io/organizations/gangrunprintingcom/projects/javascript-nextjs/"
-              target="_blank"
-              rel="noopener noreferrer"
               className="text-primary hover:underline text-sm"
+              href="https://sentry.io/organizations/gangrunprintingcom/projects/javascript-nextjs/"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               → Open Your Sentry Dashboard
             </a>

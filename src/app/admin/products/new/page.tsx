@@ -252,8 +252,8 @@ export default function NewProductPage() {
         </div>
         <div className="flex gap-2">
           <AIProductDesigner
-            onContentGenerated={handleAIContentGenerated}
             defaultProductName={formData.name}
+            onContentGenerated={handleAIContentGenerated}
           />
           <Button
             className="border-purple-300 text-purple-600 hover:bg-purple-50"

@@ -172,13 +172,13 @@ export function EditableOrderStatus({ orderId, currentStatus, onStatusChange }: 
             {status.label}
           </Badge>
           {!isEditing ? (
-            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
               <RefreshCw className="h-3 w-3 mr-1" />
               Update
             </Button>
           ) : (
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
                 Cancel
               </Button>
             </div>
@@ -224,7 +224,7 @@ export function EditableOrderStatus({ orderId, currentStatus, onStatusChange }: 
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isUpdating}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmStatusChange} disabled={isUpdating}>
+            <AlertDialogAction disabled={isUpdating} onClick={handleConfirmStatusChange}>
               {isUpdating ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />

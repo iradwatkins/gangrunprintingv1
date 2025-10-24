@@ -55,7 +55,7 @@ export default function APIDocsPage() {
           </p>
           <p className="mt-2">
             📚 For more information, visit{' '}
-            <a href="/help-center" className="text-primary hover:underline">
+            <a className="text-primary hover:underline" href="/help-center">
               Help Center
             </a>
           </p>

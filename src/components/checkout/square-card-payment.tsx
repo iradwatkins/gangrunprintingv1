@@ -30,7 +30,7 @@ interface SquareCardPaymentProps {
     maskedNumber: string
     cardBrand: string
   } | null
-  user?: { id: string; email: string; name?: string } | null
+  user?: { id: string; email: string; name?: string | null } | null
   onPaymentSuccess: (result: Record<string, unknown>) => void
   onPaymentError: (error: string) => void
   onBack: () => void
@@ -335,8 +335,8 @@ export function SquareCardPayment({
 
                   <div className="flex justify-center pt-2">
                     <button
-                      onClick={() => setError(null)}
                       className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                      onClick={() => setError(null)}
                     >
                       Try Again
                     </button>
@@ -386,11 +386,11 @@ export function SquareCardPayment({
               {user && (
                 <div className="flex items-center space-x-2 mt-3 pt-3 border-t">
                   <Checkbox
-                    id="savePaymentMethod"
                     checked={shouldSavePaymentMethod}
+                    id="savePaymentMethod"
                     onCheckedChange={(checked) => setShouldSavePaymentMethod(checked as boolean)}
                   />
-                  <Label htmlFor="savePaymentMethod" className="text-sm cursor-pointer">
+                  <Label className="text-sm cursor-pointer" htmlFor="savePaymentMethod">
                     Save this payment method to my account for faster checkout
                   </Label>
                 </div>

@@ -6,7 +6,15 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Plus, GripVertical, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 
@@ -18,11 +26,7 @@ interface MenuSectionsListProps {
   onUpdate: () => void
 }
 
-export default function MenuSectionsList({
-  menuId,
-  sections,
-  onUpdate,
-}: MenuSectionsListProps) {
+export default function MenuSectionsList({ menuId, sections, onUpdate }: MenuSectionsListProps) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [newSection, setNewSection] = useState({
     title: '',
@@ -64,7 +68,12 @@ export default function MenuSectionsList({
   }
 
   const handleDeleteSection = async (sectionId: string) => {
-    if (!confirm('Are you sure you want to delete this section? Items in this section will not be deleted.')) return
+    if (
+      !confirm(
+        'Are you sure you want to delete this section? Items in this section will not be deleted.'
+      )
+    )
+      return
 
     try {
       await fetch(`/api/admin/menu-sections/${sectionId}`, {
@@ -96,38 +105,38 @@ export default function MenuSectionsList({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add Menu Section</DialogTitle>
-              <DialogDescription>
-                Create a new section for your mega menu
-              </DialogDescription>
+              <DialogDescription>Create a new section for your mega menu</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label>Section Title *</Label>
                 <Input
+                  placeholder="e.g., Popular Products, By Category"
                   value={newSection.title}
                   onChange={(e) => setNewSection({ ...newSection, title: e.target.value })}
-                  placeholder="e.g., Popular Products, By Category"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>Description</Label>
                 <Textarea
-                  value={newSection.description}
-                  onChange={(e) => setNewSection({ ...newSection, description: e.target.value })}
                   placeholder="Optional description"
                   rows={2}
+                  value={newSection.description}
+                  onChange={(e) => setNewSection({ ...newSection, description: e.target.value })}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>Column</Label>
                 <Input
-                  type="number"
-                  min="1"
                   max="4"
+                  min="1"
+                  type="number"
                   value={newSection.column}
-                  onChange={(e) => setNewSection({ ...newSection, column: parseInt(e.target.value) })}
+                  onChange={(e) =>
+                    setNewSection({ ...newSection, column: parseInt(e.target.value) })
+                  }
                 />
                 <p className="text-xs text-muted-foreground">
                   Which column to display this section in (1-4)
@@ -137,9 +146,9 @@ export default function MenuSectionsList({
               <div className="space-y-2">
                 <Label>Icon URL (Optional)</Label>
                 <Input
+                  placeholder="https://..."
                   value={newSection.iconUrl}
                   onChange={(e) => setNewSection({ ...newSection, iconUrl: e.target.value })}
-                  placeholder="https://..."
                 />
               </div>
 
@@ -147,7 +156,9 @@ export default function MenuSectionsList({
                 <Label>Show Title</Label>
                 <Switch
                   checked={newSection.showTitle}
-                  onCheckedChange={(checked) => setNewSection({ ...newSection, showTitle: checked })}
+                  onCheckedChange={(checked) =>
+                    setNewSection({ ...newSection, showTitle: checked })
+                  }
                 />
               </div>
 
@@ -163,7 +174,7 @@ export default function MenuSectionsList({
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleAddSection} disabled={!newSection.title}>
+              <Button disabled={!newSection.title} onClick={handleAddSection}>
                 Add Section
               </Button>
             </DialogFooter>
@@ -190,10 +201,10 @@ export default function MenuSectionsList({
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{section.title}</span>
                   {!section.isActive && <EyeOff className="h-4 w-4 text-gray-400" />}
-                  <Badge variant="outline" className="text-xs">
+                  <Badge className="text-xs" variant="outline">
                     Column {section.column}
                   </Badge>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge className="text-xs" variant="outline">
                     {section.items?.length || 0} items
                   </Badge>
                 </div>
@@ -203,10 +214,10 @@ export default function MenuSectionsList({
               </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
+                <Button size="sm" variant="outline">
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => handleDeleteSection(section.id)}>
+                <Button size="sm" variant="outline" onClick={() => handleDeleteSection(section.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

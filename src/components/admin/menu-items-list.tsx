@@ -5,8 +5,22 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Plus, GripVertical, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 import {
   DndContext,
@@ -15,7 +29,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -41,14 +55,9 @@ interface MenuItemsListProps {
 }
 
 function SortableMenuItem({ item, onEdit, onDelete }: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -59,8 +68,8 @@ function SortableMenuItem({ item, onEdit, onDelete }: any) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className="flex items-center gap-3 p-4 bg-white border rounded-lg hover:bg-gray-50"
+      style={style}
     >
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
         <GripVertical className="h-5 w-5 text-gray-400" />
@@ -70,23 +79,21 @@ function SortableMenuItem({ item, onEdit, onDelete }: any) {
         <div className="flex items-center gap-2">
           <span className="font-medium">{item.label}</span>
           {!item.isActive && <EyeOff className="h-4 w-4 text-gray-400" />}
-          <Badge variant="outline" className="text-xs">
+          <Badge className="text-xs" variant="outline">
             {item.linkType}
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground">{item.linkValue}</p>
         {item.Children && item.Children.length > 0 && (
-          <p className="text-xs text-muted-foreground mt-1">
-            {item.Children.length} sub-items
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">{item.Children.length} sub-items</p>
         )}
       </div>
 
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
+        <Button size="sm" variant="outline" onClick={() => onEdit(item)}>
           <Edit className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="sm" onClick={() => onDelete(item.id)}>
+        <Button size="sm" variant="outline" onClick={() => onDelete(item.id)}>
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
@@ -219,9 +226,9 @@ export default function MenuItemsList({
               <div className="space-y-2">
                 <Label>Label *</Label>
                 <Input
+                  placeholder="Menu item text"
                   value={newItem.label}
                   onChange={(e) => setNewItem({ ...newItem, label: e.target.value })}
-                  placeholder="Menu item text"
                 />
               </div>
 
@@ -230,7 +237,9 @@ export default function MenuItemsList({
                   <Label>Link Type *</Label>
                   <Select
                     value={newItem.linkType}
-                    onValueChange={(value) => setNewItem({ ...newItem, linkType: value, linkValue: '' })}
+                    onValueChange={(value) =>
+                      setNewItem({ ...newItem, linkType: value, linkValue: '' })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -281,17 +290,19 @@ export default function MenuItemsList({
                       </SelectContent>
                     </Select>
                   )}
-                  {(newItem.linkType === 'PAGE' || newItem.linkType === 'EXTERNAL' || newItem.linkType === 'CUSTOM') && (
+                  {(newItem.linkType === 'PAGE' ||
+                    newItem.linkType === 'EXTERNAL' ||
+                    newItem.linkType === 'CUSTOM') && (
                     <Input
-                      value={newItem.linkValue}
-                      onChange={(e) => setNewItem({ ...newItem, linkValue: e.target.value })}
                       placeholder={
                         newItem.linkType === 'EXTERNAL'
                           ? 'https://example.com'
                           : newItem.linkType === 'PAGE'
-                          ? '/about'
-                          : 'Custom path or URL'
+                            ? '/about'
+                            : 'Custom path or URL'
                       }
+                      value={newItem.linkValue}
+                      onChange={(e) => setNewItem({ ...newItem, linkValue: e.target.value })}
                     />
                   )}
                 </div>
@@ -322,9 +333,9 @@ export default function MenuItemsList({
               <div className="space-y-2">
                 <Label>Icon URL (Optional)</Label>
                 <Input
+                  placeholder="https://..."
                   value={newItem.iconUrl}
                   onChange={(e) => setNewItem({ ...newItem, iconUrl: e.target.value })}
-                  placeholder="https://..."
                 />
               </div>
             </div>
@@ -332,7 +343,7 @@ export default function MenuItemsList({
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleAddItem} disabled={!newItem.label || !newItem.linkValue}>
+              <Button disabled={!newItem.label || !newItem.linkValue} onClick={handleAddItem}>
                 Add Item
               </Button>
             </DialogFooter>
@@ -349,19 +360,18 @@ export default function MenuItemsList({
           </Button>
         </div>
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={items.map((item: any) => item.id)} strategy={verticalListSortingStrategy}>
+        <DndContext collisionDetection={closestCenter} sensors={sensors} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={items.map((item: any) => item.id)}
+            strategy={verticalListSortingStrategy}
+          >
             <div className="space-y-3">
               {items.map((item: any) => (
                 <SortableMenuItem
                   key={item.id}
                   item={item}
-                  onEdit={(item: any) => console.log('Edit', item)}
                   onDelete={handleDeleteItem}
+                  onEdit={(item: any) => console.log('Edit', item)}
                 />
               ))}
             </div>

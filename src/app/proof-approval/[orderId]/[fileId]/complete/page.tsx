@@ -234,7 +234,7 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button variant="outline" className="h-auto py-3 px-4" asChild>
+              <Button asChild className="h-auto py-3 px-4" variant="outline">
                 <a href="mailto:orders@gangrunprinting.com">
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5" />
@@ -248,7 +248,7 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
                 </a>
               </Button>
 
-              <Button variant="outline" className="h-auto py-3 px-4" asChild>
+              <Button asChild className="h-auto py-3 px-4" variant="outline">
                 <a href="tel:1-800-PRINTING">
                   <div className="flex items-center gap-3">
                     <Phone className="h-5 w-5" />

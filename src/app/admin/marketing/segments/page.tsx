@@ -211,7 +211,7 @@ export default function SegmentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Customer Segments</h1>
-          <p className="text-gray-600 mt-2">Organize customers into targeted groups</p>
+          <p className="text-muted-foreground mt-2">Organize customers into targeted groups</p>
         </div>
 
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -348,7 +348,7 @@ export default function SegmentsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Segments</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Segments</p>
                 <p className="text-3xl font-bold">{segments.length}</p>
               </div>
               <Target className="w-8 h-8 text-blue-500" />
@@ -360,7 +360,7 @@ export default function SegmentsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Segments</p>
+                <p className="text-sm font-medium text-muted-foreground">Active Segments</p>
                 <p className="text-3xl font-bold">{segments.filter((s) => s.isActive).length}</p>
               </div>
               <Users className="w-8 h-8 text-green-500" />
@@ -372,7 +372,7 @@ export default function SegmentsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Customers</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
                 <p className="text-3xl font-bold">
                   {segments.reduce((sum, s) => sum + s.count, 0)}
                 </p>
@@ -386,7 +386,7 @@ export default function SegmentsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Dynamic Segments</p>
+                <p className="text-sm font-medium text-muted-foreground">Dynamic Segments</p>
                 <p className="text-3xl font-bold">{segments.filter((s) => s.isDynamic).length}</p>
               </div>
               <RefreshCw className="w-8 h-8 text-orange-500" />
@@ -418,8 +418,8 @@ export default function SegmentsPage() {
                 <TableRow>
                   <TableCell className="text-center py-8" colSpan={6}>
                     <div className="flex flex-col items-center gap-2">
-                      <Target className="w-8 h-8 text-gray-400" />
-                      <p className="text-gray-500">No segments found</p>
+                      <Target className="w-8 h-8 text-muted-foreground" />
+                      <p className="text-muted-foreground">No segments found</p>
                       <Button variant="outline" onClick={() => setShowCreateDialog(true)}>
                         Create your first segment
                       </Button>
@@ -433,13 +433,13 @@ export default function SegmentsPage() {
                       <div>
                         <div className="font-medium">{segment.name}</div>
                         {segment.description && (
-                          <div className="text-sm text-gray-500">{segment.description}</div>
+                          <div className="text-sm text-muted-foreground">{segment.description}</div>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-gray-400" />
+                        <Users className="w-4 h-4 text-muted-foreground" />
                         <span className="font-medium">{segment.count.toLocaleString()}</span>
                       </div>
                     </TableCell>
@@ -452,8 +452,8 @@ export default function SegmentsPage() {
                       <Badge
                         className={
                           segment.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                            : 'bg-muted text-muted-foreground'
                         }
                       >
                         {segment.isActive ? 'Active' : 'Inactive'}

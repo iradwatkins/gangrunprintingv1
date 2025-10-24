@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
@@ -30,16 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const {
-      label,
-      linkType,
-      linkValue,
-      sortOrder,
-      isActive,
-      iconUrl,
-      badgeText,
-      badgeColor,
-    } = body
+    const { label, linkType, linkValue, sortOrder, isActive, iconUrl, badgeText, badgeColor } = body
 
     const quickLink = await prisma.quickLink.create({
       data: {

@@ -19,6 +19,7 @@ export interface ShippingAddress {
   lastName: string
   email: string
   phone: string
+  company?: string
   street: string
   street2?: string
   city: string
@@ -31,7 +32,7 @@ interface ShippingAddressFormProps {
   address: Partial<ShippingAddress>
   onChange: (address: Partial<ShippingAddress>) => void
   errors?: Record<string, string>
-  user?: { id: string; email: string; name?: string } | null
+  user?: { id: string; email: string; name?: string | null } | null
   onSaveAddressChange?: (shouldSave: boolean) => void
   shouldSaveAddress?: boolean
 }
@@ -255,11 +256,11 @@ export function ShippingAddressForm({
         {user && onSaveAddressChange && (
           <div className="flex items-center space-x-2 pt-4 border-t">
             <Checkbox
-              id="saveAddress"
               checked={shouldSaveAddress}
+              id="saveAddress"
               onCheckedChange={(checked) => onSaveAddressChange(checked as boolean)}
             />
-            <Label htmlFor="saveAddress" className="text-sm cursor-pointer">
+            <Label className="text-sm cursor-pointer" htmlFor="saveAddress">
               Save this address to my account for faster checkout
             </Label>
           </div>

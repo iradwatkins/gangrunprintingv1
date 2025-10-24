@@ -30,18 +30,17 @@ export interface NavMainItem {
   }[]
 }
 
-export function NavMainEnhanced({
-  items,
-}: {
-  items: NavMainItem[]
-}) {
+export function NavMainEnhanced({ items }: { items: NavMainItem[] }) {
   const pathname = usePathname()
 
   // Create initial state from items
-  const initialState = items.reduce((acc, item) => {
-    acc[item.title] = item.isActive || false
-    return acc
-  }, {} as Record<string, boolean>)
+  const initialState = items.reduce(
+    (acc, item) => {
+      acc[item.title] = item.isActive || false
+      return acc
+    },
+    {} as Record<string, boolean>
+  )
 
   const { openSections, toggleSection, isLoaded } = useNavigationState(initialState)
 
@@ -90,12 +89,12 @@ export function NavMainEnhanced({
                         <span>{item.title}</span>
                         {/* Child count indicator */}
                         <Badge
-                          variant="secondary"
                           className={cn(
                             'ml-auto mr-1 h-5 min-w-[20px] px-1.5 text-[10px] font-medium',
                             'transition-all duration-200',
-                            'group-data-[state=open]/collapsible:bg-primary/10 group-data-[state=open]/collapsible:text-primary',
+                            'group-data-[state=open]/collapsible:bg-primary/10 group-data-[state=open]/collapsible:text-primary'
                           )}
+                          variant="secondary"
                         >
                           {subItemCount}
                         </Badge>

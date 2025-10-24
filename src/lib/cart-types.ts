@@ -81,7 +81,8 @@ export interface CartState {
 export interface CartContextType {
   items: CartItem[]
   isOpen: boolean
-  itemCount: number
+  productCount: number // Number of unique products in cart (for badge display)
+  itemCount: number // Total quantity of all items (for order summaries)
   subtotal: number
   tax: number
   shipping: number

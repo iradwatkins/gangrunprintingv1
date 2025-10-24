@@ -87,7 +87,9 @@ export default function LocationsPage() {
         const response = await fetch('/api/airports')
         const data = await response.json()
 
-        if (data.success && data.airports) {
+        console.log('[Locations] API Response:', { success: data.success, count: data.count, airportsLength: data.airports?.length })
+
+        if (data.success && data.airports && Array.isArray(data.airports)) {
           // Transform API data to match our component format
           const transformedAirports = data.airports.map((airport: any) => ({
             id: airport.id,
@@ -99,13 +101,16 @@ export default function LocationsPage() {
             city: airport.city,
             state: airport.state,
             zip: airport.zip,
-            hours: airport.hours,
+            hours: airport.hours || {},
           }))
 
+          console.log('[Locations] Transformed airports count:', transformedAirports.length)
           setAirCargoLocations(transformedAirports)
+        } else {
+          console.error('[Locations] Invalid API response structure:', data)
         }
       } catch (error) {
-        console.error('Failed to fetch airports:', error)
+        console.error('[Locations] Failed to fetch airports:', error)
       } finally {
         setIsLoadingAirports(false)
       }
@@ -120,7 +125,7 @@ export default function LocationsPage() {
     retailLocations.forEach((loc) => allStates.add(loc.state))
     airCargoLocations.forEach((loc) => allStates.add(loc.state))
     return Array.from(allStates).sort()
-  }, [])
+  }, [airCargoLocations])
 
   // Filter locations based on search and state
   const filteredRetailLocations = useMemo(() => {

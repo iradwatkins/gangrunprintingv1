@@ -59,8 +59,8 @@ export function BrokerDiscountButton({
         variant={isBroker ? 'default' : 'outline'}
         onClick={() => setShowModal(true)}
       >
-        <Percent className="h-4 w-4 mr-2" />
-        {isBroker ? 'Manage' : 'Set'} Broker Discounts
+        <Percent className="h-4 w-4 mr-1" />
+        %
       </Button>
 
       {showModal && (

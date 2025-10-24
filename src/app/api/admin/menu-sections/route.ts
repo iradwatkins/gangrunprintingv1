@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
@@ -11,16 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const {
-      menuId,
-      title,
-      description,
-      column,
-      sortOrder,
-      showTitle,
-      isActive,
-      iconUrl,
-    } = body
+    const { menuId, title, description, column, sortOrder, showTitle, isActive, iconUrl } = body
 
     const section = await prisma.menuSection.create({
       data: {

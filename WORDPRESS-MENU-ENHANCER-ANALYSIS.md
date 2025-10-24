@@ -48,6 +48,7 @@
 **Location:** `/src/app/admin/components/nav-main.tsx`
 
 ### Existing Features ✅
+
 - Collapsible sections (Radix UI Collapsible)
 - Active state detection based on pathname
 - Icons for menu items
@@ -55,6 +56,7 @@
 - Responsive tooltip for collapsed sidebar
 
 ### Missing Features ❌
+
 - **No localStorage persistence** - Defaults to hardcoded `isActive` flag
 - **No child count indicators** - Can't see at a glance how many sub-items exist
 - **No expand/collapse all** - Must manually expand each section
@@ -65,9 +67,11 @@
 ## Integration Strategy
 
 ### Phase 1: localStorage Persistence ✅ (Priority 1)
+
 **Goal:** Remember user's expand/collapse preferences
 
 **Implementation:**
+
 - Create `useNavigationState` hook
 - Store state in localStorage as `{ [menuTitle]: boolean }`
 - Load state on mount
@@ -75,45 +79,55 @@
 - Controlled Collapsible components instead of `defaultOpen`
 
 **Files to Create:**
+
 - `/src/hooks/useNavigationState.ts`
 
 **Files to Modify:**
+
 - `/src/app/admin/components/nav-main.tsx`
 
 ---
 
 ### Phase 2: Child Count Indicators (Priority 2)
+
 **Goal:** Show visual indicators for number of sub-items
 
 **Implementation:**
+
 - Add badge component next to menu titles
 - Show count: `(12)` for sections with sub-items
 - Style to match existing theme
 - Optional: Add tooltip with more details
 
 **Files to Modify:**
+
 - `/src/app/admin/components/nav-main.tsx`
 
 ---
 
 ### Phase 3: Expand/Collapse All (Priority 3)
+
 **Goal:** Quick controls to manage all sections at once
 
 **Implementation:**
+
 - Add toolbar to sidebar header or footer
 - Expand All button
 - Collapse All button
 - Keyboard shortcuts (Cmd+E, Cmd+Shift+E)
 
 **Files to Create:**
+
 - `/src/app/admin/components/nav-toolbar.tsx`
 
 **Files to Modify:**
+
 - `/src/app/admin/components/app-sidebar.tsx`
 
 ---
 
 ### Phase 4: Additional Enhancements (Optional)
+
 - Visual highlights on hover
 - Search/filter menu items
 - Recently accessed items
@@ -123,32 +137,34 @@
 
 ## Technical Differences: WordPress vs Next.js
 
-| Feature | WordPress Plugin | GangRun Printing |
-|---------|------------------|------------------|
-| Framework | jQuery | React |
-| State Management | Manual DOM + localStorage | React hooks + localStorage |
-| Animations | jQuery slideUp/slideDown | Radix UI Collapsible animations |
-| Selectors | CSS class depth (`.menu-item-depth-0`) | Nested React components |
-| Menu Structure | Flat list with depth classes | Hierarchical data structure |
-| Drag & Drop | Native WordPress UI | N/A (not applicable) |
+| Feature          | WordPress Plugin                       | GangRun Printing                |
+| ---------------- | -------------------------------------- | ------------------------------- |
+| Framework        | jQuery                                 | React                           |
+| State Management | Manual DOM + localStorage              | React hooks + localStorage      |
+| Animations       | jQuery slideUp/slideDown               | Radix UI Collapsible animations |
+| Selectors        | CSS class depth (`.menu-item-depth-0`) | Nested React components         |
+| Menu Structure   | Flat list with depth classes           | Hierarchical data structure     |
+| Drag & Drop      | Native WordPress UI                    | N/A (not applicable)            |
 
 ---
 
 ## Code Comparison
 
 ### WordPress Plugin (Expand/Contract)
+
 ```javascript
 // Old jQuery approach
-var toggle_contract = function($item){
-  var $children = get_children($item);
-  $children.slideUp('normal', function(){
+var toggle_contract = function ($item) {
+  var $children = get_children($item)
+  $children.slideUp('normal', function () {
     // callback after animation
-  });
-  plugin.itemStatus($item.attr('id'), true); // localStorage
+  })
+  plugin.itemStatus($item.attr('id'), true) // localStorage
 }
 ```
 
 ### React Equivalent
+
 ```typescript
 // Modern React approach
 const [openSections, setOpenSections] = useNavigationState()

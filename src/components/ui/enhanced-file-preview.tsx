@@ -195,7 +195,6 @@ export function EnhancedFilePreview({
             {/* Image preview */}
             {(isImage || thumbnailUrl) && !imageError ? (
               <img
-                src={thumbnailUrl || fileUrl}
                 alt={displayName}
                 className={cn(
                   'object-contain w-full h-full cursor-pointer transition-all duration-200',
@@ -203,12 +202,13 @@ export function EnhancedFilePreview({
                   imageLoading && 'opacity-0'
                 )}
                 loading="lazy"
-                onLoad={() => setImageLoading(false)}
+                src={thumbnailUrl || fileUrl}
+                onClick={handlePreview}
                 onError={() => {
                   setImageError(true)
                   setImageLoading(false)
                 }}
-                onClick={handlePreview}
+                onLoad={() => setImageLoading(false)}
               />
             ) : (
               /* Fallback icon */
@@ -225,16 +225,16 @@ export function EnhancedFilePreview({
             )}
 
             {/* File type badge */}
-            <Badge variant="secondary" className="absolute top-2 left-2 text-xs opacity-90">
+            <Badge className="absolute top-2 left-2 text-xs opacity-90" variant="secondary">
               {fileType.toUpperCase()}
             </Badge>
 
             {/* Quick preview button overlay */}
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <Button
+                className="bg-white/90 hover:bg-white"
                 size="sm"
                 variant="secondary"
-                className="bg-white/90 hover:bg-white"
                 onClick={handlePreview}
               >
                 <Eye className="h-4 w-4 mr-1" />
@@ -259,12 +259,12 @@ export function EnhancedFilePreview({
           {/* Action buttons */}
           {showActions && (
             <div className="flex gap-2 mt-3">
-              <Button size="sm" variant="outline" className="flex-1" onClick={handlePreview}>
+              <Button className="flex-1" size="sm" variant="outline" onClick={handlePreview}>
                 <Eye className="h-4 w-4 mr-1" />
                 View
               </Button>
 
-              <Button size="sm" variant="outline" className="flex-1" onClick={handleDownload}>
+              <Button className="flex-1" size="sm" variant="outline" onClick={handleDownload}>
                 <Download className="h-4 w-4 mr-1" />
                 Download
               </Button>
@@ -311,13 +311,13 @@ export function EnhancedFilePreview({
               {/* Toolbar for images */}
               {isImage && (
                 <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline" onClick={zoomOut} disabled={zoom <= 25}>
+                  <Button disabled={zoom <= 25} size="sm" variant="outline" onClick={zoomOut}>
                     <ZoomOut className="h-4 w-4" />
                   </Button>
                   <Button size="sm" variant="outline" onClick={resetZoom}>
                     {zoom}%
                   </Button>
-                  <Button size="sm" variant="outline" onClick={zoomIn} disabled={zoom >= 300}>
+                  <Button disabled={zoom >= 300} size="sm" variant="outline" onClick={zoomIn}>
                     <ZoomIn className="h-4 w-4" />
                   </Button>
                   <Button size="sm" variant="outline" onClick={rotate}>
@@ -335,21 +335,21 @@ export function EnhancedFilePreview({
             {isImage ? (
               <div className="flex items-center justify-center min-h-[60vh]">
                 <img
-                  src={fileUrl}
                   alt={displayName}
                   className="max-w-full max-h-full object-contain transition-transform duration-200"
+                  loading="lazy"
+                  src={fileUrl}
                   style={{
                     transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
                   }}
-                  loading="lazy"
                 />
               </div>
             ) : isPdf ? (
               <div className="w-full h-[80vh]">
                 <iframe
+                  className="w-full h-full border-0 rounded-lg"
                   src={fileUrl}
                   title={displayName}
-                  className="w-full h-full border-0 rounded-lg"
                 />
               </div>
             ) : (

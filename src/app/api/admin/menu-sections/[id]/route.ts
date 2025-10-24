@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 
 // PUT /api/admin/menu-sections/[id] - Update menu section
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {
@@ -14,15 +11,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const {
-      title,
-      description,
-      column,
-      sortOrder,
-      showTitle,
-      isActive,
-      iconUrl,
-    } = body
+    const { title, description, column, sortOrder, showTitle, isActive, iconUrl } = body
 
     const section = await prisma.menuSection.update({
       where: { id: params.id },
@@ -50,10 +39,7 @@ export async function PUT(
 }
 
 // DELETE /api/admin/menu-sections/[id] - Delete menu section
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { user } = await validateRequest()
     if (!user || user.role !== 'ADMIN') {

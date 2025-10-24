@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next'
+import { type MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'

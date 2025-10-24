@@ -7,6 +7,13 @@ import { Label } from '@/components/ui/label'
 import { Truck, Plane, Loader2 } from 'lucide-react'
 import toast from '@/lib/toast'
 
+export interface PerProductShipping {
+  productId: string | undefined
+  shippingCost: number
+  weight: number
+  percentage: number
+}
+
 export interface ShippingRate {
   provider: string
   providerName: string
@@ -25,6 +32,7 @@ export interface ShippingRate {
     guaranteed: boolean
     date?: string
   }
+  perProductCosts?: PerProductShipping[]
 }
 
 interface ShippingMethodSelectorProps {
@@ -70,21 +78,25 @@ export function ShippingMethodSelector({
     setLoading(true)
     setError(null)
 
+    const requestBody = {
+      toAddress: {
+        street: destination.street || '123 Main St',
+        city: destination.city,
+        state: destination.state,
+        zipCode: destination.zipCode,
+        country: 'US',
+        isResidential: true,
+      },
+      items: items,
+    }
+
+    console.log('[ShippingMethodSelector] Fetching rates with:', requestBody)
+
     try {
       const response = await fetch('/api/shipping/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          toAddress: {
-            street: destination.street || '123 Main St',
-            city: destination.city,
-            state: destination.state,
-            zipCode: destination.zipCode,
-            country: 'US',
-            isResidential: true,
-          },
-          items: items,
-        }),
+        body: JSON.stringify(requestBody),
       })
 
       if (!response.ok) {
@@ -99,8 +111,11 @@ export function ShippingMethodSelector({
 
       const data = await response.json()
 
+      console.log('[ShippingMethodSelector] API Response:', { success: data.success, ratesCount: data.rates?.length, data })
+
       if (data.success && data.rates && Array.isArray(data.rates)) {
         if (data.rates.length === 0) {
+          console.warn('[ShippingMethodSelector] No rates returned from API')
           setError('No shipping options available for this address')
           setRates([])
         } else {
@@ -117,6 +132,7 @@ export function ShippingMethodSelector({
             estimatedDays?: number
             isGuaranteed?: boolean
             deliveryDate?: string
+            perProductCosts?: PerProductShipping[]
           }
 
           const transformedRates = data.rates.map((rate: ApiShippingRate) => ({
@@ -137,6 +153,7 @@ export function ShippingMethodSelector({
               guaranteed: rate.isGuaranteed || false,
               date: rate.deliveryDate,
             },
+            perProductCosts: rate.perProductCosts, // Include per-product breakdown
           }))
 
           setRates(transformedRates)
@@ -284,9 +301,9 @@ export function ShippingMethodSelector({
                         <div className="flex items-center space-x-3">
                           <RadioGroupItem
                             className="mt-0.5"
+                            disabled={needsAirport}
                             id={`${rate.provider}-${rate.serviceCode}-${index}`}
                             value={rate.serviceCode}
-                            disabled={needsAirport}
                           />
                           <div className="flex items-center space-x-3 flex-1">
                             <div

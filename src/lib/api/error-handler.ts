@@ -5,7 +5,7 @@
  * for API routes with security and monitoring features
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { logger } from '@/lib/logger-safe'
 import { validateRequest } from '@/lib/auth'

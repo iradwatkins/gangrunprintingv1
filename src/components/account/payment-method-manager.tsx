@@ -26,7 +26,7 @@ import { useRouter } from 'next/navigation'
 
 interface Address {
   id: string
-  label: string
+  label: string | null
   name: string
   street: string
   city: string
@@ -36,7 +36,7 @@ interface Address {
 
 interface SavedPaymentMethod {
   id: string
-  nickname: string
+  nickname: string | null
   maskedNumber: string
   cardBrand: string
   expiryMonth: number
@@ -367,8 +367,8 @@ export function PaymentMethodManager({
               <div>
                 <Label>Card Information</Label>
                 <div
-                  id="card-container"
                   className="border rounded-md p-3 min-h-[60px] bg-background"
+                  id="card-container"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Your card information is securely processed by Square and never stored on our
@@ -402,7 +402,7 @@ export function PaymentMethodManager({
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSavePaymentMethod} disabled={isLoading}>
+            <Button disabled={isLoading} onClick={handleSavePaymentMethod}>
               {isLoading
                 ? 'Saving...'
                 : isAddingNew

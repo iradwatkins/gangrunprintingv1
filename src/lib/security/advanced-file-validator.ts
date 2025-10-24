@@ -5,7 +5,7 @@
  * virus scanning integration, and advanced threat detection
  */
 
-import { ValidationResult } from './file-validator'
+import { type ValidationResult } from './file-validator'
 import { logger } from '@/lib/logger-safe'
 
 // Magic byte signatures for file type verification

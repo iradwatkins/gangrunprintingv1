@@ -110,17 +110,28 @@ export function CartDrawer() {
                           </div>
                         )}
                       </div>
-                      <Button
-                        className="h-8 w-8"
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => removeItem(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          className="h-8 w-8"
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => removeItem(item.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-end mt-3">
+                    <div className="flex items-center justify-between mt-3">
+                      <Button
+                        asChild
+                        size="sm"
+                        variant="outline"
+                      >
+                        <Link href={`/products/${item.productSlug}?editCartItem=${item.id}`} onClick={closeCart}>
+                          Edit
+                        </Link>
+                      </Button>
                       <p className="font-semibold">${item.price.toFixed(2)}</p>
                     </div>
                   </div>
@@ -184,13 +195,6 @@ export function CartDrawer() {
                   Proceed to Checkout
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                {items.length > 0 && items[0].productSlug && (
-                  <Button asChild className="w-full" variant="outline">
-                    <Link href={`/products/${items[0].productSlug}`} onClick={closeCart}>
-                      Edit Product
-                    </Link>
-                  </Button>
-                )}
               </div>
 
               {/* Trust Badge */}

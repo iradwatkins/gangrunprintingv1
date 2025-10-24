@@ -7,7 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { ArrowLeft, Save } from 'lucide-react'
 import Link from 'next/link'
@@ -49,7 +55,7 @@ export default function NewMenuPage() {
     <div className="container mx-auto py-8 px-4 max-w-2xl">
       <div className="mb-6">
         <Link href="/admin/menus">
-          <Button variant="ghost" size="sm">
+          <Button size="sm" variant="ghost">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Menus
           </Button>
@@ -59,20 +65,18 @@ export default function NewMenuPage() {
       <Card>
         <CardHeader>
           <CardTitle>Create New Menu</CardTitle>
-          <CardDescription>
-            Create a new navigation menu for your website
-          </CardDescription>
+          <CardDescription>Create a new navigation menu for your website</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="name">Menu Name *</Label>
               <Input
+                required
                 id="name"
+                placeholder="e.g., Main Header, Footer, Mobile Menu"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Main Header, Footer, Mobile Menu"
-                required
               />
             </div>
 
@@ -99,10 +103,10 @@ export default function NewMenuPage() {
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Optional description for this menu"
                 rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
 
@@ -114,19 +118,19 @@ export default function NewMenuPage() {
                 </p>
               </div>
               <Switch
-                id="isActive"
                 checked={formData.isActive}
+                id="isActive"
                 onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
               />
             </div>
 
             <div className="flex gap-4">
-              <Button type="submit" disabled={loading} className="flex-1">
+              <Button className="flex-1" disabled={loading} type="submit">
                 <Save className="mr-2 h-4 w-4" />
                 {loading ? 'Creating...' : 'Create Menu'}
               </Button>
-              <Link href="/admin/menus" className="flex-1">
-                <Button type="button" variant="outline" className="w-full">
+              <Link className="flex-1" href="/admin/menus">
+                <Button className="w-full" type="button" variant="outline">
                   Cancel
                 </Button>
               </Link>

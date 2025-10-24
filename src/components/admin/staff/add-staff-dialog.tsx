@@ -236,6 +236,8 @@ export function AddStaffDialog() {
           name: formData.name,
           email: formData.email,
           role: formData.role,
+          permissions: formData.permissions, // Include permissions array
+          sendInvitation: formData.sendInvitation,
         }),
       })
 

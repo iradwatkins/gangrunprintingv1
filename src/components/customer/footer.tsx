@@ -72,12 +72,12 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <Label htmlFor="newsletter-email" className="sr-only">
+              <Label className="sr-only" htmlFor="newsletter-email">
                 Email address for newsletter
               </Label>
               <Input
-                id="newsletter-email"
                 className="max-w-sm"
+                id="newsletter-email"
                 placeholder="Enter your email"
                 type="email"
               />

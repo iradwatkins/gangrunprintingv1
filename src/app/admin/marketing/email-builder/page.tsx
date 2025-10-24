@@ -29,7 +29,7 @@ function EmailBuilderPageContent() {
   const templateId = searchParams.get('templateId')
 
   const [campaign, setCampaign] = useState<Campaign | null>(null)
-  const [template, setTemplate] = useState<EmailTemplate | null>(null)
+  const [template, setTemplate] = useState<EmailTemplate | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
@@ -292,7 +292,7 @@ function EmailBuilderPageContent() {
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
+      <div className="bg-background border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -307,13 +307,13 @@ function EmailBuilderPageContent() {
                   ? 'Edit Template'
                   : 'Create Email Template'}
             </h1>
-            {campaign && <p className="text-sm text-gray-600">{campaign.name}</p>}
+            {campaign && <p className="text-sm text-muted-foreground">{campaign.name}</p>}
           </div>
         </div>
 
         <div className="flex gap-2">
           {campaignId && campaign?.status === 'DRAFT' && (
-            <Button className="bg-green-600 hover:bg-green-700" onClick={handleSendCampaign}>
+            <Button className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800" onClick={handleSendCampaign}>
               <Send className="w-4 h-4 mr-2" />
               Send Campaign
             </Button>
@@ -322,7 +322,7 @@ function EmailBuilderPageContent() {
       </div>
 
       {/* Email Builder */}
-      <div className="flex-1">
+      <div className="flex-1 bg-background">
         <EmailBuilder template={template} onPreview={handlePreview} onSave={handleSave} />
       </div>
 

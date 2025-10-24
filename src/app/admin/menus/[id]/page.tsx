@@ -54,23 +54,22 @@ export default async function MenuEditPage({ params }: { params: { id: string } 
     },
   })
 
-  const products = await prisma.product.findMany({
+  const rawProducts = await prisma.product.findMany({
     where: { isActive: true },
     orderBy: { name: 'asc' },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      categoryId: true,
+    include: {
+      ProductCategory: true,
     },
     take: 100, // Limit to first 100 for performance
   })
 
-  return (
-    <MenuBuilderClient
-      menu={menu}
-      categories={categories}
-      products={products}
-    />
-  )
+  // Transform to match component type: { id, name, slug, Category: { name } | null }
+  const products = rawProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    Category: p.ProductCategory ? { name: p.ProductCategory.name } : null,
+  }))
+
+  return <MenuBuilderClient categories={categories} menu={menu} products={products} />
 }

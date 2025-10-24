@@ -18,7 +18,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             id: true,
             filename: true,
             fileUrl: true,
-            fileType: true,
+            mimeType: true,
           },
         },
       },

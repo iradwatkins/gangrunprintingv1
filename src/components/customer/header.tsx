@@ -129,16 +129,18 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
   // Use menu items if available, otherwise fall back to categories
   const menuItems = menu?.items || []
   const hasMegaMenu = menu && menu.sections.length > 0
-  const displayQuickLinks = quickLinks.length > 0 ? quickLinks :
-    fallbackCategories.slice(0, 5).map(cat => ({
-      id: cat.id,
-      label: cat.name,
-      linkType: 'CATEGORY',
-      linkValue: cat.slug,
-      iconUrl: null,
-      badgeText: null,
-      badgeColor: null,
-    }))
+  const displayQuickLinks =
+    quickLinks.length > 0
+      ? quickLinks
+      : fallbackCategories.slice(0, 5).map((cat) => ({
+          id: cat.id,
+          label: cat.name,
+          linkType: 'CATEGORY',
+          linkValue: cat.slug,
+          iconUrl: null,
+          badgeText: null,
+          badgeColor: null,
+        }))
 
   // Check user authentication status
   useEffect(() => {
@@ -260,7 +262,10 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className={hasMegaMenu ? 'w-[600px] p-4' : 'w-56'}>
+                <DropdownMenuContent
+                  align="start"
+                  className={hasMegaMenu ? 'w-[600px] p-4' : 'w-56'}
+                >
                   {hasMegaMenu ? (
                     // Mega Menu Layout
                     <div className="grid grid-cols-3 gap-4">
@@ -280,8 +285,8 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
                             {section.items.map((item) => (
                               <Link
                                 key={item.id}
-                                href={getMenuItemHref(item)}
                                 className="block px-2 py-1.5 text-sm hover:bg-muted rounded-md transition-colors"
+                                href={getMenuItemHref(item)}
                                 target={item.openInNewTab ? '_blank' : undefined}
                               >
                                 {item.label}
@@ -548,8 +553,8 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
                               <Link
                                 key={item.id}
                                 href={getMenuItemHref(item)}
-                                onClick={() => setMobileMenuOpen(false)}
                                 target={item.openInNewTab ? '_blank' : undefined}
+                                onClick={() => setMobileMenuOpen(false)}
                               >
                                 <Button
                                   className="w-full justify-start text-sm"

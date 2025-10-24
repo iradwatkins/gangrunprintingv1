@@ -217,7 +217,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // CRITICAL: Always ensure items is an array to prevent .filter() errors
   const safeItems = Array.isArray(state.items) ? state.items : []
 
-  const itemCount = safeItems.reduce((sum, item) => sum + item.quantity, 0)
+  const productCount = safeItems.length // Number of unique products in cart
+  const itemCount = safeItems.reduce((sum, item) => sum + item.quantity, 0) // Total quantity (kept for backward compatibility)
   const subtotal = safeItems.reduce((sum, item) => sum + item.subtotal, 0)
   const tax = subtotal * TAX_RATE
   // Shipping is calculated dynamically at checkout - using placeholder for cart display
@@ -227,7 +228,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const value: CartContextType = {
     items: safeItems, // Always an array
     isOpen: state.isOpen,
-    itemCount,
+    productCount, // Number of unique products (for cart badge)
+    itemCount, // Total quantity (for order summaries)
     subtotal,
     tax,
     shipping,

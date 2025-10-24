@@ -176,8 +176,8 @@ export default function PaymentPage() {
             {user && !showManualPayment && !selectedMethod && (
               <SavedPaymentMethods
                 userId={user.id}
-                onSelectPaymentMethod={handleSavedPaymentMethodSelect}
                 onNewPaymentMethod={handleNewPaymentMethod}
+                onSelectPaymentMethod={handleSavedPaymentMethodSelect}
               />
             )}
 
@@ -286,8 +286,8 @@ export default function PaymentPage() {
                   applicationId={squareAppId}
                   environment={squareEnvironment}
                   locationId={squareLocationId}
-                  total={total}
                   savedPaymentMethod={selectedSavedPaymentMethod}
+                  total={total}
                   user={user}
                   onBack={() => setSelectedMethod(null)}
                   onPaymentError={handlePaymentError}

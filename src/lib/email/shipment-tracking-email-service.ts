@@ -87,7 +87,7 @@ export class ShipmentTrackingEmailService {
     const businessDays = this.getBusinessDaysForCarrier(carrier)
 
     // Add business days (skip weekends)
-    let deliveryDate = new Date(now)
+    const deliveryDate = new Date(now)
     let daysAdded = 0
 
     while (daysAdded < businessDays) {

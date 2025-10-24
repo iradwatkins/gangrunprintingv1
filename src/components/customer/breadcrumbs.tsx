@@ -40,8 +40,8 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
 
             {isLast ? (
               <span
-                className="font-medium text-foreground truncate max-w-[200px] md:max-w-none"
                 aria-current="page"
+                className="font-medium text-foreground truncate max-w-[200px] md:max-w-none"
               >
                 {item.label}
               </span>
