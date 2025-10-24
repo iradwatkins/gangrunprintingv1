@@ -42,6 +42,7 @@ function getErrorMessage(errorCode: string): string {
 }
 
 interface VerifyPageProps {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{
     error?: string
   }>

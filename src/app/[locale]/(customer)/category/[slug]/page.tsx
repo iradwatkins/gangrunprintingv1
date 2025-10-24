@@ -12,7 +12,7 @@ import { generateCategoryMetadata } from '@/lib/seo/metadata'
 import { generateCategorySchema } from '@/lib/seo/schema'
 
 interface CategoryPageProps {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: string; slug: string }>
 }
 
 // Generate metadata for SEO

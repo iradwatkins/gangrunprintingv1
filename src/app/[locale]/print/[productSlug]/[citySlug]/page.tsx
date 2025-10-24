@@ -5,6 +5,7 @@ import { CityLandingPageContent } from '@/components/landing-pages/CityLandingPa
 
 interface PageProps {
   params: {
+    locale: string
     productSlug: string
     citySlug: string
   }

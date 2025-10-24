@@ -20,6 +20,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 interface FunnelAnalyticsPageProps {
+  params: Promise<{ locale: string }>
   searchParams: {
     funnelId?: string
     period?: string

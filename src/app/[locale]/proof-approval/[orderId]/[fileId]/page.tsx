@@ -4,6 +4,7 @@ import { ProofApprovalInterface } from '@/components/customer/proof-approval-int
 
 interface PageProps {
   params: Promise<{
+    locale: string
     orderId: string
     fileId: string
   }>
@@ -136,7 +137,7 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ orderId: string; fileId: string }>
+  params: Promise<{ locale: string; orderId: string; fileId: string }>
 }) {
   const { orderId } = await params
 

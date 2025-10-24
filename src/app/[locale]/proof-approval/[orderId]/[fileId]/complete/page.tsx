@@ -8,6 +8,7 @@ import Link from 'next/link'
 
 interface PageProps {
   params: Promise<{
+    locale: string
     orderId: string
     fileId: string
   }>
@@ -274,7 +275,7 @@ export default async function ProofApprovalCompletePage({ params, searchParams }
 }
 
 // Generate metadata
-export async function generateMetadata({ params }: { params: Promise<{ orderId: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; orderId: string }> }) {
   const { orderId } = await params
 
   const order = await prisma.order.findUnique({

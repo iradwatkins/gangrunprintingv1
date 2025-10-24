@@ -41,6 +41,7 @@ interface ProductImage {
 
 interface EditProductPageProps {
   params: Promise<{
+    locale: string
     id: string
   }>
 }

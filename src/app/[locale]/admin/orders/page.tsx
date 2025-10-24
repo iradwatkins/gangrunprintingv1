@@ -42,6 +42,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 interface OrdersPageProps {
+  params: Promise<{ locale: string }>
   searchParams?: Promise<{
     page?: string
     status?: string

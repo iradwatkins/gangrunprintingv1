@@ -32,7 +32,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 interface InvoicePageProps {
-  params: Promise<{ invoiceId: string }>
+  params: Promise<{ locale: string; invoiceId: string }>
 }
 
 async function getInvoice(invoiceId: string) {

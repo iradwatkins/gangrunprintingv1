@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import { EditOrderForm } from '@/components/admin/orders/edit-order-form'
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ locale: string; id: string }>
 }
 
 async function getOrder(id: string) {

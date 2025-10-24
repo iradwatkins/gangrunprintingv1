@@ -5,6 +5,7 @@ import { FunnelEditor } from '@/components/funnels/funnel-editor'
 
 interface FunnelEditorPageProps {
   params: {
+    locale: string
     id: string
   }
 }

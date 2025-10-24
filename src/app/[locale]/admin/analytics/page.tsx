@@ -25,6 +25,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 interface AnalyticsPageProps {
+  params: Promise<{ locale: string }>
   searchParams: {
     period?: string
   }

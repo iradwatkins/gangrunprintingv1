@@ -21,6 +21,7 @@ export const revalidate = 0
 
 interface OrderTrackingPageProps {
   params: Promise<{
+    locale: string
     orderNumber: string
   }>
 }
