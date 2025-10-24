@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { validateRequest } from '@/lib/auth/validate-request'
+import { validateRequest } from '@/lib/auth'
 import { logBusinessEvent, logError } from '@/lib/logger-safe'
 
 /**
