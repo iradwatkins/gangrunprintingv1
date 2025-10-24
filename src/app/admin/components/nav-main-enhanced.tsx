@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronRight, type LucideIcon } from 'lucide-react'
+import { type LucideIcon } from 'lucide-react'
 import { useNavigationState } from '@/hooks/useNavigationState'
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
@@ -90,7 +90,7 @@ export function NavMainEnhanced({ items }: { items: NavMainItem[] }) {
                         {/* Child count indicator */}
                         <Badge
                           className={cn(
-                            'ml-auto mr-1 h-5 min-w-[20px] px-1.5 text-[10px] font-medium',
+                            'ml-auto h-5 min-w-[20px] px-1.5 text-[10px] font-medium',
                             'transition-all duration-200',
                             'group-data-[state=open]/collapsible:bg-primary/10 group-data-[state=open]/collapsible:text-primary'
                           )}
@@ -98,7 +98,6 @@ export function NavMainEnhanced({ items }: { items: NavMainItem[] }) {
                         >
                           {subItemCount}
                         </Badge>
-                        <ChevronRight className="ml-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>

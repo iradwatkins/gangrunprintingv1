@@ -14,10 +14,10 @@ import {
 } from 'lucide-react'
 
 import { NavMainEnhanced, type NavMainItem } from './nav-main-enhanced'
-import { NavToolbar } from './nav-toolbar'
 import { NavUser } from './nav-user'
 import { TeamSwitcher } from './team-switcher'
 import { ThemeToggle } from '@/components/admin/theme-toggle'
+import { CompactLanguageSwitcher } from '@/components/i18n/language-switcher'
 import {
   Sidebar,
   SidebarContent,
@@ -253,15 +253,19 @@ export function AppSidebarEnhanced({ ...props }: React.ComponentProps<typeof Sid
       </SidebarHeader>
       <SidebarContent>
         <NavMainEnhanced items={navItems} />
-        {/* Toolbar for expand/collapse all */}
-        <NavToolbar onCollapseAll={collapseAll} onExpandAll={() => expandAll(expandableSections)} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="flex items-center justify-between px-2 py-1">
-              <span className="text-xs text-muted-foreground">Theme</span>
-              <ThemeToggle />
+            <div className="flex items-center justify-between gap-2 px-2 py-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-muted-foreground">Theme</span>
+                <ThemeToggle />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-muted-foreground">Lang</span>
+                <CompactLanguageSwitcher />
+              </div>
             </div>
           </SidebarGroupContent>
         </SidebarGroup>

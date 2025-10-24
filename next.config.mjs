@@ -1,6 +1,6 @@
-// next-intl plugin DISABLED - i18n completely disabled in middleware
-// import createNextIntlPlugin from 'next-intl/plugin'
-// const withNextIntl = createNextIntlPlugin('./i18n.ts')
+// next-intl plugin for internationalization
+import createNextIntlPlugin from 'next-intl/plugin'
+const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
 
 // Bundle analyzer for build optimization (conditionally imported)
 // import withBundleAnalyzer from '@next/bundle-analyzer'
@@ -344,16 +344,16 @@ const nextConfig = {
 }
 
 // Apply plugins in order
-// next-intl plugin disabled - i18n not in use
+// Start with next-intl plugin wrapper
+let finalConfig = withNextIntl(nextConfig)
 
 // Bundle analyzer - conditionally enable with ANALYZE=true npm run build
-let finalConfig = nextConfig
 if (process.env.ANALYZE === 'true') {
   const withBundleAnalyzer = require('@next/bundle-analyzer')
   const bundleAnalyzer = withBundleAnalyzer({
     enabled: true,
   })
-  finalConfig = bundleAnalyzer(nextConfig)
+  finalConfig = bundleAnalyzer(finalConfig)
 }
 
 // Add Sentry if DSN is configured

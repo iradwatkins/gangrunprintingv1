@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
         email: user.email,
         name: user.name,
         phoneNumber: user.phoneNumber,
+        preferredLanguage: user.preferredLanguage || 'en',
       },
     })
   } catch (error) {

@@ -9,7 +9,13 @@ import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { CartProvider } from '@/contexts/cart-context'
 import { SessionKeeper } from '@/components/auth/session-keeper'
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({
+  children,
+  messages,
+}: {
+  children: React.ReactNode
+  messages?: any
+}) {
   const [queryClient] = useState(
     () =>
       new QueryClient({

@@ -34,7 +34,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { ThemeToggle, MobileThemeToggle } from '@/components/theme-toggle'
 import { CartButton } from '@/components/cart/cart-button'
 
 // Static navigation items (non-category links)
@@ -495,9 +494,6 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
 
             {/* Cart */}
             <CartButton />
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}
@@ -599,10 +595,6 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
                       </Button>
                     </Link>
                   ))}
-
-                  <div className="border-t pt-4 mt-4">
-                    <MobileThemeToggle />
-                  </div>
 
                   <div className="border-t pt-4 mt-4 space-y-1">
                     {isSignedIn ? (

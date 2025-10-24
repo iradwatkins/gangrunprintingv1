@@ -13,6 +13,10 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 // import { ErrorBoundary } from '@/components/error-boundary'
 import { ThemeInjector } from '@/components/theme/theme-injector'
 // import { ErrorHandler } from '@/components/error-handler' // TEMPORARILY DISABLED TO FIX WEBPACK ERROR
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
+import { headers, cookies } from 'next/headers'
+import { defaultLocale } from '@/i18n'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -43,7 +47,14 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Get locale from cookies (set by middleware) or use default
+  const cookieStore = await cookies()
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || defaultLocale
+
+  // Get messages for next-intl with explicit locale
+  const messages = await getMessages({ locale })
+
   // Use environment-specific Square SDK URL
   const squareSdkUrl =
     process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === 'production'
@@ -51,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       : 'https://sandbox.web.squarecdn.com/v1/square.js'
 
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang={locale}>
       <head>
         {/* Square Web Payments SDK - Load early for checkout performance */}
         <Script src={squareSdkUrl} strategy="beforeInteractive" />
@@ -70,7 +81,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OfflineIndicator />
         {/* Performance monitor disabled to fix signin issues */}
         {/* ErrorBoundary temporarily disabled for build */}
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
         <InstallPrompt />
       </body>
     </html>

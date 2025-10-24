@@ -1,24 +1,55 @@
+import createMiddleware from 'next-intl/middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { locales, defaultLocale } from './src/i18n'
+
+// Create the next-intl middleware
+const intlMiddleware = createMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix: 'as-needed', // Only add prefix for non-default locales
+  localeDetection: true, // Auto-detect from Accept-Language header and NEXT_LOCALE cookie
+})
 
 export function middleware(request: NextRequest) {
+  // Get the pathname from the request FIRST (before intl middleware)
+  const pathname = request.nextUrl.pathname
+
+  // Extract locale from pathname (if present)
+  const pathnameLocale = locales.find(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  )
+
+  // Get pathname without locale prefix for pattern matching
+  const pathnameWithoutLocale = pathnameLocale
+    ? pathname.replace(`/${pathnameLocale}`, '') || '/'
+    : pathname
   // CATEGORY URL REDIRECTS: Redirect old category URLs to new structure
-  if (request.nextUrl.pathname.startsWith('/products/flyers')) {
-    return NextResponse.redirect(new URL('/category/flyers', request.url))
+  if (pathnameWithoutLocale.startsWith('/products/flyers')) {
+    const newUrl = pathnameLocale
+      ? `/${pathnameLocale}/category/flyers`
+      : '/category/flyers'
+    return NextResponse.redirect(new URL(newUrl, request.url))
   }
-  if (request.nextUrl.pathname.startsWith('/products/business-cards')) {
-    return NextResponse.redirect(new URL('/category/business-cards', request.url))
+  if (pathnameWithoutLocale.startsWith('/products/business-cards')) {
+    const newUrl = pathnameLocale
+      ? `/${pathnameLocale}/category/business-cards`
+      : '/category/business-cards'
+    return NextResponse.redirect(new URL(newUrl, request.url))
   }
-  if (request.nextUrl.pathname.startsWith('/products/brochures')) {
-    return NextResponse.redirect(new URL('/category/brochures', request.url))
+  if (pathnameWithoutLocale.startsWith('/products/brochures')) {
+    const newUrl = pathnameLocale
+      ? `/${pathnameLocale}/category/brochures`
+      : '/category/brochures'
+    return NextResponse.redirect(new URL(newUrl, request.url))
   }
   // Add more category redirects as needed...
 
   // CRITICAL FIX: Handle large file uploads to prevent ERR_CONNECTION_CLOSED
   if (
-    request.nextUrl.pathname.startsWith('/api/products/upload-image') ||
-    request.nextUrl.pathname.startsWith('/api/upload') ||
-    request.nextUrl.pathname.startsWith('/api/products/customer-images')
+    pathnameWithoutLocale.startsWith('/api/products/upload-image') ||
+    pathnameWithoutLocale.startsWith('/api/upload') ||
+    pathnameWithoutLocale.startsWith('/api/products/customer-images')
   ) {
     // Clone the request headers
     const requestHeaders = new Headers(request.headers)
@@ -56,12 +87,14 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // Apply security headers to all responses
-  const response = NextResponse.next()
+  // Handle i18n routing and get response
+  let response = intlMiddleware(request)
 
-  // TEST: Add verification header to confirm middleware is running
+  // CRITICAL: Set headers on the response returned by intl middleware
+  // These headers help debug locale detection and middleware execution
   response.headers.set('X-Middleware-Active', 'true')
-  response.headers.set('X-Middleware-Version', '2025-10-10')
+  response.headers.set('X-Middleware-Version', '2025-10-24')
+  response.headers.set('X-I18n-Locale', pathnameLocale || defaultLocale)
 
   // Set Content Security Policy for payment processors and analytics
   // CRITICAL: Square requires multiple CDN sources for full functionality + 3D Secure domains

@@ -19,6 +19,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { CompactLanguageSwitcher } from '@/components/i18n/language-switcher'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const footerLinks = {
   products: [
@@ -111,7 +113,7 @@ export default function Footer() {
           isExpanded ? 'block' : 'hidden md:block'
         }`}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
             <Link className="flex items-center space-x-2 mb-4" href="/">
@@ -213,6 +215,21 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Preferences */}
+          <div>
+            <h3 className="font-semibold mb-4">Preferences</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-muted-foreground block mb-2">Language</label>
+                <CompactLanguageSwitcher />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-2">Theme</label>
+                <ThemeToggle />
+              </div>
+            </div>
           </div>
         </div>
 

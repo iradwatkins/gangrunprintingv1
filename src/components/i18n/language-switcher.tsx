@@ -124,8 +124,21 @@ export function LanguageSwitcher({
 
   const currentLanguage = languages[locale as keyof typeof languages]
 
-  const handleLanguageChange = (newLocale: string) => {
+  const handleLanguageChange = async (newLocale: string) => {
+    // Navigate to new locale
     router.replace(pathname, { locale: newLocale })
+
+    // Also save user preference to database if they're logged in
+    try {
+      await fetch('/api/user/preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preferredLanguage: newLocale }),
+      })
+    } catch (error) {
+      // Silently fail - language change still works via cookie
+      console.error('Failed to save language preference:', error)
+    }
   }
 
   // Don't render if only one language is supported

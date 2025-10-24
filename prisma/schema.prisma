@@ -38,6 +38,11 @@ model AddOn {
   sortOrder                Int              @default(0)
   isActive                 Boolean          @default(true)
   adminNotes               String?
+
+  // I18N: Multilingual content support
+  // Structure: { en: { name, description, tooltipText }, es: { name, description, tooltipText } }
+  translations             Json?
+
   createdAt                DateTime         @default(now())
   updatedAt                DateTime @updatedAt
   AddOnSetItem             AddOnSetItem[]
@@ -873,6 +878,10 @@ model PaperStock {
   markupValue          Float?                @default(0) // Percentage (e.g., 100) or dollar amount (e.g., 1.00)
   profitMargin         Float? // Auto-calculated: pricePerSqInch - vendorPricePerSqInch
 
+  // I18N: Multilingual content support
+  // Structure: { en: { name, tooltipText }, es: { name, tooltipText } }
+  translations         Json?
+
   OrderItem         OrderItem[]
   PaperException    PaperException?
   PaperStockCoating PaperStockCoating[]
@@ -974,6 +983,10 @@ model Product {
   setupFee         Float    @default(0)
   shortDescription String?
   sku              String   @unique
+
+  // I18N: Multilingual content support
+  // Structure: { en: { name, description, shortDescription }, es: { name, description, shortDescription } }
+  translations     Json?
 
   // SEO City Products (Epic 8)
   parentProductId String? // If this is a city-specific product
@@ -1101,6 +1114,10 @@ model ProductCategory {
   metaTitle        String? // SEO meta title (max 60 chars recommended)
   metaDescription  String? // SEO meta description (max 160 chars recommended)
   seoKeywords      String[]          @default([]) // SEO keywords array
+
+  // I18N: Multilingual content support
+  // Structure: { en: { name, description, metaTitle, metaDescription }, es: { name, description, metaTitle, metaDescription } }
+  translations     Json?
 
   createdAt        DateTime          @default(now())
   updatedAt        DateTime @updatedAt
@@ -1724,6 +1741,10 @@ model User {
   marketingOptIn    Boolean             @default(true)
   phoneNumber       String?
   smsOptIn          Boolean             @default(false)
+
+  // I18N: User's preferred language
+  preferredLanguage String              @default("en") // Supported: "en", "es"
+
   Account           Account[]
   Address           Address[]
   CampaignSend      CampaignSend[]
