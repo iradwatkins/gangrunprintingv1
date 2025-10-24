@@ -9,14 +9,7 @@ import { Providers } from './providers'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { OfflineIndicator } from '@/components/pwa/offline-indicator'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
-// Performance monitor temporarily disabled to fix signin page issues
-// import { ErrorBoundary } from '@/components/error-boundary'
 import { ThemeInjector } from '@/components/theme/theme-injector'
-// import { ErrorHandler } from '@/components/error-handler' // TEMPORARILY DISABLED TO FIX WEBPACK ERROR
-import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
-import { headers, cookies } from 'next/headers'
-import { defaultLocale } from '@/i18n'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -48,22 +41,61 @@ export const viewport: Viewport = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Get locale from cookies (set by middleware) or use default
-  const cookieStore = await cookies()
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || defaultLocale
-
-  // Get messages for next-intl with explicit locale
-  const messages = await getMessages({ locale })
-
   // Use environment-specific Square SDK URL
   const squareSdkUrl =
     process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT === 'production'
       ? 'https://web.squarecdn.com/v1/square.js'
       : 'https://sandbox.web.squarecdn.com/v1/square.js'
 
+  // Schema.org structured data for SEO and AI platforms
+  const baseUrl = 'https://gangrunprinting.com'
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'GangRun Printing',
+    url: baseUrl,
+    logo: `${baseUrl}/gangrunprinting_logo_new_1448921366__42384-200x200.png`,
+    description: 'Professional printing services for business cards, flyers, brochures, and more',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'US',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'Customer Service',
+      availableLanguage: ['en', 'es'],
+    },
+  }
+
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'GangRun Printing',
+    url: baseUrl,
+    inLanguage: ['en', 'es'],
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${baseUrl}/{locale}/products?search={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  }
+
   return (
-    <html suppressHydrationWarning lang={locale}>
+    <html suppressHydrationWarning>
       <head>
+        {/* Schema.org JSON-LD for SEO and AI platforms (ChatGPT, Claude, Perplexity) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+
         {/* Square Web Payments SDK - Load early for checkout performance */}
         <Script src={squareSdkUrl} strategy="beforeInteractive" />
 
@@ -77,13 +109,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={`${inter.variable} font-sans`}>
         <GoogleAnalytics />
         <ThemeInjector />
-        {/* <ErrorHandler /> TEMPORARILY DISABLED TO FIX WEBPACK ERROR */}
         <OfflineIndicator />
-        {/* Performance monitor disabled to fix signin issues */}
-        {/* ErrorBoundary temporarily disabled for build */}
-        <NextIntlClientProvider messages={messages}>
-          <Providers>{children}</Providers>
-        </NextIntlClientProvider>
+        <Providers>{children}</Providers>
         <InstallPrompt />
       </body>
     </html>
