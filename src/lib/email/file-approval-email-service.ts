@@ -39,7 +39,7 @@ export class FileApprovalEmailService {
     adminMessage?: string
   ): Promise<void> {
     try {
-      const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/track/${order.orderNumber}`
+      const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/en/track/${order.orderNumber}`
       const proofUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/api/orders/${order.id}/files/${proofFile.id}`
 
       const emailHtml = render(
@@ -83,9 +83,9 @@ export class FileApprovalEmailService {
     adminMessage?: string
   ): Promise<void> {
     try {
-      const approveUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/proof-approval/${order.id}/${proofFile.id}?action=approve`
-      const rejectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/proof-approval/${order.id}/${proofFile.id}?action=reject`
-      const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/track/${order.orderNumber}`
+      const approveUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/en/proof-approval/${order.id}/${proofFile.id}?action=approve`
+      const rejectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/en/proof-approval/${order.id}/${proofFile.id}?action=reject`
+      const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/en/track/${order.orderNumber}`
 
       // Download file from MinIO as attachment
       let attachment

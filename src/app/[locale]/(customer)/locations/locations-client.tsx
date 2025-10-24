@@ -25,7 +25,7 @@ import {
   Truck,
   Info,
 } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 
 // Retail locations data
 const retailLocations = [

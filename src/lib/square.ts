@@ -40,7 +40,9 @@ export async function createSquareCheckout(orderData: {
         },
         askForShippingAddress: true,
         merchantSupportEmail: 'support@gangrunprinting.com',
-        redirectUrl: `${process.env.NEXTAUTH_URL}/checkout/success`,
+        // SEO-COMPLIANT: Redirect URL must include locale prefix (/en/)
+        // Default to English for payment success - user can change language after checkout
+        redirectUrl: `${process.env.NEXTAUTH_URL}/en/checkout/success`,
       },
       order: {
         locationId: SQUARE_LOCATION_ID,

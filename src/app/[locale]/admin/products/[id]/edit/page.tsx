@@ -20,7 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Eye } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 
 interface ProductImage {
   id?: string

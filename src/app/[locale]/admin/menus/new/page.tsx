@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { ArrowLeft, Save } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 
 export default function NewMenuPage() {
   const router = useRouter()

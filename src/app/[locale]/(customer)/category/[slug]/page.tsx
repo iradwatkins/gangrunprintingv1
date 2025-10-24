@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import { Package, Grid3x3, ArrowRight } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { Card, CardContent } from '@/components/ui/card'

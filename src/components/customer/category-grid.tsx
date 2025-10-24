@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import Image from 'next/image'
 import { Package, ArrowRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'

@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { type LucideIcon } from 'lucide-react'
 import { useNavigationState } from '@/hooks/useNavigationState'

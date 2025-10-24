@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 
 function getErrorTitle(errorCode: string): string {
   switch (errorCode) {

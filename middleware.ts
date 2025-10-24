@@ -4,12 +4,13 @@ import type { NextRequest } from 'next/server'
 import { locales, defaultLocale } from './src/i18n'
 
 // Create the next-intl middleware
-// COOKIE-BASED LOCALE SWITCHING: Use 'as-needed' mode (no URL prefixes)
-// Spanish content accessible via NEXT_LOCALE cookie, English is default
+// SEO-COMPLIANT LOCALE ROUTING: Use 'always' mode (URL prefixes required)
+// All URLs require locale prefix: /en/ or /es/ for proper search engine crawling
+// This enables Google/Bing to index both language versions independently
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed', // Cookie-based routing - no /en/ or /es/ prefixes needed
+  localePrefix: 'always', // SEO-compliant routing - all URLs require /en/ or /es/ prefix
   localeDetection: true, // Auto-detect from Accept-Language header and NEXT_LOCALE cookie
 })
 

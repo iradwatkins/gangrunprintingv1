@@ -12,7 +12,7 @@ import { CartItemImages } from './cart-item-images'
 import { ShippingPreview } from './shipping-preview'
 import { FileThumbnails } from '../product/FileThumbnails'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import toast from '@/lib/toast'
 

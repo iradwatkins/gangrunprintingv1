@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Package, ShoppingCart, CheckCircle } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import AccountWrapper from '@/components/account/account-wrapper'
 
 async function getUserDashboardData(userId: string) {

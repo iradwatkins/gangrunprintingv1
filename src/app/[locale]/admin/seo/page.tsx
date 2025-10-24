@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Copy, ExternalLink, CheckCircle2, BarChart3, TrendingUp } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import toast from '@/lib/toast'
 
 export default function SEOPage() {

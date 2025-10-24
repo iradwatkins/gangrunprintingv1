@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import {
   ArrowUpDown,

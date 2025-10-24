@@ -13,7 +13,7 @@ import {
   Tablet,
   Target,
 } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-intl'
 import { Button } from '@/components/ui/button'
 
 export const dynamic = 'force-dynamic'
