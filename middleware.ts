@@ -4,12 +4,12 @@ import type { NextRequest } from 'next/server'
 import { locales, defaultLocale } from './src/i18n'
 
 // Create the next-intl middleware
-// CRITICAL SEO 2025: Use 'always' to create /en/ and /es/ routes for Google, Bing, ChatGPT, Claude, Perplexity
-// This ensures all content is crawlable and indexable by search engines and AI platforms
+// COOKIE-BASED LOCALE SWITCHING: Use 'as-needed' mode (no URL prefixes)
+// Spanish content accessible via NEXT_LOCALE cookie, English is default
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'always', // SEO Best Practice: All locales get URL prefix for crawler visibility
+  localePrefix: 'as-needed', // Cookie-based routing - no /en/ or /es/ prefixes needed
   localeDetection: true, // Auto-detect from Accept-Language header and NEXT_LOCALE cookie
 })
 

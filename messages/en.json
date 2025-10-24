@@ -312,6 +312,184 @@
     "subscribe": "Subscribe",
     "copyright": "© 2024 GangRun Printing. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service"
+    "termsOfService": "Terms of Service",
+    "newsletterTitle": "Subscribe to Our Newsletter",
+    "newsletterDescription": "Get exclusive offers and printing tips delivered to your inbox",
+    "emailLabel": "Email address for newsletter",
+    "footerLinksToggle": "Footer Links",
+    "companyDescription": "Your trusted partner for professional printing services. Quality prints, fast delivery, and exceptional service.",
+    "businessHours": "Mon-Fri: 8AM-8PM, Sat-Sun: 9AM-6PM",
+    "trustBadges": {
+      "satisfaction": "100% Satisfaction Guarantee",
+      "freeShipping": "Free Shipping on Orders $99+",
+      "securePayment": "Secure Payment Processing",
+      "ecoFriendly": "Eco-Friendly Printing"
+    },
+    "cookiePolicy": "Cookie Policy",
+    "weAccept": "We Accept:",
+    "paymentMethods": {
+      "visa": "Visa",
+      "mastercard": "Mastercard",
+      "amex": "Amex",
+      "paypal": "PayPal",
+      "applePay": "Apple Pay",
+      "googlePay": "Google Pay"
+    },
+    "products": {
+      "title": "Products",
+      "businessCards": "Business Cards",
+      "flyers": "Flyers & Brochures",
+      "banners": "Banners & Signs",
+      "stickers": "Stickers & Labels",
+      "apparel": "Apparel",
+      "viewAll": "View All Products"
+    },
+    "services": {
+      "title": "Services",
+      "design": "Design Services",
+      "bulk": "Bulk Orders",
+      "rush": "Rush Printing",
+      "samples": "Free Samples",
+      "quotes": "Custom Quotes"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "contact": "Contact Us",
+      "locations": "Locations",
+      "careers": "Careers",
+      "blog": "Blog"
+    },
+    "support": {
+      "title": "Support",
+      "track": "Track Order",
+      "helpCenter": "Help Center",
+      "shipping": "Shipping Info",
+      "returns": "Return Policy",
+      "faqs": "FAQs"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "language": "Language",
+      "theme": "Theme"
+    }
+  },
+  "homepage": {
+    "stats": {
+      "customers": "Happy Customers",
+      "turnaround": "Fast Turnaround",
+      "quality": "Quality Guarantee",
+      "products": "Product Types"
+    },
+    "categories": {
+      "title": "Choose Your Product",
+      "description": "Select from our wide range of printing products. Each category offers multiple customization options.",
+      "popular": "Popular",
+      "productsCount": "products",
+      "product": "product",
+      "getStarted": "Get Started",
+      "noCategories": "No product categories available yet."
+    },
+    "featuredProducts": {
+      "title": "Featured Products",
+      "description": "Our most popular products with competitive pricing and fast delivery",
+      "featured": "Featured",
+      "startingAt": "Starting at",
+      "viewDetails": "View Details",
+      "noProducts": "No featured products available yet.",
+      "browseAll": "Browse All Products"
+    },
+    "whyChoose": {
+      "title": "Why Choose GangRun Printing?",
+      "description": "We combine quality, speed, and service to deliver exceptional printing solutions",
+      "fastTurnaround": {
+        "title": "Fast Turnaround",
+        "description": "Same-day and next-day printing options available"
+      },
+      "quality": {
+        "title": "Quality Guarantee",
+        "description": "100% satisfaction or we'll reprint for free"
+      },
+      "support": {
+        "title": "Expert Support",
+        "description": "Free design consultation and file review"
+      },
+      "growth": {
+        "title": "Business Growth",
+        "description": "Solutions that scale with your business"
+      }
+    },
+    "testimonials": {
+      "title": "What Our Customers Say",
+      "description": "Don't just take our word for it - hear from our satisfied customers",
+      "items": [
+        {
+          "name": "Sarah Johnson",
+          "role": "Marketing Manager",
+          "company": "Tech Startup",
+          "content": "The print quality exceeded our expectations. Fast delivery and excellent customer service!"
+        },
+        {
+          "name": "Mike Chen",
+          "role": "Owner",
+          "company": "Local Restaurant",
+          "content": "We've been using GangRun for all our printing needs. Consistently great results and competitive pricing."
+        },
+        {
+          "name": "Emily Davis",
+          "role": "Event Organizer",
+          "company": "Davis Events",
+          "content": "Their rush printing service saved our event! Professional quality delivered on time, every time."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Upload your design and get your custom printed products in as little as 24 hours",
+      "browseProducts": "Browse Products",
+      "getQuote": "Get a Quote",
+      "benefits": {
+        "freeReview": "Free Design Review",
+        "noSetup": "No Setup Fees",
+        "satisfaction": "100% Satisfaction"
+      }
+    }
+  },
+  "header": {
+    "phone": "1-800-PRINTING",
+    "sameDayBadge": "Same Day Available",
+    "account": "Account",
+    "printProducts": "Print Products",
+    "staticNav": {
+      "about": "About",
+      "help": "Help",
+      "contact": "Contact"
+    },
+    "menu": {
+      "productCategories": "Product Categories",
+      "allProducts": "All Products"
+    },
+    "userMenu": {
+      "myAccount": "My Account",
+      "dashboard": "Dashboard",
+      "orders": "Orders",
+      "downloads": "Downloads",
+      "addresses": "Addresses",
+      "paymentMethods": "Payment Methods",
+      "accountDetails": "Account Details",
+      "downloadApp": "Download App",
+      "signOut": "Sign Out",
+      "signIn": "Sign In",
+      "createAccount": "Create Account",
+      "trackOrderGuest": "Track Order (Guest)"
+    },
+    "mobileMenu": {
+      "menu": "Menu",
+      "callNow": "Call now for instant support"
+    },
+    "quickLinks": {
+      "title": "Quick Links:",
+      "viewAll": "View All Products →"
+    }
   }
 }
