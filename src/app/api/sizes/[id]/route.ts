@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/auth'
 
 // GET single size group
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -42,6 +43,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 // PUT update size group
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Authentication required - Admin only
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id } = await params
     const body = await request.json()
     const {

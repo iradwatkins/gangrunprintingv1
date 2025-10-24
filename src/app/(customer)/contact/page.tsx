@@ -35,24 +35,42 @@ export default function ContactPage() {
     e.preventDefault()
     setLoading(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    setSubmitted(true)
-    setLoading(false)
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        subject: '',
-        message: '',
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       })
-      setSubmitted(false)
-    }, 3000)
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSubmitted(true)
+
+        // Reset form after 5 seconds
+        setTimeout(() => {
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            company: '',
+            subject: '',
+            message: '',
+          })
+          setSubmitted(false)
+        }, 5000)
+      } else {
+        // Show error message
+        alert(data.error || 'Failed to send message. Please try again.')
+      }
+    } catch (error) {
+      console.error('[Contact Form] Error:', error)
+      alert('Failed to send message. Please try again later.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

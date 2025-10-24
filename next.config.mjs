@@ -59,14 +59,14 @@ const nextConfig = {
   // React strict mode
   reactStrictMode: true,
 
-  // Enable TypeScript checking during build
+  // Enable TypeScript checking during build (removed ignoreBuildErrors - let TS errors block builds)
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
-  // Enable ESLint checking during build
+  // Enable ESLint checking during build (removed ignoreDuringBuilds - let ESLint errors block builds)
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 
   // Image optimization
@@ -338,16 +338,6 @@ const nextConfig = {
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
     return `build-${year}${month}${day}-${hours}${minutes}`
-  },
-
-  // TypeScript configuration
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
-  // ESLint configuration
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 }
 

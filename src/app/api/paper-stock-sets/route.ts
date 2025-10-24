@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { randomUUID } from 'crypto'
+import { validateRequest } from '@/lib/auth'
 
 // Schema for creating/updating a paper stock set
 const paperStockSetSchema = z.object({
@@ -75,6 +76,12 @@ export async function GET(): Promise<unknown> {
 // POST - Create a new paper stock set
 export async function POST(request: NextRequest) {
   try {
+    // Authentication required - Admin only
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     const validatedData = paperStockSetSchema.parse(body)
 

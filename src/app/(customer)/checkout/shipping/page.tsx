@@ -74,20 +74,37 @@ export default function ShippingPage() {
   }, []) // Run only once on mount
 
   // ============================================================================
-  // 🚨 WEIGHT CALCULATION: Send cart items to backend for accurate calculation
+  // 🚨 CRITICAL: FEDEX SHIPPING PACKAGE VALIDATION (October 21, 2025)
   // ============================================================================
-  // Backend /api/shipping/calculate handles weight calculation using the formula:
-  // weight = paperStockWeight × (width × height) × quantity
-  // We send raw cart item data (quantity, width, height, paperStockWeight) to backend
+  // MANDATORY PATTERN: Only include dimensions if ALL values are fully defined as valid numbers
+  // FedEx API returns 400 "Invalid request" when dimensions have undefined values
+  // Root Cause: Cart items can have dimensions: { length: undefined, width: undefined, height: undefined }
+  // Solution: Check BOTH existence AND type - if incomplete, OMIT dimensions entirely
+  // DO NOT CHANGE THIS VALIDATION WITHOUT READING: /docs/CRITICAL-FEDEX-DIMENSIONS-VALIDATION-FIX.md
   // ============================================================================
-  const shippingItems = items.map((item) => ({
-    productId: item.productId,
-    quantity: item.quantity,
-    width: item.dimensions?.width || 3.5, // Default business card width
-    height: item.dimensions?.height || 2, // Default business card height
-    paperStockId: item.options.paperStockId,
-    paperStockWeight: item.paperStockWeight,
-  }))
+  const shippingItems = items.map((item) => {
+    const pkg: any = {
+      productId: item.productId,
+      quantity: item.quantity,
+      paperStockId: item.options.paperStockId,
+      paperStockWeight: item.paperStockWeight || 1,
+    }
+
+    // CRITICAL: Must check BOTH existence AND type
+    // The dimensions property must be FULLY VALID or COMPLETELY OMITTED. There is no middle ground.
+    if (
+      item.dimensions?.width &&
+      item.dimensions?.height &&
+      typeof item.dimensions.width === 'number' &&
+      typeof item.dimensions.height === 'number'
+    ) {
+      pkg.width = item.dimensions.width
+      pkg.height = item.dimensions.height
+    }
+    // If incomplete, OMIT dimensions entirely (no width/height properties)
+
+    return pkg
+  })
 
   const handleSavedAddressSelect = (address: any) => {
     setShippingAddress({

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { createId } from '@paralleldrive/cuid2'
 import { cache } from '@/lib/redis'
+import { validateRequest } from '@/lib/auth'
 
 const createTurnaroundTimeSchema = z.object({
   name: z.string().min(1).max(50),
@@ -57,6 +58,12 @@ export async function GET(): Promise<unknown> {
 // POST /api/turnaround-times
 export async function POST(request: NextRequest) {
   try {
+    // Authentication required - Admin only
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
 
     const data = createTurnaroundTimeSchema.parse(body)

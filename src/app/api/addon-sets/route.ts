@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
+import { validateRequest } from '@/lib/auth'
 
 // GET /api/addon-sets - List all addon sets
 export async function GET(request: NextRequest) {
@@ -61,6 +62,12 @@ export async function GET(request: NextRequest) {
 // POST /api/addon-sets - Create a new addon set
 export async function POST(request: NextRequest) {
   try {
+    // Authentication required - Admin only
+    const { user, session } = await validateRequest()
+    if (!session || !user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     const { name, description, addOnIds = [] } = body
 
