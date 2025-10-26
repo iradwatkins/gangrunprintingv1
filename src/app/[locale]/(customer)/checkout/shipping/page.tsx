@@ -36,10 +36,22 @@ export default function ShippingPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // Redirect if cart is empty
+  // CRITICAL: Redirect if cart is empty OR if checkout data is missing
+  // This prevents users from bookmarking /checkout/shipping and accessing it directly
   useEffect(() => {
     if (items.length === 0) {
+      // No items in cart - redirect to cart/checkout page
       router.push('/checkout')
+      return
+    }
+
+    // Check if checkout session exists (user should come from /checkout page)
+    const checkoutData = sessionStorage.getItem('checkout_cart_data')
+    if (!checkoutData) {
+      // No checkout session - user trying to access shipping directly
+      console.warn('[Shipping] No checkout session found - redirecting to /checkout')
+      router.push('/checkout')
+      return
     }
   }, [items, router])
 

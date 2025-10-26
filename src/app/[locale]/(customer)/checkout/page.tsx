@@ -44,13 +44,13 @@ export default function CartPage() {
     sessionStorage.setItem('cart_artwork_files', JSON.stringify(files))
   }
 
-  const handleContinueToPayment = () => {
+  const handleContinueToCheckout = () => {
     if (items.length === 0) {
       toast.error('Your cart is empty')
       return
     }
 
-    // Store cart data in session storage for payment page
+    // Store cart data in session storage for shipping page
     const checkoutData = {
       items,
       subtotal,
@@ -65,8 +65,9 @@ export default function CartPage() {
       sessionStorage.setItem('cart_artwork_files', JSON.stringify(uploadedFiles))
     }
 
-    // Navigate to payment page
-    router.push('/checkout/payment')
+    // CRITICAL FIX: Navigate to shipping page first (not directly to payment)
+    // User must enter shipping address before payment
+    router.push('/checkout/shipping')
   }
 
   // Empty cart state
@@ -222,9 +223,9 @@ export default function CartPage() {
                   </p>
                 </div>
 
-                {/* Continue to Payment Button */}
-                <Button className="w-full" size="lg" onClick={handleContinueToPayment}>
-                  Continue to Payment
+                {/* Continue to Shipping Button */}
+                <Button className="w-full" size="lg" onClick={handleContinueToCheckout}>
+                  Continue to Shipping
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
 
