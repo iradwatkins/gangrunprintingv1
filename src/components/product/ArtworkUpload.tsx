@@ -127,33 +127,43 @@ export function ArtworkUpload({
       const updatedFiles = [...files, ...uploadedFiles]
       setFiles(updatedFiles)
 
-      // Upload files
-      uploadedFiles.forEach(async (uploadedFile, index) => {
-        const result = await uploadFile(uploadedFile.file)
+      // Upload files in parallel and wait for all to complete
+      Promise.all(
+        uploadedFiles.map(async (uploadedFile) => {
+          const result = await uploadFile(uploadedFile.file)
 
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === uploadedFile.id
-              ? {
-                  ...f,
-                  status: result.success ? 'success' : 'error',
-                  url: result.url,
-                  progress: 100,
-                }
-              : f
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === uploadedFile.id
+                ? {
+                    ...f,
+                    status: result.success ? 'success' : 'error',
+                    url: result.url,
+                    progress: 100,
+                  }
+                : f
+            )
           )
-        )
 
-        // Notify parent component
-        if (result.success) {
-          const finalFiles = updatedFiles.map((f) =>
-            f.id === uploadedFile.id ? { ...f, status: 'success' as const, url: result.url } : f
-          )
-          onFilesChange(finalFiles)
-        }
+          return { uploadedFile, result }
+        })
+      ).then((results) => {
+        // After ALL files are uploaded, update parent component once
+        let finalFiles = [...updatedFiles]
+        results.forEach(({ uploadedFile, result }) => {
+          if (result.success) {
+            finalFiles = finalFiles.map((f) =>
+              f.id === uploadedFile.id ? { ...f, status: 'success' as const, url: result.url } : f
+            )
+          }
+        })
+
+        // Call onFilesChange only once with all files updated
+        onFilesChange(finalFiles)
+
+        const successCount = results.filter(r => r.result.success).length
+        toast.success(`${successCount} file(s) uploaded successfully`)
       })
-
-      toast.success(`${validFiles.length} file(s) uploaded successfully`)
     },
     [files, maxFiles, maxSizeMB, onFilesChange]
   )
