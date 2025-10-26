@@ -246,7 +246,8 @@ export function ProductWizard({ product }: ProductWizardProps) {
 
       toast.success('Draft saved successfully')
     } catch (error) {
-      toast.error(error.message || 'Failed to save draft')
+      const err = error instanceof Error ? error : new Error(String(error))
+      toast.error(err.message || 'Failed to save draft')
     } finally {
       setSavingDraft(false)
     }
@@ -275,7 +276,8 @@ export function ProductWizard({ product }: ProductWizardProps) {
       toast.success(product ? 'Product updated successfully' : 'Product published successfully')
       router.push('/admin/products')
     } catch (error) {
-      toast.error(error.message || 'Failed to publish product')
+      const err = error instanceof Error ? error : new Error(String(error))
+      toast.error(err.message || 'Failed to publish product')
     } finally {
       setLoading(false)
     }

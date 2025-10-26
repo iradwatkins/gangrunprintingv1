@@ -169,7 +169,7 @@ export async function sendNotificationToUser(
           return { success: true, id: subscription.id }
         } catch (error) {
           // Handle expired subscriptions
-          if (error.statusCode === 410) {
+          if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 410) {
             await prisma.pushSubscription.update({
               where: { id: subscription.id },
               data: { active: false },

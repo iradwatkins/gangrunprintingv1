@@ -169,7 +169,8 @@ export async function downloadFileFromMinIO(
       }
     })
   } catch (error) {
-    throw new Error(`Failed to download file: ${error.message}`)
+    const err = error instanceof Error ? error : new Error(String(error))
+    throw new Error(`Failed to download file: ${err.message}`)
   }
 }
 
@@ -328,7 +329,8 @@ export async function sendBatchEmails(emails: EmailTemplate[]) {
       const result = await sendEmail(email)
       results.push({ ...result, success: true })
     } catch (error) {
-      results.push({ success: false, error: error.message })
+      const err = error instanceof Error ? error : new Error(String(error))
+      results.push({ success: false, error: err.message })
     }
   }
   return results

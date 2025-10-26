@@ -164,7 +164,7 @@ export function ProductImageUpload({
 
       return { url: imageUrl, imageData }
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') {
         throw new Error('Upload timeout. Please try with a smaller file or check your connection.')
       }
       throw error
@@ -183,7 +183,8 @@ export function ProductImageUpload({
       onImageUpdate(url, imageData)
       toast.success('Image uploaded successfully')
     } catch (error) {
-      toast.error(error.message || 'Failed to upload image')
+      const err = error instanceof Error ? error : new Error(String(error))
+      toast.error(err.message || 'Failed to upload image')
     } finally {
       setUploading(false)
       if (e.target) e.target.value = ''

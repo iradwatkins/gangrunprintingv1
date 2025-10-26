@@ -11,9 +11,12 @@
 // Core pricing engine
 export {
   ModulePricingEngine,
+  useModulePricingEngine,
+} from './ModulePricingEngine'
+
+export type {
   ModulePricingContext,
   ModulePricingRequirements,
-  useModulePricingEngine,
   UseModulePricingEngineOptions,
 } from './ModulePricingEngine'
 

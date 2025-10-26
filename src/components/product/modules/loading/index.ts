@@ -5,15 +5,18 @@
 
 // Core loading system
 export {
+  ModuleLoadingManager,
+  useModuleLoading,
+  combineModuleLoadingStates,
+  createModuleDisabledState,
+} from './ModuleLoadingSystem'
+
+export type {
+  ModuleLoadingState,
   ModuleLoadingType,
   ModuleLoadingPriority,
   ModuleLoadingOperation,
-  ModuleLoadingState,
-  ModuleLoadingManager,
-  useModuleLoading,
   UseModuleLoadingOptions,
-  combineModuleLoadingStates,
-  createModuleDisabledState,
 } from './ModuleLoadingSystem'
 
 // Loading display components
@@ -25,6 +28,9 @@ export {
   ModuleLoadingSkeleton,
   ModuleLoadingSuccess,
   ModuleLoadingBoundary,
+} from './ModuleLoadingComponents'
+
+export type {
   ModuleLoadingSpinnerProps,
   ModuleLoadingProgressProps,
   ModuleLoadingDisplayProps,

@@ -53,7 +53,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(sidesOption, { status: 201 })
   } catch (error) {
-    if (error.code === 'P2002') {
+    // Type guard for Prisma errors
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A sides option with this name already exists' },
         { status: 400 }

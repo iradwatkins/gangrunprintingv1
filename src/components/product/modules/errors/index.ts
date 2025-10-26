@@ -5,14 +5,17 @@
 
 // Core error system
 export {
-  ModuleErrorType,
-  ModuleErrorSeverity,
-  IndependentModuleError,
   ModuleErrorFactory,
   ModuleErrorState,
   ModuleErrorRecovery,
-  ModuleErrorRecoveryAction,
   useModuleErrors,
+} from './ModuleErrorSystem'
+
+export type {
+  ModuleErrorType,
+  ModuleErrorSeverity,
+  IndependentModuleError,
+  ModuleErrorRecoveryAction,
   UseModuleErrorsOptions,
 } from './ModuleErrorSystem'
 
@@ -24,6 +27,9 @@ export {
   ModuleFieldError,
   ModuleSuccessIndicator,
   ModuleErrorBoundary,
+} from './ModuleErrorComponents'
+
+export type {
   ModuleErrorDisplayProps,
   ModuleErrorListProps,
   ModuleErrorIndicatorProps,

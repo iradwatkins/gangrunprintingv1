@@ -600,7 +600,7 @@ export default function SimpleConfigurationForm({
   // Handle configuration changes
   const handleConfigurationChange = (
     field: keyof SimpleProductConfiguration,
-    value: string | number
+    value: string | number | undefined
   ) => {
     let newConfig = { ...configuration }
 

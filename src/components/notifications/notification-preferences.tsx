@@ -178,7 +178,8 @@ export default function NotificationPreferences() {
       setSuccess('Push notifications enabled successfully!')
       setTimeout(() => setSuccess(null), 3000)
     } catch (error) {
-      setError(error.message || 'Failed to enable notifications')
+      const err = error instanceof Error ? error : new Error(String(error))
+      setError(err.message || 'Failed to enable notifications')
       setTimeout(() => setError(null), 5000)
     } finally {
       setIsLoading(false)

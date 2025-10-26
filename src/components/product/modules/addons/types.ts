@@ -24,7 +24,7 @@ export interface AddonsGrouped {
 }
 
 // Re-export standard config interfaces
-export { VariableDataConfig, PerforationConfig, BandingConfig, CornerRoundingConfig }
+export type { VariableDataConfig, PerforationConfig, BandingConfig, CornerRoundingConfig }
 
 // Use standardized props interface with legacy compatibility
 export interface AddonsModuleProps

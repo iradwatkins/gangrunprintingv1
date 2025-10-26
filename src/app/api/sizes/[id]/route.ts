@@ -110,15 +110,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json(sizeGroup)
   } catch (error) {
-    if (error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'A size group with this name already exists' },
-        { status: 400 }
-      )
-    }
+    // Type guard for Prisma errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      if (error.code === 'P2002') {
+        return NextResponse.json(
+          { error: 'A size group with this name already exists' },
+          { status: 400 }
+        )
+      }
 
-    if (error.code === 'P2025') {
-      return NextResponse.json({ error: 'Size group not found' }, { status: 404 })
+      if (error.code === 'P2025') {
+        return NextResponse.json({ error: 'Size group not found' }, { status: 404 })
+      }
     }
 
     return NextResponse.json({ error: 'Failed to update size group' }, { status: 500 })
@@ -153,7 +156,8 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    if (error.code === 'P2025') {
+    // Type guard for Prisma errors
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json({ error: 'Size group not found' }, { status: 404 })
     }
 
