@@ -3,17 +3,24 @@
  * Complete ultra-independent error handling system for product modules
  */
 
+// Import for local utility use
+import {
+  ModuleErrorType,
+  ModuleErrorSeverity,
+  type IndependentModuleError,
+} from './ModuleErrorSystem'
+
 // Core error system
 export {
   ModuleErrorFactory,
   ModuleErrorState,
   ModuleErrorRecovery,
   useModuleErrors,
+  ModuleErrorType, // Enum - needs value export
+  ModuleErrorSeverity, // Enum - needs value export
 } from './ModuleErrorSystem'
 
 export type {
-  ModuleErrorType,
-  ModuleErrorSeverity,
   IndependentModuleError,
   ModuleErrorRecoveryAction,
   UseModuleErrorsOptions,

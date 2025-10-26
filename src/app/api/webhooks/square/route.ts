@@ -161,7 +161,7 @@ async function handlePaymentUpdated(data: Record<string, unknown>) {
 }
 
 async function handleOrderCreated(data: Record<string, unknown>) {
-  const { object: squareOrder } = data
+  const { object: squareOrder } = data as { object: Record<string, any> }
 
   // Check if order already exists
   const existingOrder = await prisma.order.findFirst({
@@ -187,7 +187,7 @@ async function handleOrderCreated(data: Record<string, unknown>) {
 }
 
 async function handleOrderUpdated(data: Record<string, unknown>) {
-  const { object: squareOrder } = data
+  const { object: squareOrder } = data as { object: Record<string, any> }
 
   const order = await prisma.order.findFirst({
     where: { squareOrderId: squareOrder.id },

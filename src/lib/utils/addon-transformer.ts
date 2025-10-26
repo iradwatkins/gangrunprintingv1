@@ -117,17 +117,21 @@ export function transformAddonSets(productAddonSets: any[]): StandardizedAddon[]
  * For backwards compatibility with existing systems
  */
 export function transformLegacyAddons(legacyAddons: unknown[]): StandardizedAddon[] {
-  return legacyAddons.map((addon) => ({
-    id: addon.id,
-    name: addon.name,
-    description: addon.description || '',
-    pricingModel: addon.pricingModel || 'FIXED_FEE',
-    price: addon.price || 0,
-    priceDisplay: addon.priceDisplay || `$${addon.price || 0}`,
-    isDefault: addon.isDefault || false,
-    additionalTurnaroundDays: addon.additionalTurnaroundDays || 0,
-    configuration: addon.configuration || {},
-  }))
+  return legacyAddons.map((addon) => {
+    // Type assertion for legacy addon data
+    const data = addon as Record<string, any>
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description || '',
+      pricingModel: data.pricingModel || 'FIXED_FEE',
+      price: data.price || 0,
+      priceDisplay: data.priceDisplay || `$${data.price || 0}`,
+      isDefault: data.isDefault || false,
+      additionalTurnaroundDays: data.additionalTurnaroundDays || 0,
+      configuration: data.configuration || {},
+    }
+  })
 }
 
 /**

@@ -3,18 +3,25 @@
  * Complete ultra-independent loading state management for product modules
  */
 
+// Import for local utility use
+import {
+  ModuleLoadingType,
+  type ModuleLoadingState,
+  type ModuleLoadingOperation,
+} from './ModuleLoadingSystem'
+
 // Core loading system
 export {
   ModuleLoadingManager,
   useModuleLoading,
   combineModuleLoadingStates,
   createModuleDisabledState,
+  ModuleLoadingType, // Enum - needs value export
+  ModuleLoadingPriority, // Enum - needs value export
 } from './ModuleLoadingSystem'
 
 export type {
   ModuleLoadingState,
-  ModuleLoadingType,
-  ModuleLoadingPriority,
   ModuleLoadingOperation,
   UseModuleLoadingOptions,
 } from './ModuleLoadingSystem'
