@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ShoppingBag, Trash2, ArrowRight, Upload, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -37,6 +37,23 @@ export default function CartPage() {
   } = useCart()
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
+
+  // CRITICAL: Restore uploaded files when customer returns to checkout page
+  // This prevents customers from having to re-upload files if they navigate back/forward
+  useEffect(() => {
+    const savedFiles = sessionStorage.getItem('cart_artwork_files')
+    if (savedFiles) {
+      try {
+        const parsedFiles = JSON.parse(savedFiles)
+        setUploadedFiles(parsedFiles)
+        console.log('[Checkout] Restored', parsedFiles.length, 'uploaded files from session')
+      } catch (error) {
+        console.error('[Checkout] Failed to restore uploaded files:', error)
+        // Clear corrupted data
+        sessionStorage.removeItem('cart_artwork_files')
+      }
+    }
+  }, []) // Run only once on mount
 
   const handleFilesChange = (files: UploadedFile[]) => {
     setUploadedFiles(files)
