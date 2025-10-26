@@ -277,14 +277,11 @@ export default function ShippingPage() {
               />
             )}
 
-            {/* Airport Selector (appears BEFORE shipping methods if state has Southwest airports) */}
-            {shippingAddress.state && (
-              <AirportSelector
-                selectedAirportId={selectedAirportId ?? null}
-                state={shippingAddress.state}
-                onAirportSelected={(airportId) => setSelectedAirportId(airportId ?? undefined)}
-              />
-            )}
+            {/* Airport Selector - ALWAYS visible (not dependent on state) */}
+            <AirportSelector
+              selectedAirportId={selectedAirportId ?? null}
+              onAirportSelected={(airportId) => setSelectedAirportId(airportId ?? undefined)}
+            />
 
             {/* Shipping Method Selector */}
             {shippingAddress.zipCode && shippingAddress.state && shippingAddress.city ? (

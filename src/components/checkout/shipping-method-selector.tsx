@@ -88,6 +88,7 @@ export function ShippingMethodSelector({
         isResidential: true,
       },
       items: items,
+      selectedAirportId: selectedAirportId, // For Southwest Cargo airport pickup
     }
 
     console.log('[ShippingMethodSelector] Fetching rates with:', requestBody)

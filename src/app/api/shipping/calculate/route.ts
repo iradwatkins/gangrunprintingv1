@@ -26,6 +26,7 @@ const calculateRequestSchema = z.object({
       paperStockWeight: z.number().optional(),
     })
   ),
+  selectedAirportId: z.string().optional(), // For Southwest Cargo airport selection
   fromAddress: z
     .object({
       street: z.string(),
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { toAddress, items, fromAddress } = validation.data
+    const { toAddress, items, fromAddress, selectedAirportId } = validation.data
 
     // PERFORMANCE: Batch fetch all product metadata in parallel (was sequential per-item)
     const productIds = items.map((item) => item.productId).filter((id): id is string => !!id)
@@ -175,7 +176,11 @@ export async function POST(request: NextRequest) {
     const boxSummary = getBoxSplitSummary(boxes)
 
     // Use the split boxes for rating
-    packages.push(...boxes)
+    // Add selectedAirportId to metadata for Southwest Cargo provider
+    packages.push(...boxes.map(box => ({
+      ...box,
+      metadata: selectedAirportId ? { airportId: selectedAirportId } : undefined
+    })))
 
     // PERFORMANCE: Determine supported carriers (using pre-fetched product data)
     const supportedCarriers = new Set<string>()

@@ -21,19 +21,46 @@ export class SouthwestCargoProvider implements ShippingProvider {
 
   /**
    * Calculate shipping rates based on 82 airports
+   * CRITICAL: Always returns rates (even without airport selected)
+   * - No airport selected: Returns $0 rates (frontend shows "N/A")
+   * - Airport selected: Returns actual calculated rates
    */
   async getRates(
     _fromAddress: ShippingAddress,
     toAddress: ShippingAddress,
     packages: ShippingPackage[]
   ): Promise<ShippingRate[]> {
-    // Check if destination has Southwest Cargo airport (from 82 airports)
-    const hasAirport = await isStateAvailable(toAddress.state)
+    // Extract airportId from package metadata (if provided)
+    const airportId = packages[0]?.metadata?.airportId as string | undefined
 
-    if (!hasAirport) {
-      return []
+    // CRITICAL: Always return Southwest rates (even without airport selected)
+    // Frontend will show "N/A" until airport is selected
+    if (!airportId) {
+      // No airport selected - return placeholder rates with $0
+      // Frontend already handles showing "N/A" when rateAmount is 0
+      return [
+        {
+          carrier: this.carrier,
+          serviceCode: 'SOUTHWEST_CARGO_PICKUP',
+          serviceName: 'Southwest Cargo Pickup',
+          rateAmount: 0, // Frontend shows "N/A" for $0 rates
+          currency: 'USD',
+          estimatedDays: 3, // Standard service - 3 business days
+          isGuaranteed: false,
+        },
+        {
+          carrier: this.carrier,
+          serviceCode: 'SOUTHWEST_CARGO_DASH',
+          serviceName: 'Southwest Cargo Dash (Next Flight Guaranteed)',
+          rateAmount: 0, // Frontend shows "N/A" for $0 rates
+          currency: 'USD',
+          estimatedDays: 1, // Premium - next available flight
+          isGuaranteed: true,
+        },
+      ]
     }
 
+    // Airport selected - calculate actual rates
     // Calculate total weight
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
     const billableWeight = ensureMinimumWeight(roundWeight(totalWeight))

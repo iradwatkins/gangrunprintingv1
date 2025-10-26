@@ -22,13 +22,11 @@ interface Airport {
 }
 
 interface AirportSelectorProps {
-  state: string
   onAirportSelected: (airportId: string | null) => void
   selectedAirportId?: string | null
 }
 
 export function AirportSelector({
-  state,
   onAirportSelected,
   selectedAirportId,
 }: AirportSelectorProps) {
@@ -37,10 +35,8 @@ export function AirportSelector({
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (state) {
-      fetchAirports()
-    }
-  }, [state])
+    fetchAirports() // Always fetch all 82 airports on mount
+  }, [])
 
   const fetchAirports = async () => {
     try {
@@ -83,7 +79,7 @@ export function AirportSelector({
   if (loading) {
     return (
       <div className="space-y-2">
-        <Label>Airport Pickup (Southwest)</Label>
+        <Label>Airport Pickup (Southwest Cargo - Optional)</Label>
         <Skeleton className="h-10 w-full" />
       </div>
     )
@@ -99,13 +95,13 @@ export function AirportSelector({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="airport-selector">Airport Pickup (Southwest)</Label>
+      <Label htmlFor="airport-selector">Airport Pickup (Southwest Cargo - Optional)</Label>
       <Select value={selectedAirportId ?? undefined} onValueChange={handleAirportChange}>
         <SelectTrigger id="airport-selector">
-          <SelectValue placeholder="-- Select One --" />
+          <SelectValue placeholder="N/A - Not Available" />
         </SelectTrigger>
         <SelectContent className="max-h-[300px]">
-          <SelectItem value="none">-- Select One --</SelectItem>
+          <SelectItem value="none">N/A - Not Available</SelectItem>
           {airports.map((airport) => (
             <SelectItem key={airport.id} value={airport.id}>
               {formatAirportOption(airport)}

@@ -20,6 +20,7 @@ export interface ShippingPackage {
   weight: number // pounds
   dimensions?: ShippingDimensions
   value?: number // declared value for insurance
+  metadata?: Record<string, unknown> // For provider-specific data (e.g., airportId for Southwest)
 }
 
 export interface ShippingRate {
