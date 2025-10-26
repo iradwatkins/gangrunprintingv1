@@ -68,7 +68,7 @@ export function createPaginatedResponse<T>(
  */
 export class CrudRepository<T extends { id: string }> {
   constructor(
-    private model: Record<string, unknown>,
+    private model: any,
     private modelName: string
   ) {}
 

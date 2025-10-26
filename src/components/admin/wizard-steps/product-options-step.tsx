@@ -6,8 +6,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductOptions } from '../product-options'
 import { Settings, Info, Plus } from 'lucide-react'
 
+interface ProductOption {
+  name?: string
+  type?: string
+  values?: any[]
+  required?: boolean
+}
+
 interface ProductData {
-  options: unknown[]
+  options: ProductOption[]
 }
 
 interface ProductOptionsStepProps {

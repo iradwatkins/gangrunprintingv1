@@ -20,6 +20,7 @@ import {
   Edit,
   Trash2,
   Plus,
+  type LucideIcon,
 } from 'lucide-react'
 
 interface ActivityLogItem {
@@ -37,7 +38,7 @@ interface ActivityLogTableProps {
 
 const ACTION_CONFIG: Record<
   string,
-  { icon: Record<string, unknown>; color: string; label: string }
+  { icon: LucideIcon; color: string; label: string }
 > = {
   LOGIN: {
     icon: LogIn,

@@ -29,6 +29,7 @@ import {
   Clock,
   Package,
   Truck,
+  type LucideIcon,
 } from 'lucide-react'
 
 interface OrderItem {
@@ -54,7 +55,7 @@ interface RecentOrdersTableProps {
 
 const statusConfig: Record<
   string,
-  { label: string; variant: Record<string, unknown>; icon: Record<string, unknown> }
+  { label: string; variant: any; icon: LucideIcon }
 > = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',

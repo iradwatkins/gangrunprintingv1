@@ -34,6 +34,7 @@ import {
   AlertCircle,
   DollarSign,
   Printer,
+  type LucideIcon,
 } from 'lucide-react'
 
 interface OrderItem {
@@ -60,7 +61,7 @@ interface CustomerOrdersTableProps {
 
 const statusConfig: Record<
   string,
-  { label: string; color: string; icon: Record<string, unknown> }
+  { label: string; color: string; icon: LucideIcon }
 > = {
   PENDING_PAYMENT: {
     label: 'Pending Payment',

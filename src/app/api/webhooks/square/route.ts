@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function handlePaymentCreated(data: Record<string, unknown>) {
-  const { object: payment } = data
+  const { object: payment } = data as { object: Record<string, any> }
 
   // Find order by Square order ID
   const order = await prisma.order.findFirst({

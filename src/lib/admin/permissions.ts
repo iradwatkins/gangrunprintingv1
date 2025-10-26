@@ -294,14 +294,15 @@ export class PermissionService {
    */
   static filterMenuItems(userRole: Role, menuItems: unknown[]): unknown[] {
     return menuItems.filter((item) => {
-      if (item.permission) {
-        return this.hasPermission(userRole, item.permission)
+      const menuItem = item as Record<string, any>
+      if (menuItem.permission) {
+        return this.hasPermission(userRole, menuItem.permission)
       }
-      if (item.permissions) {
-        return this.hasAnyPermission(userRole, item.permissions)
+      if (menuItem.permissions) {
+        return this.hasAnyPermission(userRole, menuItem.permissions)
       }
-      if (item.url) {
-        return this.canAccessRoute(userRole, item.url)
+      if (menuItem.url) {
+        return this.canAccessRoute(userRole, menuItem.url)
       }
       return true // No permission specified, allow access
     })
