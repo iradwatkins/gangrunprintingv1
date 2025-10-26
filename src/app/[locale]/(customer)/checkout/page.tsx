@@ -45,8 +45,17 @@ export default function CartPage() {
     if (savedFiles) {
       try {
         const parsedFiles = JSON.parse(savedFiles)
-        setUploadedFiles(parsedFiles)
-        console.log('[Checkout] Restored', parsedFiles.length, 'uploaded files from session')
+        // Restore files with mock File objects (actual files already uploaded to temp storage)
+        const restoredFiles = parsedFiles.map((savedFile: Partial<UploadedFile>) => ({
+          id: savedFile.id || Math.random().toString(36).substr(2, 9),
+          file: new File([], savedFile.url?.split('/').pop() || 'file', { type: 'application/octet-stream' }), // Mock file - actual file is in temp storage
+          preview: savedFile.preview,
+          status: savedFile.status || 'success',
+          progress: savedFile.progress || 100,
+          url: savedFile.url,
+        }))
+        setUploadedFiles(restoredFiles as UploadedFile[])
+        console.log('[Checkout] Restored', restoredFiles.length, 'uploaded files from session')
       } catch (error) {
         console.error('[Checkout] Failed to restore uploaded files:', error)
         // Clear corrupted data
@@ -57,8 +66,16 @@ export default function CartPage() {
 
   const handleFilesChange = (files: UploadedFile[]) => {
     setUploadedFiles(files)
-    // Store in sessionStorage for checkout
-    sessionStorage.setItem('cart_artwork_files', JSON.stringify(files))
+    // Store in sessionStorage for checkout (exclude File objects - they can't be serialized)
+    const serializableFiles = files.map(({ id, preview, status, progress, url }) => ({
+      id,
+      preview,
+      status,
+      progress,
+      url,
+      // File object excluded - can't be serialized to JSON
+    }))
+    sessionStorage.setItem('cart_artwork_files', JSON.stringify(serializableFiles))
   }
 
   const handleContinueToCheckout = () => {
@@ -77,9 +94,16 @@ export default function CartPage() {
     }
     sessionStorage.setItem('checkout_cart_data', JSON.stringify(checkoutData))
 
-    // Store uploaded files
+    // Store uploaded files (already saved by handleFilesChange, but update here for safety)
     if (uploadedFiles.length > 0) {
-      sessionStorage.setItem('cart_artwork_files', JSON.stringify(uploadedFiles))
+      const serializableFiles = uploadedFiles.map(({ id, preview, status, progress, url }) => ({
+        id,
+        preview,
+        status,
+        progress,
+        url,
+      }))
+      sessionStorage.setItem('cart_artwork_files', JSON.stringify(serializableFiles))
     }
 
     // CRITICAL FIX: Navigate to shipping page first (not directly to payment)
