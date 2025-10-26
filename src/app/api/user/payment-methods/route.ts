@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { createOrUpdateSquareCustomer } from '@/lib/square'
 import { SquareClient, SquareEnvironment } from 'square'
+import { randomBytes } from 'crypto'
 
 // Initialize Square client
 const client = new SquareClient({
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
     )
 
     // Create card on file with Square
-    const { result: cardResult } = await client.cardsApi.createCard({
+    const { result: cardResult } = await (client as any).cardsApi.createCard({
       sourceId,
       card: {
         customerId: squareCustomer.id,
@@ -95,6 +96,7 @@ export async function POST(req: NextRequest) {
 
     const savedPaymentMethod = await prisma.savedPaymentMethod.create({
       data: {
+        id: `pm_${randomBytes(16).toString('hex')}`,
         userId: user.id,
         squareCustomerId: squareCustomer.id,
         squareCardId: card.id || '',
@@ -105,7 +107,7 @@ export async function POST(req: NextRequest) {
         expiryYear: card.expYear || 0,
         isDefault: isDefault || paymentMethodCount === 0, // First payment method is always default
         billingAddressId: billingAddressId || null,
-      },
+      } as any,
       include: {
         BillingAddress: true,
       },
@@ -193,7 +195,7 @@ export async function DELETE(req: NextRequest) {
 
     // Delete card from Square
     try {
-      await client.cardsApi.disableCard(existingPaymentMethod.squareCardId)
+      await (client as any).cardsApi.disableCard(existingPaymentMethod.squareCardId)
     } catch (squareError) {
       console.warn('Failed to disable card in Square:', squareError)
       // Continue with local deletion even if Square fails

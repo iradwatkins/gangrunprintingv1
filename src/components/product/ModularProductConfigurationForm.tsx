@@ -131,7 +131,8 @@ export default function ModularProductConfigurationForm({
       <QuantityModule
         required
         customValue={configuration.customQuantity}
-        quantities={configData.quantities || []}
+        quantities={(configData.quantities || []) as any}
+        items={(configData.quantities || []) as any}
         value={configuration.quantity}
         onChange={updateQuantity}
       />
@@ -142,7 +143,7 @@ export default function ModularProductConfigurationForm({
         customHeight={configuration.customHeight}
         customWidth={configuration.customWidth}
         exactSizeRequired={false}
-        sizes={configData.sizes || []}
+        sizes={(configData.sizes || []) as any}
         value={configuration.size}
         onChange={updateSize}
         onExactSizeChange={(exactSize) => {
@@ -171,7 +172,7 @@ export default function ModularProductConfigurationForm({
       {/* Addons Module */}
       <AddonsModule
         addons={configData.addons || []}
-        addonsGrouped={configData.addonsGrouped}
+        addonsGrouped={(configData as any).addonsGrouped}
         bandingConfig={configuration.bandingConfig}
         cornerRoundingConfig={configuration.cornerRoundingConfig}
         perforationConfig={configuration.perforationConfig}

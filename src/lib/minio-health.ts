@@ -9,7 +9,7 @@ export async function checkMinioHealth(): Promise<{
   buckets?: string[]
 }> {
   try {
-    const client = getMinioClient()
+    const client = await getMinioClient()
 
     // Try to list buckets as a health check
     const bucketList = await client.listBuckets()
@@ -19,7 +19,7 @@ export async function checkMinioHealth(): Promise<{
 
     return {
       available: true,
-      buckets: bucketList.map((b) => b.name),
+      buckets: bucketList.map((b: any) => b.name),
     }
   } catch (error) {
     return {

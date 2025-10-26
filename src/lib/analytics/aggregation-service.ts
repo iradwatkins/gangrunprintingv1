@@ -122,7 +122,7 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
       const visits = await prisma.funnelVisit.findMany({
         where: {
           funnelId: funnel.id,
-          timestamp: {
+          createdAt: {
             gte: startOfDay,
             lte: endOfDay,
           },
@@ -157,9 +157,9 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
 
       // Device breakdown
       const deviceData = {
-        desktop: visits.filter((v) => v.deviceType === 'desktop').length,
-        mobile: visits.filter((v) => v.deviceType === 'mobile').length,
-        tablet: visits.filter((v) => v.deviceType === 'tablet').length,
+        desktop: visits.filter((v) => v.device === 'desktop').length,
+        mobile: visits.filter((v) => v.device === 'mobile').length,
+        tablet: visits.filter((v) => v.device === 'tablet').length,
       }
 
       // UTM source breakdown
@@ -174,14 +174,14 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
         where: {
           funnelId_funnelStepId_date: {
             funnelId: funnel.id,
-            funnelStepId: null,
+            funnelStepId: '' as any,
             date: startOfDay,
           },
         },
         create: {
           id: createId(),
           funnelId: funnel.id,
-          funnelStepId: null,
+          funnelStepId: '' as any,
           date: startOfDay,
           views: totalViews,
           uniqueVisitors,
@@ -209,7 +209,7 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
 
       // Aggregate step-level metrics
       for (const step of funnel.FunnelStep) {
-        const stepVisits = visits.filter((v) => v.funnelStepId === step.id)
+        const stepVisits = visits.filter((v) => v.currentStepId === step.id)
         const stepUniqueVisitors = new Set(stepVisits.map((v) => v.sessionId)).size
 
         await prisma.funnelAnalytics.upsert({
@@ -229,8 +229,8 @@ export async function aggregateFunnelMetrics(date: Date = new Date()) {
             uniqueVisitors: stepUniqueVisitors,
             conversions: 0, // Step-level conversions tracked separately
             revenue: 0,
-            sourceData: null,
-            deviceData: null,
+            sourceData: undefined,
+            deviceData: undefined,
           },
           update: {
             views: stepVisits.length,

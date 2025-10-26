@@ -88,7 +88,7 @@ export const ErrorUtils = {
       ModuleErrorSeverity.CRITICAL,
     ]
 
-    return errors.reduce((maxSeverity, error) => {
+    return errors.reduce<ModuleErrorSeverity>((maxSeverity, error) => {
       const currentIndex = severityLevels.indexOf(error.severity)
       const maxIndex = severityLevels.indexOf(maxSeverity)
       return currentIndex > maxIndex ? error.severity : maxSeverity

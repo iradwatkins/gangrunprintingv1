@@ -116,7 +116,7 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
             messages: file.FileMessage.map((msg) => ({
               id: msg.id,
               message: msg.message,
-              authorName: msg.authorName,
+              authorName: msg.authorName || 'Unknown',
               authorRole: msg.authorRole,
               createdAt: msg.createdAt.toISOString(),
             })),

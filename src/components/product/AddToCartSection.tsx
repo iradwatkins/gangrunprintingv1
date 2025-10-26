@@ -77,7 +77,7 @@ export function AddToCartSection({
     }
 
     try {
-      addItem(cartItem)
+      addItem(cartItem as any)
       toast.success('Product added to cart!')
       // Cart drawer will auto-open from context
     } catch (error) {

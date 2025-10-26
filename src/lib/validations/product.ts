@@ -113,7 +113,7 @@ export const selectedProductOptionsSchema = z.object({
     .array(
       z.object({
         addOnId: z.string().uuid(),
-        configuration: z.record(z.any()).optional(),
+        configuration: z.record(z.string(), z.any()).optional(),
       })
     )
     .default([]),

@@ -167,7 +167,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     // Track add to cart in Google Analytics
     logAddToCart({
       item_id: item.productId || item.sku || id,
-      item_name: item.name,
+      item_name: item.productName,
       price: item.price / 100,
       quantity: item.quantity,
       category: item.categoryName || 'Uncategorized',
@@ -190,7 +190,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (item) {
         // Track remove from cart in Google Analytics
-        logEvent('remove_from_cart', 'Ecommerce', item.name, item.quantity)
+        logEvent('remove_from_cart', 'Ecommerce', item.productName, item.quantity)
       }
 
       dispatch({ type: 'REMOVE_ITEM', payload: id })

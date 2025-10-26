@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { uploadProductImage, validateImage } from '@/lib/minio-products'
 import { prisma } from '@/lib/prisma'
+import { randomBytes } from 'crypto'
 
 // Set max body size to 20MB for image uploads
 export const maxDuration = 30 // 30 seconds timeout
@@ -42,11 +43,11 @@ export async function POST(request: NextRequest) {
         // Create Image record with uploaded image data
         const imageRecord = await prisma.image.create({
           data: {
+            id: `img_${randomBytes(16).toString('hex')}`,
             name: file.name,
             url: uploadedImage.optimized, // Use optimized as main url
             thumbnailUrl: uploadedImage.thumbnail,
             alt: `Customer upload: ${file.name}`,
-            caption: 'Customer Design File',
             mimeType: file.type,
             fileSize: buffer.length,
             width: uploadedImage.metadata.width,
@@ -59,6 +60,7 @@ export async function POST(request: NextRequest) {
         // Create ProductImage that references the Image
         dbImage = await prisma.productImage.create({
           data: {
+            id: `pi_${randomBytes(16).toString('hex')}`,
             productId,
             imageId: imageRecord.id,
             sortOrder: 999, // High sort order for customer images

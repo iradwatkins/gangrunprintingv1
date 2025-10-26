@@ -158,7 +158,7 @@ export async function createPerformanceSnapshot(analysis: PerformanceAnalysis): 
       performanceScore: metrics.performanceScore,
     }))
 
-    await prisma.cityPerformanceSnapshot.createMany({
+    await (prisma as any).cityPerformanceSnapshot.createMany({
       data: snapshots,
     })
   } catch (error) {
@@ -175,7 +175,7 @@ export async function getPerformanceTrend(cityPageId: string): Promise<Performan
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const snapshots = await prisma.cityPerformanceSnapshot.findMany({
+    const snapshots = await (prisma as any).cityPerformanceSnapshot.findMany({
       where: {
         cityLandingPageId: cityPageId,
         timestamp: { gte: thirtyDaysAgo },
@@ -183,7 +183,7 @@ export async function getPerformanceTrend(cityPageId: string): Promise<Performan
       orderBy: { timestamp: 'asc' },
     })
 
-    return snapshots.map((snapshot) => ({
+    return snapshots.map((snapshot: any) => ({
       pageId: snapshot.cityLandingPageId,
       city: '', // Not included in snapshot
       views: snapshot.views,

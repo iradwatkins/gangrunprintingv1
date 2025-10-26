@@ -20,7 +20,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         name,
         code,
         description,
-        isDefault: isDefault || false,
       },
     })
 

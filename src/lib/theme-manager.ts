@@ -142,8 +142,9 @@ export class ThemeManager {
       return this.mapPrismaThemeToConfig(updated)
     } else {
       // Create new theme
+      const { randomBytes } = await import('crypto')
       const created = await prisma.customTheme.create({
-        data,
+        data: { id: `theme_${randomBytes(16).toString('hex')}`, ...data } as any,
       })
       return this.mapPrismaThemeToConfig(created)
     }
@@ -272,10 +273,10 @@ export class ThemeManager {
     return {
       id: theme.id,
       name: theme.name,
-      description: theme.description,
+      description: theme.description || undefined,
       cssVariables: theme.cssVariables as Record<string, string>,
       darkModeVariables: theme.darkModeVariables as Record<string, string>,
-      customCSS: theme.customCSS,
+      customCSS: theme.customCSS || undefined,
       isActive: theme.isActive,
       createdAt: theme.createdAt,
       updatedAt: theme.updatedAt,

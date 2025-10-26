@@ -23,12 +23,10 @@ export const lucia = new Lucia(adapter, {
     attributes: {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      httpOnly: true, // Ensure cookie is not accessible via JavaScript
+      // httpOnly is enabled by default in Lucia
       // Set proper domain for production (without leading dot for better compatibility)
       domain: process.env.NODE_ENV === 'production' ? 'gangrunprinting.com' : undefined,
       path: '/',
-      // Add max age for better browser compatibility
-      maxAge: 60 * 60 * 24 * 90, // 90 days in seconds
     },
   },
   getUserAttributes: (attributes) => {
@@ -170,7 +168,7 @@ export async function generateMagicLink(email: string): Promise<string> {
       identifier: email,
       token,
       expires: expiresAt,
-    },
+    } as any,
   })
 
   return token

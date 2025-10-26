@@ -1,5 +1,6 @@
 'use client'
 
+import type { ProductData } from '@/types/product-wizard'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -13,9 +14,6 @@ interface ProductOption {
   required?: boolean
 }
 
-interface ProductData {
-  options: ProductOption[]
-}
 
 interface ProductOptionsStepProps {
   formData: ProductData
@@ -39,7 +37,8 @@ export function ProductOptionsStep({
 
     // Options are optional, but if they exist, they should be valid
     if (formData.options && formData.options.length > 0) {
-      formData.options.forEach((option, index) => {
+      formData.options.forEach((opt, index) => {
+        const option = opt as ProductOption
         if (!option.name || !option.name.trim()) {
           newErrors[`option_${index}_name`] = `Option ${index + 1} name is required`
         }
@@ -58,7 +57,7 @@ export function ProductOptionsStep({
   }
 
   const handleOptionsChange = (options: unknown[]) => {
-    onUpdate({ options })
+    onUpdate({ options: options as Record<string, unknown>[] })
   }
 
   return (
@@ -102,7 +101,7 @@ export function ProductOptionsStep({
             </Alert>
           )}
 
-          <ProductOptions options={formData.options} onOptionsChange={handleOptionsChange} />
+          <ProductOptions options={formData.options as any} onOptionsChange={handleOptionsChange} />
         </CardContent>
       </Card>
 
@@ -239,11 +238,11 @@ export function ProductOptionsStep({
                   </div>
                   {formData.options.map((option, index) => (
                     <div key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                      <span>• {option.name || `Option ${index + 1}`}</span>
+                      <span>• {(option.name as string) || `Option ${index + 1}`}</span>
                       <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                        {option.type || 'No Type'}
+                        {(option.type as string) || 'No Type'}
                       </span>
-                      {option.required && (
+                      {(option.required as boolean) && (
                         <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
                           Required
                         </span>

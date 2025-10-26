@@ -247,7 +247,7 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
 
             {/* Orders Table with Bulk Actions */}
             <OrdersTableWithBulkActions
-              orders={orders}
+              orders={orders as any}
               searchQuery={searchQuery}
               statusFilter={statusFilter}
             />

@@ -2,6 +2,7 @@ import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { type QuoteStatus } from '@prisma/client'
+import { randomBytes } from 'crypto'
 
 // GET quotes (customer or admin)
 export async function GET(request: NextRequest) {
@@ -114,6 +115,7 @@ export async function POST(request: NextRequest) {
 
     const quote = await prisma.quote.create({
       data: {
+        id: `q_${randomBytes(16).toString('hex')}`,
         quoteNumber,
         userId: user.id,
         customerEmail,
@@ -179,10 +181,11 @@ export async function PUT(request: NextRequest) {
 
       const order = await prisma.order.create({
         data: {
-          referenceNumber,
-          userId: quote.userId,
+          id: `ord_${randomBytes(16).toString('hex')}`,
+          orderNumber: referenceNumber,
+          userId: quote.userId || undefined,
           email: quote.customerEmail,
-          phone: quote.customerPhone,
+          phone: quote.customerPhone || undefined,
           subtotal:
             quote.pricing && typeof quote.pricing === 'object' && 'subtotal' in quote.pricing
               ? Number(quote.pricing.subtotal)
@@ -205,7 +208,7 @@ export async function PUT(request: NextRequest) {
             email: quote.customerEmail,
             phone: quote.customerPhone,
           },
-        },
+        } as any,
       })
 
       // Update quote status

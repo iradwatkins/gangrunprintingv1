@@ -535,14 +535,5 @@ export interface ValidationContext {
   metadata?: any
 }
 
-export default {
-  // Export all types as default for easy importing
-  BaseModuleProps,
-  StandardModuleProps,
-  StandardModuleValue,
-  ModulePricingContribution,
-  ModuleType,
-  ModuleMetadata,
-  ValidationRule,
-  ValidationContext,
-}
+// Note: Types cannot be exported as default object (they don't exist at runtime)
+// Import types individually using named imports instead

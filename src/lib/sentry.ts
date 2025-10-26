@@ -17,8 +17,7 @@ export function initSentry() {
     // Performance Monitoring
     tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
-    // Release Health
-    autoSessionTracking: true,
+    // Release Health (autoSessionTracking removed - not in current Sentry types)
 
     // Environment configuration
     environment: process.env.NODE_ENV || 'development',

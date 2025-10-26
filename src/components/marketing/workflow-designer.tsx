@@ -605,7 +605,7 @@ function TriggerEditor({
                 value={trigger.schedule?.delay || 0}
                 onChange={(e) =>
                   onUpdate({
-                    schedule: { ...trigger.schedule, delay: parseInt(e.target.value) },
+                    schedule: { ...trigger.schedule, delay: parseInt(e.target.value) } as any,
                   })
                 }
               />
@@ -620,7 +620,7 @@ function TriggerEditor({
                 value={trigger.schedule?.recurringPattern || ''}
                 onChange={(e) =>
                   onUpdate({
-                    schedule: { ...trigger.schedule, recurringPattern: e.target.value },
+                    schedule: { ...trigger.schedule, recurringPattern: e.target.value } as any,
                   })
                 }
               />
@@ -638,7 +638,7 @@ function TriggerEditor({
               value={trigger.condition?.field || ''}
               onValueChange={(value) =>
                 onUpdate({
-                  condition: { ...trigger.condition, field: value },
+                  condition: { ...trigger.condition, field: value } as any,
                 })
               }
             >
@@ -659,7 +659,7 @@ function TriggerEditor({
               value={trigger.condition?.operator || ''}
               onValueChange={(value) =>
                 onUpdate({
-                  condition: { ...trigger.condition, operator: value },
+                  condition: { ...trigger.condition, operator: value } as any,
                 })
               }
             >
@@ -681,7 +681,7 @@ function TriggerEditor({
               value={trigger.condition?.value || ''}
               onChange={(e) =>
                 onUpdate({
-                  condition: { ...trigger.condition, value: e.target.value },
+                  condition: { ...trigger.condition, value: e.target.value } as any,
                 })
               }
             />
@@ -742,7 +742,7 @@ export function WorkflowDesigner({ workflow, onSave, onPreview }: WorkflowDesign
     }
   })
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes as any)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
   const onConnect = useCallback(

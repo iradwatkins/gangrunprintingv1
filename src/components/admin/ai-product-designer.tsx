@@ -68,7 +68,7 @@ export function AIProductDesigner({
       setResult(data)
 
       if (data.buildPhase) {
-        toast.info('Build Phase: Follow instructions to generate content')
+        toast.success('Build Phase: Follow instructions to generate content')
       } else {
         toast.success(`Content generated! SEO Score: ${data.seoContent.seoScore}/100`)
       }

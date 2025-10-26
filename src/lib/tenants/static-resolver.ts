@@ -75,7 +75,7 @@ export const getStaticTenant = cache(async (slug?: string): Promise<TenantInfo> 
         subdomain: tenant.subdomain,
         isActive: tenant.isActive,
         plan: tenant.plan,
-        settings: tenant.settings,
+        settings: tenant.settings as Record<string, unknown>,
         branding: tenant.TenantBrand[0] || null,
         locales: tenant.locales,
         defaultLocale: tenant.defaultLocale,

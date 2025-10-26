@@ -147,16 +147,12 @@ async function main() {
         },
       },
       update: {
-        isDefault: true,
-        sortOrder: 1,
         updatedAt: new Date(),
       },
       create: {
         id: createId(),
         productId: product.id,
         sizeGroupId: sizeGroup.id,
-        isDefault: true,
-        sortOrder: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -207,16 +203,12 @@ async function main() {
         },
       },
       update: {
-        isDefault: true,
-        sortOrder: 1,
         updatedAt: new Date(),
       },
       create: {
         id: createId(),
         productId: product.id,
         quantityGroupId: quantityGroup.id,
-        isDefault: true,
-        sortOrder: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -281,7 +273,6 @@ async function main() {
         },
         update: {
           isDefault: ttSet.name === 'Standard Turnaround Times',
-          sortOrder: ttSet.name === 'Standard Turnaround Times' ? 1 : 2,
           updatedAt: new Date(),
         },
         create: {
@@ -289,7 +280,6 @@ async function main() {
           productId: product.id,
           turnaroundTimeSetId: ttSet.id,
           isDefault: ttSet.name === 'Standard Turnaround Times',
-          sortOrder: ttSet.name === 'Standard Turnaround Times' ? 1 : 2,
           createdAt: new Date(),
           updatedAt: new Date(),
         },

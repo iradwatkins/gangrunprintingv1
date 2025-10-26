@@ -177,11 +177,6 @@ export function useQuantityModule({
   }, [moduleErrors.errors])
 
   return {
-    // Legacy compatibility
-    quantityId: value,
-    customValue,
-    actualValue: actualQuantity,
-
     // Standard interface
     value: {
       quantityId: value,
@@ -193,13 +188,6 @@ export function useQuantityModule({
     isValid,
     error: primaryError,
     actualQuantity,
-
-    // Ultra-independent error handling
-    errors: moduleErrors.errors,
-    hasErrors: moduleErrors.hasErrors,
-    hasBlockingErrors: moduleErrors.hasBlockingErrors,
-    clearErrors: moduleErrors.clearErrors,
-    getErrorsByField: moduleErrors.getErrorsByField,
   }
 }
 
@@ -383,14 +371,6 @@ export function useSizeModule({
   }, [moduleErrors.errors])
 
   return {
-    // Legacy compatibility
-    sizeId: value,
-    customWidth,
-    customHeight,
-    width: dimensions.width,
-    height: dimensions.height,
-    squareInches: dimensions.squareInches,
-
     // Standard interface
     value: {
       sizeId: value,
@@ -405,13 +385,6 @@ export function useSizeModule({
     dimensions,
     isValid,
     error: primaryError,
-
-    // Ultra-independent error handling
-    errors: moduleErrors.errors,
-    hasErrors: moduleErrors.hasErrors,
-    hasBlockingErrors: moduleErrors.hasBlockingErrors,
-    clearErrors: moduleErrors.clearErrors,
-    getErrorsByField: moduleErrors.getErrorsByField,
   }
 }
 
@@ -534,14 +507,6 @@ export function usePaperStockModule({
   }, [isValid, paper, coating, sides])
 
   return {
-    // Legacy compatibility
-    paperId,
-    coatingId,
-    sidesId,
-    paper,
-    coating,
-    sides,
-
     // Standard interface
     value: {
       paperId,
@@ -699,14 +664,6 @@ export function useAddonsModule({
   )
 
   return {
-    // Legacy compatibility
-    selectedAddons: selectedAddonIds,
-    variableDataConfig: specialConfigs.variableData,
-    perforationConfig: specialConfigs.perforation,
-    bandingConfig: specialConfigs.banding,
-    cornerRoundingConfig: specialConfigs.cornerRounding,
-    totalAddonsPrice: totalAddonCost,
-
     // Standard interface
     value: {
       selectedAddonIds,
@@ -900,14 +857,6 @@ export function useTurnaroundModule({
   }, [isValid, turnaround, isCompatible])
 
   return {
-    // Legacy compatibility
-    turnaroundId: selectedTurnaroundId,
-    turnaround,
-    estimatedDeliveryDate,
-    turnaroundPrice: 0, // ❌ DEPRECATED: Moved to pricing contribution
-    daysMin: daysRange.min,
-    daysMax: daysRange.max,
-
     // Standard interface
     value: {
       turnaroundId: selectedTurnaroundId,
@@ -917,7 +866,6 @@ export function useTurnaroundModule({
     },
     pricing,
     display,
-    estimatedDeliveryDate,
     isCompatible,
     daysRange,
     isValid,
@@ -929,7 +877,7 @@ export function useTurnaroundModule({
 // IMAGE MODULE HOOK (NEW IMPLEMENTATION)
 // =============================================================================
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import {
   useModuleLoading,
   ModuleLoadingType,
@@ -1005,8 +953,8 @@ export function useImageModule(options: UseImageModuleOptions) {
         type: 'validation',
         moduleType: ModuleType.IMAGES,
         field: type,
-        severity: 'warning', // Images are always optional
-      })
+        severity: 'warning' as any, // Images are always optional
+      } as any)
     },
     [moduleErrors]
   )

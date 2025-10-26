@@ -80,7 +80,7 @@ export const POST = withApiHandler(
         },
         {
           id: orderFile.id,
-          label: orderFile.label,
+          label: orderFile.label || undefined,
           filename: orderFile.filename,
           fileUrl: orderFile.fileUrl,
           mimeType: orderFile.mimeType || undefined,

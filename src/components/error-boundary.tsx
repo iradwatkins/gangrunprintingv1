@@ -144,7 +144,7 @@ export function withErrorBoundary<P extends object>(
       name={options?.name || Component.displayName || Component.name}
       onError={options?.onError}
     >
-      <Component {...props} ref={ref} />
+      <Component {...(props as any)} ref={ref} />
     </ErrorBoundary>
   ))
 

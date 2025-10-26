@@ -144,12 +144,12 @@ const clientEnvSchema = z.object({
  * Feature flags (can be read on both server and client)
  */
 const featureFlagsSchema = z.object({
-  ENABLE_PUSH_NOTIFICATIONS: z.string().transform(val => val === 'true').default('true'),
-  ENABLE_EMAIL_NOTIFICATIONS: z.string().transform(val => val === 'true').default('true'),
-  ENABLE_SMS_NOTIFICATIONS: z.string().transform(val => val === 'true').default('false'),
-  ENABLE_ANALYTICS: z.string().transform(val => val === 'true').default('true'),
-  ENABLE_SEARCH: z.string().transform(val => val === 'true').default('true'),
-  ENABLE_REDIS_CACHE: z.string().transform(val => val === 'true').default('true'),
+  ENABLE_PUSH_NOTIFICATIONS: z.string().default('true').transform(val => val === 'true'),
+  ENABLE_EMAIL_NOTIFICATIONS: z.string().default('true').transform(val => val === 'true'),
+  ENABLE_SMS_NOTIFICATIONS: z.string().default('false').transform(val => val === 'true'),
+  ENABLE_ANALYTICS: z.string().default('true').transform(val => val === 'true'),
+  ENABLE_SEARCH: z.string().default('true').transform(val => val === 'true'),
+  ENABLE_REDIS_CACHE: z.string().default('true').transform(val => val === 'true'),
 })
 
 // ============================================================================

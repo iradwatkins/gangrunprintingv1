@@ -98,7 +98,7 @@ export function OrdersTableWithBulkActions({
                 <Checkbox
                   checked={isAllSelected}
                   className="ml-2"
-                  indeterminate={isSomeSelected}
+                  {...({ indeterminate: isSomeSelected } as any)}
                   onCheckedChange={handleSelectAll}
                 />
               </TableHead>
@@ -258,7 +258,7 @@ export function OrdersTableWithBulkActions({
                         >
                           <Eye className="h-4 w-4" />
                         </Link>
-                        <OrderQuickActions order={order} />
+                        <OrderQuickActions order={order as any} />
                       </div>
                     </TableCell>
                   </TableRow>

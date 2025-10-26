@@ -10,18 +10,18 @@ import {
 } from '../types/StandardModuleTypes'
 
 // Use standardized interface with legacy compatibility
-export interface Coating extends CoatingItem {
+export interface Coating extends Omit<CoatingItem, 'priceMultiplier' | 'isDefault'> {
   priceMultiplier?: number // Legacy makes optional
   isDefault?: boolean // Legacy makes optional
 }
 
-export interface SidesOption extends SidesItem {
+export interface SidesOption extends Omit<SidesItem, 'priceMultiplier' | 'isDefault'> {
   priceMultiplier?: number // Legacy makes optional
   isDefault?: boolean // Legacy makes optional
   isEnabled?: boolean // Additional legacy field
 }
 
-export interface PaperStock extends Omit<PaperStockItem, 'description' | 'pricePerUnit'> {
+export interface PaperStock extends Omit<PaperStockItem, 'description' | 'pricePerUnit' | 'coatings' | 'sides'> {
   weight?: number // Additional legacy field
   description?: string // Legacy makes optional
   pricePerUnit?: number // Legacy makes optional

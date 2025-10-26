@@ -55,7 +55,7 @@ export function generateMetadata({
         },
       ],
       type,
-    },
+    } as any,
     twitter: {
       card: 'summary_large_image',
       title: fullTitle,

@@ -219,7 +219,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
   }
 
   const isChildActive = (children: unknown[]) => {
-    return children.some((child) => pathname === child.href)
+    return children.some((child: any) => pathname === child.href)
   }
 
   return (
@@ -292,7 +292,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                 'min-h-[44px] lg:min-h-auto',
                 isActive && 'bg-accent text-accent-foreground'
               )}
-              href={item.href}
+              href={item.href || '#'}
               onClick={handleNavClick}
             >
               <div className="flex items-center gap-3">

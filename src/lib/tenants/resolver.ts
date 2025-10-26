@@ -64,7 +64,7 @@ export const getTenantInfo = cache(async (identifier: string): Promise<TenantInf
         subdomain: tenant.subdomain,
         isActive: tenant.isActive,
         plan: tenant.plan,
-        settings: tenant.settings,
+        settings: tenant.settings as Record<string, unknown>,
         branding: tenant.TenantBrand[0] || null,
         locales: tenant.locales,
         defaultLocale: tenant.defaultLocale,
@@ -168,7 +168,7 @@ export async function getCurrentTenant(): Promise<TenantContext | null> {
 }
 
 // Clear tenant cache (useful for development)
-export function clearTenantCache(): unknown {
+export function clearTenantCache(): void {
   tenantCache.clear()
 }
 
@@ -197,7 +197,7 @@ export async function getTenantById(id: string): Promise<TenantInfo | null> {
       subdomain: tenant.subdomain,
       isActive: tenant.isActive,
       plan: tenant.plan,
-      settings: tenant.settings,
+      settings: tenant.settings as Record<string, unknown>,
       branding: tenant.TenantBrand[0] || null,
       locales: tenant.locales,
       defaultLocale: tenant.defaultLocale,

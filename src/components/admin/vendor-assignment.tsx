@@ -24,9 +24,28 @@ import { Label } from '@/components/ui/label'
 import { Factory, Mail, Phone, Clock, Truck, AlertCircle, Send, Loader2 } from 'lucide-react'
 import toast from '@/lib/toast'
 
+interface Vendor {
+  id: string
+  name: string
+  turnaroundDays: number
+  minimumOrderAmount?: number
+  supportedCarriers?: string[]
+  email?: string
+  phone?: string
+  [key: string]: any
+}
+
+interface Order {
+  id: string
+  vendorId?: string
+  vendor?: Vendor
+  categoryVendors?: Array<{ id: string; [key: string]: any }>
+  [key: string]: any
+}
+
 interface VendorAssignmentProps {
-  order: Record<string, unknown>
-  vendors: Record<string, unknown>[]
+  order: Order
+  vendors: Vendor[]
 }
 
 export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {

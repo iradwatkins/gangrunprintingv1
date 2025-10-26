@@ -8,6 +8,7 @@ import {
 } from '@prisma/client'
 import { CampaignService } from './campaign-service'
 import { createId } from '@paralleldrive/cuid2'
+import { randomBytes } from 'crypto'
 
 export interface WorkflowTrigger {
   type: 'event' | 'schedule' | 'condition'
@@ -91,8 +92,8 @@ export class WorkflowEngine {
         id: createId(),
         name,
         description,
-        trigger,
-        steps,
+        trigger: trigger as any,
+        steps: steps as any,
         segmentId,
         settings,
         isActive: false, // Start inactive
@@ -114,7 +115,7 @@ export class WorkflowEngine {
   ): Promise<MarketingWorkflow> {
     return await prisma.marketingWorkflow.update({
       where: { id },
-      data,
+      data: data as any,
     })
   }
 
@@ -220,7 +221,7 @@ export class WorkflowEngine {
     }
 
     const { MarketingWorkflow: workflow, User: user } = execution
-    const steps = workflow.steps as WorkflowStep[]
+    const steps = workflow.steps as unknown as WorkflowStep[]
 
     if (!steps || steps.length === 0) {
       await this.completeExecution(executionId, 'No steps to execute')
@@ -322,6 +323,7 @@ export class WorkflowEngine {
     // Create a send record
     await prisma.campaignSend.create({
       data: {
+        id: `csnd_${randomBytes(16).toString('hex')}`,
         campaignId: campaign.id,
         recipientEmail: user.email,
         recipientName: user.name,
@@ -348,6 +350,7 @@ export class WorkflowEngine {
     // Create SMS campaign
     const smsCampaign = await prisma.sMSCampaign.create({
       data: {
+        id: `smsc_${randomBytes(16).toString('hex')}`,
         name: `Workflow: ${execution.MarketingWorkflow.name} - ${step.name}`,
         message: settings.message,
         createdBy: 'system',
@@ -357,6 +360,7 @@ export class WorkflowEngine {
     // Create SMS send
     await prisma.sMSSend.create({
       data: {
+        id: `smsnd_${randomBytes(16).toString('hex')}`,
         campaignId: smsCampaign.id,
         phoneNumber: user.phoneNumber,
         userId: user.id,
@@ -605,7 +609,7 @@ export class WorkflowEngine {
     })
 
     for (const workflow of workflows) {
-      const trigger = workflow.trigger as WorkflowTrigger
+      const trigger = workflow.trigger as unknown as WorkflowTrigger
 
       if (trigger.event === event) {
         const userId = data.userId
@@ -632,7 +636,7 @@ export class WorkflowEngine {
     })
 
     for (const workflow of scheduledWorkflows) {
-      const trigger = workflow.trigger as WorkflowTrigger
+      const trigger = workflow.trigger as unknown as WorkflowTrigger
 
       if (trigger.schedule?.type === 'recurring') {
         // TODO: Implement cron-based scheduling

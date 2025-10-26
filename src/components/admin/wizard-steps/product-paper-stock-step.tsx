@@ -1,14 +1,12 @@
 'use client'
 
+import type { ProductData } from '@/types/product-wizard'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductPaperStocks } from '../product-paper-stocks'
 import { FileText, Info } from 'lucide-react'
 
-interface ProductData {
-  paperStocks: unknown[]
-}
 
 interface ProductPaperStockStepProps {
   formData: ProductData
@@ -47,7 +45,7 @@ export function ProductPaperStockStep({
   }
 
   const handleStocksChange = (stocks: unknown[]) => {
-    onUpdate({ paperStocks: stocks })
+    onUpdate({ paperStocks: stocks as Record<string, unknown>[] })
   }
 
   return (
@@ -92,7 +90,7 @@ export function ProductPaperStockStep({
           )}
 
           <ProductPaperStocks
-            selectedStocks={formData.paperStocks}
+            selectedStocks={formData.paperStocks as any}
             onStocksChange={handleStocksChange}
           />
         </CardContent>
@@ -137,8 +135,8 @@ export function ProductPaperStockStep({
                   </div>
                   {formData.paperStocks.map((stock, index) => (
                     <div key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                      <span>• {stock.name}</span>
-                      {stock.isDefault && (
+                      <span>• {stock.name as string}</span>
+                      {(stock.isDefault as boolean) && (
                         <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
                           Default
                         </span>

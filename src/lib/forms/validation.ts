@@ -189,7 +189,7 @@ export function generateSlug(name: string): string {
 export function formatValidationErrors(errors: z.ZodError): Record<string, string> {
   const formatted: Record<string, string> = {}
 
-  errors.errors.forEach((error) => {
+  errors.issues.forEach((error) => {
     const path = error.path.join('.')
     formatted[path] = error.message
   })

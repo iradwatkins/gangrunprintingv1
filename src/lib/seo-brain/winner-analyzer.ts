@@ -45,7 +45,7 @@ export async function analyzeWinners(params: { campaignId: string; topCount?: nu
       where: { landingPageSetId: campaignId },
       include: {
         _count: {
-          select: { orders: true },
+          select: { Order: true },
         },
       },
       orderBy: {
@@ -92,7 +92,7 @@ export async function analyzeWinners(params: { campaignId: string; topCount?: nu
     })
 
     // Save pattern to database
-    await prisma.cityWinnerPattern.create({
+    await (prisma as any).cityWinnerPattern.create({
       data: {
         id: `pattern-${campaignId}-${Date.now()}`,
         productType: 'flyers', // TODO: Extract from campaign

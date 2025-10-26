@@ -257,7 +257,7 @@ export class ProductConfigurationService {
       })
 
       if (productSizeGroup?.SizeGroup) {
-        return transformSizeGroup(productSizeGroup.SizeGroup)
+        return transformSizeGroup(productSizeGroup.SizeGroup as any) as any
       }
 
       return this.getFallbackSizes()
@@ -699,7 +699,7 @@ export class ProductConfigurationService {
 
     // Set addon defaults
     if (components.addons.length > 0) {
-      defaults.addons = findDefaultAddons(components.addons)
+      defaults.addons = findDefaultAddons(components.addons as any)
     }
 
     // Set turnaround default

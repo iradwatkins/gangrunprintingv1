@@ -65,7 +65,7 @@ export default function SimpleSizeForm({
           setSizes(data.sizes)
           // Set default size
           const defaultSize =
-            data.defaults?.size || data.sizes.find((s) => s.isDefault)?.id || data.sizes[0]?.id
+            data.defaults?.size || data.sizes.find((s: Size) => s.isDefault)?.id || data.sizes[0]?.id
           setSelectedSize(defaultSize)
 
           // Notify parent of initial configuration

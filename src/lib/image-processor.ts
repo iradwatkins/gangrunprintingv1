@@ -72,7 +72,7 @@ async function analyzeImageContent(buffer: Buffer): Promise<ImageAnalysis> {
 
     // Check for transparency
     const hasTransparency =
-      metadata.channels === 4 || (metadata.format === 'png' && metadata.channels === 2)
+      metadata.channels === 4 || (metadata.format === 'png' && (metadata.channels as number) === 2)
 
     // Calculate average contrast (simplified method)
     let contrastSum = 0
@@ -92,7 +92,7 @@ async function analyzeImageContent(buffer: Buffer): Promise<ImageAnalysis> {
 
     // Detect text-like content (high frequency edges)
     const stats = await image.stats()
-    const textLikelihood = stats.channels[0].std / 128 // Simplified edge detection via standard deviation
+    const textLikelihood = (stats.channels[0] as any).std / 128 // Simplified edge detection via standard deviation
 
     // Recommend quality based on analysis
     let recommendedQuality = 75 // Default

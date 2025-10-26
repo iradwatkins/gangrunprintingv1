@@ -146,7 +146,7 @@ export class AutoTranslationService {
         confidence: result.confidence,
         translationModel: result.model,
         originalText: sourceText,
-      },
+      } as any,
     })
 
     return translation.id
@@ -211,7 +211,7 @@ export class AutoTranslationService {
             sourceLocale,
             targetLocale,
             source.value,
-            source.context,
+            source.context || undefined,
             tenantId
           )
           results.translated++

@@ -77,7 +77,7 @@ export const pricingCalculationRequestSchema = z.object({
       z.object({
         addonId: z.string(),
         quantity: z.number().int().positive().optional(),
-        configuration: z.record(z.unknown()).optional(),
+        configuration: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .default([]),

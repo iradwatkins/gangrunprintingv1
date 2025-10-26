@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
                   })),
                 }
               : undefined,
-          })),
+          })) as any,
         },
 
         // Create status history entry

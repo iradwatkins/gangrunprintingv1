@@ -11,10 +11,10 @@ import { VariableDataSection } from './VariableDataSection'
 import { PerforationSection } from './PerforationSection'
 import { BandingSection } from './BandingSection'
 import { CornerRoundingSection } from './CornerRoundingSection'
-import type { AddonOption } from '../types/addon.types'
+import type { Addon } from '../types/addon.types'
 
 interface AddonRendererProps {
-  addon: AddonOption
+  addon: Addon
   selectedAddons: string[]
   disabled: boolean
   quantity: number

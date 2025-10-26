@@ -1,5 +1,6 @@
 'use client'
 
+import type { ProductData } from '@/types/product-wizard'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,19 +17,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PricingCalculator } from '../pricing-calculator'
 import { Calculator, DollarSign, Info, TestTube, Loader2 } from 'lucide-react'
 
-interface ProductData {
-  basePrice: number
-  setupFee: number
-  paperStocks: unknown[]
-  options: unknown[]
-  pricingTiers: unknown[]
-  quantityIds: string[]
-  sizeIds: string[]
-  useQuantityGroup: boolean
-  quantityGroupId: string
-  useSizeGroup: boolean
-  sizeGroupId: string
-}
 
 interface ProductPriceTestStepProps {
   formData: ProductData
@@ -94,7 +82,7 @@ export function ProductPriceTestStep({
           const allQuantities = await res.json()
           setQuantities(
             allQuantities.filter((q: Record<string, unknown>) =>
-              formData.quantityIds.includes(q.id)
+              formData.quantityIds.includes(q.id as string)
             )
           )
         }
@@ -111,7 +99,7 @@ export function ProductPriceTestStep({
         const res = await fetch('/api/sizes')
         if (res.ok) {
           const allSizes = await res.json()
-          setSizes(allSizes.filter((s: Record<string, unknown>) => formData.sizeIds.includes(s.id)))
+          setSizes(allSizes.filter((s: Record<string, unknown>) => formData.sizeIds.includes(s.id as string)))
         }
       }
     } catch (error) {}
@@ -134,10 +122,10 @@ export function ProductPriceTestStep({
       let pricePerUnit = basePrice
       if (formData.pricingTiers.length > 0) {
         const tier = formData.pricingTiers.find(
-          (t) => quantity >= t.minQuantity && (t.maxQuantity === null || quantity <= t.maxQuantity)
+          (t: any) => quantity >= t.minQuantity && (t.maxQuantity === null || quantity <= (t.maxQuantity ?? Infinity))
         )
         if (tier) {
-          pricePerUnit = tier.pricePerUnit
+          pricePerUnit = (tier as any).pricePerUnit
         }
       }
 
@@ -146,7 +134,8 @@ export function ProductPriceTestStep({
 
       // Add option costs
       Object.entries(testConfiguration.selectedOptions).forEach(([optionId, value]) => {
-        const option = formData.options.find((o) => o.id === optionId)
+        const opt = formData.options.find((o: any) => o.id === optionId)
+        const option = opt as any
         if (option && option.pricing) {
           if (option.type === 'checkbox' && value) {
             total += option.pricing.fee || 0
@@ -247,9 +236,9 @@ export function ProductPriceTestStep({
             basePrice={formData.basePrice}
             options={formData.options}
             paperStocks={formData.paperStocks}
-            pricingTiers={formData.pricingTiers}
+            pricingTiers={formData.pricingTiers as any}
             setupFee={formData.setupFee}
-            onTiersChange={(tiers) => onUpdate({ pricingTiers: tiers })}
+            onTiersChange={(tiers) => onUpdate({ pricingTiers: tiers as any })}
           />
         </CardContent>
       </Card>
@@ -284,8 +273,8 @@ export function ProductPriceTestStep({
                 </SelectTrigger>
                 <SelectContent>
                   {quantities.map((qty: Record<string, unknown>) => (
-                    <SelectItem key={qty.id} value={qty.value.toString()}>
-                      {qty.value}
+                    <SelectItem key={qty.id as string} value={(qty.value as number).toString()}>
+                      {qty.value as number}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -305,8 +294,8 @@ export function ProductPriceTestStep({
                 </SelectTrigger>
                 <SelectContent>
                   {sizes.map((size: Record<string, unknown>) => (
-                    <SelectItem key={size.id} value={size.id}>
-                      {size.name}
+                    <SelectItem key={size.id as string} value={size.id as string}>
+                      {size.name as string}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -326,8 +315,8 @@ export function ProductPriceTestStep({
                 </SelectTrigger>
                 <SelectContent>
                   {formData.paperStocks.map((paper: Record<string, unknown>) => (
-                    <SelectItem key={paper.id} value={paper.id}>
-                      {paper.name}
+                    <SelectItem key={paper.id as string} value={paper.id as string}>
+                      {paper.name as string}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -38,7 +38,6 @@ import { FedExErrorHandler, FedExError, withRetry } from '../fedex/error-handler
 import {
   findNearestHub,
   isStateServedBySmartPost,
-  type SmartPostHub,
 } from '../fedex/smartpost-hubs'
 import {
   requiresFreight,
@@ -54,6 +53,8 @@ import type {
   FedExRateRequest,
   FedExRateResponse,
   RateCalculationOptions,
+  ShippingPackage as FedExShippingPackage,
+  SmartPostHub,
 } from '../fedex/types'
 
 interface FedExProviderConfig {
@@ -185,7 +186,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
       await this.authenticate()
 
       // Determine if freight is needed
-      const needsFreight = requiresFreight(packages)
+      const needsFreight = requiresFreight(packages as FedExShippingPackage[])
 
       // Use intelligent box packing for parcel shipments
       let optimizedPackages = packages
@@ -197,7 +198,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
       const isInternational = toAddress.country && toAddress.country !== 'US'
       const serviceCategories = this.determineServiceCategories(
         needsFreight,
-        isInternational,
+        isInternational as boolean,
         toAddress.state!
       )
 
@@ -247,7 +248,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
     // Convert to PackItem format
     const items: PackItem[] = packages.flatMap(
       (pkg, index) =>
-        pkg.items?.map((item) => ({
+        (pkg as any).items?.map((item: any) => ({
           name: item.name,
           length: item.dimensions?.length || pkg.dimensions?.length || 12,
           width: item.dimensions?.width || pkg.dimensions?.width || 12,
@@ -382,9 +383,9 @@ export class FedExProviderEnhanced implements ShippingProvider {
           },
           dimensions: pkg.dimensions
             ? {
-                length: Math.ceil(pkg.dimensions.length),
-                width: Math.ceil(pkg.dimensions.width),
-                height: Math.ceil(pkg.dimensions.height),
+                length: Math.ceil(pkg.dimensions.length || 10),
+                width: Math.ceil(pkg.dimensions.width || 10),
+                height: Math.ceil(pkg.dimensions.height || 1),
                 units: 'IN',
               }
             : undefined,
@@ -408,7 +409,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
     } else if (category === 'freight') {
       // Add freight-specific details
       baseRequest.requestedShipment.freightShipmentDetail = buildFreightShipmentDetail(
-        packages,
+        packages as FedExShippingPackage[],
         options?.customsValue || 1000
       )
     }
@@ -547,13 +548,13 @@ export class FedExProviderEnhanced implements ShippingProvider {
             recipient: {
               address: this.formatAddress(toAddress),
               contact: {
-                personName: toAddress.name || 'Recipient',
-                phoneNumber: toAddress.phone || '1234567890',
+                personName: (toAddress as any).name || 'Recipient',
+                phoneNumber: (toAddress as any).phone || '1234567890',
               },
             },
             shipDateStamp: new Date().toISOString().split('T')[0],
             serviceType: serviceCode,
-            packagingType: packages[0].packagingType || 'YOUR_PACKAGING',
+            packagingType: (packages[0] as any).packagingType || 'YOUR_PACKAGING',
             pickupType: 'DROPOFF_AT_FEDEX_LOCATION',
             blockInsightVisibility: false,
             labelSpecification: {
@@ -569,9 +570,9 @@ export class FedExProviderEnhanced implements ShippingProvider {
               },
               dimensions: pkg.dimensions
                 ? {
-                    length: Math.ceil(pkg.dimensions.length),
-                    width: Math.ceil(pkg.dimensions.width),
-                    height: Math.ceil(pkg.dimensions.height),
+                    length: Math.ceil(pkg.dimensions.length || 10),
+                    width: Math.ceil(pkg.dimensions.width || 10),
+                    height: Math.ceil(pkg.dimensions.height || 1),
                     units: 'IN',
                   }
                 : undefined,
@@ -634,7 +635,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
           (event: FedExScanEvent) => ({
             timestamp: new Date(event.date),
             location: `${event.scanLocation.city}, ${event.scanLocation.stateOrProvinceCode}`,
-            status: event.derivedStatus || event.eventType,
+            status: event.derivedStatusCode || (event as any).eventType || 'unknown',
             description: event.eventDescription,
           })
         )
@@ -717,7 +718,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
     residential: boolean
   } {
     return {
-      streetLines: [address.street, address.street2].filter(Boolean),
+      streetLines: [address.street, address.street2].filter(Boolean) as string[],
       city: address.city,
       stateOrProvinceCode: address.state,
       postalCode: address.zipCode,
@@ -752,7 +753,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
     isResidential?: boolean
   ): ShippingRate[] {
     const totalWeight = packages.reduce((sum, pkg) => sum + pkg.weight, 0)
-    const needsFreight = requiresFreight(packages)
+    const needsFreight = requiresFreight(packages as FedExShippingPackage[])
 
     const rates: ShippingRate[] = []
 
@@ -791,7 +792,7 @@ export class FedExProviderEnhanced implements ShippingProvider {
       })
     } else {
       // Freight services
-      const freightCost = estimateFreightCost(packages, fromZip || '60173', toZip || '90001', {
+      const freightCost = estimateFreightCost(packages as FedExShippingPackage[], fromZip || '60173', toZip || '90001', {
         liftgateRequired: isResidential,
       })
 

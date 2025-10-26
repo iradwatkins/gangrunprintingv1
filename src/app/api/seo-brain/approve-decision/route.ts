@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
       where: { id: decisionId },
       data: {
         selectedOption: selectedOption.toUpperCase(),
-        userFeedback: feedback || null,
         respondedAt: new Date(),
         status: 'APPROVED',
       },

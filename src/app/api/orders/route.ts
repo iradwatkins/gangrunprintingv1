@@ -156,10 +156,11 @@ export async function POST(request: NextRequest) {
     // Create order
     const order = await prisma.order.create({
       data: {
+        id: `ord_${randomBytes(16).toString('hex')}`,
         orderNumber,
         email,
         phone,
-        userId: user?.id,
+        userId: user?.id || undefined,
         subtotal,
         tax,
         shipping,
@@ -168,6 +169,7 @@ export async function POST(request: NextRequest) {
         status: 'PENDING_PAYMENT',
         OrderItem: {
           create: items.map((item: Record<string, unknown>) => ({
+            id: `oi_${randomBytes(16).toString('hex')}`,
             productName: item.productName,
             productSku: item.productSku,
             quantity: item.quantity,
@@ -178,6 +180,7 @@ export async function POST(request: NextRequest) {
         File: files
           ? {
               create: files.map((file: Record<string, unknown>) => ({
+                id: `file_${randomBytes(16).toString('hex')}`,
                 fileName: file.fileName,
                 fileUrl: file.fileUrl,
                 fileSize: file.fileSize,
@@ -201,7 +204,7 @@ export async function POST(request: NextRequest) {
             sent: false,
           },
         },
-      },
+      } as any,
       include: {
         OrderItem: true,
         File: true,

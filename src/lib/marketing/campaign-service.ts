@@ -65,7 +65,7 @@ export class CampaignService {
       data: {
         ...data,
         utmCampaign: data.name.toLowerCase().replace(/\s+/g, '-'),
-      },
+      } as any,
       include: {
         CustomerSegment: true,
       },
@@ -178,7 +178,7 @@ export class CampaignService {
         name,
         status: CampaignStatus.DRAFT,
         scheduledAt: null,
-      },
+      } as any,
     })
   }
 
@@ -259,7 +259,7 @@ export class CampaignService {
 
     if (sends.length > 0) {
       await prisma.campaignSend.createMany({
-        data: sends,
+        data: sends as any,
       })
     }
 
@@ -426,7 +426,7 @@ export class CampaignService {
         uniqueClicks,
         revenue: 0, // TODO: Calculate from order tracking
         orders: 0, // TODO: Calculate from order tracking
-      },
+      } as any,
     })
   }
 

@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { N8NWorkflows } from '@/lib/n8n'
 import { WebhookService } from '@/lib/services/webhook-service'
-import crypto from 'crypto'
+import crypto, { randomBytes } from 'crypto'
 
 // Verify Square webhook signature
 function verifyWebhookSignature(
@@ -101,9 +101,11 @@ async function handlePaymentCreated(data: Record<string, unknown>) {
       // Add status history
       await tx.statusHistory.create({
         data: {
+          id: `${order.orderNumber}-status-${Date.now()}`,
           orderId: order.id,
           fromStatus: order.status,
           toStatus: 'PAID',
+          notes: 'Payment received via Square',
           changedBy: 'Square Webhook',
         },
       })
@@ -111,10 +113,11 @@ async function handlePaymentCreated(data: Record<string, unknown>) {
       // Create notification
       await tx.notification.create({
         data: {
-          orderId: order.id,
+          id: `notif_${randomBytes(16).toString('hex')}`,
+          Order: { connect: { id: order.id } },
           type: 'PAYMENT_RECEIVED',
           sent: false,
-        },
+        } as any,
       })
     })
 
@@ -134,12 +137,12 @@ async function handlePaymentCreated(data: Record<string, unknown>) {
 }
 
 async function handlePaymentUpdated(data: Record<string, unknown>) {
-  const { object: payment } = data
+  const { object: payment } = data as { object: Record<string, any> }
 
   // Find order and update payment status
   const order = await prisma.order.findFirst({
     where: {
-      squarePaymentId: payment.id,
+      squarePaymentId: payment.id as string,
     },
   })
 
@@ -172,6 +175,7 @@ async function handleOrderCreated(data: Record<string, unknown>) {
     // Create new order from Square order
     const order = await prisma.order.create({
       data: {
+        id: `ord_${randomBytes(16).toString('hex')}`,
         orderNumber: `SQ-${squareOrder.reference_id || squareOrder.id.slice(-8)}`,
         email: squareOrder.customer?.email_address || 'unknown@example.com',
         status: 'PENDING_PAYMENT',
@@ -181,7 +185,7 @@ async function handleOrderCreated(data: Record<string, unknown>) {
         total: squareOrder.total_money?.amount || 0,
         squareOrderId: squareOrder.id,
         shippingAddress: {},
-      },
+      } as any,
     })
   }
 }
@@ -206,15 +210,16 @@ async function handleOrderUpdated(data: Record<string, unknown>) {
 
 async function handleFulfillmentUpdated(data: Record<string, unknown>) {
   const { object: fulfillment } = data
+  const fulfillmentData = fulfillment as any
 
   const order = await prisma.order.findFirst({
-    where: { squareOrderId: fulfillment.order_id },
+    where: { squareOrderId: fulfillmentData.order_id },
   })
 
   if (order) {
     let newStatus = order.status
 
-    switch (fulfillment.state) {
+    switch (fulfillmentData.state) {
       case 'PROPOSED':
         newStatus = 'PROCESSING'
         break
@@ -238,11 +243,12 @@ async function handleFulfillmentUpdated(data: Record<string, unknown>) {
 
         await tx.statusHistory.create({
           data: {
+            id: `sh_${randomBytes(16).toString('hex')}`,
             orderId: order.id,
             fromStatus: order.status,
             toStatus: newStatus as any,
             changedBy: 'Square Webhook',
-          },
+          } as any,
         })
       })
 
@@ -255,10 +261,10 @@ async function handleFulfillmentUpdated(data: Record<string, unknown>) {
 }
 
 async function handleRefundCreated(data: Record<string, unknown>) {
-  const { object: refund } = data
+  const { object: refund } = data as { object: Record<string, any> }
 
   const order = await prisma.order.findFirst({
-    where: { squarePaymentId: refund.payment_id },
+    where: { squarePaymentId: refund.payment_id as string },
   })
 
   if (order) {
@@ -276,21 +282,23 @@ async function handleRefundCreated(data: Record<string, unknown>) {
       // Add status history
       await tx.statusHistory.create({
         data: {
+          id: `sh_${randomBytes(16).toString('hex')}`,
           orderId: order.id,
           fromStatus: order.status,
           toStatus: 'REFUNDED',
           changedBy: 'Square Webhook',
           notes: `Refund amount: $${(refund.amount_money?.amount || 0) / 100}`,
-        },
+        } as any,
       })
 
       // Create notification
       await tx.notification.create({
         data: {
-          orderId: order.id,
+          id: `notif_${randomBytes(16).toString('hex')}`,
+          Order: { connect: { id: order.id } },
           type: 'ORDER_REFUNDED' as any,
           sent: false,
-        },
+        } as any,
       })
     })
   }

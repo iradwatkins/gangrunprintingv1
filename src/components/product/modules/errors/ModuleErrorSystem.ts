@@ -16,6 +16,7 @@ import { type ModuleError, type ModuleType } from '../types/StandardModuleTypes'
  */
 export enum ModuleErrorType {
   // Input validation errors
+  VALIDATION_ERROR = 'validation_error',
   REQUIRED_FIELD_MISSING = 'required_field_missing',
   INVALID_VALUE = 'invalid_value',
   VALUE_OUT_OF_RANGE = 'value_out_of_range',
@@ -393,7 +394,7 @@ export class ModuleErrorState {
       ModuleErrorSeverity.CRITICAL,
     ]
 
-    return errors.reduce((maxSeverity, error) => {
+    return errors.reduce<ModuleErrorSeverity>((maxSeverity, error) => {
       const currentIndex = severityLevels.indexOf(error.severity)
       const maxIndex = severityLevels.indexOf(maxSeverity)
       return currentIndex > maxIndex ? error.severity : maxSeverity

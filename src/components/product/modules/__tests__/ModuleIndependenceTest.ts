@@ -9,7 +9,7 @@
  * - Modules can be fixed individually without affecting others
  */
 
-import { describe, test, expect, beforeEach } from '@jest/jest'
+import { describe, test, expect, beforeEach } from '@jest/globals'
 import { renderHook, act } from '@testing-library/react'
 import { useModuleErrors } from '../errors/ModuleErrorSystem'
 import { useModuleLoading } from '../loading/ModuleLoadingSystem'
@@ -38,10 +38,15 @@ describe('Ultra-Independent Module Architecture', () => {
         quantityErrors.current.addError({
           id: 'qty_error_1',
           message: 'Invalid quantity selected',
-          type: ModuleErrorType.VALIDATION_ERROR,
+          type: 'validation',
+          errorType: ModuleErrorType.VALIDATION_ERROR,
           moduleType: ModuleType.QUANTITY,
           field: 'quantity',
           severity: ModuleErrorSeverity.ERROR,
+          timestamp: new Date(),
+          canRecover: true,
+          retryable: false,
+          userMessage: 'Invalid quantity selected',
         })
       })
 
@@ -70,19 +75,29 @@ describe('Ultra-Independent Module Architecture', () => {
         quantityErrors.current.addError({
           id: 'qty_error_1',
           message: 'Quantity error',
-          type: ModuleErrorType.VALIDATION_ERROR,
+          type: 'validation',
+          errorType: ModuleErrorType.VALIDATION_ERROR,
+          timestamp: new Date(),
           moduleType: ModuleType.QUANTITY,
           field: 'quantity',
           severity: ModuleErrorSeverity.ERROR,
+          canRecover: true,
+          retryable: false,
+          userMessage: 'Quantity error',
         })
 
         sizeErrors.current.addError({
           id: 'size_error_1',
           message: 'Size error',
-          type: ModuleErrorType.VALIDATION_ERROR,
+          type: 'validation',
+          errorType: ModuleErrorType.VALIDATION_ERROR,
+          timestamp: new Date(),
           moduleType: ModuleType.SIZE,
           field: 'dimensions',
           severity: ModuleErrorSeverity.ERROR,
+          canRecover: true,
+          retryable: false,
+          userMessage: 'Size error',
         })
       })
 
@@ -110,29 +125,34 @@ describe('Ultra-Independent Module Architecture', () => {
         moduleErrors.current.addError({
           id: 'warning_1',
           message: 'This is a warning',
-          type: ModuleErrorType.VALIDATION_ERROR,
+          type: 'validation',
+          errorType: ModuleErrorType.VALIDATION_ERROR,
+          timestamp: new Date(),
           moduleType: ModuleType.ADDONS,
           field: 'addon',
           severity: ModuleErrorSeverity.WARNING,
-        })
+        } as any)
 
         moduleErrors.current.addError({
           id: 'error_1',
           message: 'This is an error',
-          type: ModuleErrorType.VALIDATION_ERROR,
+          type: 'validation',
+          errorType: ModuleErrorType.VALIDATION_ERROR,
+          timestamp: new Date(),
           moduleType: ModuleType.ADDONS,
           field: 'addon',
           severity: ModuleErrorSeverity.ERROR,
-        })
+        } as any)
 
         moduleErrors.current.addError({
           id: 'critical_1',
           message: 'This is critical',
-          type: ModuleErrorType.SYSTEM_ERROR,
+          type: 'processing',
+          errorType: ModuleErrorType.SYSTEM_ERROR,
           moduleType: ModuleType.ADDONS,
           field: 'system',
           severity: ModuleErrorSeverity.CRITICAL,
-        })
+        } as any)
       })
 
       expect(moduleErrors.current.errors).toHaveLength(3)
@@ -247,20 +267,20 @@ describe('Ultra-Independent Module Architecture', () => {
 
       // Update progress
       act(() => {
-        moduleLoading.current.updateProgress(uploadOpId!, 25)
+        imageLoading.current.updateProgress(uploadOpId!, 25)
       })
 
-      expect(moduleLoading.current.loadingState.overallProgress).toBeCloseTo(25, 0)
+      expect(imageLoading.current.loadingState.overallProgress).toBeCloseTo(25, 0)
 
       act(() => {
-        moduleLoading.current.updateProgress(uploadOpId!, 75)
+        imageLoading.current.updateProgress(uploadOpId!, 75)
       })
 
-      expect(moduleLoading.current.loadingState.overallProgress).toBeCloseTo(75, 0)
+      expect(imageLoading.current.loadingState.overallProgress).toBeCloseTo(75, 0)
 
       // Complete upload
       act(() => {
-        moduleLoading.current.completeLoading(uploadOpId!)
+        imageLoading.current.completeLoading(uploadOpId!)
       })
     })
   })
@@ -280,11 +300,12 @@ describe('Ultra-Independent Module Architecture', () => {
         quantityErrors.current.addError({
           id: 'qty_system_error',
           message: 'System error in quantity module',
-          type: ModuleErrorType.SYSTEM_ERROR,
+          type: 'processing',
+          errorType: ModuleErrorType.SYSTEM_ERROR,
           moduleType: ModuleType.QUANTITY,
           field: 'system',
           severity: ModuleErrorSeverity.CRITICAL,
-        })
+        } as any)
       })
 
       expect(quantityErrors.current.hasBlockingErrors).toBe(true)
@@ -311,10 +332,15 @@ describe('Ultra-Independent Module Architecture', () => {
         imageErrors.current.addError({
           id: 'img_upload_fail',
           message: 'Upload failed',
-          type: ModuleErrorType.UPLOAD_ERROR,
+          type: 'network',
+          errorType: ModuleErrorType.NETWORK_ERROR,
           moduleType: ModuleType.IMAGES,
           field: 'upload',
           severity: ModuleErrorSeverity.WARNING, // Images should always be warnings, never critical
+          timestamp: new Date(),
+          canRecover: true,
+          retryable: true,
+          userMessage: 'Upload failed',
         })
       })
 
@@ -342,10 +368,15 @@ describe('Ultra-Independent Module Architecture', () => {
         quantityErrors.current.addError({
           id: 'qty_error',
           message: 'Quantity validation failed',
-          type: ModuleErrorType.VALIDATION_ERROR,
+          type: 'validation',
+          errorType: ModuleErrorType.VALIDATION_ERROR,
+          timestamp: new Date(),
           moduleType: ModuleType.QUANTITY,
           field: 'quantity',
           severity: ModuleErrorSeverity.ERROR,
+          canRecover: true,
+          retryable: false,
+          userMessage: 'Quantity validation failed',
         })
       })
 
@@ -413,10 +444,15 @@ describe('Ultra-Independent Module Architecture', () => {
         imageErrors.current.addError({
           id: 'upload_fail',
           message: 'Upload failed - network error',
-          type: ModuleErrorType.UPLOAD_ERROR,
+          type: 'network',
+          errorType: ModuleErrorType.NETWORK_ERROR,
           moduleType: ModuleType.IMAGES,
           field: 'upload',
           severity: ModuleErrorSeverity.WARNING, // Never critical
+          timestamp: new Date(),
+          canRecover: true,
+          retryable: true,
+          userMessage: 'Upload failed - network error',
         })
       })
 

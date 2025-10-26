@@ -46,7 +46,7 @@ async function generateVariantsForProduct(
   const product = await prisma.product.findUnique({
     where: { id: productId },
     include: {
-      category: true,
+      ProductCategory: true,
       ProductPaperStock: {
         include: {
           PaperStock: true,
@@ -54,12 +54,12 @@ async function generateVariantsForProduct(
       },
       ProductSize: {
         include: {
-          size: true,
+          StandardSize: true,
         },
       },
       ProductQuantity: {
         include: {
-          quantity: true,
+          StandardQuantity: true,
         },
       },
     },
@@ -73,7 +73,7 @@ async function generateVariantsForProduct(
   console.log(`   Base Price: $${product.basePrice}`)
 
   // Get all configuration options
-  const paperStocks = product.ProductPaperStock.map((ps) => ({
+  const paperStocks = product.ProductPaperStock.map((ps: any) => ({
     id: ps.paperStock.id,
     name: ps.paperStock.name,
     weight: ps.paperStock.weight,
@@ -81,7 +81,7 @@ async function generateVariantsForProduct(
     priceMultiplier: ps.priceMultiplier || 1.0,
   }))
 
-  const sizes = product.ProductSize.map((s) => ({
+  const sizes = product.ProductSize.map((s: any) => ({
     id: s.size.id,
     name: s.size.name,
     width: s.size.width,
@@ -89,7 +89,7 @@ async function generateVariantsForProduct(
     priceMultiplier: s.priceMultiplier || 1.0,
   }))
 
-  const quantities = product.ProductQuantity.map((q) => ({
+  const quantities = product.ProductQuantity.map((q: any) => ({
     id: q.quantity.id,
     value: q.quantity.value,
     priceMultiplier: q.priceMultiplier || 1.0,
@@ -149,9 +149,9 @@ async function generateVariantsForProduct(
     }
 
     // Calculate price
-    const paperStock = paperStocks.find((ps) => ps.id === variant.paperStockId)!
-    const size = sizes.find((s) => s.id === variant.sizeId)!
-    const quantity = quantities.find((q) => q.id === variant.quantityId)!
+    const paperStock = paperStocks.find((ps: any) => ps.id === variant.paperStockId)!
+    const size = sizes.find((s: any) => s.id === variant.sizeId)!
+    const quantity = quantities.find((q: any) => q.id === variant.quantityId)!
 
     const price =
       product.basePrice *
@@ -182,7 +182,7 @@ async function generateVariantsForProduct(
 
         // Additional fields
         turnaroundTime: product.productionTime.toString(),
-        imageUrl: product.images?.[0] || null,
+        imageUrl: (product as any).images?.[0] || null,
         isActive: product.isActive,
       },
     })

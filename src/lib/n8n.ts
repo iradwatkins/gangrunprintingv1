@@ -65,19 +65,20 @@ export class N8NClient {
 
   // Trigger order created workflow
   async triggerOrderCreated(order: Record<string, unknown>) {
+    const orderData = order as any
     return this.sendWebhook('order.created', {
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      customerEmail: order.email,
-      total: order.total / 100,
-      items: order.OrderItem?.map((item: Record<string, unknown>) => ({
+      orderId: orderData.id,
+      orderNumber: orderData.orderNumber,
+      customerEmail: orderData.email,
+      total: orderData.total / 100,
+      items: orderData.OrderItem?.map((item: Record<string, unknown>) => ({
         productName: item.productName,
         quantity: item.quantity,
-        price: item.price / 100,
+        price: (item.price as number) / 100,
         options: item.options,
       })),
-      status: order.status,
-      createdAt: order.createdAt,
+      status: orderData.status,
+      createdAt: orderData.createdAt,
     })
   }
 
@@ -98,13 +99,15 @@ export class N8NClient {
     order: Record<string, unknown>,
     paymentDetails: Record<string, unknown>
   ) {
+    const orderData = order as any
+    const paymentData = paymentDetails as any
     return this.sendWebhook('payment.received', {
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      amount: order.total / 100,
-      paymentMethod: paymentDetails.method || 'card',
-      transactionId: paymentDetails.transactionId,
-      customerEmail: order.email,
+      orderId: orderData.id,
+      orderNumber: orderData.orderNumber,
+      amount: orderData.total / 100,
+      paymentMethod: paymentData.method || 'card',
+      transactionId: paymentData.transactionId,
+      customerEmail: orderData.email,
       receivedAt: new Date().toISOString(),
     })
   }

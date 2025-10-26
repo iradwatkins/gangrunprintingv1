@@ -253,11 +253,11 @@ export function validateExtensionMatchesMimeType(filename: string, mimeType: str
   if (!config) return false
 
   // Handle multiple possible extensions for same MIME type
-  const allowedExtensions = [config.extension]
-  if (normalized.includes('jpeg')) allowedExtensions.push('.jpeg', '.jpg')
-  if (normalized.includes('postscript')) allowedExtensions.push('.ai', '.eps')
+  const allowedExtensions: any = [config.extension]
+  if (normalized.includes('jpeg')) allowedExtensions.push('.jpeg' as any, '.jpg')
+  if (normalized.includes('postscript')) allowedExtensions.push('.ai', '.eps' as any)
 
-  return allowedExtensions.includes(extension)
+  return allowedExtensions.includes(extension as any)
 }
 
 /**

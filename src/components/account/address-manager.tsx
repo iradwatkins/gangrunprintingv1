@@ -60,7 +60,7 @@ export function AddressManager({ addresses: initialAddresses }: AddressManagerPr
     if (address) {
       setEditingAddress(address)
       setFormData({
-        label: address.label,
+        label: address.label || '',
         name: address.name,
         company: address.company || '',
         street: address.street,

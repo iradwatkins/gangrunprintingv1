@@ -3,7 +3,7 @@
  * Provides helpers for memoization, debouncing, and performance monitoring
  */
 
-import { useEffect, useRef, useCallback, useState } from 'react'
+import React, { useEffect, useRef, useCallback, useState } from 'react'
 import { DEBOUNCE_DELAY } from '@/config/constants'
 
 /**

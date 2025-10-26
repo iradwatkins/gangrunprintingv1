@@ -136,7 +136,7 @@ export function AddonAccordion({
               onCornerRoundingToggle={cornerRounding.handleToggle}
               onCornerRoundingTypeChange={cornerRounding.handleCornerTypeChange}
               onPerforationToggle={perforation.handleToggle}
-              onPerforationUpdateConfig={perforation.handleUpdateConfig}
+              onPerforationUpdateConfig={perforation.updateConfig}
               onVariableDataLocationsChange={variableData.handleLocationsChange}
               onVariableDataLocationsCountChange={variableData.handleLocationsCountChange}
               onVariableDataToggle={variableData.handleToggle}
@@ -189,7 +189,7 @@ export function AddonAccordion({
                       onCornerRoundingToggle={cornerRounding.handleToggle}
                       onCornerRoundingTypeChange={cornerRounding.handleCornerTypeChange}
                       onPerforationToggle={perforation.handleToggle}
-                      onPerforationUpdateConfig={perforation.handleUpdateConfig}
+                      onPerforationUpdateConfig={perforation.updateConfig}
                       onVariableDataLocationsChange={variableData.handleLocationsChange}
                       onVariableDataLocationsCountChange={variableData.handleLocationsCountChange}
                       onVariableDataToggle={variableData.handleToggle}
@@ -250,7 +250,7 @@ export function AddonAccordion({
               onCornerRoundingToggle={cornerRounding.handleToggle}
               onCornerRoundingTypeChange={cornerRounding.handleCornerTypeChange}
               onPerforationToggle={perforation.handleToggle}
-              onPerforationUpdateConfig={perforation.handleUpdateConfig}
+              onPerforationUpdateConfig={perforation.updateConfig}
               onVariableDataLocationsChange={variableData.handleLocationsChange}
               onVariableDataLocationsCountChange={variableData.handleLocationsCountChange}
               onVariableDataToggle={variableData.handleToggle}

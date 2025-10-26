@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { randomBytes } from 'crypto'
 
 // Validation schema
 const assignTurnaroundTimeSetSchema = z.object({
@@ -57,6 +58,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         },
       },
       create: {
+        id: `ptts_${randomBytes(16).toString('hex')}`,
         productId,
         turnaroundTimeSetId,
         isDefault,

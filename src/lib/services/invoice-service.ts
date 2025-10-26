@@ -174,6 +174,7 @@ export async function createInvoice(params: CreateInvoiceParams): Promise<Invoic
   // Create status history entry
   await prisma.statusHistory.create({
     data: {
+      id: `${order.orderNumber}-status-${Date.now()}`,
       orderId: order.id,
       fromStatus: order.status,
       toStatus: order.status,
@@ -278,6 +279,7 @@ export async function recordPayment(params: RecordPaymentParams): Promise<void> 
   // Create status history entry
   await prisma.statusHistory.create({
     data: {
+      id: `${order.orderNumber}-status-${Date.now()}`,
       orderId: order.id,
       fromStatus: order.status,
       toStatus: 'PAID',

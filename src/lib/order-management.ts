@@ -170,6 +170,42 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, OrderStatusInfo> = {
     nextStatuses: [OrderStatus.PENDING_PAYMENT, OrderStatus.CANCELLED],
     icon: 'alert-circle',
   },
+  [OrderStatus.PAYMENT_DECLINED]: {
+    status: OrderStatus.PAYMENT_DECLINED,
+    label: 'Payment Declined',
+    color: 'text-red-700',
+    bgColor: 'bg-red-100',
+    description: 'Payment was declined',
+    nextStatuses: [OrderStatus.PENDING_PAYMENT, OrderStatus.CANCELLED],
+    icon: 'x-circle',
+  },
+  [OrderStatus.ON_THE_WAY]: {
+    status: OrderStatus.ON_THE_WAY,
+    label: 'On the Way',
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-100',
+    description: 'Order is on the way to destination',
+    nextStatuses: [OrderStatus.DELIVERED],
+    icon: 'truck',
+  },
+  [OrderStatus.PICKED_UP]: {
+    status: OrderStatus.PICKED_UP,
+    label: 'Picked Up',
+    color: 'text-green-700',
+    bgColor: 'bg-green-100',
+    description: 'Order has been picked up by customer',
+    nextStatuses: [],
+    icon: 'check-circle',
+  },
+  [OrderStatus.REPRINT]: {
+    status: OrderStatus.REPRINT,
+    label: 'Reprint',
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-100',
+    description: 'Order requires reprinting',
+    nextStatuses: [OrderStatus.PRE_PRESS, OrderStatus.PRODUCTION],
+    icon: 'rotate-cw',
+  },
 }
 
 // Helper function to check if a status transition is valid
@@ -202,7 +238,7 @@ export function calculateEstimatedDelivery(
   // Only calculate for active orders
   if (
     [OrderStatus.CANCELLED, OrderStatus.REFUNDED, OrderStatus.PAYMENT_FAILED].includes(
-      currentStatus
+      currentStatus as any
     )
   ) {
     return null
@@ -252,6 +288,10 @@ export function getOrderProgress(status: OrderStatus): number {
     [OrderStatus.CANCELLED]: 0,
     [OrderStatus.REFUNDED]: 0,
     [OrderStatus.PAYMENT_FAILED]: 0,
+    [OrderStatus.PAYMENT_DECLINED]: 0,
+    [OrderStatus.ON_THE_WAY]: 97,
+    [OrderStatus.PICKED_UP]: 100,
+    [OrderStatus.REPRINT]: 25,
   }
 
   return progressMap[status] || 0

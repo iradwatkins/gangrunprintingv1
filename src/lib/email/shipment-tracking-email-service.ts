@@ -160,7 +160,7 @@ export class ShipmentTrackingEmailService {
       }
 
       // Generate email content
-      const emailHtml = render(
+      const emailHtml = await render(
         OrderShippedEmail({
           orderNumber: order.orderNumber,
           customerName: order.User?.name || undefined,

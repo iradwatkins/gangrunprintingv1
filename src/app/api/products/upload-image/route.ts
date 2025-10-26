@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
           requestId
         )
       } else if (error.message.includes('timeout')) {
-        return createTimeoutErrorResponse('Image processing', null, requestId)
+        return createTimeoutErrorResponse('Image processing', undefined, requestId)
       } else if (error.message.includes('exceeds 10MB')) {
         return createUploadErrorResponse(error.message, MAX_FILE_SIZE, requestId)
       } else if (error.message.includes('Maximum 4 images')) {

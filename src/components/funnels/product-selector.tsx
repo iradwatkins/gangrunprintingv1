@@ -72,8 +72,8 @@ export function ProductSelector({
 
   const getProductImageUrl = (product: ProductWithDetails) => {
     const primaryImage =
-      product.ProductImage.find((img) => img.isPrimary) || product.ProductImage[0]
-    return primaryImage?.url || '/placeholder-product.png'
+      product.ProductImage.find((img: any) => img.isPrimary) || product.ProductImage[0]
+    return (primaryImage as any)?.Image?.url || '/placeholder-product.png'
   }
 
   return (

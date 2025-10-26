@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { SERVICE_ENDPOINTS } from '@/config/constants'
+import type { N8NWebhook } from '@prisma/client'
 
 export interface N8NWorkflowConfig {
   id: string
@@ -43,13 +44,15 @@ export class N8NIntegration {
     const webhookUrl = `${this.N8N_BASE_URL}/${webhookPath}`
 
     // Create webhook in database
+    const { randomBytes } = await import('crypto')
     return await prisma.n8NWebhook.create({
       data: {
+        id: `n8nwh_${randomBytes(16).toString('hex')}`,
         name,
         url: webhookUrl,
         trigger,
         description,
-        payload,
+        payload: payload as any,
         isActive: true,
       },
     })
@@ -66,7 +69,7 @@ export class N8NIntegration {
     return await prisma.n8NWebhook.findUnique({
       where: { id },
       include: {
-        logs: {
+        N8NWebhookLog: {
           take: 10,
           orderBy: { executedAt: 'desc' },
         },
@@ -77,7 +80,7 @@ export class N8NIntegration {
   static async updateWebhook(id: string, data: Partial<N8NWebhook>): Promise<N8NWebhook> {
     return await prisma.n8NWebhook.update({
       where: { id },
-      data,
+      data: data as any,
     })
   }
 
@@ -171,11 +174,13 @@ export class N8NIntegration {
     response: N8NExecutionResult,
     status: number = 200
   ): Promise<void> {
+    const { randomBytes } = await import('crypto')
     await prisma.n8NWebhookLog.create({
       data: {
+        id: `n8nlog_${randomBytes(16).toString('hex')}`,
         webhookId,
-        payload,
-        response,
+        payload: payload as any,
+        response: response as any,
         status,
       },
     })

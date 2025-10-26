@@ -1,3 +1,5 @@
+import { Carrier } from '@prisma/client'
+
 export interface ShippingAddress {
   street: string
   street2?: string

@@ -84,7 +84,7 @@ export default function SimpleQuantityForm({
       selectedAddons: [],
     }
 
-    const isComplete = value !== 'qty_custom' || (customQuantity && customQuantity > 0)
+    const isComplete = value !== 'qty_custom' || Boolean(customQuantity && customQuantity > 0)
     if (onConfigurationChangeRef.current) {
       onConfigurationChangeRef.current(config, isComplete)
     }

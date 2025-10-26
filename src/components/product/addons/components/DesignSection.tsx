@@ -102,7 +102,7 @@ export function DesignSection({
     if (!selectedDesignOption) return null
 
     // For Standard/Rush Design with side selection
-    if (selectedDesignOption.requiresSideSelection && selectedDesignOption.sideOptions) {
+    if ('requiresSideSelection' in selectedDesignOption && selectedDesignOption.requiresSideSelection && 'sideOptions' in selectedDesignOption && selectedDesignOption.sideOptions) {
       if (secondarySelection) {
         const side = secondarySelection as 'oneSide' | 'twoSides'
         return formatPrice(selectedDesignOption.sideOptions[side].price)
@@ -111,7 +111,7 @@ export function DesignSection({
     }
 
     // For Minor/Major changes with flat price
-    const price = selectedDesignOption.basePrice ?? 0
+    const price = ('basePrice' in selectedDesignOption ? selectedDesignOption.basePrice : 0) ?? 0
     if (price > 0) {
       return formatPrice(price)
     }
@@ -119,7 +119,7 @@ export function DesignSection({
     return null
   }
 
-  const shouldShowSecondaryDropdown = selectedDesignOption?.requiresSideSelection === true
+  const shouldShowSecondaryDropdown = selectedDesignOption && 'requiresSideSelection' in selectedDesignOption && selectedDesignOption.requiresSideSelection === true
   const shouldShowPrice =
     primarySelection === 'minor_changes' || primarySelection === 'major_changes'
 
@@ -187,7 +187,7 @@ export function DesignSection({
             </div>
 
             {/* Secondary Dropdown for Standard/Rush Design */}
-            {shouldShowSecondaryDropdown && selectedDesignOption?.sideOptions && (
+            {shouldShowSecondaryDropdown && selectedDesignOption && 'sideOptions' in selectedDesignOption && selectedDesignOption.sideOptions && (
               <div className="ml-6 space-y-2">
                 <Label>Select Sides *</Label>
                 <Select

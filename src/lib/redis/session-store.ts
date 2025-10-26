@@ -4,7 +4,7 @@
 import type Redis from 'ioredis'
 import { type Adapter, type DatabaseSession, type DatabaseUser } from 'lucia'
 
-export class RedisSessionAdapter implements Adapter {
+export class RedisSessionAdapter implements Partial<Adapter> {
   private redis: Redis
   private sessionPrefix = 'session:'
   private userSessionPrefix = 'user_sessions:'

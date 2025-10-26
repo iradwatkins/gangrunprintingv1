@@ -200,7 +200,7 @@ export class ThemeImporter {
     return {
       name: (data.name as string | undefined) || (data.title as string | undefined) || 'Imported Theme',
       description: data.description as string | undefined,
-      cssContent: (data.css as string | undefined) || this.generateCSSFromVariables((data.variables as Record<string, unknown> | undefined) || (data.cssVars as Record<string, unknown> | undefined) || {}),
+      cssContent: (data.css as string | undefined) || this.generateCSSFromVariables(((data.variables as Record<string, unknown> | undefined) || (data.cssVars as Record<string, unknown> | undefined) || {}) as any),
       variables: ((data.variables as Record<string, string> | undefined) || (data.cssVars as Record<string, string> | undefined) || {}) as Record<string, string>,
       darkVariables: (data.darkVariables as Record<string, string> | undefined) || (data.darkCssVars as Record<string, string> | undefined),
       metadata: {

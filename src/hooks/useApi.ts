@@ -150,7 +150,7 @@ export function useApiMutation<TRequest = any, TResponse = any>(
     (data: TRequest, overrideOptions: Partial<UseApiOptions> = {}) => {
       return execute({
         method: 'POST',
-        body: data,
+        body: data as any,
         ...overrideOptions,
       })
     },

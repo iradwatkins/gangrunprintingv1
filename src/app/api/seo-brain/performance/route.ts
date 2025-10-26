@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       where: { landingPageSetId: campaignId },
       include: {
         _count: {
-          select: { orders: true },
+          select: { Order: true },
         },
       },
       orderBy: { revenue: 'desc' },

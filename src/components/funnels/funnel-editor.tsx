@@ -159,7 +159,7 @@ export function FunnelEditor({ funnel: initialFunnel, products }: FunnelEditorPr
         </TabsContent>
 
         <TabsContent className="mt-6" value="settings">
-          <FunnelSettings funnel={funnel} onUpdate={(updated) => setFunnel(updated)} />
+          <FunnelSettings funnel={funnel} onUpdate={(updated) => setFunnel(updated as any)} />
         </TabsContent>
 
         <TabsContent className="mt-6" value="analytics">

@@ -2,7 +2,7 @@
 // Implements caching layer for product data to improve performance
 
 import { getRedisClient } from './client'
-import type { Product, Category, PaperStock, TurnaroundTime } from '@prisma/client'
+import type { Product, ProductCategory, PaperStock, TurnaroundTime } from '@prisma/client'
 
 interface CacheOptions {
   ttl?: number // Time to live in seconds
@@ -70,7 +70,7 @@ export class ProductCache {
   }
 
   // Category caching
-  async getCategories(): Promise<Category[] | null> {
+  async getCategories(): Promise<ProductCategory[] | null> {
     const key = `${this.prefix}categories:all`
     const cached = await this.redis.get(key)
 
@@ -81,7 +81,7 @@ export class ProductCache {
     return null
   }
 
-  async setCategories(categories: Category[], ttl?: number): Promise<void> {
+  async setCategories(categories: ProductCategory[], ttl?: number): Promise<void> {
     const key = `${this.prefix}categories:all`
     await this.redis.setex(
       key,
@@ -212,7 +212,7 @@ export class ProductCache {
   }
 
   // Warmup cache (can be run on server start or via cron)
-  async warmupCache(products: Product[], categories: Category[]): Promise<void> {
+  async warmupCache(products: Product[], categories: ProductCategory[]): Promise<void> {
     // Cache categories
     await this.setCategories(categories, 7200) // 2 hours
 

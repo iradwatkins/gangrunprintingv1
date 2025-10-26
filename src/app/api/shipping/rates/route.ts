@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     // Filter by requested providers if specified
     if (requestedProviders && requestedProviders.length > 0) {
-      modulesToUse = modulesToUse.filter((module) => requestedProviders.includes(module.id))
+      modulesToUse = modulesToUse.filter((module) => requestedProviders.includes(module.id as any))
     }
 
     // Build destination address
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Collect rates from all enabled modules
-    const allRates = []
+    const allRates: any[] = []
     const errors: Record<string, string> = {}
 
     for (const module of modulesToUse) {

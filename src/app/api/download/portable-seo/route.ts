@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const fileBuffer = await readFile(filePath)
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(fileBuffer as any, {
       headers: {
         'Content-Type': 'application/gzip',
         'Content-Disposition': 'attachment; filename="portable-seo-llm-system.tar.gz"',

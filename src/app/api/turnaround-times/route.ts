@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
           error: 'Validation failed',
           details: error.issues,
           message: error.issues
-            .map((e: Record<string, unknown>) => `${e.path.join('.')}: ${e.message}`)
+            .map((e: any) => `${e.path.join('.')}: ${e.message}`)
             .join(', '),
         },
         { status: 400 }

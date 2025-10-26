@@ -42,7 +42,7 @@ export class FileApprovalEmailService {
       const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/en/track/${order.orderNumber}`
       const proofUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/api/orders/${order.id}/files/${proofFile.id}`
 
-      const emailHtml = render(
+      const emailHtml = await render(
         ProofReadyEmail({
           customerName: order.User?.name || undefined,
           orderNumber: order.orderNumber,
@@ -109,7 +109,7 @@ export class FileApprovalEmailService {
         attachment = null
       }
 
-      const emailHtml = render(
+      const emailHtml = await render(
         ProofReadyEmail({
           customerName: order.User?.name || undefined,
           orderNumber: order.orderNumber,
@@ -165,7 +165,7 @@ export class FileApprovalEmailService {
     try {
       const orderUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/admin/orders/${order.id}`
 
-      const emailHtml = render(
+      const emailHtml = await render(
         ProofApprovedEmail({
           orderNumber: order.orderNumber,
           customerName: order.User?.name || 'Customer',
@@ -209,7 +209,7 @@ export class FileApprovalEmailService {
     try {
       const orderUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/admin/orders/${order.id}`
 
-      const emailHtml = render(
+      const emailHtml = await render(
         ProofRejectedEmail({
           orderNumber: order.orderNumber,
           customerName: order.User?.name || 'Customer',
@@ -247,7 +247,7 @@ export class FileApprovalEmailService {
       const orderUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://gangrunprinting.com'}/admin/orders/${order.id}`
       const fileNames = files.map((f) => f.label || f.filename)
 
-      const emailHtml = render(
+      const emailHtml = await render(
         ArtworkUploadedEmail({
           orderNumber: order.orderNumber,
           customerName: order.User?.name || 'Customer',

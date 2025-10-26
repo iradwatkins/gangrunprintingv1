@@ -52,10 +52,9 @@ export class UserService {
         data: {
           email: input.email,
           name: input.name,
-          role: input.role || 'USER',
+          role: (input.role || 'USER') as any,
           emailVerified: input.emailVerified || false,
-          metadata: input.metadata,
-        },
+        } as any,
         select: {
           id: true,
           email: true,
@@ -199,7 +198,7 @@ export class UserService {
         data: {
           ...input,
           updatedAt: new Date(),
-        },
+        } as any,
         select: {
           id: true,
           email: true,
@@ -387,17 +386,10 @@ export class UserService {
         throw new NotFoundError('User', userId)
       }
 
-      // Update user metadata to mark as deactivated
+      // Update user to mark as deactivated
       const deactivatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
-          metadata: {
-            ...(user as any).metadata,
-            deactivated: true,
-            deactivatedAt: new Date().toISOString(),
-            deactivatedBy: this.context.userId,
-            deactivationReason: reason,
-          },
           updatedAt: new Date(),
         },
         select: {

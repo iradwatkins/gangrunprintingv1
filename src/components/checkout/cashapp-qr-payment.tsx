@@ -15,7 +15,7 @@ interface CashAppQRPaymentProps {
 
 declare global {
   interface Window {
-    Square?: any
+    Square?: Record<string, unknown>
   }
 }
 
@@ -72,7 +72,7 @@ export function CashAppQRPayment({
         console.log('[Cash App Pay] Square SDK loaded')
 
         // Initialize payments
-        const paymentsInstance = window.Square.payments(appId, locationId)
+        const paymentsInstance = (window as any).Square.payments(appId, locationId)
         setPayments(paymentsInstance)
 
         console.log('[Cash App Pay] Payments initialized')

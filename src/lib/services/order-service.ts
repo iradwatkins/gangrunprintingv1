@@ -11,6 +11,7 @@ import { type OrderStatus, type Carrier } from '@prisma/client'
 import { N8NIntegration } from '@/lib/n8n/integration'
 import { OrderEmailService } from '@/lib/email/order-email-service'
 import { StatusChangeEmailService } from '@/lib/email/status-change-email-service'
+import { randomUUID } from 'crypto'
 
 export interface StatusTransition {
   orderId: string
@@ -91,6 +92,7 @@ export class OrderService {
         squarePaymentId,
         StatusHistory: {
           create: {
+            id: randomUUID(),
             fromStatus: 'PENDING_PAYMENT',
             toStatus: 'CONFIRMATION',
             notes: 'Payment received via Square',
@@ -173,6 +175,7 @@ export class OrderService {
       status: toStatus,
       StatusHistory: {
         create: {
+            id: randomUUID(),
           fromStatus,
           toStatus,
           notes: notes || `Status changed to ${toStatus}`,
@@ -263,6 +266,7 @@ export class OrderService {
         internalNotes: notes || `Assigned to ${vendor.name}`,
         StatusHistory: {
           create: {
+            id: randomUUID(),
             fromStatus: order.status,
             toStatus: 'PRODUCTION',
             notes: `Vendor assigned: ${vendor.name}`,
@@ -325,6 +329,7 @@ export class OrderService {
         estimatedDelivery,
         StatusHistory: {
           create: {
+            id: randomUUID(),
             fromStatus: 'PRODUCTION',
             toStatus: 'SHIPPED',
             notes: `Shipped via ${carrier}`,
@@ -378,6 +383,7 @@ export class OrderService {
         pickedUpBy,
         StatusHistory: {
           create: {
+            id: randomUUID(),
             fromStatus: order.status,
             toStatus: 'PICKED_UP',
             notes: notes || `Picked up by ${pickedUpBy}`,
@@ -414,7 +420,7 @@ export class OrderService {
 
     // Can only hold orders before they ship
     const allowedStatuses: OrderStatus[] = ['CONFIRMATION', 'PRODUCTION']
-    if (!allowedStatuses.includes(order.status)) {
+    if (!allowedStatuses.includes(order.status as any)) {
       throw new Error(`Cannot hold order in status: ${order.status}`)
     }
 
@@ -426,6 +432,7 @@ export class OrderService {
         internalNotes: adminNotes,
         StatusHistory: {
           create: {
+            id: randomUUID(),
             fromStatus: order.status,
             toStatus: 'ON_HOLD',
             notes: `Order held: ${reason}`,
@@ -467,6 +474,7 @@ export class OrderService {
         holdReason: null,
         StatusHistory: {
           create: {
+            id: randomUUID(),
             fromStatus: 'ON_HOLD',
             toStatus: resumeStatus,
             notes: 'Order resumed',
@@ -481,7 +489,7 @@ export class OrderService {
    * Validate if status transition is allowed
    */
   private static isValidTransition(from: OrderStatus, to: OrderStatus): boolean {
-    const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+    const validTransitions: Partial<Record<OrderStatus, OrderStatus[]>> = {
       PENDING_PAYMENT: ['CONFIRMATION', 'PAYMENT_DECLINED', 'CANCELLED'],
       PAYMENT_DECLINED: ['PENDING_PAYMENT', 'CANCELLED'],
       CONFIRMATION: ['PRODUCTION', 'ON_HOLD', 'CANCELLED'],

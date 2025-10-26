@@ -8,7 +8,7 @@ import {
 } from '../types/StandardModuleTypes'
 
 // Use standardized interface with legacy compatibility
-export interface Size extends Omit<SizeItem, 'displayName'> {
+export interface Size extends Omit<SizeItem, 'displayName' | 'squareInches' | 'priceMultiplier' | 'isDefault'> {
   displayName: string | null // Legacy allows null
   minWidth?: number | null // Legacy allows null
   maxWidth?: number | null // Legacy allows null

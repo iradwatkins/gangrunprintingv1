@@ -33,7 +33,7 @@ export function useImageUpload({ productId, onImagesChange }: UseImageUploadProp
     maxRetries: 5,
     timeout: 60000,
     onProgress: (progress) => {
-      updateProgress(progress)
+      updateProgress('file-upload', progress)
     },
     onError: (error) => {
       handleError(error)

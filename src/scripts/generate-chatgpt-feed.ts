@@ -105,7 +105,7 @@ async function generateFeed(preview: boolean = false): Promise<{
 
   for (const product of products) {
     // Get primary image
-    const imageUrl = product.images?.[0] || `${baseUrl}/images/placeholder.png`
+    const imageUrl = (product as any).images?.[0] || `${baseUrl}/images/placeholder.png`
 
     // Product URL
     const productUrl = `${baseUrl}/products/${product.slug}`

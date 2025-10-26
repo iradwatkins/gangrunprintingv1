@@ -208,7 +208,7 @@ export async function getTrafficSources(
 
     const propertyId = process.env.GOOGLE_ANALYTICS_4_PROPERTY_ID!
 
-    const response = await client.properties.runReport({
+    const response = await (client.properties.runReport as any)({
       property: `properties/${propertyId}`,
       requestBody: {
         dateRanges: [{ startDate, endDate }],
@@ -221,11 +221,11 @@ export async function getTrafficSources(
 
     const rows = response.data.rows || []
     const totalSessions = rows.reduce(
-      (sum, r) => sum + parseInt(r.metricValues?.[0]?.value || '0'),
+      (sum: number, r: any) => sum + parseInt(r.metricValues?.[0]?.value || '0'),
       0
     )
 
-    return rows.map((row) => {
+    return rows.map((row: any) => {
       const sessions = parseInt(row.metricValues?.[0]?.value || '0')
       return {
         source: row.dimensionValues?.[0]?.value || '(unknown)',

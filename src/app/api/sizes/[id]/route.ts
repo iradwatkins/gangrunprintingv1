@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         )
       }
 
-      const hasCustom = valuesList.some((v) => v.toLowerCase() === 'custom')
+      const hasCustom = valuesList.some((v: any) => v.toLowerCase() === 'custom')
       if (hasCustom) {
         if (customMinWidth && customMaxWidth && customMinWidth >= customMaxWidth) {
           return NextResponse.json(

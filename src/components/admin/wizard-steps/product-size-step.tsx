@@ -1,16 +1,12 @@
 'use client'
 
+import type { ProductData } from '@/types/product-wizard'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductSizes } from '../product-sizes'
 import { Ruler, Info } from 'lucide-react'
 
-interface ProductData {
-  useSizeGroup: boolean
-  sizeGroupId: string
-  sizeIds: string[]
-}
 
 interface ProductSizeStepProps {
   formData: ProductData

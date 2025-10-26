@@ -376,6 +376,7 @@ export function ShippingRates({
         {selectedRate.startsWith('SOUTHWEST_CARGO-') && (
           <div className="mt-6">
             <AirportSelector
+              state={toAddress.state}
               selectedAirportId={selectedAirportId}
               onAirportSelected={handleAirportSelection}
             />

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { type CampaignABTest, ABTestType } from '@prisma/client'
+import { randomBytes } from 'crypto'
 
 export interface ABTestVariant {
   id: string
@@ -74,11 +75,12 @@ export class ABTestingService {
 
     return await prisma.campaignABTest.create({
       data: {
+        id: `abtest_${randomBytes(16).toString('hex')}`,
         campaignId,
         name,
         description,
         testType,
-        variants,
+        variants: variants as any,
         trafficSplit,
         winnerCriteria,
         confidence,
@@ -92,12 +94,7 @@ export class ABTestingService {
     return await prisma.campaignABTest.findUnique({
       where: { id },
       include: {
-        campaign: {
-          include: {
-            sends: true,
-            analytics: true,
-          },
-        },
+        MarketingCampaign: true,
       },
     })
   }
@@ -131,9 +128,9 @@ export class ABTestingService {
       throw new Error('A/B test not found')
     }
 
-    const variants = abTest.variants as ABTestVariant[]
-    const campaign = abTest.campaign
-    const sends = campaign.sends || []
+    const variants = abTest.variants as unknown as ABTestVariant[]
+    const campaign = (abTest as any).MarketingCampaign
+    const sends = campaign?.sends || []
 
     const results: ABTestResults[] = []
     let totalSends = 0
@@ -411,7 +408,7 @@ export class ABTestingService {
       throw new Error('A/B test not found or inactive')
     }
 
-    const variants = abTest.variants as ABTestVariant[]
+    const variants = abTest.variants as unknown as ABTestVariant[]
     const trafficSplit = abTest.trafficSplit as Record<string, number>
 
     // Use deterministic assignment based on send ID
@@ -471,7 +468,7 @@ export class ABTestingService {
     await prisma.campaignABTest.update({
       where: { id: testId },
       data: {
-        results: statistics,
+        results: statistics as any,
       },
     })
 

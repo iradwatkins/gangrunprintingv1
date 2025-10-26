@@ -110,11 +110,11 @@ export const POST = withApiHandler(
             id: order.id,
             orderNumber: order.orderNumber,
             email: order.email,
-            User: order.User,
+            User: order.User ? { name: order.User.name } : undefined,
           },
           {
             id: orderFile.id,
-            label: orderFile.label,
+            label: orderFile.label ?? undefined,
             filename: orderFile.filename,
           },
           customerMessage,
@@ -135,11 +135,11 @@ export const POST = withApiHandler(
             id: order.id,
             orderNumber: order.orderNumber,
             email: order.email,
-            User: order.User,
+            User: order.User ? { name: order.User.name } : undefined,
           },
           {
             id: orderFile.id,
-            label: orderFile.label,
+            label: orderFile.label ?? undefined,
             filename: orderFile.filename,
           },
           customerMessage || 'Customer requested changes to the proof'

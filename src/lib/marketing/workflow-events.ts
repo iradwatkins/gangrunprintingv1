@@ -111,7 +111,7 @@ export async function checkAbandonedCarts() {
           lte: oneHourAgo,
         },
         items: {
-          not: null,
+          not: null as any,
         },
       },
       select: {
@@ -139,7 +139,10 @@ export async function checkAbandonedCarts() {
 
     // Filter to only users who haven't ordered recently and are opted into marketing
     const eligibleCarts = abandonedCarts.filter(
-      (cart) => cart.User && cart.User.marketingOptIn && cart.User.Order.length === 0
+      (cart) => {
+        const user = (cart as any).User as { marketingOptIn: boolean; Order: any[] } | null
+        return user && user.marketingOptIn && user.Order.length === 0
+      }
     )
 
     for (const cart of eligibleCarts) {

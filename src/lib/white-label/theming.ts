@@ -1,3 +1,10 @@
+interface TenantInfo {
+  id: string
+  name: string
+  slug: string
+  branding?: Record<string, unknown>
+}
+
 export interface ThemeConfig {
   // Colors
   primaryColor: string
@@ -58,24 +65,24 @@ export class ThemeEngine {
     }
 
     const config: ThemeConfig = {
-      primaryColor: branding.primaryColor || '#3b82f6',
-      secondaryColor: branding.secondaryColor || '#64748b',
-      accentColor: branding.accentColor || '#f59e0b',
-      backgroundColor: branding.backgroundColor || '#ffffff',
-      textColor: branding.textColor || '#1f2937',
-      primaryFont: branding.primaryFont || 'Inter',
-      secondaryFont: branding.secondaryFont || 'Inter',
-      fontSize: branding.fontSize || '16px',
-      borderRadius: branding.borderRadius || '8px',
-      spacing: branding.spacing || '16px',
-      logoUrl: branding.logoUrl,
-      logoText: branding.logoText,
-      faviconUrl: branding.faviconUrl,
-      customCss: branding.customCss,
-      customJs: branding.customJs,
-      emailHeaderLogo: branding.emailHeaderLogo,
-      emailFooterText: branding.emailFooterText,
-      emailColors: branding.emailColors,
+      primaryColor: (branding.primaryColor as string) || '#3b82f6',
+      secondaryColor: (branding.secondaryColor as string) || '#64748b',
+      accentColor: (branding.accentColor as string) || '#f59e0b',
+      backgroundColor: (branding.backgroundColor as string) || '#ffffff',
+      textColor: (branding.textColor as string) || '#1f2937',
+      primaryFont: (branding.primaryFont as string) || 'Inter',
+      secondaryFont: (branding.secondaryFont as string) || 'Inter',
+      fontSize: (branding.fontSize as string) || '16px',
+      borderRadius: (branding.borderRadius as string) || '8px',
+      spacing: (branding.spacing as string) || '16px',
+      logoUrl: branding.logoUrl as string | undefined,
+      logoText: branding.logoText as string | undefined,
+      faviconUrl: branding.faviconUrl as string | undefined,
+      customCss: branding.customCss as string | undefined,
+      customJs: branding.customJs as string | undefined,
+      emailHeaderLogo: branding.emailHeaderLogo as string | undefined,
+      emailFooterText: branding.emailFooterText as string | undefined,
+      emailColors: branding.emailColors as Record<string, string> | undefined,
     }
 
     return this.compileTheme(config)

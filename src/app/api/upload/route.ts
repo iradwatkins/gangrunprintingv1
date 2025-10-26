@@ -9,7 +9,7 @@ import {
   initializeBuckets,
   isMinioAvailable,
 } from '@/lib/minio-client'
-import { randomUUID } from 'crypto'
+import { randomUUID, randomBytes } from 'crypto'
 
 // Bucket initialization will happen at runtime when needed
 
@@ -115,13 +115,14 @@ export async function POST(request: NextRequest) {
     if (orderId) {
       const fileRecord = await prisma.file.create({
         data: {
+          id: `file_${randomBytes(16).toString('hex')}`,
           orderId,
           filename: file.name,
           fileUrl: objectPath,
           fileSize: file.size,
           mimeType: file.type,
           uploadedBy: user?.email || 'anonymous',
-        },
+        } as any,
       })
 
       return NextResponse.json({

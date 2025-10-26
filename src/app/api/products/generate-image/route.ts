@@ -178,13 +178,13 @@ export async function POST(request: NextRequest) {
             aspectRatio,
             imageSize,
             seoLabels,
-          },
+          } as any,
           campaignId,
           locale,
           version,
           isActive: false, // Not active until approved
           originalPrompt: prompt,
-          diversityMetadata,
+          diversityMetadata: diversityMetadata as any,
           cityName,
         },
       })

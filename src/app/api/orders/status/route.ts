@@ -4,6 +4,7 @@ import { OrderStatus, NotificationType } from '@prisma/client'
 import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management'
 import { N8NWorkflows } from '@/lib/n8n'
 import { requireAuth, requireAdminAuth, handleAuthError } from '@/lib/auth/api-helpers'
+import { randomBytes } from 'crypto'
 
 // Update order status
 export async function PUT(request: NextRequest) {
@@ -29,6 +30,7 @@ export async function PUT(request: NextRequest) {
       select: {
         id: true,
         status: true,
+        orderNumber: true,
         referenceNumber: true,
       },
     })
@@ -58,6 +60,7 @@ export async function PUT(request: NextRequest) {
       // Create status history entry
       await tx.statusHistory.create({
         data: {
+          id: `${order.orderNumber}-status-${Date.now()}`,
           orderId: orderId,
           fromStatus: order.status as OrderStatus,
           toStatus: newStatus,
@@ -85,7 +88,10 @@ export async function PUT(request: NextRequest) {
       if (newStatus === OrderStatus.DELIVERED) {
         await tx.notification.create({
           data: {
-            orderId: orderId,
+            id: `notif_${randomBytes(16).toString('hex')}`,
+            Order: {
+              connect: { id: orderId },
+            },
             type: NotificationType.ORDER_DELIVERED,
             sent: false,
           },

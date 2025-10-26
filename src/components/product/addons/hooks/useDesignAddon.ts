@@ -67,7 +67,7 @@ export function useDesignAddon({ config, onChange, designAddons = [] }: DesignAd
     if (!addon) return 0
 
     // For options with side selection
-    if (addon.configuration?.requiresSideSelection && addon.configuration.sideOptions) {
+    if (addon.configuration?.requiresSideSelection && addon.configuration.sideOptions && selectedSide) {
       return addon.configuration.sideOptions[selectedSide].price
     }
 

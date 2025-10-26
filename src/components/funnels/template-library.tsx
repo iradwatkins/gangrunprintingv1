@@ -125,7 +125,7 @@ export function TemplateLibrary({ onSelectTemplate }: TemplateLibraryProps) {
               key={category}
               size="sm"
               variant={selectedCategory === category ? 'default' : 'outline'}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => setSelectedCategory(category || null)}
             >
               {category}
             </Button>

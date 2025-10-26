@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
     const responseTime = Date.now() - startTime
 
     // Transform to match frontend expectations (PascalCase property names)
-    const transformedProducts = transformProductsForFrontend(products)
+    const transformedProducts = transformProductsForFrontend(products as any)
 
     // Calculate pagination metadata
     const totalPages = Math.ceil(totalCount / limit)
@@ -146,14 +146,14 @@ export async function GET(request: NextRequest) {
       200,
       {
         count: transformedProducts.length,
-        totalCount,
+        total: totalCount,
         page,
         limit,
         totalPages,
         hasNextPage,
         hasPreviousPage,
         responseTime,
-      },
+      } as any,
       requestId
     )
   } catch (error) {
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
             2
           )
         )
-        return createValidationErrorResponse(validationError.issues, requestId)
+        return createValidationErrorResponse(validationError.issues as any, requestId)
       }
       return createErrorResponse('Data validation failed', 400, undefined, requestId)
     }
@@ -301,13 +301,13 @@ export async function POST(request: NextRequest) {
       ])
 
       if (!category) {
-        return createErrorResponse(`Category not found: ${categoryId}`, 400, null, requestId)
+        return createErrorResponse(`Category not found: ${categoryId}`, 400, undefined, requestId)
       }
       if (!paperStockSet) {
         return createErrorResponse(
           `Paper stock set not found: ${paperStockSetId}`,
           400,
-          null,
+          undefined,
           requestId
         )
       }
@@ -315,16 +315,16 @@ export async function POST(request: NextRequest) {
         return createErrorResponse(
           `Quantity group not found: ${quantityGroupId}`,
           400,
-          null,
+          undefined,
           requestId
         )
       }
       if (!sizeGroup) {
-        return createErrorResponse(`Size group not found: ${sizeGroupId}`, 400, null, requestId)
+        return createErrorResponse(`Size group not found: ${sizeGroupId}`, 400, undefined, requestId)
       }
       if (selectedAddOns.length > 0 && addOns.length !== selectedAddOns.length) {
         const missing = selectedAddOns.filter((id) => !addOns.find((ao) => ao.id === id))
-        return createErrorResponse(`Add-ons not found: ${missing.join(', ')}`, 400, null, requestId)
+        return createErrorResponse(`Add-ons not found: ${missing.join(', ')}`, 400, undefined, requestId)
       }
     } catch (validationError) {
       return createDatabaseErrorResponse(validationError instanceof Error ? validationError : new Error(String(validationError)), requestId)
@@ -557,7 +557,7 @@ export async function POST(request: NextRequest) {
     await cache.clearPattern('categories:*')
 
     // Transform product for frontend compatibility
-    const transformedProduct = transformProductForFrontend(product)
+    const transformedProduct = transformProductForFrontend(product as any)
     return createSuccessResponse(transformedProduct, 201, undefined, requestId)
   } catch (error) {
     // Handle transaction timeouts

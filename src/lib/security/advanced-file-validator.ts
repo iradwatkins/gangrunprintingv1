@@ -301,10 +301,10 @@ export async function validateFileAdvanced(
     }
 
     // Determine final threat level
-    if (threatLevel === 'high' || virusScan.status === 'infected') {
+    if (threatLevel === 'high' || (virusScan.status as string) === 'infected') {
       threatLevel = 'high'
-    } else if (warnings.length > 0) {
-      threatLevel = Math.max(threatLevel as any, 'medium' as any) as 'medium'
+    } else if (warnings.length > 0 && threatLevel === 'low') {
+      threatLevel = 'medium'
     }
 
     const result: AdvancedValidationResult = {

@@ -64,11 +64,13 @@ export class SegmentationService {
     const criteria = { rules }
     const customerIds = await this.calculateSegmentMembers(criteria)
 
+    const { randomBytes } = await import('crypto')
     return await prisma.customerSegment.create({
       data: {
+        id: `seg_${randomBytes(16).toString('hex')}`,
         name,
         description,
-        criteria,
+        criteria: criteria as any,
         customerIds,
         count: customerIds.length,
         isDynamic: true,
@@ -489,17 +491,17 @@ export class SegmentationService {
     const rfmData: RFMAnalysis[] = []
 
     for (const user of users) {
-      if (user.orders.length === 0) continue
+      if (user.Order.length === 0) continue
 
       // Calculate Recency (days since last order)
-      const lastOrderDate = Math.max(...user.orders.map((order) => order.createdAt.getTime()))
+      const lastOrderDate = Math.max(...user.Order.map((order) => order.createdAt.getTime()))
       const recency = Math.floor((now.getTime() - lastOrderDate) / (1000 * 60 * 60 * 24))
 
       // Calculate Frequency (number of orders)
-      const frequency = user.orders.length
+      const frequency = user.Order.length
 
       // Calculate Monetary (total amount spent)
-      const monetary = user.orders.reduce((sum, order) => sum + order.total, 0)
+      const monetary = user.Order.reduce((sum, order) => sum + order.total, 0)
 
       rfmData.push({
         userId: user.id,
@@ -729,7 +731,7 @@ export class SegmentationService {
 
     for (const segmentData of segments) {
       try {
-        await this.createSegment(segmentData.name, segmentData.description, segmentData.rules)
+        await this.createSegment(segmentData.name, segmentData.description, segmentData.rules as any)
       } catch (error) {}
     }
   }

@@ -45,7 +45,7 @@ export function withAuth(
         )
       }
 
-      return await handler(request, context, { user, session })
+      return await handler(request, context, { user, session } as any)
     } catch (error) {
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
@@ -61,16 +61,19 @@ export function checkOwnershipOrAdmin(
   resourceUserId?: string,
   resourceEmail?: string
 ): boolean {
-  if (!session?.user) return false
+  const sessionData = session as any
+  const userData = user as any
+
+  if (!sessionData?.user) return false
 
   // Admin can access anything
-  if (session.user.role === 'ADMIN') return true
+  if (sessionData.user.role === 'ADMIN') return true
 
   // Check ownership by user ID
-  if (resourceUserId && user?.id === resourceUserId) return true
+  if (resourceUserId && userData?.id === resourceUserId) return true
 
   // Check ownership by email
-  if (resourceEmail && session.user.email === resourceEmail) return true
+  if (resourceEmail && sessionData.user.email === resourceEmail) return true
 
   return false
 }

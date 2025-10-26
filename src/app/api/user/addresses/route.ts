@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { randomBytes } from 'crypto'
 
 // GET - Fetch user's saved addresses
 export async function GET(req: NextRequest) {
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
 
     const address = await prisma.address.create({
       data: {
+        id: `addr_${randomBytes(16).toString('hex')}`,
         userId: user.id,
         label: label || 'Address',
         name,
@@ -74,7 +76,7 @@ export async function POST(req: NextRequest) {
         country: country || 'United States',
         phone,
         isDefault: isDefault || addressCount === 0, // First address is always default
-      },
+      } as any,
     })
 
     return NextResponse.json({ address })

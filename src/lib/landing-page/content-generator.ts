@@ -69,7 +69,7 @@ export async function enrichCityData(cityId: string): Promise<CityContext> {
     longitude: city.longitude || undefined,
     timezone: city.timezone || undefined,
     ...enrichment,
-  }
+  } as any
 }
 
 /**

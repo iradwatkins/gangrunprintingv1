@@ -3,6 +3,17 @@
  * Tracks user actions, errors, and performance metrics
  */
 
+// Extend XMLHttpRequest to include monitoring data
+declare global {
+  interface XMLHttpRequest {
+    _monitorData?: {
+      method: string
+      url: string | URL
+      startTime: number
+    }
+  }
+}
+
 interface LogEntry {
   timestamp: string
   type: 'error' | 'warning' | 'info' | 'action' | 'network'
@@ -112,7 +123,7 @@ class ClientMonitor {
       window.fetch = async (...args) => {
         const start = Date.now()
         const [resource, config] = args
-        const url = typeof resource === 'string' ? resource : resource.url
+        const url = typeof resource === 'string' ? resource : (resource as any).url || (resource as any).href
 
         try {
           const response = await originalFetch.apply(window, args)
@@ -160,16 +171,17 @@ class ClientMonitor {
       const originalXHROpen = XMLHttpRequest.prototype.open
       const originalXHRSend = XMLHttpRequest.prototype.send
 
-      XMLHttpRequest.prototype.open = function (method, url, ...args) {
+      XMLHttpRequest.prototype.open = function (this: any, method: any, url: any, ...args: any[]) {
         this._monitorData = { method, url, startTime: 0 }
-        return originalXHROpen.apply(this, [method, url, ...args])
-      }
+        return originalXHROpen.apply(this, [method, url, ...args] as any)
+      } as any
 
       XMLHttpRequest.prototype.send = function (...args) {
         if (this._monitorData) {
           this._monitorData.startTime = Date.now()
 
           this.addEventListener('load', () => {
+            if (!this._monitorData) return
             const duration = Date.now() - this._monitorData.startTime
             if (this.status >= 400) {
               ClientMonitor.getInstance().logNetwork({
@@ -187,6 +199,7 @@ class ClientMonitor {
           })
 
           this.addEventListener('error', () => {
+            if (!this._monitorData) return
             const duration = Date.now() - this._monitorData.startTime
             ClientMonitor.getInstance().logError({
               category: 'xhr',

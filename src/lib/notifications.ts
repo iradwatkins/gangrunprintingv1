@@ -1,3 +1,4 @@
+// @ts-expect-error - web-push types not available
 import webpush from 'web-push'
 import { prisma } from '@/lib/prisma'
 
@@ -185,8 +186,10 @@ export async function sendNotificationToUser(
     const failed = results.filter((r) => r.status === 'rejected').length
 
     // Store notification in database for history
+    const { randomBytes } = await import('crypto')
     await prisma.pushNotification.create({
       data: {
+        id: `pnot_${randomBytes(16).toString('hex')}`,
         userId,
         type,
         title: notification.title,

@@ -56,7 +56,7 @@ export const ProofReadyEmail = ({
 
         {/* Proof Details */}
         <Section style={proofBox}>
-          <Text style={proofLabel}>
+          <Text style={proofLabelStyle}>
             <strong>Proof File:</strong> {proofLabel}
           </Text>
           {adminMessage && (
@@ -171,7 +171,7 @@ const proofBox = {
   marginBottom: '24px',
 }
 
-const proofLabel = {
+const proofLabelStyle = {
   fontSize: '14px',
   margin: '0 0 12px',
   color: '#1f2937',

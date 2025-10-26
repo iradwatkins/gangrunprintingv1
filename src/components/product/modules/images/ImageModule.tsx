@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef } from 'react'
 import { ImageUploader } from './ImageUploader'
 import { ImagePreview } from './ImagePreview'
-import { ModuleLoadingBoundary } from '../loading/ModuleLoadingComponents'
+import { ModuleLoadingBoundary, ModuleLoadingType, ModuleLoadingPriority } from '../loading'
 import { useImageModule } from '../hooks/StandardModuleHooks'
 import type { ImageModuleProps, ImageFile } from './types'
 import { ImageUploadState, DEFAULT_IMAGE_CONFIG } from './types'
@@ -139,9 +139,9 @@ export function ImageModule({
   const startUpload = useCallback(
     async (imageFile: ImageFile, file: File) => {
       const operationId = startModuleLoading(
-        'file_upload',
+        ModuleLoadingType.FILE_UPLOAD,
         `Uploading ${imageFile.name}`,
-        'high',
+        ModuleLoadingPriority.HIGH,
         30000 // 30 second estimate
       )
 

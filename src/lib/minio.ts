@@ -327,7 +327,7 @@ export function isMinioAvailable(): boolean {
 }
 
 // Reset function for testing
-export function resetMinioClient(): unknown {
+export function resetMinioClient(): void {
   minioClient = null
   initAttempted = false
   initError = null

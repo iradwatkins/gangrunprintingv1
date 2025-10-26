@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { randomBytes } from 'crypto'
 
 // Schema for creating/updating a quantity group
 const quantityGroupSchema = z.object({
@@ -49,7 +50,10 @@ export async function POST(request: NextRequest) {
 
     // Create the quantity group
     const group = await prisma.quantityGroup.create({
-      data: validatedData,
+      data: {
+        id: `qg_${randomBytes(16).toString('hex')}`,
+        ...validatedData,
+      },
     })
 
     return NextResponse.json(group)

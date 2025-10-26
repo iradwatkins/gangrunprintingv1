@@ -5,8 +5,8 @@ import { useEffect } from 'react'
 // Extend Window interface for Google Analytics
 declare global {
   interface Window {
-    dataLayer: any[]
-    gtag: (...args: any[]) => void
+    dataLayer?: any[]
+    gtag?: (...args: any[]) => void
   }
 }
 
@@ -23,12 +23,11 @@ export default function GoogleAnalytics() {
     script.onload = () => {
       // Initialize GA when script loads
       window.dataLayer = window.dataLayer || []
-      function gtag() {
-        dataLayer.push(arguments)
+      window.gtag = (...args: any[]) => {
+        window.dataLayer!.push(args)
       }
-      window.gtag = gtag
-      gtag('js', new Date())
-      gtag('config', GA_MEASUREMENT_ID, {
+      window.gtag('js', new Date())
+      window.gtag('config', GA_MEASUREMENT_ID, {
         page_path: window.location.pathname,
       })
     }

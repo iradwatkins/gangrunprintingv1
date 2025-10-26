@@ -545,7 +545,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             icon={<Factory className="h-5 w-5" />}
             title="Vendor Assignment"
           >
-            <VendorAssignment order={order} vendors={vendors} />
+            <VendorAssignment order={order as any} vendors={vendors as any} />
           </CollapsibleSection>
 
           {/* Shipping & Tracking Information */}

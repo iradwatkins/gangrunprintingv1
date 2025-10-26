@@ -328,10 +328,10 @@ export function generateAllProductSchemas(
   ]
 
   const faqSchema = product.seoFaqs ? generateFAQSchema(product.seoFaqs) : null
-  if (faqSchema) schemas.push(faqSchema)
+  if (faqSchema) schemas.push(faqSchema as any)
 
   const localBusinessSchema = generateLocalBusinessSchema(product, siteUrl)
-  if (localBusinessSchema) schemas.push(localBusinessSchema)
+  if (localBusinessSchema) schemas.push(localBusinessSchema as any)
 
   return schemas
 }

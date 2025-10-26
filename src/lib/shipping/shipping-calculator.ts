@@ -182,7 +182,7 @@ export class ShippingCalculator {
         estimatedDays: rate.estimatedDays,
         rateAmount: rate.rateAmount,
         expiresAt,
-      })),
+      })) as any,
     })
   }
 

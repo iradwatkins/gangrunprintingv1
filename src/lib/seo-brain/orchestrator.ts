@@ -387,11 +387,7 @@ export class SEOBrainOrchestrator {
       data: {
         status: 'EXECUTED',
         executedAt: new Date(),
-        executionResult: {
-          option: selectedOption,
-          action: selected.action,
-          timestamp: new Date().toISOString(),
-        },
+        selectedOption: selectedOption,
       },
     })
   }

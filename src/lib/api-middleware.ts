@@ -1,3 +1,5 @@
+import { NextRequest } from 'next/server'
+import { v4 as uuidv4 } from 'uuid'
 import { reportError, addBreadcrumb } from '@/lib/sentry'
 
 // Generate correlation ID for request tracking
@@ -48,7 +50,7 @@ export function withErrorHandling<T extends any[]>(
         method: request.method,
         duration,
         userAgent: request.headers.get('user-agent'),
-        ip: request.headers.get('x-forwarded-for') || request.ip,
+        ip: request.headers.get('x-forwarded-for') || 'unknown',
         body: await safeParseBody(request),
       })
 
@@ -103,7 +105,7 @@ export function withRateLimit<T extends any[]>(
 ) {
   return async (...args: T): Promise<Response> => {
     const request = args[0] as NextRequest
-    const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown'
+    const ip = request.headers.get('x-forwarded-for') || 'unknown' || 'unknown'
     const correlationId = request.headers.get('x-correlation-id') || generateCorrelationId()
 
     const now = Date.now()
@@ -308,7 +310,7 @@ export function withLogging<T extends any[]>(
       path: request.nextUrl.pathname,
       query: Object.fromEntries(request.nextUrl.searchParams),
       headers: Object.fromEntries(request.headers.entries()),
-      ip: request.headers.get('x-forwarded-for') || request.ip,
+      ip: request.headers.get('x-forwarded-for') || 'unknown',
       userAgent: request.headers.get('user-agent'),
     }
 
@@ -318,9 +320,10 @@ export function withLogging<T extends any[]>(
 
       // Redact sensitive fields
       if (options.sensitiveFields && requestData.body) {
+        const body = requestData.body as Record<string, any>
         options.sensitiveFields.forEach((field) => {
-          if (requestData.body[field]) {
-            requestData.body[field] = '[REDACTED]'
+          if (body[field]) {
+            body[field] = '[REDACTED]'
           }
         })
       }
@@ -368,7 +371,7 @@ export function withLogging<T extends any[]>(
 // Combine multiple middleware functions
 export function withMiddleware<T extends any[]>(
   handler: (...args: T) => Promise<Response> | Response,
-  ...middlewares: Array<(handler: Record<string, unknown>) => any>
+  ...middlewares: Array<(handler: any) => any>
 ) {
   return middlewares.reduce((wrapped, middleware) => middleware(wrapped), handler)
 }
@@ -383,18 +386,18 @@ export const withStandardMiddleware = <T extends any[]>(
     validationOptions?: Parameters<typeof withRequestValidation>[1]
   } = {}
 ) => {
-  const middlewares: Array<(handler: Record<string, unknown>) => any> = [withErrorHandling]
+  const middlewares: Array<(handler: any) => any> = [withErrorHandling]
 
   if (options.logRequests) {
     middlewares.push(withLogging)
   }
 
   if (options.rateLimit) {
-    middlewares.push((h) => withRateLimit(h, options.rateLimit))
+    middlewares.push((h) => withRateLimit(h as any, options.rateLimit))
   }
 
   if (options.validationOptions) {
-    middlewares.push((h) => withRequestValidation(h, options.validationOptions))
+    middlewares.push((h) => withRequestValidation(h as any, options.validationOptions))
   }
 
   if (options.requireAuth) {

@@ -62,18 +62,18 @@ export class FileMigrationService {
       await client.copyObject(
         BUCKETS.UPLOADS, // destination bucket
         fullPermanentPath, // destination path
-        BUCKETS.UPLOADS, // source bucket
-        actualTempFile // source path (full path including prefix)
+        `/${BUCKETS.UPLOADS}/${actualTempFile}` as any // source path with bucket prefix
       )
 
-      // Set metadata for permanent file
-      await client.putObjectMetadata(BUCKETS.UPLOADS, fullPermanentPath, {
-        'file-type': fileType,
-        'order-id': orderId,
-        'migrated-at': new Date().toISOString(),
-        'permanent-file': 'true',
-        'temp-file-id': tempFileId,
-      })
+      // Set metadata for permanent file (MinIO doesn't have putObjectMetadata - metadata is set during putObject)
+      // TODO: Set metadata during copyObject or re-upload with metadata
+      // await (client as any).putObjectMetadata(BUCKETS.UPLOADS, fullPermanentPath, {
+      //   'file-type': fileType,
+      //   'order-id': orderId,
+      //   'migrated-at': new Date().toISOString(),
+      //   'permanent-file': 'true',
+      //   'temp-file-id': tempFileId,
+      // })
 
       const permanentUrl = `/api/files/permanent/${permanentFileId}${fileExtension}`
 
@@ -87,8 +87,7 @@ export class FileMigrationService {
         await client.copyObject(
           BUCKETS.UPLOADS,
           permanentThumbnailPath,
-          BUCKETS.UPLOADS,
-          tempThumbnailPath
+          `/${BUCKETS.UPLOADS}/${tempThumbnailPath}` as any
         )
 
         thumbnailUrl = `/api/files/permanent/thumbnails/${permanentFileId}.jpg`

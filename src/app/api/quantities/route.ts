@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     // If format=selector, return transformed data for quantity selector component
     if (format === 'selector') {
-      const transformedQuantities = transformQuantityGroups(processedGroups)
+      const transformedQuantities = transformQuantityGroups(processedGroups as any)
       return NextResponse.json(transformedQuantities)
     }
 

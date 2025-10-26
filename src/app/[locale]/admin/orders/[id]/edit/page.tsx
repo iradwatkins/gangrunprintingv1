@@ -55,7 +55,7 @@ export default async function EditOrderPage({ params }: PageProps) {
       </div>
 
       {/* Edit Order Form */}
-      <EditOrderForm order={order} />
+      <EditOrderForm order={order as any} />
     </div>
   )
 }

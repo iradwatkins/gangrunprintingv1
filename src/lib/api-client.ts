@@ -119,7 +119,7 @@ class ApiClient {
   /**
    * Main request handler with retry logic
    */
-  private async request<T = unknown>(
+  async request<T = unknown>(
     url: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
@@ -145,7 +145,7 @@ class ApiClient {
 
         // Check if response is ok
         if (!response.ok) {
-          const errorBody = await this.parseResponse(response)
+          const errorBody = (await this.parseResponse(response)) as any
           throw new ApiError(
             errorBody?.error || `Request failed with status ${response.status}`,
             response.status,
@@ -157,7 +157,7 @@ class ApiClient {
         const data = await this.parseResponse<T>(response)
         return {
           success: true,
-          data,
+          data: data as any,
           statusCode: response.status,
         }
       } catch (error) {

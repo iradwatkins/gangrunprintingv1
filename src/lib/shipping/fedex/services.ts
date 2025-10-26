@@ -663,7 +663,7 @@ export function recommendServices(requirements: ServiceRequirements): FedExServi
 
   // Filter by max days
   if (requirements.maxDays) {
-    services = services.filter((s) => s.estimatedDaysMax <= requirements.maxDays)
+    services = services.filter((s) => s.estimatedDaysMax <= (requirements.maxDays ?? Infinity))
   }
 
   // Sort by price (multiplier) if economy preferred

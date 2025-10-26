@@ -86,7 +86,7 @@ export function PaymentMethodManager({
 
     const initializeSquare = async () => {
       try {
-        const payments = window.Square.payments(
+        const payments = (window as any).Square.payments(
           process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!,
           process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
         )
@@ -118,7 +118,7 @@ export function PaymentMethodManager({
       setEditingPaymentMethod(paymentMethod)
       setIsAddingNew(false)
       setFormData({
-        nickname: paymentMethod.nickname,
+        nickname: paymentMethod.nickname || '',
         billingAddressId: paymentMethod.BillingAddress?.id || '',
         isDefault: paymentMethod.isDefault,
       })

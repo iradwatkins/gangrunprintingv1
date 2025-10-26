@@ -133,7 +133,7 @@ export function ProductSearch({ className }: { className?: string }) {
   }
 
   // Handle filter changes
-  const updateFilter = (key: keyof SearchFilters, value: Record<string, unknown>) => {
+  const updateFilter = (key: keyof SearchFilters, value: string | number | boolean | undefined | string[]) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
@@ -243,7 +243,7 @@ export function ProductSearch({ className }: { className?: string }) {
               <SearchFiltersContent
                 clearFilters={clearFilters}
                 filters={filters}
-                updateFilter={updateFilter}
+                updateFilter={updateFilter as any}
               />
             </div>
           </SheetContent>
@@ -302,7 +302,7 @@ function SearchFiltersContent({
   clearFilters,
 }: {
   filters: SearchFilters
-  updateFilter: (key: keyof SearchFilters, value: Record<string, unknown>) => void
+  updateFilter: (key: keyof SearchFilters, value: any) => void
   clearFilters: () => void
 }) {
   return (

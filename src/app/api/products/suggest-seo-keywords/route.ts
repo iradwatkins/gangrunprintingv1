@@ -247,7 +247,7 @@ export async function POST(request: NextRequest) {
         GANGRUN_INDUSTRIES.map((industry) => `${industry} ${normalizedName}`),
 
       locationBased: (targetCities || TOP_CITIES).map(
-        (city) => `${normalizedName} printing ${city.toLowerCase()}`
+        (city: any) => `${normalizedName} printing ${city.toLowerCase()}`
       ),
 
       technicalFeatures: keywordData.technicalFeatures || [

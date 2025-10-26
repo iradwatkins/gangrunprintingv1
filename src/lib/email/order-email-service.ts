@@ -35,7 +35,7 @@ export class OrderEmailService {
     try {
       const trackingUrl = `${process.env.NEXTAUTH_URL}/orders/${order.id}/track`
 
-      const emailHtml = render(
+      const emailHtml = await render(
         OrderConfirmationEmail({
           orderNumber: order.orderNumber,
           customerName: order.User?.name || undefined,
@@ -79,7 +79,7 @@ export class OrderEmailService {
     try {
       const trackingUrl = `${process.env.NEXTAUTH_URL}/orders/${order.id}/track`
 
-      const emailHtml = render(
+      const emailHtml = await render(
         OrderInProductionEmail({
           orderNumber: order.orderNumber,
           customerName: order.User?.name || undefined,

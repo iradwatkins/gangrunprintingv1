@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { randomBytes } from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date(),
       },
       create: {
+        id: `ps_${randomBytes(16).toString('hex')}`,
         endpoint: subscription.endpoint,
         subscription: JSON.stringify(subscription),
         active: true,

@@ -1259,7 +1259,7 @@ export default function SimpleConfigurationForm({
               !a.id.startsWith('addon_design_changes')
           ) || []
         }
-        addonsGrouped={configData.addonsGrouped}
+        addonsGrouped={(configData as any).addonsGrouped}
         bandingConfig={configuration.bandingConfig}
         cornerRoundingConfig={configuration.cornerRoundingConfig}
         designConfig={configuration.designConfig}

@@ -98,14 +98,14 @@ export function AppSidebarCustomer({ ...props }: React.ComponentProps<typeof Sid
         <SidebarGroup>
           <SidebarGroupLabel>My Account</SidebarGroupLabel>
           <SidebarGroupContent>
-            <NavMainEnhanced items={navItems} navigationState={navigationState} />
+            <NavMainEnhanced items={navItems} navigationState={navigationState} {...({} as any)} />
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel>Shop</SidebarGroupLabel>
           <SidebarGroupContent>
-            <NavMainEnhanced items={shopItems} navigationState={navigationState} />
+            <NavMainEnhanced items={shopItems} navigationState={navigationState} {...({} as any)} />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

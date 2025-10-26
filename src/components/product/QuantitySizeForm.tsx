@@ -40,16 +40,19 @@ export default function QuantitySizeForm({
     fetch(`/api/products/${productId}/configuration`)
       .then((res) => res.json())
       .then((data) => {
+        let defaultQty = ''
+        let defaultSize = ''
+
         if (data.quantities && data.quantities.length > 0) {
           setQuantities(data.quantities)
-          const defaultQty = data.defaults?.quantity || data.quantities[0]?.id
+          defaultQty = data.defaults?.quantity || data.quantities[0]?.id
           setSelectedQuantity(defaultQty)
         }
 
         if (data.sizes && data.sizes.length > 0) {
           setSizes(data.sizes)
-          const defaultSize =
-            data.defaults?.size || data.sizes.find((s) => s.isDefault)?.id || data.sizes[0]?.id
+          defaultSize =
+            data.defaults?.size || data.sizes.find((s: Size) => s.isDefault)?.id || data.sizes[0]?.id
           setSelectedSize(defaultSize)
         }
 
@@ -79,13 +82,13 @@ export default function QuantitySizeForm({
       selectedAddons: [],
     }
 
-    let isComplete = qtyId && sizeId
+    let isComplete = !!(qtyId && sizeId)
     if (qtyId === 'qty_custom') {
-      isComplete = isComplete && customQuantity && customQuantity > 0
+      isComplete = !!(isComplete && customQuantity && customQuantity > 0)
     }
     const selectedSizeObj = sizes.find((s) => s.id === sizeId)
     if (selectedSizeObj?.isCustom) {
-      isComplete = isComplete && customWidth && customHeight && customWidth > 0 && customHeight > 0
+      isComplete = !!(isComplete && customWidth && customHeight && customWidth > 0 && customHeight > 0)
     }
 
     if (isCompleteOverride !== undefined) {

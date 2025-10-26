@@ -1,16 +1,12 @@
 'use client'
 
+import type { ProductData } from '@/types/product-wizard'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductQuantities } from '../product-quantities'
 import { Layers, Info } from 'lucide-react'
 
-interface ProductData {
-  useQuantityGroup: boolean
-  quantityGroupId: string
-  quantityIds: string[]
-}
 
 interface ProductQuantityStepProps {
   formData: ProductData

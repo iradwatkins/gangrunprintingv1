@@ -123,7 +123,7 @@ export class PricingCalculator {
             break
 
           case 'PERCENTAGE':
-            const percentage = addOn.configuration.percentage || 0
+            const percentage = (addOn.configuration.percentage as number) || 0
             const appliesTo = addOn.configuration.appliesTo || 'base_price'
 
             let baseForPercentage = basePaperPrintPrice
@@ -138,8 +138,8 @@ export class PricingCalculator {
             break
 
           case 'PER_UNIT':
-            const pricePerUnit = addOn.configuration.pricePerUnit || 0
-            const units = addOn.quantity || inputs.quantity
+            const pricePerUnit = (addOn.configuration.pricePerUnit as number) || 0
+            const units = (addOn.quantity as number) || inputs.quantity
             addOnCost = pricePerUnit * units
             calculation = `$${pricePerUnit} × ${units} units = $${addOnCost.toFixed(2)}`
             break
@@ -150,21 +150,21 @@ export class PricingCalculator {
 
             // Handle setup fee + per piece pricing
             if (config.setupFee !== undefined) {
-              addOnCost += config.setupFee
+              addOnCost += (config.setupFee as number)
               calculation = `Setup: $${config.setupFee}`
             }
 
             if (config.pricePerPiece !== undefined) {
-              const pieceCost = config.pricePerPiece * inputs.quantity
+              const pieceCost = (config.pricePerPiece as number) * inputs.quantity
               addOnCost += pieceCost
               calculation += `${calculation ? ' + ' : ''}$${config.pricePerPiece}/pc × ${inputs.quantity} = $${pieceCost.toFixed(2)}`
             }
 
             // Handle per bundle pricing
             if (config.pricePerBundle !== undefined) {
-              const itemsPerBundle = config.defaultItemsPerBundle || 100
+              const itemsPerBundle = (config.defaultItemsPerBundle as number) || 100
               const bundles = Math.ceil(inputs.quantity / itemsPerBundle)
-              addOnCost = config.pricePerBundle * bundles
+              addOnCost = (config.pricePerBundle as number) * bundles
               calculation = `$${config.pricePerBundle} × ${bundles} bundles = $${addOnCost.toFixed(2)}`
             }
 

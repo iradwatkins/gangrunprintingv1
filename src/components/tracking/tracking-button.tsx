@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Package, ExternalLink } from 'lucide-react'
 import { getTrackingInfo } from '@/lib/tracking'
+import { Carrier } from '@prisma/client'
 
 interface TrackingButtonProps {
   carrier: Carrier

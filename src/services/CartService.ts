@@ -63,14 +63,14 @@ export class CartService {
     // Create order in database
     const order = await this.prisma.order.create({
       data: {
-        customerId: customerInfo.id,
+        userId: customerInfo.id,
         status: 'PENDING',
         subtotal: orderSummary.subtotal,
         tax: orderSummary.tax,
         shipping: orderSummary.shipping,
         total: orderSummary.total,
         shippingAddress: JSON.stringify(shippingAddress),
-        orderItems: {
+        OrderItem: {
           create: items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
@@ -79,9 +79,9 @@ export class CartService {
             configuration: JSON.stringify(item.options),
             customerFileUrl: item.fileUrl,
             customerFileName: item.fileName,
-          })),
+          })) as any,
         },
-      },
+      } as any,
       include: {
         OrderItem: true,
       },
@@ -95,16 +95,8 @@ export class CartService {
     return this.prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        customer: true,
-        orderItems: {
-          include: {
-            product: {
-              include: {
-                ProductImage: true,
-              },
-            },
-          },
-        },
+        User: true,
+        OrderItem: true,
       },
     })
   }
@@ -115,7 +107,7 @@ export class CartService {
       where: { id: orderId },
       data: {
         status,
-        statusNotes: notes,
+        ...(notes && { adminNotes: notes }),
         updatedAt: new Date(),
       },
     })
@@ -127,27 +119,16 @@ export class CartService {
 
     const [orders, total] = await Promise.all([
       this.prisma.order.findMany({
-        where: { customerId },
+        where: { userId: customerId },
         include: {
-          OrderItem: {
-            include: {
-              product: {
-                include: {
-                  ProductImage: {
-                    where: { isPrimary: true },
-                    take: 1,
-                  },
-                },
-              },
-            },
-          },
+          OrderItem: true,
         },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
       this.prisma.order.count({
-        where: { customerId },
+        where: { userId: customerId },
       }),
     ])
 
@@ -179,7 +160,7 @@ export class CartService {
 
     // Express shipping for rush orders
     const hasRushOrder = items.some(
-      (item) => item.turnaround.includes('rush') || item.turnaround.includes('1 day')
+      (item) => (item.turnaround as any).includes('rush') || (item.turnaround as any).includes('1 day')
     )
 
     return baseShipping + weightShipping + (hasRushOrder ? 15.0 : 0)
@@ -188,8 +169,8 @@ export class CartService {
   // Generate unique SKU for cart item
   generateSKU(item: CartItem): string {
     const productCode = item.productSlug.substring(0, 8).toUpperCase()
-    const paperCode = item.options.paperStockId.substring(0, 4).toUpperCase()
-    const sizeCode = item.options.size.substring(0, 4).toUpperCase()
+    const paperCode = (item.options.paperStockId ?? 'NONE').substring(0, 4).toUpperCase()
+    const sizeCode = (item.options.size ?? 'STD').substring(0, 4).toUpperCase()
     const quantityCode = item.quantity.toString().padStart(4, '0')
 
     return `${productCode}-${paperCode}-${sizeCode}-${quantityCode}`

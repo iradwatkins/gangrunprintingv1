@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { z } from 'zod'
+import { randomBytes } from 'crypto'
 
 // Schema for updating a paper stock set
 const updatePaperStockSetSchema = z.object({
@@ -148,6 +149,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
           await tx.paperStockSetItem.createMany({
             data: paperStocksWithDefault.map((stock, index) => ({
+              id: `pssi_${randomBytes(16).toString('hex')}`,
               paperStockSetId: id,
               paperStockId: stock.id,
               isDefault: stock.isDefault,

@@ -303,8 +303,8 @@ export default function SimpleQuantityTest({
 
   // Get paper, coating, sides, turnaround names
   const finalPaper = selectedPaperObj?.name || 'Not set'
-  const finalCoating = availableCoatings.find((c) => c.id === selectedCoating)?.name || 'Not set'
-  const finalSides = availableSides.find((s) => s.id === selectedSides)?.name || 'Not set'
+  const finalCoating = availableCoatings.find((c: any) => c.id === selectedCoating)?.name || 'Not set'
+  const finalSides = availableSides.find((s: any) => s.id === selectedSides)?.name || 'Not set'
   const selectedTurnaroundObj = memoizedTurnaroundTimes.find((t) => t.id === selectedTurnaround)
   const finalTurnaround = selectedTurnaroundObj
     ? `${selectedTurnaroundObj.displayName || selectedTurnaroundObj.name} (${selectedTurnaroundObj.daysMin}-${selectedTurnaroundObj.daysMax} days)`
@@ -326,9 +326,9 @@ export default function SimpleQuantityTest({
 
       const paperPricePerSqInch = selectedPaperObj.pricePerSqInch || 0.0005
       const coatingMultiplier =
-        availableCoatings.find((c) => c.id === selectedCoating)?.priceMultiplier || 1.0
+        availableCoatings.find((c: any) => c.id === selectedCoating)?.priceMultiplier || 1.0
       const sidesMultiplier =
-        availableSides.find((s) => s.id === selectedSides)?.priceMultiplier || 1.0
+        availableSides.find((s: any) => s.id === selectedSides)?.priceMultiplier || 1.0
 
       // Base calculation: Quantity × Square Inches × Paper Price × Coating Multiplier × Sides Multiplier
       const basePrice =
@@ -496,8 +496,8 @@ export default function SimpleQuantityTest({
       sku: `${product.slug}-${selectedQuantity || customQuantity}-${Date.now()}`,
       price: totalPrice / (finalQuantity || 1), // Price PER UNIT (cart will multiply by quantity)
       quantity: finalQuantity || 1,
-      categoryId: product.ProductCategory?.id || undefined,
-      categoryName: product.ProductCategory?.name || undefined,
+      categoryId: (product as any).ProductCategory?.id || undefined,
+      categoryName: (product as any).ProductCategory?.name || undefined,
       turnaround: selectedTurnaroundObj
         ? {
             id: selectedTurnaroundObj.id,
@@ -707,7 +707,7 @@ export default function SimpleQuantityTest({
               <SelectValue className="text-foreground" placeholder="Select coating" />
             </SelectTrigger>
             <SelectContent className="bg-background">
-              {availableCoatings.map((coating) => (
+              {availableCoatings.map((coating: any) => (
                 <SelectItem key={coating.id} className="text-foreground" value={coating.id}>
                   {coating.name}
                 </SelectItem>
@@ -726,7 +726,7 @@ export default function SimpleQuantityTest({
               <SelectValue className="text-foreground" placeholder="Select sides" />
             </SelectTrigger>
             <SelectContent className="bg-background">
-              {availableSides.map((side) => (
+              {availableSides.map((side: any) => (
                 <SelectItem key={side.id} className="text-foreground" value={side.id}>
                   {side.name}
                 </SelectItem>

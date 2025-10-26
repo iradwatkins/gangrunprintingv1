@@ -40,10 +40,10 @@ export const ProofRejectedEmail = ({
 
         {/* Proof Details */}
         <Section style={proofBox}>
-          <Text style={proofLabel}>
+          <Text style={proofLabelStyle}>
             <strong>Proof File:</strong> {proofLabel}
           </Text>
-          <Text style={proofLabel}>
+          <Text style={proofLabelStyle}>
             <strong>Customer:</strong> {customerName} ({customerEmail})
           </Text>
         </Section>
@@ -132,7 +132,7 @@ const proofBox = {
   marginBottom: '24px',
 }
 
-const proofLabel = {
+const proofLabelStyle = {
   fontSize: '14px',
   margin: '0 0 8px',
   color: '#1f2937',

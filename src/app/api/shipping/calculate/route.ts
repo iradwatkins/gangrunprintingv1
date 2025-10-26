@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
       rates = rates.filter((rate: unknown) => {
         const r = rate as ApiRate
         const serviceCode = r.serviceCode || r.service
-        return ALLOWED_SERVICE_CODES.includes(serviceCode)
+        return serviceCode ? ALLOWED_SERVICE_CODES.includes(serviceCode) : false
       })
 
       // Sort rates by price (lowest to highest)

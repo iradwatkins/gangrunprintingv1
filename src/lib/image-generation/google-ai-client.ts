@@ -142,14 +142,17 @@ export class GoogleAIImageGenerator {
       const response = await this.client.models.generateImages({
         model: this.model,
         prompt: prompt,
-        config: imageConfig,
+        config: imageConfig as any,
       })
 
       if (!response.generatedImages || response.generatedImages.length === 0) {
         throw new Error('No images generated in response')
       }
 
-      const imageBytes = response.generatedImages[0].image.imageBytes
+      const imageBytes = response.generatedImages[0]?.image?.imageBytes
+      if (!imageBytes) {
+        throw new Error('No image bytes in response')
+      }
       const buffer = Buffer.from(imageBytes, 'base64')
 
       return {

@@ -236,7 +236,7 @@ export async function POST(request: NextRequest) {
       customWidth: data.customWidth,
       customHeight: data.customHeight,
       quantitySelection: data.quantitySelection,
-      standardQuantity: standardQuantity || undefined,
+      standardQuantity: (standardQuantity as any) || undefined,
       customQuantity: data.customQuantity,
       basePaperPrice: paperStock.pricePerSqInch,
       sidesMultiplier: paperStockSides.priceMultiplier,

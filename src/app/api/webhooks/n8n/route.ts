@@ -69,7 +69,7 @@ async function handleOrderCreated(identifier: string, payload: Record<string, un
     if (payload.autoAssignVendor) {
       const vendor = await prisma.vendor.findFirst({
         where: { isActive: true },
-        orderBy: { orders: { _count: 'asc' } }, // Assign to vendor with least orders
+        orderBy: { Order: { _count: 'asc' } }, // Assign to vendor with least orders
       })
 
       if (vendor) {
@@ -108,7 +108,7 @@ async function handleOrderStatusUpdate(identifier: string, payload: Record<strin
       const updated = await tx.order.update({
         where: { id: order.id },
         data: {
-          status: newStatus,
+          status: newStatus as any,
           adminNotes: notes
             ? `${order.adminNotes || ''}\n[${new Date().toISOString()}] ${notes}`
             : order.adminNotes,
@@ -136,12 +136,12 @@ async function handleOrderStatusUpdate(identifier: string, payload: Record<strin
         REFUNDED: 'ORDER_REFUNDED',
       }
 
-      if (notificationTypes[newStatus]) {
+      if (notificationTypes[newStatus as string]) {
         await tx.notification.create({
           data: {
             id: `${order.orderNumber}-notif-${Date.now()}`,
             orderId: order.id,
-            type: notificationTypes[newStatus] as any,
+            type: notificationTypes[newStatus as string] as any,
             sent: false,
           },
         })
@@ -247,7 +247,7 @@ async function handleFulfillmentUpdate(identifier: string, payload: Record<strin
       shipped: 'SHIPPED',
     }
 
-    const newStatus = statusMap[status] || order.status
+    const newStatus = statusMap[status as string] || order.status
 
     const updatedOrder = await prisma.order.update({
       where: { id: order.id },
@@ -274,7 +274,7 @@ async function handleFulfillmentUpdate(identifier: string, payload: Record<strin
 
 async function handleTrackingUpdate(identifier: string, payload: Record<string, unknown>) {
   try {
-    const { trackingNumber, carrier, trackingUrl } = payload
+    const { trackingNumber, carrier, trackingUrl } = payload as any
 
     const order = await findOrder(identifier)
     if (!order) {
@@ -344,7 +344,7 @@ async function handleNotificationSend(identifier: string, payload: Record<string
     const existingNotification = await prisma.notification.findFirst({
       where: {
         orderId: order.id,
-        type: type,
+        type: type as any,
       },
     })
 
@@ -356,7 +356,7 @@ async function handleNotificationSend(identifier: string, payload: Record<string
         data: {
           id: `${order.orderNumber}-${type}-${Date.now()}`,
           orderId: order.id,
-          type: type,
+          type: type as any,
           sent: false,
         },
       })

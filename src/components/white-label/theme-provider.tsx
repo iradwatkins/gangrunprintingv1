@@ -3,6 +3,13 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ThemeEngine, type CompiledTheme } from '@/lib/white-label/theming'
 
+interface TenantInfo {
+  id: string
+  name: string
+  slug: string
+  branding?: Record<string, unknown>
+}
+
 interface ThemeContextType {
   theme: CompiledTheme
   tenant: TenantInfo | null
@@ -170,11 +177,11 @@ export function TenantMetadata() {
         favicon.rel = 'icon'
         document.head.appendChild(favicon)
       }
-      favicon.href = tenant.branding.faviconUrl
+      favicon.href = tenant.branding.faviconUrl as string
     }
 
     // Update page title if logoText is provided
-    if (tenant.branding?.logoText) {
+    if (tenant.branding?.logoText && typeof tenant.branding.logoText === 'string') {
       const titleSuffix = ' - Professional Print Services'
       if (!document.title.includes(tenant.branding.logoText)) {
         document.title = tenant.branding.logoText + titleSuffix

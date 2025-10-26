@@ -331,12 +331,12 @@ export default function SimpleAddonSelector({
   const standardAddons = addons.filter(
     (addon) =>
       !['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(
-        addon.configuration?.type
+        addon.configuration?.type as string
       )
   )
   const specialAddons = addons.filter((addon) =>
     ['variable_data', 'perforation', 'banding', 'corner_rounding'].includes(
-      addon.configuration?.type
+      addon.configuration?.type as string
     )
   )
 

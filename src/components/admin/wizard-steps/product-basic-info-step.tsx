@@ -1,5 +1,6 @@
 'use client'
 
+import type { ProductData } from '@/types/product-wizard'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,17 +22,6 @@ import { Info, Package, Camera, Sparkles, RefreshCw } from 'lucide-react'
 import { generateSKU, generateUniqueSKU, isValidSKU } from '@/lib/utils/sku-generator'
 import toast from '@/lib/toast'
 
-interface ProductData {
-  name: string
-  slug: string
-  sku: string
-  categoryId: string
-  description: string
-  shortDescription: string
-  isActive: boolean
-  isFeatured: boolean
-  images: unknown[]
-}
 
 interface ProductBasicInfoStepProps {
   formData: ProductData
@@ -262,8 +252,8 @@ export function ProductBasicInfoStep({
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat: Record<string, unknown>) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
+                    <SelectItem key={cat.id as string} value={cat.id as string}>
+                      {cat.name as string}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -382,8 +372,8 @@ export function ProductBasicInfoStep({
           )}
 
           <ProductImageUpload
-            images={formData.images}
-            onImagesChange={(images) => onUpdate({ images })}
+            images={formData.images as any}
+            onImagesChange={(images) => onUpdate({ images: images as any })}
           />
 
           {/* Image Guidelines */}

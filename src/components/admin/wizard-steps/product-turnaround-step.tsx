@@ -1,5 +1,6 @@
 'use client'
 
+import type { ProductData } from '@/types/product-wizard'
 import { useState, useEffect } from 'react'
 
 import { Input } from '@/components/ui/input'
@@ -10,15 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Clock, Zap, Layers, Info, AlertTriangle } from 'lucide-react'
 
-interface ProductData {
-  productionTime: number
-  rushAvailable: boolean
-  rushDays: number
-  rushFee: number
-  gangRunEligible: boolean
-  minGangQuantity: number
-  maxGangQuantity: number
-}
 
 interface ProductTurnaroundStepProps {
   formData: ProductData

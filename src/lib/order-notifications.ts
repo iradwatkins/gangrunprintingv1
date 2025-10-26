@@ -1,25 +1,26 @@
 import { sendNotificationToUser, NotificationTypes } from './notifications'
+import { OrderStatus } from '@prisma/client'
 
 // Map order status to notification type
 export function getNotificationTypeForStatus(status: OrderStatus): string | null {
   switch (status) {
-    case 'PENDING':
+    case OrderStatus.PENDING_PAYMENT:
       return NotificationTypes.ORDER_CONFIRMED
-    case 'CONFIRMATION':
+    case OrderStatus.CONFIRMATION:
       return NotificationTypes.ORDER_CONFIRMED
-    case 'PRE_PRESS':
+    case OrderStatus.PRE_PRESS:
       return NotificationTypes.DESIGN_APPROVED
-    case 'PRODUCTION':
+    case OrderStatus.PRODUCTION:
       return NotificationTypes.ORDER_PRINTING
-    case 'BINDERY':
+    case OrderStatus.BINDERY:
       return NotificationTypes.ORDER_PROCESSING
-    case 'READY':
+    case OrderStatus.READY_FOR_PICKUP:
       return NotificationTypes.ORDER_READY
-    case 'SHIPPED':
+    case OrderStatus.SHIPPED:
       return NotificationTypes.ORDER_SHIPPED
-    case 'DELIVERED':
+    case OrderStatus.DELIVERED:
       return NotificationTypes.ORDER_DELIVERED
-    case 'CANCELLED':
+    case OrderStatus.CANCELLED:
       return NotificationTypes.ORDER_CANCELLED
     default:
       return null
@@ -40,7 +41,7 @@ export async function notifyOrderStatusChange(
   }
 
   try {
-    await sendNotificationToUser(userId, notificationType, {
+    await sendNotificationToUser(userId, notificationType as any, {
       orderId,
       status,
       ...additionalData,

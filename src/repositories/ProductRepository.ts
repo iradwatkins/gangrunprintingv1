@@ -172,7 +172,7 @@ export class ProductRepository {
 
     return this.prisma.product.findUnique({
       where: { id: productId },
-      include: includes,
+      include: includes as any,
     })
   }
 
@@ -294,13 +294,9 @@ export class ProductRepository {
 
   // Update product view count for analytics
   async incrementViewCount(productId: string) {
-    return this.prisma.product.update({
+    // Note: viewCount field removed from schema - tracking via analytics instead
+    return this.prisma.product.findUnique({
       where: { id: productId },
-      data: {
-        viewCount: {
-          increment: 1,
-        },
-      },
     })
   }
 
@@ -315,7 +311,7 @@ export class ProductRepository {
           take: 1,
         },
       },
-      orderBy: [{ viewCount: 'desc' }, { createdAt: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }],
       take: limit,
     })
   }

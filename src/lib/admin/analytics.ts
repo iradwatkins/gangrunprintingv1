@@ -252,7 +252,9 @@ export class AnalyticsService {
       if (existing) {
         existing.revenue += order.total
         existing.orders += 1
-        existing.customers.add(order.userId)
+        if (order.userId) {
+          existing.customers.add(order.userId)
+        }
       }
     })
 

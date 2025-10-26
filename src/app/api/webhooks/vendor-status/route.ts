@@ -5,6 +5,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { OrderStateMachine, type OrderStatus } from '@/domains/orders/state-machine'
 import { VendorWebhookHandler, type VendorWebhookPayload } from '@/domains/vendors/webhook-handler'
+import { randomUUID } from 'crypto'
 // import { sendOrderStatusEmail } from '@/lib/order-notifications';
 
 export async function POST(request: NextRequest) {
@@ -28,8 +29,8 @@ export async function POST(request: NextRequest) {
     const order = await prisma.order.findUnique({
       where: { id: payload.orderId },
       include: {
-        customer: true,
-        vendor: true,
+        User: true,
+        Vendor: true,
       },
     })
 
@@ -61,10 +62,11 @@ export async function POST(request: NextRequest) {
         }),
         StatusHistory: {
           create: {
-            status: transition.newStatus!,
-            message: payload.details?.message || `Status updated to ${transition.newStatus}`,
-            vendorId: payload.vendorId,
-            createdAt: new Date(payload.timestamp),
+            id: randomUUID(),
+            fromStatus: order.status as OrderStatus,
+            toStatus: transition.newStatus!,
+            notes: payload.details?.message || `Status updated to ${transition.newStatus}`,
+            changedBy: `vendor-${payload.vendorId}`,
           },
         },
       },

@@ -2132,7 +2132,11 @@ enum OrderStatus {
   CONFIRMATION
   ON_HOLD
   PROCESSING
+  PRE_PRESS
   PRINTING
+  QUALITY_CHECK
+  BINDERY
+  PACKAGING
   PRODUCTION
   SHIPPED
   READY_FOR_PICKUP
@@ -2236,6 +2240,7 @@ enum TranslationStatus {
 enum UserRole {
   CUSTOMER
   ADMIN
+  STAFF
 }
 
 enum PaymentMethodType {
@@ -3097,6 +3102,28 @@ model SEOSuggestion {
 
   @@index([targetType, targetId])
   @@index([status, priority])
+  @@index([createdAt])
+}
+
+// SEO Brain Decision Tracking - Records decisions that need human approval
+model SEOBrainDecision {
+  id             String   @id @default(cuid())
+  decisionType   String   // 'PAGE_OPTIMIZATION', 'CONTENT_UPDATE', etc.
+  targetType     String   // 'CityLandingPage', 'Product', etc.
+  targetId       String
+  analysis       Json     // Performance analysis data
+  options        Json     // Array of possible actions
+  selectedOption String?  // Which option was chosen
+  status         String   @default("PENDING") // 'PENDING', 'APPROVED', 'EXECUTED'
+  beforeMetrics  Json     // Metrics before change
+  afterMetrics   Json?    // Metrics after change
+  respondedAt    DateTime? // When user responded
+  executedAt     DateTime? // When executed
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([targetType, targetId])
+  @@index([status])
   @@index([createdAt])
 }
 

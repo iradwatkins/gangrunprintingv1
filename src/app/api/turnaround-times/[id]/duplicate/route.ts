@@ -42,8 +42,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         basePrice: original.basePrice,
         priceMultiplier: original.priceMultiplier,
         requiresNoCoating: original.requiresNoCoating,
-        restrictedCoatings: original.restrictedCoatings,
-        restrictedOptions: original.restrictedOptions,
+        restrictedCoatings: original.restrictedCoatings as any,
+        restrictedOptions: original.restrictedOptions as any,
         sortOrder: original.sortOrder + 1, // Place after original
         isActive: false, // Start as inactive to prevent conflicts
         updatedAt: new Date(),

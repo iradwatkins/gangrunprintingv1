@@ -9,7 +9,7 @@
  * - Images are ALWAYS optional and NEVER block pricing/checkout
  */
 
-import { describe, test, expect, beforeEach } from '@jest/jest'
+import { describe, test, expect, beforeEach } from '@jest/globals'
 import { ModulePricingEngine } from '../pricing/ModulePricingEngine'
 import { ModuleType } from '../types/StandardModuleTypes'
 import type { ModulePricingContribution } from '../types/StandardModuleTypes'

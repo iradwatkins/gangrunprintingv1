@@ -120,7 +120,7 @@ export function QuantitySelector({
 
       if (customOption) {
         // Use the validation function from transformer
-        const validation = validateCustomQuantity(numValue, customOption)
+        const validation = validateCustomQuantity(numValue, customOption as any)
 
         if (!validation.isValid) {
           setError(validation.error || 'Invalid quantity')

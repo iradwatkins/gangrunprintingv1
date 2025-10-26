@@ -47,8 +47,6 @@ export async function GET(request: NextRequest) {
         role: true,
         emailVerified: true,
         createdAt: true,
-        lastLoginAt: true,
-        isActive: true,
         permissions: true, // Include permissions from database
       },
     })
@@ -173,8 +171,7 @@ export async function POST(request: NextRequest) {
         name: name || email.split('@')[0],
         role,
         permissions: staffPermissions, // Save permissions to database
-        emailVerified: null,
-        isActive: true,
+        emailVerified: false,
         updatedAt: new Date(),
       },
     })
@@ -252,11 +249,10 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 })
     }
 
-    // Soft delete by setting isActive to false
+    // Soft delete by setting updatedAt
     await prisma.user.update({
       where: { id },
       data: {
-        isActive: false,
         updatedAt: new Date(),
       },
     })

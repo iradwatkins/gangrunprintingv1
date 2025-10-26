@@ -84,7 +84,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Transform for frontend compatibility
-    const transformedProduct = transformProductForFrontend(product)
+    const transformedProduct = transformProductForFrontend(product as any)
     return createSuccessResponse(transformedProduct)
   } catch (error) {
     return createDatabaseErrorResponse(error instanceof Error ? error : new Error(String(error)))

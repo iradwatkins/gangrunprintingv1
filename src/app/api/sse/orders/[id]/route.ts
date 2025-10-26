@@ -64,7 +64,7 @@ export async function GET(
                   orderBy: { createdAt: 'desc' },
                   take: 1,
                 },
-                notifications: {
+                Notification: {
                   where: { sent: false },
                   take: 5,
                 },
@@ -83,8 +83,8 @@ export async function GET(
                       carrier: updatedOrder.carrier,
                       updatedAt: updatedOrder.updatedAt,
                     },
-                    latestStatusChange: updatedOrder.statusHistory[0],
-                    pendingNotifications: updatedOrder.notifications.length,
+                    latestStatusChange: updatedOrder.StatusHistory[0],
+                    pendingNotifications: updatedOrder.Notification.length,
                   })}\n\n`
                 )
               )

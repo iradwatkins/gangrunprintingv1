@@ -5,7 +5,8 @@
  */
 
 import { ModuleType } from '../types/StandardModuleTypes'
-import type { ModulePricingContribution, ModulePricingContext } from '../types/StandardModuleTypes'
+import type { ModulePricingContribution } from '../types/StandardModuleTypes'
+import type { ModulePricingContext } from './ModulePricingEngine'
 
 // =============================================================================
 // CACHE KEY GENERATION

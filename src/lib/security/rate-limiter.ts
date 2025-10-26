@@ -38,7 +38,7 @@ interface RateLimitConfig {
   keyPrefix?: string // Prefix for the rate limit key
 }
 
-interface RateLimitResult {
+export interface RateLimitResult {
   allowed: boolean
   remaining: number
   resetTime: number

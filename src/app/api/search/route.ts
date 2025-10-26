@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
 
     // Log the search
     if (query) {
-      logSearch(query, totalCount)
+      logSearch(query)
     }
 
     return NextResponse.json(response)

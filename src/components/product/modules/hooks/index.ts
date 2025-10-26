@@ -24,7 +24,6 @@ export type {
   UsePaperStockModuleProps,
   UseAddonsModuleProps,
   UseTurnaroundModuleProps,
-  UseImageModuleProps,
 } from './StandardModuleHooks'
 
 // Re-export related types for convenience

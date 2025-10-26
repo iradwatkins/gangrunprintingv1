@@ -80,7 +80,7 @@ export function generateSEOReportJSON(data: Partial<SEOReportJSON>): string {
     metadata: {
       generatedAt: new Date().toISOString(),
       ...data.metadata,
-    },
+    } as any,
     summary: data.summary || {
       totalKeywords: 0,
       avgPosition: 0,

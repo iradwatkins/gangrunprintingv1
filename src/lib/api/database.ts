@@ -190,6 +190,6 @@ export const whereBuilders = {
 /**
  * Transaction wrapper
  */
-export async function withTransaction<T>(operation: (tx: typeof prisma) => Promise<T>): Promise<T> {
+export async function withTransaction<T>(operation: (tx: any) => Promise<T>): Promise<T> {
   return await prisma.$transaction(operation)
 }

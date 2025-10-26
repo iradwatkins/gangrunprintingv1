@@ -1,4 +1,14 @@
 /**
+ * Weight calculation parameters
+ */
+interface WeightCalculationParams {
+  paperStockWeight: number
+  width: number
+  height: number
+  quantity: number
+}
+
+/**
  * Calculate the weight of printed materials in pounds
  * Formula: Paper Stock Weight × Size (sq inches) × Quantity = Weight (lbs)
  */

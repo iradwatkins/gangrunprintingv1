@@ -182,7 +182,7 @@ export function useApiBundle<T extends Record<string, any>>(
 
     // Fetch all URLs in parallel with timeout
     const results = await Promise.allSettled(
-      validUrls.map(([key, url]) => fetchWithTimeout(key, url))
+      validUrls.map(([key, url]) => fetchWithTimeout(key, url as string))
     )
 
     const newData: Partial<T> = {}
@@ -194,7 +194,7 @@ export function useApiBundle<T extends Record<string, any>>(
         if (error) {
           newErrors[key as keyof T] = error
         } else {
-          newData[key as keyof T] = data
+          newData[key as keyof T] = data as any
           newErrors[key as keyof T] = null
         }
       } else {

@@ -2,6 +2,7 @@ import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { cache } from '@/lib/redis'
+import { randomBytes } from 'crypto'
 
 export async function GET(): Promise<unknown> {
   try {
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
 
     const sidesOption = await prisma.sidesOption.create({
       data: {
+        id: `so_${randomBytes(16).toString('hex')}`,
         name,
         code: name
           .toLowerCase()

@@ -86,7 +86,7 @@ export function useForm<T extends Record<string, any>>({
 
       try {
         // Create a schema for just this field
-        const fieldSchema = validationSchema.shape[field as string]
+        const fieldSchema = (validationSchema as any).shape?.[field as string]
         if (!fieldSchema) return true
 
         fieldSchema.parse(values[field])

@@ -47,7 +47,7 @@ export const OrderRefundedEmail = ({
       {/* Refund Amount */}
       <Section style={refundBox}>
         <Text style={refundLabel}>Refund Amount</Text>
-        <Text style={refundAmount}>${(refundAmount / 100).toFixed(2)}</Text>
+        <Text style={refundAmountStyle}>${(refundAmount / 100).toFixed(2)}</Text>
         <Text style={orderNumberText}>Order #{orderNumber}</Text>
       </Section>
 
@@ -249,7 +249,7 @@ const refundLabel = {
   fontWeight: '600',
 }
 
-const refundAmount = {
+const refundAmountStyle = {
   fontSize: '36px',
   fontWeight: 'bold',
   color: '#166534',

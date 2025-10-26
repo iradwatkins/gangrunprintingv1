@@ -90,8 +90,6 @@ export {
   getFreightClassForPrintProduct,
   isResidentialFreightAvailable,
   calculateResidentialFreightSurcharge,
-  type FreightClass,
-  type FreightShipmentDetail,
 } from './freight'
 
 // TypeScript Types

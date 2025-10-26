@@ -276,8 +276,10 @@ export class CurrencyService {
       const validTo = new Date(now.getTime() + 24 * 60 * 60 * 1000) // Valid for 24 hours
 
       for (const [currency, rate] of Object.entries(rates)) {
+        const { randomBytes } = await import('crypto')
         await prisma.exchangeRate.create({
           data: {
+            id: `exr_${randomBytes(16).toString('hex')}`,
             fromCurrency: baseCurrency,
             toCurrency: currency,
             rate: rate as number,

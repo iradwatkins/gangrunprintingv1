@@ -35,7 +35,7 @@ export async function sendEmail(template: EmailTemplate) {
       text: template.text,
       reply_to: template.replyTo,
       attachments: template.attachments,
-    })
+    } as any)
 
     if (error) {
       throw new Error(`Failed to send email: ${error.message}`)
@@ -207,11 +207,12 @@ export async function getOrderFilesAsAttachments(orderId: string): Promise<{
     const attachments = []
     for (const file of files) {
       try {
+        if (!file.fileUrl) continue
         const fileBuffer = await downloadFileFromMinIO(BUCKETS.UPLOADS, file.fileUrl)
         attachments.push({
           filename: file.filename,
           content: fileBuffer,
-          contentType: file.mimeType,
+          contentType: file.mimeType || 'application/octet-stream',
         })
       } catch (error) {
         // Continue with other files even if one fails
@@ -219,8 +220,8 @@ export async function getOrderFilesAsAttachments(orderId: string): Promise<{
     }
 
     return {
-      attachments,
-      orderFiles: files,
+      attachments: attachments as any,
+      orderFiles: files as any,
     }
   } catch (error) {
     return { attachments: [], orderFiles: [] }
@@ -253,7 +254,7 @@ export async function sendOrderConfirmationWithFiles(orderData: {
       email: orderData.customerEmail,
       attachments,
       orderFiles,
-    })
+    } as any)
 
     // Send email with attachments
     const result = await sendEmail({
@@ -304,7 +305,7 @@ export async function sendAdminOrderNotification(orderData: {
       ...orderData,
       attachments,
       orderFiles,
-    })
+    } as any)
 
     // Send email with attachments to admin
     const result = await sendEmail({

@@ -240,7 +240,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         imageId: imageId,
       },
       200,
-      null,
+      undefined,
       requestId
     )
   } catch (error) {

@@ -177,6 +177,7 @@ async function handlePaymentFailed(orderId: string, reason: string): Promise<voi
       status: 'PAYMENT_DECLINED',
       StatusHistory: {
         create: {
+            id: crypto.randomUUID(),
           fromStatus: 'PENDING_PAYMENT',
           toStatus: 'PAYMENT_DECLINED',
           notes: `Payment failed: ${reason}`,

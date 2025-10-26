@@ -220,7 +220,7 @@ export class BasePriceEngine {
         errors.push('Custom quantity must be greater than 0')
       }
       // Validate 5000 increment rule for quantities above 5000
-      if (input.customQuantity > 5000 && input.customQuantity % 5000 !== 0) {
+      if (input.customQuantity && input.customQuantity > 5000 && input.customQuantity % 5000 !== 0) {
         errors.push(
           `Custom quantities above 5000 must be in increments of 5000. Received: ${input.customQuantity}`
         )

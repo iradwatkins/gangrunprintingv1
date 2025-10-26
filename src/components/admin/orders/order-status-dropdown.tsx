@@ -204,13 +204,13 @@ export function OrderStatusDropdown({
                     {nextState.requiresPayment && (
                       <Icons.CreditCard
                         className="h-3 w-3 text-muted-foreground"
-                        title="Requires payment"
+                        aria-label="Requires payment"
                       />
                     )}
                     {nextState.requiresAdmin && (
                       <Icons.Shield
                         className="h-3 w-3 text-muted-foreground"
-                        title="Requires admin"
+                        aria-label="Requires admin"
                       />
                     )}
                   </div>

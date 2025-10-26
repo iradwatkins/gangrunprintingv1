@@ -104,11 +104,14 @@ export function createValidationErrorResponse(
   errors: Record<string, unknown>[],
   requestId?: string
 ): NextResponse<ApiError> {
-  const details = errors.map((err) => ({
-    field: err.path?.join('.') || 'unknown',
-    message: err.message || 'Validation error',
-    code: err.code || 'VALIDATION_ERROR',
-  }))
+  const details = errors.map((e) => {
+    const err = e as any
+    return {
+      field: err.path?.join('.') || 'unknown',
+      message: err.message || 'Validation error',
+      code: err.code || 'VALIDATION_ERROR',
+    }
+  })
 
   return createErrorResponse('Validation failed', 400, { validationErrors: details }, requestId)
 }
@@ -131,7 +134,8 @@ export function createDatabaseErrorResponse(
     P1009: { message: 'Database connection error', statusCode: 503 },
   }
 
-  const errorCode = error.code
+  const err = error as any
+  const errorCode = err.code
   const prismaError = prismaErrors[errorCode]
 
   if (prismaError) {
@@ -141,7 +145,7 @@ export function createDatabaseErrorResponse(
       {
         databaseError: true,
         originalError: errorCode,
-        meta: error.meta,
+        meta: err.meta,
       },
       requestId
     )

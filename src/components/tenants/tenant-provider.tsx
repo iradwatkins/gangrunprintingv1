@@ -2,6 +2,26 @@
 
 import { createContext, useContext, useState, useEffect } from 'react'
 
+interface TenantInfo {
+  id: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain: string
+  isActive: boolean
+  settings?: Record<string, unknown>
+  branding?: Record<string, unknown>
+  locales: string[]
+  defaultLocale: string
+  currency?: string
+  timezone?: string
+}
+
+interface TenantContext {
+  tenant: TenantInfo | null
+  locale: string
+}
+
 interface TenantProviderProps {
   children: React.ReactNode
   initialTenant: TenantContext | null

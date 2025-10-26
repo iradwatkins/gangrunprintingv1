@@ -7,6 +7,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
+import { randomBytes } from 'crypto'
 
 export async function POST(request: Request) {
   try {
@@ -20,6 +21,7 @@ export async function POST(request: Request) {
     // Create funnel visit record
     const visit = await prisma.funnelVisit.create({
       data: {
+        id: `fv_${randomBytes(16).toString('hex')}`,
         funnelId: funnelId || null,
         userId: user?.id || null,
         sessionId,

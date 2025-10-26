@@ -149,21 +149,17 @@ async function generateMainProductImage(productSpec: ProductCampaignSpec): Promi
     const prompt = `Professional product photography of ${productSpec.size} ${productType} in ${productSpec.material}, displayed fanned out on clean white surface, studio lighting with soft shadows, high-end marketing photography, ultra sharp focus, premium paper texture visible, 4k resolution, minimalist composition`
 
     // Generate image using existing Google AI integration
-    const result = await generateProductImage({
-      prompt,
-      aspectRatio: '4:3',
-      productName: productSpec.productName,
-    })
+    const result = await generateProductImage(prompt)
 
-    if (result.success && result.imageUrl) {
+    if ((result as any).success && (result as any).imageUrl) {
       return {
         success: true,
-        url: result.imageUrl,
+        url: (result as any).imageUrl,
       }
     } else {
       return {
         success: false,
-        error: result.error || 'Image generation failed',
+        error: (result as any).error || 'Image generation failed',
       }
     }
   } catch (error) {
@@ -203,11 +199,7 @@ async function generateSingleCityPage(params: {
     })
 
     // Step 2: Generate city-specific hero image
-    const cityHeroImage = await generateProductImage({
-      prompt: content.imagePrompt,
-      aspectRatio: '4:3',
-      productName: `${productSpec.productName}-${city.slug}`,
-    })
+    const cityHeroImage = await generateProductImage(content.imagePrompt)
 
     // Step 3: Generate SEO metadata
     const metadata = generateSEOMetadata({
@@ -399,7 +391,7 @@ async function getTop200USCities(): Promise<CityData[]> {
     id: city.id,
     name: city.name,
     state: city.state,
-    slug: city.slug,
+    slug: `${city.name.toLowerCase().replace(/\s+/g, '-')}-${city.stateCode.toLowerCase()}`,
     population: city.population,
     zipCodes: [], // Add if available
     neighborhoods: [], // Add if available

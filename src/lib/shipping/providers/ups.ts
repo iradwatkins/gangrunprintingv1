@@ -78,10 +78,10 @@ export class UPSProvider implements ShippingProvider {
 
       this.authToken = response.data
       // Set token expiry with 5-minute buffer
-      this.tokenExpiry = new Date(Date.now() + (this.authToken.expires_in - 300) * 1000)
+      this.tokenExpiry = new Date(Date.now() + (this.authToken!.expires_in - 300) * 1000)
 
       // Update default headers
-      this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken.access_token}`
+      this.client.defaults.headers.common['Authorization'] = `Bearer ${this.authToken!.access_token}`
     } catch (error) {
       throw new Error('Failed to authenticate with UPS API')
     }
@@ -155,14 +155,14 @@ export class UPSProvider implements ShippingProvider {
       }
 
       const rates: ShippingRate[] = response.data.RateResponse.RatedShipment.filter(
-        (shipment: Record<string, unknown>) => shipment.Service.Code in SERVICE_NAMES
-      ).map((shipment: Record<string, unknown>) => {
+        (shipment: any) => shipment.Service.Code in SERVICE_NAMES
+      ).map((shipment: any) => {
         const serviceCode = shipment.Service.Code
         const totalCharge = parseFloat(shipment.TotalCharges.MonetaryValue)
         const estimatedDays = this.getEstimatedDays(serviceCode)
         const markup = 1 + (upsConfig.markupPercentage || 0) / 100
 
-        const timeInTransit = shipment.TimeInTransit
+        const timeInTransit = shipment.TimeInTransit as any
         let deliveryDate: Date | undefined
         if (timeInTransit?.ServiceSummary?.EstimatedArrival) {
           const arrival = timeInTransit.ServiceSummary.EstimatedArrival
@@ -311,14 +311,18 @@ export class UPSProvider implements ShippingProvider {
       const package_ = shipment.package[0]
 
       const events: TrackingEvent[] = (package_.activity || []).map(
-        (activity: Record<string, unknown>) => ({
-          timestamp: new Date(`${activity.date} ${activity.time}`),
-          location: activity.location?.address
-            ? `${activity.location.address.city}, ${activity.location.address.stateProvince}`
-            : 'Unknown',
-          status: activity.status.type,
-          description: activity.status.description,
-        })
+        (activity: Record<string, unknown>) => {
+          const location = activity.location as Record<string, any> | undefined
+          const address = location?.address as Record<string, any> | undefined
+          return {
+            timestamp: new Date(`${activity.date} ${activity.time}`),
+            location: address
+              ? `${address.city}, ${address.stateProvince}`
+              : 'Unknown',
+            status: (activity.status as Record<string, any>).type,
+            description: (activity.status as Record<string, any>).description,
+          }
+        }
       )
 
       const currentStatus = package_.currentStatus?.description

@@ -118,9 +118,9 @@ export function deepMerge<T extends Record<string, unknown>>(target: T, source: 
 
   for (const key in source) {
     if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-      result[key] = deepMerge((result[key] as Record<string, unknown> | undefined) || {}, source[key] as Record<string, unknown>) as T[Extract<keyof T, string>]
+      result[key] = deepMerge((result[key] as Record<string, unknown> | undefined) || {}, source[key] as Record<string, unknown>) as any
     } else {
-      result[key] = source[key] as T[keyof T]
+      result[key] = source[key] as any
     }
   }
 

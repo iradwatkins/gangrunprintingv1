@@ -88,7 +88,7 @@ export async function getPageSearchData(
       },
     })
 
-    return response.data.rows || []
+    return (response.data.rows || []) as GSCQuery[]
   } catch (error) {
     console.error('Google Search Console API error:', error)
     throw new Error(
@@ -115,7 +115,7 @@ export async function getSiteSearchData(startDate: string, endDate: string): Pro
       },
     })
 
-    return response.data.rows || []
+    return (response.data.rows || []) as GSCQuery[]
   } catch (error) {
     console.error('Site-wide GSC data error:', error)
     return []
@@ -183,7 +183,7 @@ export async function trackProductSEO(productId: string) {
           avgPosition: Math.round(avgPosition * 10) / 10,
           totalKeywords: rankings.length,
         },
-      },
+      } as any,
     },
   })
 

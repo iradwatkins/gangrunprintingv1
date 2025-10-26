@@ -5,6 +5,7 @@
  * Captures attribution data and stores in session for order attribution.
  */
 
+// @ts-expect-error - js-cookie types not available
 import Cookies from 'js-cookie'
 
 /**

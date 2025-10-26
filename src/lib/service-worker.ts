@@ -76,7 +76,7 @@ export class ServiceWorkerManager {
     try {
       const subscription = await this.registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(publicKey),
+        applicationServerKey: this.urlBase64ToUint8Array(publicKey) as any,
       })
 
       return subscription

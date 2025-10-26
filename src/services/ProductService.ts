@@ -212,7 +212,7 @@ export class ProductService {
         createdAt: true,
         updatedAt: true,
         ProductCategory: true,
-        productImages: {
+        ProductImage: {
           select: {
             id: true,
             imageId: true,

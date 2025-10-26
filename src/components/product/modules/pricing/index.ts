@@ -35,7 +35,6 @@ export type { CachedPricingResult, CachedModuleContext, PricingCacheStats } from
 // Re-export types from standard module types that are needed for pricing
 export type {
   ModulePricingContribution,
-  ModulePricingCalculation,
   ModuleType,
 } from '../types/StandardModuleTypes'
 
@@ -118,7 +117,7 @@ export const PricingUtils = {
   /**
    * Check if pricing context is complete
    */
-  hasCompletePricingData: (context: ModulePricingContext): boolean => {
+  hasCompletePricingData: (context: any): boolean => {
     return !!(
       context.quantity > 0 &&
       context.paperPricePerUnit >= 0 &&

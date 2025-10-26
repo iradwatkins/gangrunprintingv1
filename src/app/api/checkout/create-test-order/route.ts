@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email for test orders
     try {
-      await OrderEmailService.sendOrderConfirmation(order)
+      await OrderEmailService.sendOrderConfirmation(order as any)
       //   `[Test Order] Confirmation email sent to ${order.email} for order ${order.orderNumber}`
       // )
     } catch (emailError) {

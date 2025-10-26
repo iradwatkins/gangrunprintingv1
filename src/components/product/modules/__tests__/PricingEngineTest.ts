@@ -8,7 +8,7 @@
  * STEP 3: Final Price = base_price + addon_price × turnaround
  */
 
-import { describe, test, expect, beforeEach } from '@jest/jest'
+import { describe, test, expect, beforeEach } from '@jest/globals'
 import { ModulePricingEngine } from '../pricing/ModulePricingEngine'
 import { ModuleType } from '../types/StandardModuleTypes'
 import type { ModulePricingContribution } from '../types/StandardModuleTypes'
@@ -75,6 +75,7 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
+          description: 'Module calculation',
           breakdown: [
             {
               type: 'quantity',
@@ -90,9 +91,10 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
+          description: 'Module calculation',
           breakdown: [
-            { type: 'coating', cost: 1.2 }, // 20% coating upcharge
-            { type: 'sides', cost: 1.1 }, // 10% sides upcharge
+            { item: 'Coating', type: 'coating', cost: 1.2 }, // 20% coating upcharge
+            { item: 'Sides', type: 'sides', cost: 1.1 }, // 10% sides upcharge
           ],
         },
       }
@@ -137,6 +139,7 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
+          description: 'Quantity calculation',
           breakdown: [{ type: 'quantity', item: '1000 units', cost: 1000 }],
         },
       }
@@ -222,6 +225,7 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
+          description: 'Quantity calculation',
           breakdown: [{ type: 'quantity', item: '500 units', cost: 500 }],
         },
       }
@@ -305,6 +309,7 @@ describe('ModulePricingEngine', () => {
         basePrice: 0,
         isValid: true,
         calculation: {
+          description: 'Quantity calculation',
           breakdown: [{ type: 'quantity', item: '750 units', cost: 750 }],
         },
       }
@@ -336,6 +341,7 @@ describe('ModulePricingEngine', () => {
         basePrice: 0,
         isValid: true,
         calculation: {
+          description: 'Quantity calculation',
           breakdown: [{ type: 'quantity', item: '300 units', cost: 300 }],
         },
       }
@@ -391,6 +397,7 @@ describe('ModulePricingEngine', () => {
         multiplier: 1,
         isValid: true,
         calculation: {
+          description: 'Quantity calculation',
           breakdown: [{ type: 'quantity', item: '1000 units', cost: 1000 }],
         },
       }
@@ -443,6 +450,7 @@ describe('ModulePricingEngine', () => {
         basePrice: 0,
         isValid: true,
         calculation: {
+          description: 'Quantity calculation',
           breakdown: [{ type: 'quantity', item: '100 units', cost: 100 }],
         },
       }
@@ -477,7 +485,7 @@ describe('ModulePricingEngine', () => {
       const quantityContrib: ModulePricingContribution = {
         basePrice: 0,
         isValid: true,
-        calculation: { breakdown: [{ type: 'quantity', item: '100 units', cost: 100 }] },
+        calculation: { description: 'Quantity calculation', breakdown: [{ type: 'quantity', item: '100 units', cost: 100 }] },
       }
       const paperContrib: ModulePricingContribution = { basePrice: 1.0, isValid: true }
       const sizeContrib: ModulePricingContribution = { basePrice: 0, multiplier: 1, isValid: true }

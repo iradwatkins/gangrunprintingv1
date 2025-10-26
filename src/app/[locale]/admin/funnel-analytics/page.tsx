@@ -297,7 +297,7 @@ export default async function FunnelAnalyticsPage({ searchParams }: FunnelAnalyt
       <div className="flex gap-2">
         {Object.entries(periodLabels).map(([key, label]) => (
           <Button key={key} asChild size="sm" variant={data.period === key ? 'default' : 'outline'}>
-            <Link href={`/admin/funnel-analytics?funnelId=${data.selectedFunnel.id}&period=${key}`}>
+            <Link href={`/admin/funnel-analytics?funnelId=${data.selectedFunnel?.id}&period=${key}`}>
               {label}
             </Link>
           </Button>
