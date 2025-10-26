@@ -1,18 +1,18 @@
 import createMiddleware from 'next-intl/middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { locales, defaultLocale } from './src/i18n'
+import { routing } from './src/lib/i18n/routing'
 
-// Create the next-intl middleware
-// SEO-COMPLIANT LOCALE ROUTING: Use 'always' mode (URL prefixes required)
-// All URLs require locale prefix: /en/ or /es/ for proper search engine crawling
-// This enables Google/Bing to index both language versions independently
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'always', // SEO-compliant routing - all URLs require /en/ or /es/ prefix
-  localeDetection: true, // Auto-detect from Accept-Language header and NEXT_LOCALE cookie
-})
+// Extract locales from routing for compatibility
+const locales = routing.locales
+const defaultLocale = routing.defaultLocale
+
+// Create the next-intl middleware using the routing configuration
+// SEO BEST PRACTICE: Use 'as-needed' locale prefix strategy
+// - English (default): No prefix → /products, /admin/dashboard, /contact
+// - Spanish: /es/ prefix → /es/products, /es/admin/dashboard, /es/contact
+// This is the industry standard (Google, Amazon, Wikipedia) and Google recognizes it
+const intlMiddleware = createMiddleware(routing)
 
 export function middleware(request: NextRequest) {
   // Get the pathname from the request FIRST (before intl middleware)
@@ -27,6 +27,7 @@ export function middleware(request: NextRequest) {
   const pathnameWithoutLocale = pathnameLocale
     ? pathname.replace(`/${pathnameLocale}`, '') || '/'
     : pathname
+
   // CATEGORY URL REDIRECTS: Redirect old category URLs to new structure
   if (pathnameWithoutLocale.startsWith('/products/flyers')) {
     const newUrl = pathnameLocale

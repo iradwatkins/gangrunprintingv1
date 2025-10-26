@@ -5,7 +5,7 @@ import { AlertTriangle, RefreshCw, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 export default function ProductError({
   error,

@@ -56,6 +56,9 @@ export async function GET(request: NextRequest) {
         productId,
         sortOrder: { gte: 999 }, // Customer images have high sort order
       },
+      include: {
+        Image: true, // Include Image relation to access url, thumbnailUrl, etc.
+      },
       orderBy: { createdAt: 'desc' },
     })
 
@@ -64,10 +67,10 @@ export async function GET(request: NextRequest) {
         success: true,
         images: images.map((img) => ({
           id: img.id,
-          url: img.url,
-          thumbnailUrl: img.thumbnailUrl,
-          fileName: img.alt?.replace('Customer upload: ', '') || 'Uploaded file',
-          fileSize: img.fileSize,
+          url: img.Image.url, // Access via Image relation
+          thumbnailUrl: img.Image.thumbnailUrl,
+          fileName: img.Image.alt?.replace('Customer upload: ', '') || 'Uploaded file',
+          fileSize: img.Image.fileSize,
           uploadedAt: img.createdAt,
         })),
       },

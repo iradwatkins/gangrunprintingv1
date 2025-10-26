@@ -28,27 +28,27 @@ model Account {
 }
 
 model AddOn {
-  id                       String           @id
-  name                     String           @unique
+  id                       String       @id
+  name                     String       @unique
   description              String?
   tooltipText              String?
   pricingModel             PricingModel
   configuration            Json
-  additionalTurnaroundDays Int              @default(0)
-  sortOrder                Int              @default(0)
-  isActive                 Boolean          @default(true)
+  additionalTurnaroundDays Int          @default(0)
+  sortOrder                Int          @default(0)
+  isActive                 Boolean      @default(true)
   adminNotes               String?
 
   // I18N: Multilingual content support
   // Structure: { en: { name, description, tooltipText }, es: { name, description, tooltipText } }
-  translations             Json?
+  translations Json?
 
-  createdAt                DateTime         @default(now())
-  updatedAt                DateTime @updatedAt
-  AddOnSetItem             AddOnSetItem[]
-  AddOnSubOption           AddOnSubOption[]
-  OrderItemAddOn           OrderItemAddOn[]
-  ProductAddOn             ProductAddOn[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  AddOnSetItem   AddOnSetItem[]
+  AddOnSubOption AddOnSubOption[]
+  OrderItemAddOn OrderItemAddOn[]
+  ProductAddOn   ProductAddOn[]
 }
 
 model AddOnSet {
@@ -58,7 +58,7 @@ model AddOnSet {
   sortOrder       Int               @default(0)
   isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime          @updatedAt
   AddOnSetItem    AddOnSetItem[]
   ProductAddOnSet ProductAddOnSet[]
   LandingPageSet  LandingPageSet[] // Landing page sets using this addon set
@@ -72,7 +72,7 @@ model AddOnSetItem {
   isDefault       Boolean         @default(false)
   sortOrder       Int             @default(0)
   createdAt       DateTime        @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime        @updatedAt
   AddOn           AddOn           @relation(fields: [addOnId], references: [id], onDelete: Cascade)
   AddOnSet        AddOnSet        @relation(fields: [addOnSetId], references: [id], onDelete: Cascade)
 
@@ -98,23 +98,23 @@ model AddOnSubOption {
 }
 
 model Address {
-  id                    String                 @id
-  userId                String
-  label                 String?
-  name                  String
-  company               String?
-  street                String
-  street2               String?
-  city                  String
-  state                 String
-  zipCode               String
-  country               String                 @default("United States")
-  phone                 String?
-  isDefault             Boolean                @default(false)
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime @updatedAt
-  User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  SavedPaymentMethod    SavedPaymentMethod[]   @relation("BillingAddress")
+  id                 String               @id
+  userId             String
+  label              String?
+  name               String
+  company            String?
+  street             String
+  street2            String?
+  city               String
+  state              String
+  zipCode            String
+  country            String               @default("United States")
+  phone              String?
+  isDefault          Boolean              @default(false)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  SavedPaymentMethod SavedPaymentMethod[] @relation("BillingAddress")
 
   @@index([userId])
   @@index([userId, isDefault])
@@ -123,24 +123,24 @@ model Address {
 model SavedPaymentMethod {
   id               String   @id
   userId           String
-  squareCustomerId String   // Square customer profile reference
-  squareCardId     String   // Square tokenized card reference
-  nickname         String?  // "Personal Visa", "Business Card"
-  maskedNumber     String   // "****-****-****-1234"
-  cardBrand        String   // "VISA", "MASTERCARD", etc.
+  squareCustomerId String // Square customer profile reference
+  squareCardId     String // Square tokenized card reference
+  nickname         String? // "Personal Visa", "Business Card"
+  maskedNumber     String // "****-****-****-1234"
+  cardBrand        String // "VISA", "MASTERCARD", etc.
   expiryMonth      Int
   expiryYear       Int
   isDefault        Boolean  @default(false)
-  billingAddressId String?  // Link to Address table
+  billingAddressId String? // Link to Address table
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  BillingAddress  Address? @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  BillingAddress Address? @relation("BillingAddress", fields: [billingAddressId], references: [id])
 
+  @@unique([userId, squareCardId])
   @@index([userId])
   @@index([userId, isDefault])
-  @@unique([userId, squareCardId])
 }
 
 model Airport {
@@ -185,7 +185,7 @@ model CampaignABTest {
   startedAt         DateTime?
   endedAt           DateTime?
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime          @updatedAt
   MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
@@ -230,7 +230,7 @@ model CampaignSend {
   errorMessage      String?
   trackingData      Json?
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime          @updatedAt
   MarketingCampaign MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   User              User?             @relation(fields: [userId], references: [id])
 
@@ -262,7 +262,7 @@ model CoatingOption {
   name              String              @unique
   description       String?
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime            @updatedAt
   PaperStockCoating PaperStockCoating[]
 }
 
@@ -314,7 +314,7 @@ model CustomerJourney {
   engagement         Json?
   preferences        Json?
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime             @updatedAt
   User               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   CustomerTouchpoint CustomerTouchpoint[]
 
@@ -334,7 +334,7 @@ model CustomerSegment {
   count             Int                 @default(0)
   lastUpdated       DateTime            @default(now())
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime            @updatedAt
   MarketingCampaign MarketingCampaign[]
   MarketingWorkflow MarketingWorkflow[]
   SMSCampaign       SMSCampaign[]
@@ -492,9 +492,30 @@ model File {
   Order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
+model ImageCampaign {
+  id               String   @id
+  name             String   @unique // e.g., "200 Cities - Postcards (English)"
+  slug             String   @unique // e.g., "200-cities-postcards-en"
+  description      String?
+  locale           String   @default("en") // "en" or "es"
+  status           String   @default("active") // active, archived, draft
+  promptTemplateId String? // Prompt template used for this campaign
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  images         Image[]
+  PromptTemplate PromptTemplate? @relation(fields: [promptTemplateId], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([locale])
+  @@index([status])
+  @@index([promptTemplateId])
+}
+
 model Image {
-  id           String         @id
-  name         String         @unique
+  id           String   @id
+  name         String   @unique
   description  String?
   url          String
   thumbnailUrl String?
@@ -508,15 +529,106 @@ model Image {
   height       Int?
   fileSize     Int?
   mimeType     String?
-  category     String         @default("general")
-  tags         String[]       @default([])
+  category     String   @default("general")
+  tags         String[] @default([])
   metadata     Json?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime @updatedAt
+
+  // AI Image Management enhancements
+  campaignId        String? // Links to ImageCampaign for organized storage
+  locale            String? // "en" or "es" - for diversity tracking
+  version           Int     @default(1) // v1, v2, v3... (track regenerations)
+  isActive          Boolean @default(true) // Mark preferred version
+  originalPrompt    String? // Store the prompt used to generate
+  diversityMetadata Json? // { ethnicity: ["latin_american"], demographics: {...} }
+  cityName          String? // For city-specific campaigns (e.g., "Chicago")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
   ProductImage ProductImage[]
+  campaign     ImageCampaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
 
   @@index([category])
   @@index([createdAt])
+  @@index([campaignId])
+  @@index([locale])
+  @@index([isActive])
+  @@index([cityName])
+}
+
+// ============================================================================
+// PROMPT REFINEMENT STUDIO - AI Image Generation Templates
+// ============================================================================
+
+model PromptTemplate {
+  id          String         @id @default(cuid())
+  name        String // "E-Commerce Clean Product Shot"
+  slug        String         @unique // "ecommerce-clean-product-shot"
+  description String? // "Pure white background, 100% product focus"
+  category    PromptCategory @default(PRODUCT) // PRODUCT, PROMOTIONAL, SEASONAL
+  status      PromptStatus   @default(DRAFT) // DRAFT, PRODUCTION, ARCHIVED
+
+  // Prompt content (Main prompt)
+  promptText String @db.Text // The actual prompt (base prompt)
+  variables  Json? // { productType: "[PRODUCT]", cityName: "[CITY]" }
+
+  // Prompt Studio Extensions (Oct 25, 2025)
+  productType     String? // "Business Cards", "Flyers", etc.
+  styleModifiers  String? @db.Text // Style and aesthetic preferences
+  technicalSpecs  String? @db.Text // Technical quality specs
+  negativePrompt  String? @db.Text // Things to avoid
+  isTemplate      Boolean @default(false) // Template vs user-created prompt
+  currentIteration Int    @default(1) // Prompt refinement iteration counter
+
+  // AI Configuration
+  aiProvider  String @default("google-imagen") // "google-imagen", "openai-dalle"
+  aspectRatio String @default("1:1") // "1:1", "16:9", "4:3"
+
+  // Testing history
+  testImages PromptTestImage[]
+
+  // Usage tracking - where this prompt is used
+  productImages ProductImage[]
+  landingPages  LandingPageSet[]
+  campaigns     ImageCampaign[]
+
+  // Metadata
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@index([slug])
+  @@index([isActive])
+  @@index([isTemplate]) // For template browsing
+}
+
+model PromptTestImage {
+  id                String         @id @default(cuid())
+  promptTemplateId  String // Renamed for clarity
+  promptTemplate    PromptTemplate @relation(fields: [promptTemplateId], references: [id], onDelete: Cascade)
+
+  // Test details
+  imageUrl   String   @db.Text // URL to generated image (base64 or storage URL)
+  promptText String   @db.Text // Exact prompt used (captures iterations)
+  iteration  Int      @default(1) // v1, v2, v3...
+  config     Json? // Generation config used { aspectRatio, imageSize, etc. }
+
+  // User feedback (Prompt Studio - Oct 25, 2025)
+  quality  ImageQuality @default(good) // Quick rating: excellent/good/poor
+  rating   Int?         // Optional 1-5 stars (legacy/detailed rating)
+  notes    String?      // "Too dark", "Perfect!", etc.
+  isWinner Boolean      @default(false) // Mark the best one
+
+  createdAt DateTime @default(now())
+
+  @@index([promptTemplateId])
+  @@index([iteration])
+  @@index([isWinner])
+  @@index([quality]) // For filtering best results
 }
 
 model Locale {
@@ -551,7 +663,7 @@ model MarketingAsset {
   folder     String?
   createdBy  String
   createdAt  DateTime  @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime  @updatedAt
 
   @@index([folder])
   @@index([type])
@@ -582,7 +694,7 @@ model MarketingCampaign {
   utmMedium         String              @default("email")
   createdBy         String
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime            @updatedAt
   CampaignABTest    CampaignABTest[]
   CampaignAnalytics CampaignAnalytics[]
   CampaignSend      CampaignSend[]
@@ -604,7 +716,7 @@ model MarketingWorkflow {
   segmentId         String?
   settings          Json?
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime            @updatedAt
   CustomerSegment   CustomerSegment?    @relation(fields: [segmentId], references: [id])
   WorkflowExecution WorkflowExecution[]
 
@@ -622,7 +734,7 @@ model N8NWebhook {
   lastTriggered DateTime?
   triggerCount  Int             @default(0)
   createdAt     DateTime        @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime        @updatedAt
   N8NWebhookLog N8NWebhookLog[]
 
   @@index([isActive])
@@ -643,25 +755,25 @@ model N8NWebhookLog {
 }
 
 model CartSession {
-  id             String   @id
-  sessionId      String   @unique
+  id             String    @id
+  sessionId      String    @unique
   userId         String?
   email          String?
   phone          String?
   items          Json // Array of cart items with product info
   subtotal       Float
-  tax            Float    @default(0)
-  shipping       Float    @default(0)
+  tax            Float     @default(0)
+  shipping       Float     @default(0)
   total          Float
   shippingMethod String?
-  lastActivity   DateTime @default(now())
-  abandoned      Boolean  @default(false)
+  lastActivity   DateTime  @default(now())
+  abandoned      Boolean   @default(false)
   abandonedAt    DateTime?
-  recovered      Boolean  @default(false)
+  recovered      Boolean   @default(false)
   recoveredAt    DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  User           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  User           User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([sessionId])
   @@index([userId])
@@ -686,7 +798,7 @@ model Coupon {
   isActive    Boolean   @default(true)
   metadata    Json? // Store campaign info (e.g., "winback", "abandoned_cart")
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
   User        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([code])
@@ -717,7 +829,7 @@ model OptionValue {
   width          Float?
   height         Float?
   createdAt      DateTime      @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime      @updatedAt
   ProductOption  ProductOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
 
   @@index([optionId])
@@ -740,7 +852,7 @@ model Order {
   shippingMethod      String?
   trackingNumber      String?
   createdAt           DateTime  @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime  @updatedAt
   adminNotes          String?
   carrier             Carrier?
   deleteAt            DateTime  @default(dbgenerated("(now() + '1 year'::interval)"))
@@ -815,6 +927,13 @@ model Order {
   @@index([status]) // ORDER STATUS MANAGER: Index for efficient status lookups
   @@index([userId, createdAt]) // MARKETING AUTOMATION: Efficient anniversary queries
   @@index([createdAt, status]) // MARKETING AUTOMATION: Efficient win-back queries
+  // PERFORMANCE: Additional indexes for common queries
+  @@index([userId])
+  @@index([vendorId])
+  @@index([email])
+  @@index([trackingNumber])
+  @@index([selectedAirportId])
+  @@index([createdAt])
 }
 
 model OrderItem {
@@ -829,11 +948,16 @@ model OrderItem {
   calculatedWeight Float?
   dimensions       Json?
   paperStockId     String?
-  categoryId       String?          // For analytics - product category ID
-  categoryName     String?          // For analytics - product category name
+  categoryId       String? // For analytics - product category ID
+  categoryName     String? // For analytics - product category name
   Order            Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
   PaperStock       PaperStock?      @relation(fields: [paperStockId], references: [id])
   OrderItemAddOn   OrderItemAddOn[]
+
+  // PERFORMANCE: Indexes for common queries
+  @@index([orderId])
+  @@index([paperStockId])
+  @@index([categoryId])
 }
 
 model OrderItemAddOn {
@@ -847,6 +971,8 @@ model OrderItemAddOn {
   OrderItem       OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
 
   @@unique([orderItemId, addOnId])
+  @@index([orderItemId])
+  @@index([addOnId])
 }
 
 model PaperException {
@@ -856,7 +982,7 @@ model PaperException {
   doubleSidedMultiplier Float      @default(1.75)
   description           String?
   createdAt             DateTime   @default(now())
-  updatedAt             DateTime @updatedAt
+  updatedAt             DateTime   @updatedAt
   PaperStock            PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
 
   @@index([exceptionType])
@@ -880,7 +1006,7 @@ model PaperStock {
 
   // I18N: Multilingual content support
   // Structure: { en: { name, tooltipText }, es: { name, tooltipText } }
-  translations         Json?
+  translations Json?
 
   OrderItem         OrderItem[]
   PaperException    PaperException?
@@ -910,7 +1036,7 @@ model PaperStockSet {
   sortOrder            Int                    @default(0)
   isActive             Boolean                @default(true)
   createdAt            DateTime               @default(now())
-  updatedAt            DateTime @updatedAt
+  updatedAt            DateTime               @updatedAt
   PaperStockSetItem    PaperStockSetItem[]
   ProductPaperStockSet ProductPaperStockSet[]
   LandingPageSet       LandingPageSet[] // Landing page sets using this paper stock
@@ -923,7 +1049,7 @@ model PaperStockSetItem {
   isDefault       Boolean       @default(false)
   sortOrder       Int           @default(0)
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime      @updatedAt
   PaperStock      PaperStock    @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
   PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
 
@@ -986,7 +1112,7 @@ model Product {
 
   // I18N: Multilingual content support
   // Structure: { en: { name, description, shortDescription }, es: { name, description, shortDescription } }
-  translations     Json?
+  translations Json?
 
   // SEO City Products (Epic 8)
   parentProductId String? // If this is a city-specific product
@@ -1009,6 +1135,12 @@ model Product {
   imagePromptsUsed      String[]  @default([]) // Array of prompt names used for AI images
   seoScore              Float? // Overall SEO quality score 0-100
   lastOptimizedAt       DateTime? // Last time AI optimization was applied
+
+  // ChatGPT Agentic Commerce Protocol (ACP) Fields
+  itemGroupId           String? @unique // Groups variants together for ChatGPT shopping
+  gtin                  String? @unique // Global Trade Item Number (UPC/EAN)
+  enableChatGPTSearch   Boolean @default(true) // Allow product in ChatGPT search results
+  enableChatGPTCheckout Boolean @default(true) // Allow direct checkout via ChatGPT
 
   // Relations for parent-child products
   ParentProduct            Product?                   @relation("ProductHierarchy", fields: [parentProductId], references: [id])
@@ -1039,27 +1171,74 @@ model Product {
   ProductSEOContent        ProductSEOContent[]
   ProductPerformance       ProductPerformance[] // AI System performance tracking
   FeaturedProductSelection FeaturedProductSelection[] // Menu system featured products
+  ProductVariant           ProductVariant[] // ChatGPT ACP variants
 
   @@index([categoryId])
   @@index([slug])
   @@index([isLandingPageProduct])
   @@index([landingPageSetId])
+  // PERFORMANCE: Additional indexes for common queries
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([createdAt])
+  @@index([cityId])
+  @@index([parentProductId])
+  @@index([isActive, isFeatured]) // Compound index for featured active products
+}
+
+// ChatGPT Agentic Commerce Protocol (ACP) - Product Variants
+// Represents specific SKU combinations for ChatGPT shopping feed
+model ProductVariant {
+  id        String @id @default(cuid())
+  productId String
+
+  // Required ChatGPT ACP fields
+  offerId           String @unique // SKU + seller + price combo (must be unique)
+  title             String // Variant-specific title (e.g., "Business Cards - Glossy 100lb - 3.5x2 - 100 qty")
+  price             Float // Final price for this exact variant
+  availability      String // "in_stock", "out_of_stock", "preorder", "backorder"
+  inventoryQuantity Int    @default(999999) // Available quantity
+
+  // Custom variant fields for printing (ChatGPT ACP supports custom_variant1/2/3)
+  paperStock String? // e.g., "Glossy 100lb", "Matte 80lb" (custom_variant1)
+  size       String? // e.g., "3.5x2", "4x6", "8.5x11" (custom_variant2)
+  quantity   String? // e.g., "100", "500", "1000" (custom_variant3)
+
+  // Auto-calculated from product configuration
+  turnaroundTime    String? // e.g., "3 business days", "Same day"
+  totalSheetsNeeded Int? // For gang run calculations
+
+  // Variant-specific image (optional - can use product's main image)
+  imageUrl String? // Variant-specific image URL
+
+  // Tracking
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([offerId])
+  @@index([isActive])
+  @@index([availability])
 }
 
 model ProductSEOContent {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   city        String?
   state       String?
-  content     String   @db.Text
+  content     String    @db.Text
   wordCount   Int
-  generatedAt DateTime @default(now())
-  model       String   // "qwen2.5:32b"
-  approved    Boolean  @default(false)
+  generatedAt DateTime  @default(now())
+  model       String // "qwen2.5:32b"
+  approved    Boolean   @default(false)
   publishedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([productId])
   @@index([approved])
@@ -1097,54 +1276,57 @@ model ProductAddOnSet {
 }
 
 model ProductCategory {
-  id               String            @id
-  name             String            @unique
-  slug             String            @unique
+  id               String  @id
+  name             String  @unique
+  slug             String  @unique
   description      String?
-  sortOrder        Int               @default(0)
-  isActive         Boolean           @default(true)
-  isHidden         Boolean           @default(false) // Hidden from navigation but products still searchable/SEO-friendly
+  sortOrder        Int     @default(0)
+  isActive         Boolean @default(true)
+  isHidden         Boolean @default(false) // Hidden from navigation but products still searchable/SEO-friendly
   parentCategoryId String?
   vendorId         String? // VENDOR SYSTEM: Default vendor for products in this category (determines shipping options)
-  brokerDiscount   Int               @default(0) // Default broker discount percentage (0-100) for products in this category
+  brokerDiscount   Int     @default(0) // Default broker discount percentage (0-100) for products in this category
 
   // CATEGORY IMAGES & SEO (Shopify-style enhancement)
-  imageUrl         String? // Category banner/hero image URL
-  thumbnailUrl     String? // Category thumbnail for grid display
-  metaTitle        String? // SEO meta title (max 60 chars recommended)
-  metaDescription  String? // SEO meta description (max 160 chars recommended)
-  seoKeywords      String[]          @default([]) // SEO keywords array
+  imageUrl        String? // Category banner/hero image URL
+  thumbnailUrl    String? // Category thumbnail for grid display
+  metaTitle       String? // SEO meta title (max 60 chars recommended)
+  metaDescription String? // SEO meta description (max 160 chars recommended)
+  seoKeywords     String[] @default([]) // SEO keywords array
 
   // I18N: Multilingual content support
   // Structure: { en: { name, description, metaTitle, metaDescription }, es: { name, description, metaTitle, metaDescription } }
-  translations     Json?
+  translations Json?
 
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime @updatedAt
-  Product          Product[]
-  ParentCategory   ProductCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id], onDelete: SetNull)
-  Subcategories    ProductCategory[] @relation("CategoryHierarchy")
-  Vendor           Vendor?           @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  Product        Product[]
+  ParentCategory ProductCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id], onDelete: SetNull)
+  Subcategories  ProductCategory[] @relation("CategoryHierarchy")
+  Vendor         Vendor?           @relation(fields: [vendorId], references: [id], onDelete: SetNull)
 
   @@index([parentCategoryId])
   @@index([vendorId])
 }
 
 model ProductImage {
-  id        String   @id
-  productId String
-  sortOrder Int      @default(0)
-  isPrimary Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  imageId   String
-  Image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id               String          @id
+  productId        String
+  sortOrder        Int             @default(0)
+  isPrimary        Boolean         @default(false)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  imageId          String
+  promptTemplateId String? // Prompt used to generate this image
+  Image            Image           @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  Product          Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  PromptTemplate   PromptTemplate? @relation(fields: [promptTemplateId], references: [id], onDelete: SetNull)
 
   @@unique([productId, imageId])
   @@index([imageId])
   @@index([isPrimary])
   @@index([productId])
+  @@index([promptTemplateId])
 }
 
 model ProductOption {
@@ -1155,7 +1337,7 @@ model ProductOption {
   required    Boolean       @default(false)
   sortOrder   Int           @default(0)
   createdAt   DateTime      @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime      @updatedAt
   OptionValue OptionValue[]
   Product     Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -1183,7 +1365,7 @@ model ProductPaperStockSet {
   isDefault       Boolean       @default(false)
   sortOrder       Int           @default(0)
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime      @updatedAt
   PaperStockSet   PaperStockSet @relation(fields: [paperStockSetId], references: [id], onDelete: Cascade)
   Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -1215,7 +1397,7 @@ model ProductQuantity {
   isDefault          Boolean          @default(false)
   isActive           Boolean          @default(true)
   createdAt          DateTime         @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime         @updatedAt
   Product            Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
   StandardQuantity   StandardQuantity @relation(fields: [standardQuantityId], references: [id], onDelete: Cascade)
 
@@ -1229,7 +1411,7 @@ model ProductQuantityGroup {
   productId       String
   quantityGroupId String
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime      @updatedAt
   Product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   QuantityGroup   QuantityGroup @relation(fields: [quantityGroupId], references: [id], onDelete: Cascade)
 
@@ -1245,7 +1427,7 @@ model ProductSize {
   isDefault      Boolean      @default(false)
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime     @updatedAt
   Product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
   StandardSize   StandardSize @relation(fields: [standardSizeId], references: [id], onDelete: Cascade)
 
@@ -1259,7 +1441,7 @@ model ProductSizeGroup {
   productId   String
   sizeGroupId String
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
   Product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   SizeGroup   SizeGroup @relation(fields: [sizeGroupId], references: [id], onDelete: Cascade)
 
@@ -1274,7 +1456,7 @@ model ProductTurnaroundTimeSet {
   turnaroundTimeSetId String
   isDefault           Boolean           @default(false)
   createdAt           DateTime          @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime          @updatedAt
   Product             Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
   TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
 
@@ -1324,7 +1506,7 @@ model QuantityGroup {
   sortOrder            Int                    @default(0)
   isActive             Boolean                @default(true)
   createdAt            DateTime               @default(now())
-  updatedAt            DateTime @updatedAt
+  updatedAt            DateTime               @updatedAt
   ProductQuantityGroup ProductQuantityGroup[]
   LandingPageSet       LandingPageSet[] // Landing page sets using this quantity group
 }
@@ -1344,7 +1526,7 @@ model Quote {
   createdBy          String?
   convertedToOrderId String?
   createdAt          DateTime    @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime    @updatedAt
   User               User?       @relation(fields: [userId], references: [id])
 }
 
@@ -1358,7 +1540,7 @@ model SMSCampaign {
   sentAt          DateTime?
   createdBy       String
   createdAt       DateTime         @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime         @updatedAt
   CustomerSegment CustomerSegment? @relation(fields: [segmentId], references: [id])
   SMSSend         SMSSend[]
 
@@ -1376,7 +1558,7 @@ model SMSSend {
   deliveredAt  DateTime?
   errorMessage String?
   createdAt    DateTime    @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime    @updatedAt
   SMSCampaign  SMSCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   User         User?       @relation(fields: [userId], references: [id])
 
@@ -1392,6 +1574,10 @@ model Session {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // PERFORMANCE: Indexes for session lookups and cleanup
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model ShippingRate {
@@ -1417,7 +1603,7 @@ model SidesOption {
   code            String            @unique
   description     String?
   createdAt       DateTime          @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime          @updatedAt
   PaperStockSides PaperStockSides[]
 }
 
@@ -1434,7 +1620,7 @@ model SizeGroup {
   sortOrder        Int                @default(0)
   isActive         Boolean            @default(true)
   createdAt        DateTime           @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime           @updatedAt
   ProductSizeGroup ProductSizeGroup[]
   LandingPageSet   LandingPageSet[] // Landing page sets using this size group
 }
@@ -1447,7 +1633,7 @@ model StandardQuantity {
   sortOrder        Int               @default(0)
   isActive         Boolean           @default(true)
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime          @updatedAt
   ProductQuantity  ProductQuantity[]
 
   @@index([isActive])
@@ -1464,7 +1650,7 @@ model StandardSize {
   sortOrder          Int           @default(0)
   isActive           Boolean       @default(true)
   createdAt          DateTime      @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime      @updatedAt
   ProductSize        ProductSize[]
 
   @@index([isActive])
@@ -1507,7 +1693,7 @@ model Tenant {
   trialEndsAt        DateTime?
   suspendedAt        DateTime?
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime             @updatedAt
   TenantBrand        TenantBrand[]
   TenantDomain       TenantDomain[]
   TenantUser         TenantUser[]
@@ -1565,7 +1751,7 @@ model TenantDomain {
   sslCertificateId   String?
   sslExpiresAt       DateTime?
   createdAt          DateTime  @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime  @updatedAt
   Tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([domain])
@@ -1628,7 +1814,7 @@ model Translation {
   originalText     String?
   translationModel String?
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime          @updatedAt
   Tenant           Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, key, namespace, locale])
@@ -1661,7 +1847,7 @@ model TranslationRequest {
   autoConfidence Float?
   requestedBy    String
   createdAt      DateTime            @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime            @updatedAt
   Tenant         Tenant?             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([assignedTo])
@@ -1686,7 +1872,7 @@ model TurnaroundTime {
   restrictedCoatings    String[]                @default([])
   restrictedOptions     Json?
   createdAt             DateTime                @default(now())
-  updatedAt             DateTime @updatedAt
+  updatedAt             DateTime                @updatedAt
   TurnaroundTimeSetItem TurnaroundTimeSetItem[]
 
   @@index([isActive])
@@ -1700,7 +1886,7 @@ model TurnaroundTimeSet {
   isActive                 Boolean                    @default(true)
   sortOrder                Int                        @default(0)
   createdAt                DateTime                   @default(now())
-  updatedAt                DateTime @updatedAt
+  updatedAt                DateTime                   @updatedAt
   ProductTurnaroundTimeSet ProductTurnaroundTimeSet[]
   TurnaroundTimeSetItem    TurnaroundTimeSetItem[]
   LandingPageSet           LandingPageSet[] // Landing page sets using this turnaround time set
@@ -1717,7 +1903,7 @@ model TurnaroundTimeSetItem {
   sortOrder           Int               @default(0)
   priceOverride       Float?
   createdAt           DateTime          @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime          @updatedAt
   TurnaroundTime      TurnaroundTime    @relation(fields: [turnaroundTimeId], references: [id], onDelete: Cascade)
   TurnaroundTimeSet   TurnaroundTimeSet @relation(fields: [turnaroundTimeSetId], references: [id], onDelete: Cascade)
 
@@ -1727,43 +1913,50 @@ model TurnaroundTimeSetItem {
 }
 
 model User {
-  id                String              @id
-  email             String              @unique
-  emailVerified     Boolean             @default(false)
-  image             String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime @updatedAt
-  name              String?
-  role              UserRole            @default(CUSTOMER)
-  isBroker          Boolean             @default(false)
-  brokerDiscounts   Json?
-  permissions       String[]            @default([]) // Staff permissions array
-  marketingOptIn    Boolean             @default(true)
-  phoneNumber       String?
-  smsOptIn          Boolean             @default(false)
+  id              String   @id
+  email           String   @unique
+  emailVerified   Boolean  @default(false)
+  image           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  name            String?
+  role            UserRole @default(CUSTOMER)
+  isBroker        Boolean  @default(false)
+  brokerDiscounts Json?
+  permissions     String[] @default([]) // Staff permissions array
+  marketingOptIn  Boolean  @default(true)
+  phoneNumber     String?
+  smsOptIn        Boolean  @default(false)
 
   // I18N: User's preferred language
-  preferredLanguage String              @default("en") // Supported: "en", "es"
+  preferredLanguage String @default("en") // Supported: "en", "es"
 
-  Account           Account[]
-  Address           Address[]
-  CampaignSend      CampaignSend[]
-  CustomerJourney   CustomerJourney?
-  Order             Order[]             @relation("OrderCustomer")
-  OrdersCreated     Order[]             @relation("OrderCreatedBy")
-  PushNotification  PushNotification[]
-  PushSubscription  PushSubscription[]
-  Quote             Quote[]
+  Account            Account[]
+  Address            Address[]
+  CampaignSend       CampaignSend[]
+  CustomerJourney    CustomerJourney?
+  Order              Order[]              @relation("OrderCustomer")
+  OrdersCreated      Order[]              @relation("OrderCreatedBy")
+  PushNotification   PushNotification[]
+  PushSubscription   PushSubscription[]
+  Quote              Quote[]
   SavedPaymentMethod SavedPaymentMethod[]
-  SMSSend           SMSSend[]
-  session           Session[]
-  TenantUser        TenantUser[]
-  WorkflowExecution WorkflowExecution[]
-  Funnel            Funnel[]
-  FunnelVisit       FunnelVisit[]
-  PageTemplate      PageTemplate[]
-  CartSession       CartSession[]
-  Coupon            Coupon[]
+  SMSSend            SMSSend[]
+  session            Session[]
+  TenantUser         TenantUser[]
+  WorkflowExecution  WorkflowExecution[]
+  Funnel             Funnel[]
+  FunnelVisit        FunnelVisit[]
+  PageTemplate       PageTemplate[]
+  CartSession        CartSession[]
+  Coupon             Coupon[]
+  SystemLog          SystemLog[]
+
+  // PERFORMANCE: Indexes for common queries
+  @@index([role])
+  @@index([isBroker])
+  @@index([createdAt])
+  @@index([emailVerified])
 }
 
 model Vendor {
@@ -1783,7 +1976,7 @@ model Vendor {
   n8nWebhookUrl       String?
   apiCredentials      Json?
   createdAt           DateTime           @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime           @updatedAt
   Order               Order[]
   VendorPaperStock    VendorPaperStock[]
   VendorProduct       VendorProduct[]
@@ -1799,7 +1992,7 @@ model VendorPaperStock {
   leadTime     Int?
   minQuantity  Int?
   createdAt    DateTime   @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime   @updatedAt
   PaperStock   PaperStock @relation(fields: [paperStockId], references: [id], onDelete: Cascade)
   Vendor       Vendor     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
@@ -1844,7 +2037,7 @@ model WorkflowExecution {
   errorMessage      String?
   stepResults       Json?
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime          @updatedAt
   User              User?             @relation(fields: [userId], references: [id])
   MarketingWorkflow MarketingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
@@ -2107,7 +2300,7 @@ model Funnel {
   totalRevenue     Float        @default(0)
   settings         Json? // Global funnel settings
   createdAt        DateTime     @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime     @updatedAt
 
   User            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   FunnelStep      FunnelStep[]
@@ -2138,7 +2331,7 @@ model FunnelStep {
   conversions    Int            @default(0)
   revenue        Float          @default(0)
   createdAt      DateTime       @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime       @updatedAt
 
   Funnel            Funnel              @relation(fields: [funnelId], references: [id], onDelete: Cascade)
   FunnelStepProduct FunnelStepProduct[]
@@ -2167,7 +2360,7 @@ model FunnelStepProduct {
   isDefault     Boolean       @default(false)
   sortOrder     Int           @default(0)
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime      @updatedAt
 
   FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
   Product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -2194,7 +2387,7 @@ model OrderBump {
   revenue       Float         @default(0)
   isActive      Boolean       @default(true)
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime      @updatedAt
 
   FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
   Product    Product    @relation(fields: [productId], references: [id])
@@ -2221,7 +2414,7 @@ model Upsell {
   revenue       Float         @default(0)
   isActive      Boolean       @default(true)
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime      @updatedAt
 
   FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
   Product    Product    @relation(fields: [productId], references: [id])
@@ -2246,7 +2439,7 @@ model Downsell {
   revenue       Float         @default(0)
   isActive      Boolean       @default(true)
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime      @updatedAt
 
   FunnelStep FunnelStep @relation(fields: [funnelStepId], references: [id], onDelete: Cascade)
   Product    Product    @relation(fields: [productId], references: [id])
@@ -2305,7 +2498,7 @@ model FunnelVisit {
   convertedAt   DateTime?
   orderId       String? // FK to Order if converted
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt     DateTime  @updatedAt
 
   Funnel Funnel @relation(fields: [funnelId], references: [id], onDelete: Cascade)
   User   User?  @relation(fields: [userId], references: [id])
@@ -2382,7 +2575,7 @@ model PageElement {
   sortOrder      Int         @default(0)
   isVisible      Boolean     @default(true)
   createdAt      DateTime    @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime    @updatedAt
 
   PageTemplate PageTemplate? @relation(fields: [pageTemplateId], references: [id], onDelete: Cascade)
   PageVersion  PageVersion?  @relation(fields: [pageVersionId], references: [id], onDelete: Cascade)
@@ -2464,9 +2657,9 @@ model City {
   updatedAt DateTime @updatedAt
 
   // Relations
-  CityLandingPage     CityLandingPage[]
-  Product             Product[] // City-specific products
-  GeographicLocation  GeographicLocation[] // Airport pickup locations
+  CityLandingPage    CityLandingPage[]
+  Product            Product[] // City-specific products
+  GeographicLocation GeographicLocation[] // Airport pickup locations
 
   @@unique([name, state])
   @@index([rank])
@@ -2491,6 +2684,7 @@ model LandingPageSet {
   sizeGroupId         String
   addOnSetId          String?
   turnaroundTimeSetId String?
+  promptTemplateId    String? // Prompt used to generate hero images
 
   // Content templates (with city variables like [CITY], [STATE])
   titleTemplate    String
@@ -2530,9 +2724,11 @@ model LandingPageSet {
   SizeGroup         SizeGroup          @relation(fields: [sizeGroupId], references: [id])
   AddOnSet          AddOnSet?          @relation(fields: [addOnSetId], references: [id])
   TurnaroundTimeSet TurnaroundTimeSet? @relation(fields: [turnaroundTimeSetId], references: [id])
+  PromptTemplate    PromptTemplate?    @relation(fields: [promptTemplateId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([slug])
+  @@index([promptTemplateId])
 }
 
 // City-specific landing pages - 200 unique pages generated from LandingPageSet template
@@ -2594,7 +2790,7 @@ model CityLandingPage {
   conversions    Int    @default(0) // Legacy
 
   // AI-Generated Pickup Locations (Landing Page AI System)
-  aiGeneratedPickupCopy String? @db.Text // Subtle pickup location copy
+  aiGeneratedPickupCopy String?   @db.Text // Subtle pickup location copy
   pickupLocations       Json? // Array of { airportId, code, displayName, distance }
   seoScore              Float? // Page SEO quality score 0-100
   contentVersion        Int       @default(1) // Track content revisions
@@ -2658,7 +2854,7 @@ model DesignOption {
   sortOrder             Int               @default(0)
   isActive              Boolean           @default(true)
   createdAt             DateTime          @default(now())
-  updatedAt             DateTime @updatedAt
+  updatedAt             DateTime          @updatedAt
   DesignSetItem         DesignSetItem[]
 
   @@index([isActive])
@@ -2673,7 +2869,7 @@ model DesignSet {
   sortOrder        Int                @default(0)
   isActive         Boolean            @default(true)
   createdAt        DateTime           @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime           @updatedAt
   DesignSetItem    DesignSetItem[]
   ProductDesignSet ProductDesignSet[]
 
@@ -2689,7 +2885,7 @@ model DesignSetItem {
   isDefault      Boolean      @default(false)
   sortOrder      Int          @default(0)
   createdAt      DateTime     @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime     @updatedAt
   DesignOption   DesignOption @relation(fields: [designOptionId], references: [id], onDelete: Cascade)
   DesignSet      DesignSet    @relation(fields: [designSetId], references: [id], onDelete: Cascade)
 
@@ -2706,7 +2902,7 @@ model ProductDesignSet {
   isDefault   Boolean   @default(false)
   sortOrder   Int       @default(0)
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
   DesignSet   DesignSet @relation(fields: [designSetId], references: [id], onDelete: Cascade)
   Product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -2804,9 +3000,9 @@ model GeographicLocation {
 
 // Product Performance Tracking - Time-series data for ML
 model ProductPerformance {
-  id                 String   @id @default(cuid())
-  productId          String?
-  cityLandingPageId  String?
+  id                String  @id @default(cuid())
+  productId         String?
+  cityLandingPageId String?
 
   // Rankings
   googleRanking Int?
@@ -2815,16 +3011,16 @@ model ProductPerformance {
   difficulty    Int? // 0-100
 
   // Engagement
-  impressions Int   @default(0)
-  clicks      Int   @default(0)
+  impressions Int    @default(0)
+  clicks      Int    @default(0)
   ctr         Float?
 
   // Conversions
-  views          Int     @default(0)
-  addToCarts     Int     @default(0)
-  conversions    Int     @default(0)
+  views          Int      @default(0)
+  addToCarts     Int      @default(0)
+  conversions    Int      @default(0)
   conversionRate Float?
-  revenue        Decimal @default(0) @db.Decimal(10, 2)
+  revenue        Decimal  @default(0) @db.Decimal(10, 2)
   avgOrderValue  Decimal? @db.Decimal(10, 2)
 
   // Metadata
@@ -2832,8 +3028,8 @@ model ProductPerformance {
   source     String // 'google-search-console', 'analytics'
   metadata   Json?
 
-  Product          Product?         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  CityLandingPage  CityLandingPage? @relation(fields: [cityLandingPageId], references: [id], onDelete: Cascade)
+  Product         Product?         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  CityLandingPage CityLandingPage? @relation(fields: [cityLandingPageId], references: [id], onDelete: Cascade)
 
   @@index([productId, recordedAt])
   @@index([cityLandingPageId, recordedAt])
@@ -2842,7 +3038,7 @@ model ProductPerformance {
 
 // SEO Patterns - Machine-learned patterns from successful content
 model SEOPattern {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   patternType String // 'keyword', 'content-structure', 'image-count'
   description String
   category    String? // 'business-cards', 'postcards'
@@ -2853,9 +3049,9 @@ model SEOPattern {
   confidenceScore Float @default(0) // 0-100
 
   // Pattern data
-  data             Json
-  successExamples  String[] @default([])
-  failureExamples  String[] @default([])
+  data            Json
+  successExamples String[] @default([])
+  failureExamples String[] @default([])
 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -2867,7 +3063,7 @@ model SEOPattern {
 
 // SEO Suggestions - AI-generated optimization queue
 model SEOSuggestion {
-  id             String   @id @default(cuid())
+  id             String @id @default(cuid())
   targetType     String // 'Product', 'CityLandingPage'
   targetId       String
   suggestionType String // 'add-keyword', 'update-title'
@@ -2875,19 +3071,19 @@ model SEOSuggestion {
   description    String
 
   // Impact estimation
-  expectedImpact  String // 'High', 'Medium', 'Low'
-  estimatedBoost  Json?
+  expectedImpact String // 'High', 'Medium', 'Low'
+  estimatedBoost Json?
 
   // Status
-  status   String  @default("pending") // 'pending', 'approved', 'rejected', 'implemented'
-  priority Int     @default(5) // 1-10
+  status   String @default("pending") // 'pending', 'approved', 'rejected', 'implemented'
+  priority Int    @default(5) // 1-10
 
   // Implementation tracking
-  approvedBy            String?
-  approvedAt            DateTime?
-  implementedAt         DateTime?
-  testingStartedAt      DateTime?
-  testingCompletedAt    DateTime?
+  approvedBy         String?
+  approvedAt         DateTime?
+  implementedAt      DateTime?
+  testingStartedAt   DateTime?
+  testingCompletedAt DateTime?
 
   // Results
   beforeMetrics Json?
@@ -2906,7 +3102,7 @@ model SEOSuggestion {
 
 // AI Agent Execution Tracking - Monitor cost & performance
 model AIAgentExecution {
-  id        String   @id @default(cuid())
+  id        String @id @default(cuid())
   agentType String // 'seo-expert', 'keyword-research', 'image-generation'
   taskType  String // 'product-creation', 'city-page-generation'
 
@@ -2944,13 +3140,13 @@ model AIAgentExecution {
 
 // Main menu container (Header, Footer, Mobile, etc.)
 model Menu {
-  id          String     @id @default(cuid())
-  name        String     @unique // e.g., "Header Menu", "Footer Menu", "Mobile Menu"
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., "Header Menu", "Footer Menu", "Mobile Menu"
   type        MenuType
   description String?
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   items    MenuItem[]
   sections MenuSection[]
@@ -2961,26 +3157,26 @@ model Menu {
 
 // Individual menu items (categories, products, pages, links)
 model MenuItem {
-  id         String       @id @default(cuid())
-  menuId     String
-  sectionId  String? // For mega menu - which section this item belongs to
-  parentId   String? // For nested menu items
-  label      String
-  linkType   MenuLinkType
-  linkValue  String // Category slug, product slug, page slug, or full URL
-  iconUrl    String? // Custom icon URL
-  imageUrl   String? // Feature image for mega menu
-  sortOrder  Int          @default(0)
-  isActive   Boolean      @default(true)
-  openInNewTab Boolean    @default(false)
-  customClass String? // Custom CSS class for styling
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id           String       @id @default(cuid())
+  menuId       String
+  sectionId    String? // For mega menu - which section this item belongs to
+  parentId     String? // For nested menu items
+  label        String
+  linkType     MenuLinkType
+  linkValue    String // Category slug, product slug, page slug, or full URL
+  iconUrl      String? // Custom icon URL
+  imageUrl     String? // Feature image for mega menu
+  sortOrder    Int          @default(0)
+  isActive     Boolean      @default(true)
+  openInNewTab Boolean      @default(false)
+  customClass  String? // Custom CSS class for styling
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  Menu        Menu          @relation(fields: [menuId], references: [id], onDelete: Cascade)
-  Section     MenuSection?  @relation(fields: [sectionId], references: [id], onDelete: SetNull)
-  Parent      MenuItem?     @relation("MenuItemChildren", fields: [parentId], references: [id], onDelete: Cascade)
-  Children    MenuItem[]    @relation("MenuItemChildren")
+  Menu     Menu         @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  Section  MenuSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  Parent   MenuItem?    @relation("MenuItemChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  Children MenuItem[]   @relation("MenuItemChildren")
 
   @@index([menuId])
   @@index([sectionId])
@@ -2991,17 +3187,17 @@ model MenuItem {
 
 // Custom sections for mega menu (e.g., "Popular", "New", "By Category")
 model MenuSection {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   menuId      String
   title       String // e.g., "Popular Products", "Shop by Category"
   description String?
-  column      Int        @default(1) // For multi-column layouts (1-4)
-  sortOrder   Int        @default(0)
-  showTitle   Boolean    @default(true)
-  isActive    Boolean    @default(true)
+  column      Int      @default(1) // For multi-column layouts (1-4)
+  sortOrder   Int      @default(0)
+  showTitle   Boolean  @default(true)
+  isActive    Boolean  @default(true)
   iconUrl     String? // Optional icon for section header
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   Menu  Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
   items MenuItem[]
@@ -3012,17 +3208,17 @@ model MenuSection {
 
 // Quick links bar (appears below main header)
 model QuickLink {
-  id          String       @id @default(cuid())
-  label       String
-  linkType    MenuLinkType
-  linkValue   String // Category slug, product slug, or URL
-  sortOrder   Int          @default(0)
-  isActive    Boolean      @default(true)
-  iconUrl     String?
-  badgeText   String? // Optional badge (e.g., "New", "Sale")
-  badgeColor  String? // Badge color hex code
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id         String       @id @default(cuid())
+  label      String
+  linkType   MenuLinkType
+  linkValue  String // Category slug, product slug, or URL
+  sortOrder  Int          @default(0)
+  isActive   Boolean      @default(true)
+  iconUrl    String?
+  badgeText  String? // Optional badge (e.g., "New", "Sale")
+  badgeColor String? // Badge color hex code
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   @@index([sortOrder])
   @@index([isActive])
@@ -3030,18 +3226,18 @@ model QuickLink {
 
 // Featured product selections (homepage)
 model FeaturedProductSelection {
-  id               String    @id @default(cuid())
-  productId        String
-  sortOrder        Int       @default(0)
-  isActive         Boolean   @default(true)
-  customTitle      String? // Override product title
+  id                String   @id @default(cuid())
+  productId         String
+  sortOrder         Int      @default(0)
+  isActive          Boolean  @default(true)
+  customTitle       String? // Override product title
   customDescription String? // Override product description
-  customImageUrl   String? // Override product image
-  showBadge        Boolean   @default(false)
-  badgeText        String? // e.g., "Best Seller", "New"
-  badgeColor       String? // Badge color hex code
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  customImageUrl    String? // Override product image
+  showBadge         Boolean  @default(false)
+  badgeText         String? // e.g., "Best Seller", "New"
+  badgeColor        String? // Badge color hex code
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -3065,4 +3261,83 @@ enum MenuLinkType {
   PAGE // Links to internal page
   EXTERNAL // External URL
   CUSTOM // Custom path
+}
+
+enum PromptCategory {
+  PRODUCT // Clean product shots
+  PROMOTIONAL // Black Friday, sales
+  SEASONAL // Thanksgiving, Christmas
+  LIFESTYLE // Real-world usage
+  ENVIRONMENT // Print shop, factory floor
+}
+
+enum PromptStatus {
+  DRAFT // Still refining
+  PRODUCTION // Ready to use
+  ARCHIVED // Deprecated/old version
+}
+
+enum ImageQuality {
+  excellent // Perfect result, ready to use
+  good      // Acceptable result, may need minor tweaks
+  poor      // Needs significant improvement
+}
+
+// ==============================================================================
+// SYSTEM & MONITORING MODELS (Added October 25, 2025 - Code Janitor)
+// ==============================================================================
+
+// Contact form submissions for customer inquiries
+model ContactFormSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  subject     String
+  message     String   @db.Text
+  status      String   @default("NEW") // NEW, IN_PROGRESS, RESPONDED, CLOSED
+  submittedAt DateTime @default(now())
+  respondedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([submittedAt])
+  @@index([email])
+}
+
+// System logs for critical errors and monitoring
+model SystemLog {
+  id        String   @id @default(cuid())
+  type      String // CLIENT_ERROR, SERVER_ERROR, SECURITY, etc.
+  message   String   @db.Text
+  details   Json? // Additional context (stack trace, user agent, etc.)
+  userId    String?
+  createdAt DateTime @default(now())
+
+  User User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// SEO Brain campaign queue for managing city page generation
+model ProductCampaignQueue {
+  id          String   @id
+  productName String
+  productSpec Json // { quantity, size, material, turnaround, price, keywords, etc. }
+  status      String // GENERATING, COMPLETED, FAILED, PAUSED
+  priority    Int      @default(5) // 1-10, higher = more urgent
+  progress    Json? // Current progress state
+  error       String?  @db.Text
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
 }

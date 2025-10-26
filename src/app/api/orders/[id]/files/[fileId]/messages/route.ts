@@ -20,8 +20,8 @@ export async function GET(
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    const isAdmin = session?.user?.role === 'ADMIN'
-    const isOwner = session?.user?.email === order.email
+    const isAdmin = user?.role === 'ADMIN'
+    const isOwner = user?.email === order.email
 
     if (!isAdmin && !isOwner) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
@@ -152,7 +152,7 @@ export async function POST(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { error: 'Validation failed', details: error.issues },
         { status: 400 }
       )
     }

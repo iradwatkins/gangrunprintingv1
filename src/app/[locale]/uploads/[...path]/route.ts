@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
 
     const bucketName = 'gangrun-uploads'
 
-    const client = getMinioClient()
+    const client = await getMinioClient()
     const stream = await client.getObject(bucketName, path)
 
     const chunks: Buffer[] = []

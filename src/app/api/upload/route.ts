@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import {
@@ -11,6 +12,26 @@ import {
 import { randomUUID } from 'crypto'
 
 // Bucket initialization will happen at runtime when needed
+
+// Zod schema for upload metadata validation
+const uploadMetadataSchema = z.object({
+  orderId: z.string().uuid().optional(),
+  fileType: z.enum(['design', 'proof', 'reference']).optional(),
+})
+
+// Allowed file types for validation
+const ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/svg+xml',
+  'application/postscript', // AI files
+  'application/x-photoshop', // PSD files
+  'application/vnd.adobe.photoshop',
+] as const
+
+// Maximum file size: 50MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,34 +46,58 @@ export async function POST(request: NextRequest) {
     // Get form data
     const formData = await request.formData()
     const file = formData.get('file') as File
-    const orderId = formData.get('orderId') as string
-    const fileType = formData.get('fileType') as string // 'design' | 'proof' | 'reference'
 
+    // Validate file presence
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Validate file type
-    const allowedTypes = [
-      'application/pdf',
-      'image/jpeg',
-      'image/png',
-      'image/svg+xml',
-      'application/postscript', // AI files
-      'application/x-photoshop', // PSD files
-      'application/vnd.adobe.photoshop',
-    ]
-
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        {
+          error: 'File too large',
+          details: `Maximum file size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+        },
+        { status: 400 }
+      )
     }
+
+    // Validate file type
+    if (!ALLOWED_MIME_TYPES.includes(file.type as any)) {
+      return NextResponse.json(
+        {
+          error: 'Invalid file type',
+          details: `Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`,
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validate metadata fields with Zod
+    const metadataValidation = uploadMetadataSchema.safeParse({
+      orderId: formData.get('orderId'),
+      fileType: formData.get('fileType'),
+    })
+
+    if (!metadataValidation.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid metadata',
+          issues: metadataValidation.error.issues,
+        },
+        { status: 400 }
+      )
+    }
+
+    const { orderId, fileType } = metadataValidation.data
 
     // Generate unique filename
     const fileExt = file.name.split('.').pop()
     const uniqueFilename = `${randomUUID()}.${fileExt}`
     const objectPath = orderId
       ? `orders/${orderId}/${fileType}/${uniqueFilename}`
-      : `uploads/${session?.user?.email || 'anonymous'}/${uniqueFilename}`
+      : `uploads/${user?.email || 'anonymous'}/${uniqueFilename}`
 
     // Convert File to Buffer
     const bytes = await file.arrayBuffer()
@@ -62,7 +107,7 @@ export async function POST(request: NextRequest) {
     const uploadResult = await uploadFile(BUCKETS.UPLOADS, objectPath, buffer, {
       'original-name': file.name,
       'content-type': file.type,
-      'uploaded-by': session?.user?.email || 'anonymous',
+      'uploaded-by': user?.email || 'anonymous',
       'upload-date': new Date().toISOString(),
     })
 
@@ -75,7 +120,7 @@ export async function POST(request: NextRequest) {
           fileUrl: objectPath,
           fileSize: file.size,
           mimeType: file.type,
-          uploadedBy: session?.user?.email || 'anonymous',
+          uploadedBy: user?.email || 'anonymous',
         },
       })
 
@@ -104,6 +149,18 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Upload error:', error)
+
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          issues: error.issues,
+        },
+        { status: 400 }
+      )
+    }
+
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
       {
@@ -124,7 +181,7 @@ export async function GET(request: NextRequest) {
 
     if (action === 'presigned' && filename) {
       // Generate presigned URL for direct upload
-      const objectPath = `uploads/${session?.user?.email || 'anonymous'}/${filename}`
+      const objectPath = `uploads/${user?.email || 'anonymous'}/${filename}`
       const url = await getPresignedUploadUrl(BUCKETS.UPLOADS, objectPath)
 
       return NextResponse.json({

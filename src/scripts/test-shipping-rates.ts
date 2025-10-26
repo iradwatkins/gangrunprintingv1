@@ -4,7 +4,7 @@
  * Verifies that pickup and dash rates are correctly applied
  */
 
-import { SouthwestCargoProvider } from '../lib/shipping/providers/southwest-cargo'
+import { SouthwestCargoProvider } from '../lib/shipping/modules/southwest-cargo/provider'
 import type { ShippingAddress, ShippingPackage } from '../lib/shipping/interfaces'
 
 const provider = new SouthwestCargoProvider()

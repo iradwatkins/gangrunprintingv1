@@ -32,18 +32,25 @@ export async function POST(request: NextRequest) {
     const { name, email, phone, company, subject, message } = validationResult.data
 
     // Save contact form submission to database (for tracking and follow-up)
-    // Note: ContactFormSubmission table may not exist yet - skip if not available
+    // SECURITY FIX (2025-01-24): Replaced raw SQL with Prisma query builder to prevent SQL injection
     try {
-      // Check if table exists before attempting to save
-      const hasTable = await prisma.$queryRaw`SELECT to_regclass('public."ContactFormSubmission"') as exists`
-      if (hasTable) {
-        await prisma.$executeRaw`
-          INSERT INTO "ContactFormSubmission" (id, name, email, phone, company, subject, message, status, "submittedAt", "createdAt", "updatedAt")
-          VALUES (gen_random_uuid(), ${name}, ${email}, ${phone || null}, ${company || null}, ${subject}, ${message}, 'NEW', NOW(), NOW(), NOW())
-        `
-      }
+      // Use Prisma's type-safe query builder instead of raw SQL
+      // This automatically handles parameterization and prevents SQL injection
+      await prisma.contactFormSubmission.create({
+        data: {
+          name,
+          email,
+          phone: phone || null,
+          company: company || null,
+          subject,
+          message,
+          status: 'NEW',
+          submittedAt: new Date(),
+        },
+      })
     } catch (dbError) {
       // Log but don't fail the request if database save fails
+      // This will gracefully handle if ContactFormSubmission table doesn't exist
       console.error('[Contact Form] Failed to save to database:', dbError)
     }
 

@@ -24,18 +24,22 @@ export async function POST(request: NextRequest) {
         id: { in: productIds },
       },
       include: {
-        ProductImage: true,
+        ProductImage: {
+          include: {
+            Image: true,
+          },
+        },
       },
     })
 
     // Delete all product images from MinIO
     for (const product of productsToDelete) {
-      if (product.productImages && product.productImages.length > 0) {
-        for (const image of product.productImages) {
+      if (product.ProductImage && product.ProductImage.length > 0) {
+        for (const productImage of product.ProductImage) {
           try {
-            await deleteProductImage(image.storageKey)
+            await deleteProductImage(productImage.Image.name)
           } catch (error) {
-            console.error(`Failed to delete image ${image.storageKey}:`, error)
+            console.error(`Failed to delete image ${productImage.Image.name}:`, error)
             // Continue with deletion even if image cleanup fails
           }
         }
@@ -55,6 +59,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Bulk delete error:', error)
-    return createDatabaseErrorResponse(error)
+    return createDatabaseErrorResponse(error instanceof Error ? error : new Error(String(error)))
   }
 }

@@ -300,10 +300,9 @@ export function OrderFilesManager({ orderId }: Props) {
           {files.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed rounded-lg">
               <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-sm text-muted-foreground mb-4">No files uploaded yet</p>
-              <div className="flex justify-center">
-                <SimpleFileUpload orderId={orderId} onSuccess={fetchFiles} />
-              </div>
+              <p className="text-sm text-muted-foreground">
+                No files uploaded yet. Use the "Upload File for Approval" button above to add files.
+              </p>
             </div>
           ) : (
             <>

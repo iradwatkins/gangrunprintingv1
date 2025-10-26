@@ -7,7 +7,7 @@
 import type { Metadata } from 'next'
 import { FAQPage } from '@/components/seo/FAQSchema'
 import { generalFAQs } from '@/data/faqs/general'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { CreditCard, FileText, HelpCircle, Truck, Clock, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {

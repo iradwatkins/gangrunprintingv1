@@ -35,36 +35,41 @@ export async function GET(request: NextRequest) {
       orderBy: { revenue: 'desc' },
     })
 
+    // Type assertion for _count field
+    const pagesWithCount = cityPages as Array<
+      (typeof cityPages)[number] & { _count: { orders: number } }
+    >
+
     // Calculate metrics
-    const totalViews = cityPages.reduce((sum, page) => sum + page.views, 0)
-    const totalConversions = cityPages.reduce((sum, page) => sum + page._count.orders, 0)
-    const totalRevenue = cityPages.reduce((sum, page) => sum + page.revenue.toNumber(), 0)
+    const totalViews = pagesWithCount.reduce((sum, page) => sum + page.views, 0)
+    const totalConversions = pagesWithCount.reduce((sum, page) => sum + page._count.orders, 0)
+    const totalRevenue = pagesWithCount.reduce((sum, page) => sum + page.revenue, 0)
 
     // Top 10 performers
-    const topPerformers = cityPages.slice(0, 10).map((page) => ({
+    const topPerformers = pagesWithCount.slice(0, 10).map((page) => ({
       city: page.slug,
       views: page.views,
       conversions: page._count.orders,
-      revenue: page.revenue.toNumber(),
-      conversionRate: page.conversionRate?.toNumber() || 0,
+      revenue: page.revenue,
+      conversionRate: page.conversionRate || 0,
     }))
 
     // Bottom 10 performers
-    const bottomPerformers = cityPages
+    const bottomPerformers = pagesWithCount
       .slice(-10)
       .reverse()
       .map((page) => ({
         city: page.slug,
         views: page.views,
         conversions: page._count.orders,
-        revenue: page.revenue.toNumber(),
-        conversionRate: page.conversionRate?.toNumber() || 0,
+        revenue: page.revenue,
+        conversionRate: page.conversionRate || 0,
       }))
 
     return NextResponse.json({
       success: true,
       summary: {
-        totalCities: cityPages.length,
+        totalCities: pagesWithCount.length,
         totalViews,
         totalConversions,
         totalRevenue,

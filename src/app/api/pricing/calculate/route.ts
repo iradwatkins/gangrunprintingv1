@@ -183,12 +183,12 @@ async function fetchCatalogData(request: z.infer<typeof pricingCalculationReques
     ? await prisma.paperStock.findMany({
         where: { isActive: true },
         include: {
-          paperStockCoatings: {
+          PaperStockCoating: {
             include: {
               CoatingOption: true,
             },
           },
-          paperStockSides: {
+          PaperStockSides: {
             include: {
               SidesOption: true,
             },
@@ -213,7 +213,7 @@ async function fetchCatalogData(request: z.infer<typeof pricingCalculationReques
             isActive: true,
           },
           include: {
-            addOnSubOptions: true,
+            AddOnSubOption: true,
           },
         })
       : []

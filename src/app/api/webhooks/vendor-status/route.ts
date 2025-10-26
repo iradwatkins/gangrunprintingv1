@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         ...(payload.details?.trackingNumber && {
           trackingNumber: payload.details.trackingNumber,
         }),
-        statusHistory: {
+        StatusHistory: {
           create: {
             status: transition.newStatus!,
             message: payload.details?.message || `Status updated to ${transition.newStatus}`,

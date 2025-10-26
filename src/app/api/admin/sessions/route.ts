@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
         timeUntilExpiry: Math.max(0, timeUntilExpiry),
         daysUntilExpiry: Math.max(0, daysUntilExpiry),
         isCurrentSession: session.id === currentSession?.id,
-        user: session.user,
+        user: (session as any).user,
       }
     })
 
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
       expiringSoon: processedSessions.filter((s) => s.isExpiringSoon && !s.isExpired).length,
       byUser: processedSessions.reduce(
         (acc, session) => {
-          const email = session.user.email
+          const email = (session.user as any)?.email || 'unknown'
           if (!acc[email]) {
             acc[email] = { active: 0, expired: 0, total: 0 }
           }

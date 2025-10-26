@@ -1,4 +1,5 @@
 import { type Prisma } from '@prisma/client'
+import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { logger, logBusinessEvent, logError, logPerformance } from '@/lib/logger-safe'
 import {
@@ -48,6 +49,7 @@ export class OrderService {
         // Create the order
         const order = await tx.order.create({
           data: {
+            id: `order_${randomBytes(16).toString('hex')}`,
             orderNumber,
             email: input.email,
             userId: input.userId,
@@ -70,6 +72,7 @@ export class OrderService {
         for (const itemInput of input.items) {
           const orderItem = await tx.orderItem.create({
             data: {
+              id: `oi_${randomBytes(16).toString('hex')}`,
               orderId: order.id,
               productSku: itemInput.productSku,
               productName: itemInput.productName,
@@ -85,6 +88,7 @@ export class OrderService {
             for (const addOnInput of itemInput.addOns) {
               await tx.orderItemAddOn.create({
                 data: {
+                  id: `oia_${randomBytes(16).toString('hex')}`,
                   orderItemId: orderItem.id,
                   addOnId: addOnInput.addOnId,
                   configuration: addOnInput.configuration as any,
@@ -98,6 +102,7 @@ export class OrderService {
         // Create status history entry
         await tx.statusHistory.create({
           data: {
+            id: `sh_${randomBytes(16).toString('hex')}`,
             orderId: order.id,
             toStatus: 'PENDING_PAYMENT',
             fromStatus: 'PENDING_PAYMENT',
@@ -243,6 +248,7 @@ export class OrderService {
         // Create status history entry
         await tx.statusHistory.create({
           data: {
+            id: `sh_${randomBytes(16).toString('hex')}`,
             orderId,
             toStatus: input.status as any,
             fromStatus: currentOrder.status as any,
@@ -388,6 +394,7 @@ export class OrderService {
 
         await tx.statusHistory.create({
           data: {
+            id: `sh_${randomBytes(16).toString('hex')}`,
             orderId,
             toStatus: 'CANCELLED',
             fromStatus: order.status as any,

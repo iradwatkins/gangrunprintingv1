@@ -87,9 +87,7 @@ async function main() {
       },
       status: 'GENERATING',
       priority: 5,
-      citiesGenerated: 0,
-      citiesIndexed: 0,
-      generationStartedAt: new Date(),
+      startedAt: new Date(),
     },
   })
 

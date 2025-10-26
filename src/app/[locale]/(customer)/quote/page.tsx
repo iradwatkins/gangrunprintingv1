@@ -27,7 +27,7 @@ import {
   Calculator,
   Zap,
 } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 export default function QuotePage() {
   const [formData, setFormData] = useState({

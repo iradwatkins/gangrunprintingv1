@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

@@ -11,12 +11,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const original = await prisma.paperStock.findUnique({
       where: { id },
       include: {
-        paperStockCoatings: {
+        PaperStockCoating: {
           include: {
             CoatingOption: true,
           },
         },
-        paperStockSides: {
+        PaperStockSides: {
           include: {
             SidesOption: true,
           },
@@ -56,9 +56,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       })
 
       // Copy paper stock coatings
-      if (original.paperStockCoatings.length > 0) {
+      if (original.PaperStockCoating.length > 0) {
         await tx.paperStockCoating.createMany({
-          data: original.paperStockCoatings.map((coating) => ({
+          data: original.PaperStockCoating.map((coating) => ({
             paperStockId: newPaperStock.id,
             coatingId: coating.coatingId,
             isDefault: coating.isDefault,
@@ -67,9 +67,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
 
       // Copy paper stock sides
-      if (original.paperStockSides.length > 0) {
+      if (original.PaperStockSides.length > 0) {
         await tx.paperStockSides.createMany({
-          data: original.paperStockSides.map((side) => ({
+          data: original.PaperStockSides.map((side) => ({
             paperStockId: newPaperStock.id,
             sidesOptionId: side.sidesOptionId,
             priceMultiplier: side.priceMultiplier,
@@ -82,12 +82,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return await tx.paperStock.findUnique({
         where: { id: newPaperStock.id },
         include: {
-          paperStockCoatings: {
+          PaperStockCoating: {
             include: {
               CoatingOption: true,
             },
           },
-          paperStockSides: {
+          PaperStockSides: {
             include: {
               SidesOption: true,
             },

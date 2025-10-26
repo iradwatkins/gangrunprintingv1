@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import toast from '@/lib/toast'
 
 // Common Lucide icons for order statuses

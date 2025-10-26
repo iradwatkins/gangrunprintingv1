@@ -1,11 +1,14 @@
 import { Google } from 'arctic'
 
-// SEO-COMPLIANT OAUTH: Callback URL must include locale prefix (/en/)
-// Default to English for OAuth callback - user can change language after login
+// CRITICAL: API routes do NOT use locale prefixes (/en/, /es/)
+// Only customer-facing pages in /[locale]/ directory use locale routing
+// OAuth is a server-to-server callback and should remain locale-agnostic
+// This prevents redirect_uri_mismatch errors with Google Cloud Console
+// See: docs/BMAD-FIX-GOOGLE-OAUTH-LOCALE-2025-10-25.md
 export const google = new Google(
   process.env.AUTH_GOOGLE_ID!,
   process.env.AUTH_GOOGLE_SECRET!,
-  `${process.env.NEXTAUTH_URL}/en/api/auth/google/callback`
+  `${process.env.NEXTAUTH_URL}/api/auth/google/callback`
 )
 
 export interface GoogleUser {

@@ -5,10 +5,36 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { validateRequest } from '@/lib/auth'
 import { OrderService } from '@/lib/services/order-service'
 import { prisma } from '@/lib/prisma'
 import { type OrderStatus } from '@prisma/client'
+
+// Zod schema for status update validation
+const statusUpdateSchema = z.object({
+  toStatus: z.enum([
+    'PENDING_PAYMENT',
+    'PAYMENT_DECLINED',
+    'PAYMENT_FAILED',
+    'PAID',
+    'CONFIRMATION',
+    'ON_HOLD',
+    'PROCESSING',
+    'PRINTING',
+    'PRODUCTION',
+    'SHIPPED',
+    'READY_FOR_PICKUP',
+    'ON_THE_WAY',
+    'PICKED_UP',
+    'DELIVERED',
+    'REPRINT',
+    'CANCELLED',
+    'REFUNDED',
+  ]),
+  notes: z.string().max(1000).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+})
 
 interface StatusUpdateRequest {
   toStatus: OrderStatus
@@ -31,12 +57,22 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const { id } = await params
-    const body: StatusUpdateRequest = await request.json()
-    const { toStatus, notes, metadata } = body
+    const rawBody = await request.json()
 
-    if (!toStatus) {
-      return NextResponse.json({ error: 'toStatus is required' }, { status: 400 })
+    // Validate request body with Zod
+    const validation = statusUpdateSchema.safeParse(rawBody)
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          issues: validation.error.issues,
+        },
+        { status: 400 }
+      )
     }
+
+    const { toStatus, notes, metadata } = validation.data
 
     // Get current order
     const order = await prisma.order.findUnique({
@@ -53,7 +89,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     // Update status via service
     await OrderService.updateStatus({
       orderId: id,
-      fromStatus: order.status,
+      fromStatus: order.status as OrderStatus,
       toStatus,
       notes,
       changedBy: user.email || 'Admin',
@@ -108,6 +144,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     })
   } catch (error) {
     console.error('[Status Update] Error:', error)
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          issues: error.issues,
+        },
+        { status: 400 }
+      )
+    }
 
     const errorMessage = error instanceof Error ? error.message : 'Status update failed'
 

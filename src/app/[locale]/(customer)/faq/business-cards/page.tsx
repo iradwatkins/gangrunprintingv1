@@ -8,7 +8,7 @@
 import type { Metadata } from 'next'
 import { FAQPage } from '@/components/seo/FAQSchema'
 import { businessCardFAQs } from '@/data/faqs/business-cards'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 export const metadata: Metadata = {
   title: 'Business Card Printing FAQ - Common Questions Answered | GangRun Printing',

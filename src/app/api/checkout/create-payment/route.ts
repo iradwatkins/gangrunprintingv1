@@ -1,8 +1,68 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createSquareCheckout, createOrUpdateSquareCustomer } from '@/lib/square'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { randomUUID } from 'crypto'
+
+// Zod schemas for checkout validation
+const addressSchema = z.object({
+  street: z.string().min(1, 'Street address is required'),
+  street2: z.string().optional(),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(2, 'State is required'),
+  zipCode: z.string().min(5, 'ZIP code is required'),
+  country: z.string().default('US'),
+  isResidential: z.boolean().optional(),
+})
+
+const cartItemSchema = z.object({
+  id: z.string(),
+  productName: z.string().min(1),
+  sku: z.string().min(1),
+  quantity: z.number().int().positive(),
+  price: z.number().positive(),
+  options: z.record(z.string(), z.unknown()).optional(),
+  fileName: z.string().optional(),
+  fileSize: z.number().optional(),
+})
+
+const uploadedImageSchema = z.object({
+  id: z.string(),
+  url: z.string().min(1),
+  thumbnailUrl: z.string().optional(),
+  fileName: z.string(),
+  fileSize: z.number().optional(),
+  uploadedAt: z.string().optional(),
+})
+
+const customerInfoSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Valid email is required'),
+  phone: z.string().min(10, 'Valid phone number is required'),
+})
+
+const shippingRateSchema = z.object({
+  carrier: z.string(),
+  serviceName: z.string(),
+  cost: z.number().nonnegative(),
+  deliveryDays: z.number().optional(),
+})
+
+const createPaymentSchema = z.object({
+  cartItems: z.array(cartItemSchema).min(1, 'Cart must contain at least one item'),
+  uploadedImages: z.array(uploadedImageSchema).optional(),
+  customerInfo: customerInfoSchema,
+  shippingAddress: addressSchema,
+  billingAddress: addressSchema.optional(),
+  shippingRate: shippingRateSchema.optional(),
+  selectedAirportId: z.string().uuid().optional(),
+  subtotal: z.number().nonnegative(),
+  tax: z.number().nonnegative(),
+  shipping: z.number().nonnegative(),
+  total: z.number().positive(),
+})
 
 interface CartItem {
   id: string
@@ -27,7 +87,20 @@ interface UploadedImage {
 export async function POST(request: NextRequest) {
   try {
     const { user, session } = await validateRequest()
-    const body = await request.json()
+    const rawBody = await request.json()
+
+    // Validate request body with Zod
+    const validation = createPaymentSchema.safeParse(rawBody)
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          issues: validation.error.issues,
+        },
+        { status: 400 }
+      )
+    }
 
     const {
       cartItems,
@@ -41,7 +114,7 @@ export async function POST(request: NextRequest) {
       tax,
       shipping,
       total,
-    } = body
+    } = validation.data
 
     // Normalize email to lowercase for consistent lookup
     const normalizedEmail = customerInfo.email.toLowerCase()
@@ -159,6 +232,20 @@ export async function POST(request: NextRequest) {
       orderNumber: order.orderNumber,
     })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
+    console.error('[Checkout] Error:', error)
+
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          issues: error.issues,
+        },
+        { status: 400 }
+      )
+    }
+
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create checkout session'
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

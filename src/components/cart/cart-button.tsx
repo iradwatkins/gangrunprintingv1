@@ -4,7 +4,7 @@ import { ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCart } from '@/contexts/cart-context'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 export function CartButton() {
   const { total, productCount } = useCart()

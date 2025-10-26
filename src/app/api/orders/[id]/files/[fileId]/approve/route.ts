@@ -146,7 +146,7 @@ export async function POST(
               id: orderWithUser.id,
               orderNumber: orderWithUser.orderNumber,
               email: orderWithUser.email,
-              User: orderWithUser.User,
+              User: orderWithUser.User ?? undefined,
             },
             fileInfo,
             data.message,
@@ -159,7 +159,7 @@ export async function POST(
               id: orderWithUser.id,
               orderNumber: orderWithUser.orderNumber,
               email: orderWithUser.email,
-              User: orderWithUser.User,
+              User: orderWithUser.User ?? undefined,
             },
             fileInfo,
             data.message || 'Customer requested changes but did not provide details.'
@@ -185,7 +185,7 @@ export async function POST(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { error: 'Validation failed', details: error.issues },
         { status: 400 }
       )
     }

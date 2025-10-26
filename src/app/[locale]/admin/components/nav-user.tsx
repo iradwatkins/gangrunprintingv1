@@ -1,7 +1,7 @@
 'use client'
 
 import { ChevronsUpDown, LogOut, User } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { useRouter } from 'next/navigation'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

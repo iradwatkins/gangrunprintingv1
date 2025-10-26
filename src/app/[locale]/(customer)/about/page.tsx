@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { Users, Target, Sparkles, CheckCircle, ArrowRight } from 'lucide-react'
 
 export default function AboutPage() {

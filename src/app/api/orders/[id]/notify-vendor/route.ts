@@ -1,5 +1,6 @@
 import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
+import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { NotificationType } from '@prisma/client'
 
@@ -93,6 +94,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Record the notification in the database
     await prisma.notification.create({
       data: {
+        id: `notif_${randomBytes(16).toString('hex')}`,
         orderId: order.id,
         type: NotificationType.ORDER_PROCESSING,
         sent: true,

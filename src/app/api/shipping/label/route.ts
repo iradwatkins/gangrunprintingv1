@@ -88,9 +88,9 @@ export async function POST(request: NextRequest) {
       for (const item of order.OrderItem) {
         if (item.calculatedWeight) {
           totalWeight += item.calculatedWeight
-        } else if (item.paperStock && item.dimensions) {
+        } else if (item.PaperStock && item.dimensions) {
           const dims = item.dimensions as any
-          const weight = item.paperStock.weight * dims.width * dims.height * item.quantity
+          const weight = item.PaperStock.weight * dims.width * dims.height * item.quantity
           totalWeight += weight
         }
       }

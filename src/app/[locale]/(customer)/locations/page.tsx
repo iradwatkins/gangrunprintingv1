@@ -26,7 +26,7 @@ import {
   Info,
   Loader2,
 } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 // Retail locations data
 const retailLocations = [
@@ -87,8 +87,6 @@ export default function LocationsPage() {
         const response = await fetch('/api/airports')
         const data = await response.json()
 
-        console.log('[Locations] API Response:', { success: data.success, count: data.count, airportsLength: data.airports?.length })
-
         if (data.success && data.airports && Array.isArray(data.airports)) {
           // Transform API data to match our component format
           const transformedAirports = data.airports.map((airport: any) => ({
@@ -104,7 +102,6 @@ export default function LocationsPage() {
             hours: airport.hours || {},
           }))
 
-          console.log('[Locations] Transformed airports count:', transformedAirports.length)
           setAirCargoLocations(transformedAirports)
         } else {
           console.error('[Locations] Invalid API response structure:', data)

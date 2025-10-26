@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { redis } from '@/lib/redis'
 import { z } from 'zod'
-import { randomUUID } from 'crypto'
+import { randomUUID, randomBytes } from 'crypto'
 import type { Prisma } from '@prisma/client'
 
 // DTOs for input validation
@@ -211,7 +211,7 @@ export class ProductService {
         categoryId: true,
         createdAt: true,
         updatedAt: true,
-        productCategory: true,
+        ProductCategory: true,
         productImages: {
           select: {
             id: true,
@@ -365,6 +365,7 @@ export class ProductService {
         // Paper stock set
         tx.productPaperStockSet.create({
           data: {
+            id: `ppss_${randomBytes(16).toString('hex')}`,
             productId: newProduct.id,
             paperStockSetId: validated.paperStockSetId,
             isDefault: true,
@@ -373,6 +374,7 @@ export class ProductService {
         // Quantity group
         tx.productQuantityGroup.create({
           data: {
+            id: `pqg_${randomBytes(16).toString('hex')}`,
             productId: newProduct.id,
             quantityGroupId: validated.quantityGroupId,
           },
@@ -380,6 +382,7 @@ export class ProductService {
         // Size group
         tx.productSizeGroup.create({
           data: {
+            id: `psg_${randomBytes(16).toString('hex')}`,
             productId: newProduct.id,
             sizeGroupId: validated.sizeGroupId,
           },
@@ -388,6 +391,7 @@ export class ProductService {
         validated.selectedAddOns.length > 0 &&
           tx.productAddOn.createMany({
             data: validated.selectedAddOns.map((addOnId) => ({
+              id: `pa_${randomBytes(16).toString('hex')}`,
               productId: newProduct.id,
               addOnId,
             })),
@@ -401,6 +405,7 @@ export class ProductService {
           // Create Image record first
           const image = await tx.image.create({
             data: {
+              id: `img_${randomBytes(16).toString('hex')}`,
               name: `${slug}-${Date.now()}-${index}`,
               url: img.url,
               thumbnailUrl: img.thumbnailUrl || img.url,
@@ -412,6 +417,7 @@ export class ProductService {
           // Link image to product via ProductImage
           await tx.productImage.create({
             data: {
+              id: `pi_${randomBytes(16).toString('hex')}`,
               productId: newProduct.id,
               imageId: image.id,
               sortOrder: index,

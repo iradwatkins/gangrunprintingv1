@@ -223,9 +223,9 @@ async function getProductConfiguration(productId: string) {
   }
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   // Await params to fix Next.js 15 warning
-  const { slug } = await params
+  const { slug, locale } = await params
 
   // Validate slug before processing
   if (!slug || typeof slug !== 'string') {
@@ -294,16 +294,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // Generate JSON-LD structured data for SEO and AI
   const schemas = generateAllProductSchemas(transformedProduct as any)
 
-  // Build breadcrumbs
+  // LOCALE FIX: Build breadcrumbs with locale prefix for proper navigation
   const breadcrumbs = product.ProductCategory
     ? [
         {
           label: product.ProductCategory.name,
-          href: `/category/${product.ProductCategory.slug}`,
+          href: `/${locale}/category/${product.ProductCategory.slug}`,
         },
-        { label: product.name, href: `/products/${product.slug}` },
+        { label: product.name, href: `/${locale}/products/${product.slug}` },
       ]
-    : [{ label: product.name, href: `/products/${product.slug}` }]
+    : [{ label: product.name, href: `/${locale}/products/${product.slug}` }]
 
   // Pass the server-fetched data to the client component with error boundary
   return (

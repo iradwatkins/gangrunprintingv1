@@ -44,7 +44,11 @@ function reducer(
   }
 }
 
-export function useToast(): unknown {
+export function useToast(): {
+  toasts: Toast[]
+  toast: (props: Omit<Toast, 'id'>) => { id: string; dismiss: () => void }
+  dismiss: (toastId?: string) => void
+} {
   const [state, setState] = React.useState<ToastState>(memoryState)
 
   React.useEffect(() => {

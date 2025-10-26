@@ -112,8 +112,7 @@ export async function generate200CityPages(
   await prisma.productCampaignQueue.update({
     where: { id: campaignId },
     data: {
-      citiesGenerated: generated,
-      generationCompletedAt: new Date(),
+      completedAt: new Date(),
       status: generated === 200 ? 'OPTIMIZING' : 'GENERATING',
     },
   })

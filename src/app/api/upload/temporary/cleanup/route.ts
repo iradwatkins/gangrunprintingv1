@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Session ID required' }, { status: 400 })
     }
 
-    const client = getMinioClient()
+    const client = await getMinioClient()
     const cutoffTime = new Date(Date.now() - maxAge * 60 * 60 * 1000)
 
     let deletedFiles = 0
@@ -49,7 +49,7 @@ export async function DELETE(request: NextRequest) {
     const url = new URL(request.url)
     const maxAge = parseInt(url.searchParams.get('maxAge') || '24') // hours
 
-    const client = getMinioClient()
+    const client = await getMinioClient()
     const cutoffTime = new Date(Date.now() - maxAge * 60 * 60 * 1000)
 
     let deletedFiles = 0

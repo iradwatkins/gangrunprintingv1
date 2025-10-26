@@ -372,6 +372,8 @@ export type User = {
   name: string
   role: string
   emailVerified: boolean
+  preferredLanguage: string
+  phoneNumber?: string
 }
 
 export type Session = {

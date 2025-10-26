@@ -40,20 +40,25 @@ export async function analyzePerformance(campaignId: string): Promise<Performanc
       where: { landingPageSetId: campaignId },
       include: {
         _count: {
-          select: { orders: true },
+          select: { Order: true },
         },
       },
     })
 
-    if (cityPages.length === 0) {
+    // Type assertion for _count field
+    const pagesWithCount = cityPages as Array<
+      (typeof cityPages)[number] & { _count: { orders: number } }
+    >
+
+    if (pagesWithCount.length === 0) {
       throw new Error('No city pages found for campaign')
     }
 
     // Calculate metrics for each page
-    const pageMetrics: PerformanceMetrics[] = cityPages.map((page) => {
+    const pageMetrics: PerformanceMetrics[] = pagesWithCount.map((page) => {
       const conversions = page._count.orders
       const views = page.views || 0
-      const revenue = page.revenue.toNumber()
+      const revenue = page.revenue
       const conversionRate = views > 0 ? conversions / views : 0
       const avgOrderValue = conversions > 0 ? revenue / conversions : 0
 

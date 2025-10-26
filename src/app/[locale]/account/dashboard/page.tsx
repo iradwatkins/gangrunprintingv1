@@ -3,9 +3,21 @@ import { validateRequest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Package, ShoppingCart, CheckCircle } from 'lucide-react'
-import { Link } from 'next-intl'
-import AccountWrapper from '@/components/account/account-wrapper'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import {
+  Package,
+  ShoppingCart,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  AlertCircle,
+  FileText,
+  Truck,
+  Eye,
+} from 'lucide-react'
+import { Link } from '@/lib/i18n/navigation'
+import { StatsCard } from '@/components/admin/stats-cards'
 
 async function getUserDashboardData(userId: string) {
   // Get user details
@@ -73,8 +85,7 @@ export default async function DashboardPage() {
   const dashboardData = await getUserDashboardData(user.id)
 
   return (
-    <AccountWrapper>
-      <div className="max-w-6xl">
+    <div className="space-y-6">
         <h1 className="text-3xl font-bold mb-2">My Account</h1>
         <p className="text-muted-foreground mb-8">
           Welcome back, {dashboardData.user?.name || dashboardData.user?.email}
@@ -263,6 +274,5 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </div>
-    </AccountWrapper>
   )
 }

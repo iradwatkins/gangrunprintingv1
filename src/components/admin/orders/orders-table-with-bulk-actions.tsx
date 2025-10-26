@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Eye, Download, FileArchive } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { OrderQuickActions } from './order-quick-actions'
 import { OrderStatusDropdown } from './order-status-dropdown'
 import { BulkActionsBar } from './bulk-actions-bar'

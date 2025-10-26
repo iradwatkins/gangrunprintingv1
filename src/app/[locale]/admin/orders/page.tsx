@@ -18,7 +18,7 @@ import {
   AlertCircle,
   type LucideIcon,
 } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import {
   Table,
   TableBody,
@@ -92,7 +92,7 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
               productName: true,
             },
           },
-          File: {
+          OrderFile: {
             select: {
               fileUrl: true,
               filename: true,
@@ -101,6 +101,7 @@ async function OrdersContent({ searchParams }: { searchParams: Record<string, un
           _count: {
             select: {
               OrderItem: true,
+              OrderFile: true,
             },
           },
         },

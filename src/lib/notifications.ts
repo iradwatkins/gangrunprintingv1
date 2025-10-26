@@ -117,7 +117,7 @@ export const getNotificationContent = (
     case NotificationTypes.SPECIAL_OFFER:
       return {
         title: '🎉 Special Offer!',
-        body: data.message || 'Check out our latest deals and save on your next order!',
+        body: (data.message as string | undefined) || 'Check out our latest deals and save on your next order!',
         actions: [{ action: 'view-offers', title: 'View Offers' }],
       }
 

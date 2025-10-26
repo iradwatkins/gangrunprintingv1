@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Link } from 'next-intl'
-import { usePathname } from 'next/navigation'
+import { Link, usePathname } from '@/lib/i18n/navigation'
 import {
   LayoutDashboard,
   Package,

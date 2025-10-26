@@ -2,12 +2,16 @@
  * AI Image Generation API Route
  *
  * Generates product images using Google AI Imagen 4
- * Stores versions in a "drafts" folder for review
+ * Supports campaigns, diversity enhancement, and auto-SEO labeling
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { GoogleAIImageGenerator } from '@/lib/image-generation'
 import { S3Client, PutObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
+import { enhancePromptWithDiversity } from '@/lib/image-generation/diversity-enhancer'
+import { generateSEOLabels } from '@/lib/image-generation/auto-seo-generator'
+import { prisma } from '@/lib/prisma'
+import { nanoid } from 'nanoid'
 
 const s3Client = new S3Client({
   region: 'us-east-1',
@@ -27,52 +31,110 @@ interface GenerateImageRequest {
   productName?: string
   aspectRatio?: '1:1' | '3:4' | '4:3' | '9:16' | '16:9'
   imageSize?: '1K' | '2K'
+  // Campaign system fields
+  campaignId?: string
+  locale?: 'en' | 'es'
+  cityName?: string
+  stateName?: string
+  productType?: string
+  version?: number
 }
 
 /**
  * POST /api/products/generate-image
  *
+ * Enhanced with campaign support, diversity, and auto-SEO
+ *
  * Body:
  * {
- *   "prompt": "Professional photo of red business cards",
- *   "productName": "Business Cards - Red",
- *   "aspectRatio": "4:3",
- *   "imageSize": "2K"
+ *   "prompt": "Professional photo of business cards",
+ *   "locale": "en",                    // Auto-applies diversity
+ *   "cityName": "Chicago",             // For auto-SEO labels
+ *   "stateName": "Illinois",           // Optional
+ *   "productType": "business-cards",   // For SEO and context
+ *   "campaignId": "abc123",            // Optional: links to campaign
+ *   "version": 1,                      // Optional: v1, v2, v3 for regenerations
+ *   "aspectRatio": "1:1",              // For ChatGPT: always 1:1 (square)
+ *   "imageSize": "1K"                  // For ChatGPT: 1K = 1024x1024
  * }
  */
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateImageRequest = await request.json()
-    const { prompt, productName, aspectRatio = '4:3', imageSize = '2K' } = body
+    const {
+      prompt,
+      productName,
+      aspectRatio = '1:1', // ChatGPT requires square images (1024x1024)
+      imageSize = '1K',
+      campaignId,
+      locale = 'en',
+      cityName,
+      stateName,
+      productType,
+      version = 1,
+    } = body
 
     if (!prompt || prompt.trim().length === 0) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    // Initialize Google AI generator
-    const generator = new GoogleAIImageGenerator()
+    // STEP 1: Enhance prompt with diversity if locale provided
+    let finalPrompt = prompt
+    let diversityMetadata = null
 
-    // Generate the image
+    if (locale) {
+      const enhanced = enhancePromptWithDiversity(prompt, {
+        locale,
+        productType,
+        cityName,
+      })
+      finalPrompt = enhanced.prompt
+      diversityMetadata = enhanced.diversityMetadata
+    }
+
+    // STEP 2: Generate SEO labels if city/product info provided
+    let seoLabels = null
+    if (cityName && productType && locale) {
+      seoLabels = generateSEOLabels({
+        cityName,
+        stateName,
+        productType,
+        locale,
+        version,
+      })
+    }
+
+    // STEP 3: Generate the image with enhanced prompt
+    const generator = new GoogleAIImageGenerator()
     const result = await generator.generateImage({
-      prompt,
+      prompt: finalPrompt,
       config: {
         numberOfImages: 1,
         aspectRatio,
         imageSize,
-        personGeneration: 'dont_allow',
+        personGeneration: locale ? 'allow_adult' : 'dont_allow', // Allow people if locale specified
       },
     })
 
-    // Create unique filename with timestamp
+    // STEP 4: Determine storage path (campaign folder or drafts)
     const timestamp = Date.now()
-    const sanitizedName = (productName || 'product')
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '-')
-      .substring(0, 50)
+    let filename: string
 
-    const filename = `drafts/${sanitizedName}-${timestamp}.png`
+    if (campaignId) {
+      // Store in campaign-specific folder
+      const campaignSlug = await getCampaignSlug(campaignId)
+      const seoFilename = seoLabels?.filename || `image-${timestamp}.png`
+      filename = `campaigns/${campaignSlug}/${seoFilename}`
+    } else {
+      // Fallback to drafts folder (legacy)
+      const sanitizedName = (productName || 'product')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .substring(0, 50)
+      filename = `drafts/${sanitizedName}-${timestamp}.png`
+    }
 
-    // Upload to MinIO in "drafts" folder
+    // STEP 5: Upload to MinIO with enhanced metadata
     await s3Client.send(
       new PutObjectCommand({
         Bucket: BUCKET_NAME,
@@ -80,10 +142,19 @@ export async function POST(request: NextRequest) {
         Body: result.buffer,
         ContentType: 'image/png',
         Metadata: {
-          prompt: prompt.substring(0, 500), // Store prompt in metadata
+          originalPrompt: prompt.substring(0, 500),
+          enhancedPrompt: finalPrompt.substring(0, 500),
           generatedAt: result.generatedAt.toISOString(),
           aspectRatio,
           imageSize,
+          locale: locale || '',
+          cityName: cityName || '',
+          productType: productType || '',
+          version: version.toString(),
+          ...(seoLabels && {
+            alt: seoLabels.alt.substring(0, 200),
+            title: seoLabels.title.substring(0, 100),
+          }),
         },
       })
     )
@@ -91,19 +162,48 @@ export async function POST(request: NextRequest) {
     // Construct public URL
     const imageUrl = `${MINIO_PUBLIC_URL}/${BUCKET_NAME}/${filename}`
 
-    // Get count of all draft versions for this product
-    const drafts = await listDraftVersions(sanitizedName)
+    // STEP 6: Save to database if campaign provided
+    let dbImage = null
+    if (campaignId && seoLabels) {
+      dbImage = await prisma.image.create({
+        data: {
+          id: nanoid(),
+          name: seoLabels.filename,
+          url: imageUrl,
+          alt: seoLabels.alt,
+          description: seoLabels.description,
+          category: 'ai-generated',
+          tags: seoLabels.keywords,
+          metadata: {
+            aspectRatio,
+            imageSize,
+            seoLabels,
+          },
+          campaignId,
+          locale,
+          version,
+          isActive: false, // Not active until approved
+          originalPrompt: prompt,
+          diversityMetadata,
+          cityName,
+        },
+      })
+    }
 
     return NextResponse.json({
       success: true,
       data: {
         url: imageUrl,
         filename,
-        prompt,
+        originalPrompt: prompt,
+        enhancedPrompt: finalPrompt,
         generatedAt: result.generatedAt,
         aspectRatio,
         imageSize,
-        draftVersions: drafts.length,
+        seoLabels,
+        diversityMetadata,
+        dbImageId: dbImage?.id,
+        version,
       },
     })
   } catch (error: any) {
@@ -129,6 +229,17 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+/**
+ * Helper: Get campaign slug from ID
+ */
+async function getCampaignSlug(campaignId: string): Promise<string> {
+  const campaign = await prisma.imageCampaign.findUnique({
+    where: { id: campaignId },
+    select: { slug: true },
+  })
+  return campaign?.slug || 'unknown-campaign'
 }
 
 /**

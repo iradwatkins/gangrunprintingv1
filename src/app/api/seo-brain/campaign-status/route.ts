@@ -44,8 +44,8 @@ export async function GET(request: NextRequest) {
 
     // Estimate time remaining (if generating)
     let estimatedTimeRemaining = null
-    if (campaign.status === 'GENERATING' && campaign.generationStartedAt) {
-      const elapsed = Date.now() - campaign.generationStartedAt.getTime()
+    if (campaign.status === 'GENERATING' && campaign.startedAt) {
+      const elapsed = Date.now() - campaign.startedAt.getTime()
       const avgTimePerCity = elapsed / cityPages
       const remaining = (totalCities - cityPages) * avgTimePerCity
       estimatedTimeRemaining = Math.round(remaining / 1000 / 60) // minutes
@@ -61,8 +61,8 @@ export async function GET(request: NextRequest) {
         totalCities,
         progress,
         estimatedTimeRemaining,
-        startedAt: campaign.generationStartedAt,
-        completedAt: campaign.generationCompletedAt,
+        startedAt: campaign.startedAt,
+        completedAt: campaign.completedAt,
       },
     })
   } catch (error) {

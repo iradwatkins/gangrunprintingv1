@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { prisma } from '@/lib/prisma'
 import { ArrowLeft } from 'lucide-react'
 import { EditOrderForm } from '@/components/admin/orders/edit-order-form'

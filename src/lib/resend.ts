@@ -146,7 +146,7 @@ export async function downloadFileFromMinIO(
   objectPath: string
 ): Promise<Buffer> {
   try {
-    const client = getMinioClient()
+    const client = await getMinioClient()
 
     return new Promise(async (resolve, reject) => {
       try {
@@ -326,7 +326,7 @@ export async function sendBatchEmails(emails: EmailTemplate[]) {
   for (const email of emails) {
     try {
       const result = await sendEmail(email)
-      results.push({ success: true, ...result })
+      results.push({ ...result, success: true })
     } catch (error) {
       results.push({ success: false, error: error.message })
     }

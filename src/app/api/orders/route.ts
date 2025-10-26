@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { randomBytes } from 'crypto'
 import { validateRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
@@ -187,6 +188,7 @@ export async function POST(request: NextRequest) {
           : undefined,
         StatusHistory: {
           create: {
+            id: `sh_${randomBytes(16).toString('hex')}`,
             toStatus: 'PENDING_PAYMENT',
             notes: 'Order created',
             changedBy: user?.email || 'System',
@@ -194,6 +196,7 @@ export async function POST(request: NextRequest) {
         },
         Notification: {
           create: {
+            id: `notif_${randomBytes(16).toString('hex')}`,
             type: 'ORDER_CONFIRMED',
             sent: false,
           },

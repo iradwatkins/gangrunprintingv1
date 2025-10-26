@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
             SizeGroup: true,
           },
         },
-        productAddOns: {
+        ProductAddOn: {
           include: {
             AddOn: true,
           },

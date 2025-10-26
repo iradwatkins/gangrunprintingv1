@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

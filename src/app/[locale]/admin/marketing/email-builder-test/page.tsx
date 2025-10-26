@@ -1,7 +1,6 @@
 'use client'
 
 export default function EmailBuilderTestPage() {
-  console.log('TEST PAGE RENDERING')
 
   return (
     <div className="p-6">

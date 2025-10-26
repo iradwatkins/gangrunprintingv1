@@ -338,11 +338,10 @@ export default function NewProductPage() {
                 images={formData.images}
                 onImagesChange={(imagesOrCallback) => {
                   // Handle both array and callback forms
-                  if (typeof imagesOrCallback === 'function') {
-                    updateFormData((prev) => ({ images: imagesOrCallback(prev.images) }))
-                  } else {
-                    updateFormData({ images: imagesOrCallback })
-                  }
+                  const newImages = typeof imagesOrCallback === 'function'
+                    ? imagesOrCallback(formData.images)
+                    : imagesOrCallback
+                  updateFormData({ images: newImages })
                 }}
               />
             </div>

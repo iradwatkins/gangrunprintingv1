@@ -35,23 +35,34 @@ export async function POST(request: NextRequest) {
 
     const uploadedImage = await uploadProductImage(buffer, cleanFileName, file.type)
 
-    // Create a customer image record (separate from ProductImage table)
-    // We'll store this in a CustomerImage table or in ProductImage with special flag
+    // Create Image record first, then ProductImage that references it
     let dbImage = null
     if (productId) {
       try {
-        // For now, store in ProductImage table with special metadata
+        // Create Image record with uploaded image data
+        const imageRecord = await prisma.image.create({
+          data: {
+            name: file.name,
+            url: uploadedImage.optimized, // Use optimized as main url
+            thumbnailUrl: uploadedImage.thumbnail,
+            alt: `Customer upload: ${file.name}`,
+            caption: 'Customer Design File',
+            mimeType: file.type,
+            fileSize: buffer.length,
+            width: uploadedImage.metadata.width,
+            height: uploadedImage.metadata.height,
+            category: 'customer-upload',
+            isActive: true,
+          },
+        })
+
+        // Create ProductImage that references the Image
         dbImage = await prisma.productImage.create({
           data: {
             productId,
-            url: uploadedImage.url,
-            thumbnailUrl: uploadedImage.thumbnailUrl,
-            mimeType: file.type,
-            fileSize: buffer.length,
+            imageId: imageRecord.id,
             sortOrder: 999, // High sort order for customer images
             isPrimary: false,
-            alt: `Customer upload: ${file.name}`,
-            caption: 'Customer Design File',
           },
         })
       } catch (dbError) {
@@ -62,8 +73,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         id: dbImage?.id || `customer-${timestamp}`,
-        url: uploadedImage.url,
-        thumbnailUrl: uploadedImage.thumbnailUrl || uploadedImage.url,
+        url: uploadedImage.optimized, // Use correct property name
+        thumbnailUrl: uploadedImage.thumbnail,
         fileName: file.name,
         fileSize: buffer.length,
         mimeType: file.type,

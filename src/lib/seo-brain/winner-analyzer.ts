@@ -54,12 +54,17 @@ export async function analyzeWinners(params: { campaignId: string; topCount?: nu
       take: topCount,
     })
 
-    if (topPages.length === 0) {
+    // Type assertion for _count field
+    const pagesWithCount = topPages as Array<
+      (typeof topPages)[number] & { _count: { orders: number } }
+    >
+
+    if (pagesWithCount.length === 0) {
       return { success: false }
     }
 
     // Calculate performance scores
-    const pagesWithScores = topPages.map((page) => ({
+    const pagesWithScores = pagesWithCount.map((page) => ({
       ...page,
       score: calculatePerformanceScore(page),
     }))
@@ -72,7 +77,7 @@ export async function analyzeWinners(params: { campaignId: string; topCount?: nu
       score: page.score,
       views: page.views,
       conversions: page._count.orders,
-      revenue: page.revenue.toNumber(),
+      revenue: page.revenue,
       title: page.title,
       intro: page.aiIntro?.substring(0, 500), // First 500 chars
       benefitsCount: page.aiBenefits?.split('\n').length || 0,

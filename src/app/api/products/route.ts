@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
     const responseTime = Date.now() - startTime
     console.error(`[${requestId}] Database error:`, error)
 
-    return createDatabaseErrorResponse(error, requestId)
+    return createDatabaseErrorResponse(error instanceof Error ? error : new Error(String(error)), requestId)
   }
 }
 
@@ -327,7 +327,7 @@ export async function POST(request: NextRequest) {
         return createErrorResponse(`Add-ons not found: ${missing.join(', ')}`, 400, null, requestId)
       }
     } catch (validationError) {
-      return createDatabaseErrorResponse(validationError, requestId)
+      return createDatabaseErrorResponse(validationError instanceof Error ? validationError : new Error(String(validationError)), requestId)
     }
 
     // Create product with optimized transaction
@@ -570,6 +570,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return createDatabaseErrorResponse(error, requestId)
+    return createDatabaseErrorResponse(error instanceof Error ? error : new Error(String(error)), requestId)
   }
 }

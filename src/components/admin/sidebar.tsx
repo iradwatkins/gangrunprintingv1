@@ -1,6 +1,6 @@
 'use client'
 
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
@@ -24,6 +24,8 @@ import {
   ChevronDown,
   ChevronRight,
   Mail,
+  Sparkles,
+  Percent,
 } from 'lucide-react'
 
 const navigationStructure = [
@@ -116,6 +118,12 @@ const navigationStructure = [
         href: '/admin/landing-pages',
         icon: Printer,
         description: '200-city SEO campaigns',
+      },
+      {
+        title: 'Prompts',
+        href: '/admin/marketing/prompts',
+        icon: Sparkles,
+        description: 'AI image prompt studio',
       },
       {
         title: 'Campaigns',

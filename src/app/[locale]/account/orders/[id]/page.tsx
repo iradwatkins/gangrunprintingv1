@@ -17,12 +17,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { format } from '@/lib/date'
 import { TrackingButton, TrackingLink } from '@/components/tracking/tracking-button'
 import { formatTrackingNumber, getCarrierName } from '@/lib/tracking'
 import toast from '@/lib/toast'
 import { CustomerOrderFiles } from '@/components/customer/order-files'
+import { type Carrier } from '@prisma/client'
 
 interface OrderDetail {
   id: string
@@ -48,7 +49,7 @@ interface OrderDetail {
     operator?: string
   }
   trackingNumber?: string
-  carrier?: Record<string, unknown>
+  carrier?: Carrier | null
   createdAt: string
   paidAt?: string
   shippingAddress: Record<string, unknown>

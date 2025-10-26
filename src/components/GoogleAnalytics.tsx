@@ -2,6 +2,14 @@
 
 import { useEffect } from 'react'
 
+// Extend Window interface for Google Analytics
+declare global {
+  interface Window {
+    dataLayer: any[]
+    gtag: (...args: any[]) => void
+  }
+}
+
 export default function GoogleAnalytics() {
   const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 

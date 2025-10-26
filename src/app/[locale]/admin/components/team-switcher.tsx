@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { ChevronsUpDown, Plus } from 'lucide-react'
 
 import {

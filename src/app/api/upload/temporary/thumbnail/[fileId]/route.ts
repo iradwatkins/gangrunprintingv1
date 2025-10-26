@@ -28,7 +28,7 @@ export async function GET(
     }
 
     // Try to find the thumbnail for this file ID
-    const client = getMinioClient()
+    const client = await getMinioClient()
 
     // List objects to find the thumbnail path
     const objectsStream = client.listObjectsV2(BUCKETS.UPLOADS, `temp/`, true)

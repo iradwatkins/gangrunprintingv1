@@ -65,21 +65,26 @@ export class SEOBrainOrchestrator {
       include: {
         _count: {
           select: {
-            orders: true,
+            Order: true,
           },
         },
       },
     })
 
+    // Type assertion for _count field
+    const pagesWithCount = cityPages as Array<
+      (typeof cityPages)[number] & { _count: { orders: number } }
+    >
+
     // Calculate performance metrics
-    const performances = cityPages.map((page) => ({
+    const performances = pagesWithCount.map((page) => ({
       id: page.id,
       city: page.slug,
       views: page.views,
       conversions: page._count.orders,
-      revenue: page.revenue.toNumber(),
-      conversionRate: page.conversionRate?.toNumber() || 0,
-      bounceRate: page.bounceRate?.toNumber() || 0,
+      revenue: page.revenue,
+      conversionRate: page.conversionRate || 0,
+      bounceRate: page.bounceRate || 0,
       googleRanking: page.googleRanking || 999,
       performanceScore: this.calculatePerformanceScore(page),
     }))
@@ -117,7 +122,9 @@ export class SEOBrainOrchestrator {
   /**
    * Calculate performance score for a city page
    */
-  private calculatePerformanceScore(page: any): number {
+  private calculatePerformanceScore(
+    page: { _count: { orders: number }; views: number; googleRanking: number | null }
+  ): number {
     // Weighted score: conversions (50%) + views (30%) + rank (20%)
     const conversionScore = Math.min(100, (page._count.orders / 10) * 100) // 10 conversions = 100 points
     const viewScore = Math.min(100, (page.views / 500) * 100) // 500 views = 100 points

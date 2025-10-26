@@ -19,7 +19,7 @@ import { AirportSelector } from '@/components/checkout/airport-selector'
 import { SavedAddresses } from '@/components/checkout/saved-addresses'
 import { useUser } from '@/hooks/use-user'
 import toast from '@/lib/toast'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 export default function ShippingPage() {
   const router = useRouter()

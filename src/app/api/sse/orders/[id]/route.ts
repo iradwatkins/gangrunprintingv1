@@ -28,8 +28,8 @@ export async function GET(
     }
 
     // Check authorization
-    const isOwner = order.email === session?.user?.email
-    const isAdmin = (session?.user as any)?.role === 'ADMIN'
+    const isOwner = order.email === user?.email
+    const isAdmin = user?.role === 'ADMIN'
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -60,7 +60,7 @@ export async function GET(
             const updatedOrder = await prisma.order.findUnique({
               where: { id: orderId },
               include: {
-                statusHistory: {
+                StatusHistory: {
                   orderBy: { createdAt: 'desc' },
                   take: 1,
                 },

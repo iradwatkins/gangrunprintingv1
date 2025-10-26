@@ -83,7 +83,7 @@ export class CartService {
         },
       },
       include: {
-        orderItems: true,
+        OrderItem: true,
       },
     })
 
@@ -129,7 +129,7 @@ export class CartService {
       this.prisma.order.findMany({
         where: { customerId },
         include: {
-          orderItems: {
+          OrderItem: {
             include: {
               product: {
                 include: {

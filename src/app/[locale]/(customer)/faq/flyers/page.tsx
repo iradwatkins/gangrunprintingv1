@@ -7,7 +7,7 @@
 import type { Metadata } from 'next'
 import { FAQPage } from '@/components/seo/FAQSchema'
 import { flyerFAQs } from '@/data/faqs/flyers'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 export const metadata: Metadata = {
   title: 'Flyer Printing FAQ - Common Questions Answered | GangRun Printing',

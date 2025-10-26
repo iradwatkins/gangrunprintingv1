@@ -27,8 +27,8 @@ export function RevenueChart({ data, showDetailedTooltip = false }: RevenueChart
     })
   }
 
-  const CustomTooltip = ({ active, payload, label }: Record<string, unknown>) => {
-    if (active && payload && payload.length) {
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && Array.isArray(payload) && payload.length > 0) {
       return (
         <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
           <p className="text-sm font-medium">{formatDate(label)}</p>

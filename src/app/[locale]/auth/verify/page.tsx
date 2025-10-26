@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 function getErrorTitle(errorCode: string): string {
   switch (errorCode) {
@@ -82,7 +82,10 @@ async function VerifyContent({ searchParams }: VerifyPageProps) {
   )
 }
 
-export default async function VerifyPage({ searchParams }: VerifyPageProps) {
+export default async function VerifyPage({ params, searchParams }: VerifyPageProps) {
+  // Await params to satisfy Next.js type requirements (even though unused)
+  await params
+
   return (
     <Suspense
       fallback={
@@ -94,7 +97,7 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
         </div>
       }
     >
-      <VerifyContent searchParams={searchParams} />
+      <VerifyContent searchParams={searchParams} params={params} />
     </Suspense>
   )
 }

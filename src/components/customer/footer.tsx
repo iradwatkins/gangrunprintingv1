@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import Image from 'next/image'
 import {
   Facebook,
@@ -22,40 +22,41 @@ import { Separator } from '@/components/ui/separator'
 import { CompactLanguageSwitcher } from '@/components/i18n/language-switcher'
 import { ThemeToggle } from '@/components/theme-toggle'
 
-const footerLinks = {
-  products: [
-    { name: 'Business Cards', href: '/category/business-cards' },
-    { name: 'Flyers & Brochures', href: '/category/flyers' },
-    { name: 'Banners & Signs', href: '/category/banners' },
-    { name: 'Stickers & Labels', href: '/category/stickers' },
-    { name: 'Apparel', href: '/category/apparel' },
-    { name: 'View All Products', href: '/products' },
-  ],
-  services: [
-    { name: 'Design Services', href: '/quote' },
-    { name: 'Bulk Orders', href: '/quote' },
-    { name: 'Rush Printing', href: '/quote' },
-    { name: 'Free Samples', href: '/quote' },
-    { name: 'Custom Quotes', href: '/quote' },
-  ],
-  company: [
-    { name: 'About Us', href: '/about' },
-    { name: 'Contact Us', href: '/contact' },
-    { name: 'Locations', href: '/locations' },
-    { name: 'Careers', href: '/contact' },
-    { name: 'Blog', href: '/help-center' },
-  ],
-  support: [
-    { name: 'Track Order', href: '/track' },
-    { name: 'Help Center', href: '/help-center' },
-    { name: 'Shipping Info', href: '/locations' },
-    { name: 'Return Policy', href: '/help-center' },
-    { name: 'FAQs', href: '/help-center' },
-  ],
-}
-
 export default function Footer() {
   const [isExpanded, setIsExpanded] = useState(false)
+
+  // i18n Link component adds locale automatically - do NOT add locale prefix manually
+  const footerLinks = {
+    products: [
+      { name: 'Business Cards', href: '/category/business-cards' },
+      { name: 'Flyers & Brochures', href: '/category/flyers' },
+      { name: 'Banners & Signs', href: '/category/banners' },
+      { name: 'Stickers & Labels', href: '/category/stickers' },
+      { name: 'Apparel', href: '/category/apparel' },
+      { name: 'View All Products', href: '/products' },
+    ],
+    services: [
+      { name: 'Design Services', href: '/quote' },
+      { name: 'Bulk Orders', href: '/quote' },
+      { name: 'Rush Printing', href: '/quote' },
+      { name: 'Free Samples', href: '/quote' },
+      { name: 'Custom Quotes', href: '/quote' },
+    ],
+    company: [
+      { name: 'About Us', href: '/about' },
+      { name: 'Contact Us', href: '/contact' },
+      { name: 'Locations', href: '/locations' },
+      { name: 'Careers', href: '/contact' },
+      { name: 'Blog', href: '/help-center' },
+    ],
+    support: [
+      { name: 'Track Order', href: '/track' },
+      { name: 'Help Center', href: '/help-center' },
+      { name: 'Shipping Info', href: '/locations' },
+      { name: 'Return Policy', href: '/help-center' },
+      { name: 'FAQs', href: '/help-center' },
+    ],
+  }
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded)

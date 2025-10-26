@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 
 export default async function MenusPage() {

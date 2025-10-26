@@ -83,30 +83,8 @@ export default async function CityLandingPage({ params }: PageProps) {
               },
             },
           },
-          QuantityGroup: {
-            include: {
-              QuantityGroupItem: {
-                include: {
-                  Quantity: true,
-                },
-                orderBy: {
-                  sortOrder: 'asc',
-                },
-              },
-            },
-          },
-          SizeGroup: {
-            include: {
-              SizeGroupItem: {
-                include: {
-                  Size: true,
-                },
-                orderBy: {
-                  sortOrder: 'asc',
-                },
-              },
-            },
-          },
+          QuantityGroup: true,
+          SizeGroup: true,
           AddOnSet: {
             include: {
               AddOnSetItem: {

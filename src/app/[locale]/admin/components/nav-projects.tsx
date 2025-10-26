@@ -1,6 +1,6 @@
 'use client'
 
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { type LucideIcon } from 'lucide-react'
 
 import {

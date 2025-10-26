@@ -24,6 +24,8 @@ export const createProductSchema = z.object({
         alt: z.string().max(255).optional(),
         caption: z.string().max(500).optional(),
         isPrimary: z.boolean().optional(),
+        sortOrder: z.number().int().min(0).optional(),
+        imageId: z.string().optional(),
         width: z.number().int().positive().optional(),
         height: z.number().int().positive().optional(),
         fileSize: z.number().int().positive().optional(),

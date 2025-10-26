@@ -16,7 +16,8 @@ import {
   Download,
   FileText,
 } from 'lucide-react'
-import type { ImageFile, ImageUploadState } from './types'
+import type { ImageFile } from './types'
+import { ImageUploadState } from './types'
 
 interface ImagePreviewProps {
   images: ImageFile[]

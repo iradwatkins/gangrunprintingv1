@@ -341,8 +341,8 @@ export async function GET(request: NextRequest) {
     })
 
     let productConfig = null
-    let productSizes = []
-    let productQuantities = []
+    let productSizes: any[] = []
+    let productQuantities: any[] = []
 
     if (productId) {
       // Get product-specific configuration

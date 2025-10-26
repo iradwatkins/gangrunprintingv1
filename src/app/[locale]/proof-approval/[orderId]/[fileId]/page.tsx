@@ -112,13 +112,13 @@ export default async function ProofApprovalPage({ params, searchParams }: PagePr
             mimeType: file.mimeType || undefined,
             fileSize: file.fileSize || undefined,
             approvalStatus: file.approvalStatus,
-            createdAt: file.createdAt,
+            createdAt: file.createdAt.toISOString(),
             messages: file.FileMessage.map((msg) => ({
               id: msg.id,
               message: msg.message,
               authorName: msg.authorName,
               authorRole: msg.authorRole,
-              createdAt: msg.createdAt,
+              createdAt: msg.createdAt.toISOString(),
             })),
           }}
           order={{

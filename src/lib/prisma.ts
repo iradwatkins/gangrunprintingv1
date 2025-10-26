@@ -47,6 +47,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Add connection health check utility for on-demand monitoring
+// SECURITY FIX (2025-01-24): Replaced $executeRawUnsafe with safe $executeRaw
 export const checkDatabaseHealth = async (): Promise<{
   status: 'healthy' | 'unhealthy'
   latency?: number
@@ -54,7 +55,8 @@ export const checkDatabaseHealth = async (): Promise<{
 }> => {
   const startTime = Date.now()
   try {
-    await prisma.$executeRawUnsafe('SELECT 1')
+    // Use safe $executeRaw instead of $executeRawUnsafe for consistency
+    await prisma.$executeRaw`SELECT 1`
     const latency = Date.now() - startTime
 
     return { status: 'healthy', latency }

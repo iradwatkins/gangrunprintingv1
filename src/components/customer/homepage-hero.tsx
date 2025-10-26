@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowRight, Sparkles } from 'lucide-react'
@@ -18,41 +18,40 @@ interface Special {
   bgColor: string
 }
 
-// Default specials - can be moved to database later
-const DEFAULT_SPECIALS: Special[] = [
-  {
-    id: '1',
-    title: 'Business Cards Special',
-    subtitle: '500 Premium Business Cards',
-    description: 'High-quality cardstock with multiple coating options',
-    ctaText: 'Order Now',
-    ctaLink: '/category/business-cards',
-    discount: '20% OFF',
-    bgColor: 'from-blue-600 to-blue-800',
-  },
-  {
-    id: '2',
-    title: 'Flyer Printing Deal',
-    subtitle: '1000 Full-Color Flyers',
-    description: 'Perfect for events, promotions, and marketing campaigns',
-    ctaText: 'Get Started',
-    ctaLink: '/category/flyers',
-    discount: '15% OFF',
-    bgColor: 'from-purple-600 to-purple-800',
-  },
-  {
-    id: '3',
-    title: 'Brochure Package',
-    subtitle: 'Professional Tri-Fold Brochures',
-    description: 'Showcase your business with professional brochures',
-    ctaText: 'View Options',
-    ctaLink: '/category/brochures',
-    discount: '25% OFF',
-    bgColor: 'from-orange-600 to-orange-800',
-  },
-]
-
 export function HomepageHero() {
+  const DEFAULT_SPECIALS: Special[] = [
+    {
+      id: '1',
+      title: 'Business Cards Special',
+      subtitle: '500 Premium Business Cards',
+      description: 'High-quality cardstock with multiple coating options',
+      ctaText: 'Order Now',
+      ctaLink: '/category/business-cards',
+      discount: '20% OFF',
+      bgColor: 'from-blue-600 to-blue-800',
+    },
+    {
+      id: '2',
+      title: 'Flyer Printing Deal',
+      subtitle: '1000 Full-Color Flyers',
+      description: 'Perfect for events, promotions, and marketing campaigns',
+      ctaText: 'Get Started',
+      ctaLink: '/category/flyers',
+      discount: '15% OFF',
+      bgColor: 'from-purple-600 to-purple-800',
+    },
+    {
+      id: '3',
+      title: 'Brochure Package',
+      subtitle: 'Professional Tri-Fold Brochures',
+      description: 'Showcase your business with professional brochures',
+      ctaText: 'View Options',
+      ctaLink: '/category/brochures',
+      discount: '25% OFF',
+      bgColor: 'from-orange-600 to-orange-800',
+    },
+  ]
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [specials] = useState<Special[]>(DEFAULT_SPECIALS)
 

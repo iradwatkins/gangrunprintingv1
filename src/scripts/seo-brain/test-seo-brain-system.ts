@@ -7,6 +7,7 @@
 import { ollamaClient } from '../../lib/seo-brain/ollama-client'
 import { sendDecisionRequest } from '../../lib/seo-brain/telegram-notifier'
 import { prisma } from '../../lib/prisma'
+import { Prisma } from '@prisma/client'
 
 const TESTS = {
   passed: [] as string[],
@@ -114,8 +115,9 @@ async function testDatabaseTables() {
       'SEOBrainAlert',
     ]
 
+    // SECURITY FIX (2025-01-24): Replaced $queryRawUnsafe with safe parameterized query
     for (const table of tables) {
-      const count = await prisma.$queryRawUnsafe(`SELECT COUNT(*) FROM "${table}"`)
+      const count = await prisma.$queryRaw`SELECT COUNT(*) FROM ${Prisma.raw(`"${table}"`)}`
       log('  ↳', `${table}: OK`)
     }
 

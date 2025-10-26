@@ -22,7 +22,7 @@ import {
   Plus,
   X,
 } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import {
   CustomerSelector,
   type Customer,

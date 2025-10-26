@@ -21,20 +21,17 @@ export async function POST(request: Request) {
     const visit = await prisma.funnelVisit.create({
       data: {
         funnelId: funnelId || null,
-        funnelStepId: funnelStepId || null,
         userId: user?.id || null,
         sessionId,
-        pageUrl,
         referrer: referrer || null,
         utmSource: utm?.source || null,
         utmMedium: utm?.medium || null,
         utmCampaign: utm?.campaign || null,
         utmTerm: utm?.term || null,
         utmContent: utm?.content || null,
-        deviceType: device?.type || 'desktop',
+        device: device?.type || 'desktop',
         browser: device?.browser || 'unknown',
         os: device?.os || 'unknown',
-        timestamp: timestamp ? new Date(timestamp) : new Date(),
       },
     })
 
@@ -71,7 +68,7 @@ export async function GET(request: Request) {
 
     const visits = await prisma.funnelVisit.findMany({
       where: { sessionId },
-      orderBy: { timestamp: 'desc' },
+      orderBy: { createdAt: 'desc' },
       take: 50, // Last 50 visits
     })
 

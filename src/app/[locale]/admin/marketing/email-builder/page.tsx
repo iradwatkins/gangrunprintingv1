@@ -286,8 +286,6 @@ function EmailBuilderPageContent() {
     return <div className="p-6">Loading email builder...</div>
   }
 
-  console.log('EmailBuilderPage - template:', template)
-  console.log('EmailBuilderPage - rendering')
 
   return (
     <div className="h-screen flex flex-col">

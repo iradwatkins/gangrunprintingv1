@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { OrderStatus } from '@prisma/client'
+import { OrderStatus, NotificationType } from '@prisma/client'
 import { canTransitionTo, generateReferenceNumber } from '@/lib/order-management'
 import { N8NWorkflows } from '@/lib/n8n'
 import { requireAuth, requireAdminAuth, handleAuthError } from '@/lib/auth/api-helpers'
@@ -38,7 +38,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if transition is valid
-    if (!canTransitionTo(order.status, newStatus)) {
+    if (!canTransitionTo(order.status as OrderStatus, newStatus)) {
       return NextResponse.json(
         { error: `Cannot transition from ${order.status} to ${newStatus}` },
         { status: 400 }
@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest) {
       await tx.statusHistory.create({
         data: {
           orderId: orderId,
-          fromStatus: order.status,
+          fromStatus: order.status as OrderStatus,
           toStatus: newStatus,
           notes: notes,
           changedBy: user.email || user.id,
@@ -86,7 +86,7 @@ export async function PUT(request: NextRequest) {
         await tx.notification.create({
           data: {
             orderId: orderId,
-            type: 'ORDER_DELIVERED',
+            type: NotificationType.ORDER_DELIVERED,
             sent: false,
           },
         })

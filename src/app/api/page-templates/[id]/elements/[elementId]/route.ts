@@ -23,9 +23,9 @@ const updateElementSchema = z.object({
       'COLUMN',
     ])
     .optional(),
-  content: z.record(z.any()).optional(),
-  styles: z.record(z.any()).optional(),
-  position: z.record(z.any()).optional(),
+  content: z.record(z.string(), z.any()).optional(),
+  styles: z.record(z.string(), z.any()).optional(),
+  position: z.record(z.string(), z.any()).optional(),
   parentId: z.string().optional().nullable(),
   sortOrder: z.number().optional(),
   isVisible: z.boolean().optional(),

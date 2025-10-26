@@ -31,7 +31,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import toast from '@/lib/toast'
 import * as Icons from 'lucide-react'
 

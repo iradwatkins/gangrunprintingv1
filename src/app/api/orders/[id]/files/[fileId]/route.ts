@@ -59,7 +59,7 @@ const updateSchema = z.object({
   label: z.string().optional(),
   approvalStatus: z.enum(['WAITING', 'APPROVED', 'REJECTED', 'NOT_REQUIRED']).optional(),
   isVisible: z.boolean().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 })
 
 export async function PATCH(
@@ -106,7 +106,7 @@ export async function PATCH(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { error: 'Validation failed', details: error.issues },
         { status: 400 }
       )
     }

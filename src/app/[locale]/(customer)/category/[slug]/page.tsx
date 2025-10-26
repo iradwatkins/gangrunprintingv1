@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { Package, Grid3x3, ArrowRight } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { Card, CardContent } from '@/components/ui/card'
@@ -108,7 +108,7 @@ async function getCategoryData(slug: string) {
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  const { slug } = await params
+  const { slug, locale } = await params
 
   const category = await getCategoryData(slug)
 
@@ -118,13 +118,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gangrunprinting.com'
 
-  // Build breadcrumbs
+  // LOCALE FIX: Build breadcrumbs with locale prefix for proper navigation
   const breadcrumbs = category.ParentCategory
     ? [
-        { label: category.ParentCategory.name, href: `/category/${category.ParentCategory.slug}` },
-        { label: category.name, href: `/category/${category.slug}` },
+        { label: category.ParentCategory.name, href: `/${locale}/category/${category.ParentCategory.slug}` },
+        { label: category.name, href: `/${locale}/category/${category.slug}` },
       ]
-    : [{ label: category.name, href: `/category/${category.slug}` }]
+    : [{ label: category.name, href: `/${locale}/category/${category.slug}` }]
 
   // Generate schema.org data
   const categorySchema = generateCategorySchema(
@@ -191,7 +191,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {category.Subcategories.map((subcategory) => (
-                  <Link key={subcategory.id} href={`/category/${subcategory.slug}`}>
+                  <Link key={subcategory.id} href={`/${locale}/category/${subcategory.slug}`}>
                     <Card className="hover:shadow-lg transition-all hover:border-primary/50 cursor-pointer h-full">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between">
@@ -258,7 +258,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                     const imageUrl = productImage?.thumbnailUrl || productImage?.url
 
                     return (
-                      <Link key={product.id} href={`/products/${product.slug}`}>
+                      <Link key={product.id} href={`/${locale}/products/${product.slug}`}>
                         <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary/50 group cursor-pointer h-full">
                           <div className="aspect-square bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
                             {product.isFeatured && (

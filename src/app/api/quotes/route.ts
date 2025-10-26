@@ -1,6 +1,7 @@
 import { validateRequest } from '@/lib/auth'
 import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { type QuoteStatus } from '@prisma/client'
 
 // GET quotes (customer or admin)
 export async function GET(request: NextRequest) {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
       const quote = await prisma.quote.findUnique({
         where: { id: quoteId },
         include: {
-          user: {
+          User: {
             select: {
               id: true,
               name: true,
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Check authorization - users can only view their own quotes
-      if (quote.userId && quote.userId !== userId) {
+      if (quote.userId && quote.userId !== user.id) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
 
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
       // Admin can see all quotes - no userId filter
     } else {
       // Regular users only see their own quotes
-      whereClause.userId = userId
+      whereClause.userId = user.id
     }
 
     // Filter by status if provided
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
       where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
-        user: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest) {
     const quote = await prisma.quote.create({
       data: {
         quoteNumber,
-        userId: userId,
+        userId: user.id,
         customerEmail,
         customerName,
         customerPhone,
@@ -123,7 +124,7 @@ export async function POST(request: NextRequest) {
         validUntil,
         status: 'DRAFT',
         notes,
-        createdBy: userId,
+        createdBy: user.id,
       },
     })
 
@@ -161,7 +162,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check authorization - users can only update their own quotes
-    if (quote.userId && quote.userId !== userId) {
+    if (quote.userId && quote.userId !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

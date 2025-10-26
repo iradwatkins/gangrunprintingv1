@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import {
   ArrowLeft,
   Save,

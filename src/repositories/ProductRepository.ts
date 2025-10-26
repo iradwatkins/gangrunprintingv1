@@ -60,7 +60,7 @@ export class ProductRepository {
     // Build where clause
     const where: Prisma.ProductWhereInput = {
       isActive,
-      ...(categoryId && { productCategoryId: categoryId }),
+      ...(categoryId && { categoryId: categoryId }),
       ...(search && {
         OR: [
           { name: { contains: search, mode: 'insensitive' } },
@@ -181,7 +181,7 @@ export class ProductRepository {
     // First get the product to find its category
     const product = await this.prisma.product.findUnique({
       where: { id: productId },
-      select: { productCategoryId: true },
+      select: { categoryId: true },
     })
 
     if (!product) return []
@@ -189,7 +189,7 @@ export class ProductRepository {
     // Get other products in the same category
     return this.prisma.product.findMany({
       where: {
-        productCategoryId: product.productCategoryId,
+        categoryId: product.categoryId,
         id: { not: productId },
         isActive: true,
       },
@@ -221,7 +221,7 @@ export class ProductRepository {
 
     const where: Prisma.ProductWhereInput = {
       isActive: true,
-      ...(categoryId && { productCategoryId: categoryId }),
+      ...(categoryId && { categoryId: categoryId }),
       OR: [
         {
           name: {
@@ -280,7 +280,7 @@ export class ProductRepository {
       include: {
         _count: {
           select: {
-            products: {
+            Product: {
               where: { isActive: true },
             },
           },

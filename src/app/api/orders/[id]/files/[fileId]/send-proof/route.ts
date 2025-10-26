@@ -76,7 +76,7 @@ export const POST = withApiHandler(
           id: order.id,
           orderNumber: order.orderNumber,
           email: order.email,
-          User: order.User,
+          User: order.User ? { name: order.User.name ?? undefined } : undefined,
         },
         {
           id: orderFile.id,

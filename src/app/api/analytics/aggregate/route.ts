@@ -100,7 +100,6 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({
-      success: result.success,
       type,
       period: {
         start: startDate.toISOString().split('T')[0],

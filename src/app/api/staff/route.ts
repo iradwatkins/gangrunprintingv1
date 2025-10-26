@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     // Calculate stats
     const stats = {
       total: staff.length,
-      active: staff.filter((s) => s.emailVerified && s.isActive).length,
+      active: staff.filter((s) => s.emailVerified).length,
       pending: staff.filter((s) => !s.emailVerified).length,
       admins: staff.filter((s) => s.role === 'ADMIN').length,
     }
@@ -108,10 +108,10 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const recentActivity = recentSessions.map((session, index) => ({
+    const recentActivity = recentSessions.map((session) => ({
       id: session.id,
       userId: session.userId,
-      userName: session.user.name || session.user.email,
+      userName: (session as any).user?.name || (session as any).user?.email || 'Unknown',
       action: 'Logged in',
       timestamp: session.createdAt,
       details: `Session started`,

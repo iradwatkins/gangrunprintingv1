@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal, Eye, Edit, Copy, Trash2, Rocket } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { useRouter } from 'next/navigation'
 
 interface FunnelsTableProps {

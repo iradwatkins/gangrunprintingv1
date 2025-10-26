@@ -16,7 +16,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (!code || !state || !storedState || !storedCodeVerifier || state !== storedState) {
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gangrunprinting.com'
-    return NextResponse.redirect(`${baseUrl}/auth/signin?error=invalid_request`)
+    return NextResponse.redirect(`${baseUrl}/en/auth/signin?error=invalid_request`)
   }
 
   try {
@@ -181,7 +181,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const sessionCookie = lucia.createSessionCookie(session.id)
 
     // Redirect based on user role with improved logic
-    const redirectPath = user.role === 'ADMIN' ? '/admin/dashboard' : '/account/dashboard'
+    // IMPORTANT: Include /en/ locale prefix since all routes use localePrefix: 'always'
+    const redirectPath = user.role === 'ADMIN' ? '/en/admin/dashboard' : '/en/account/dashboard'
 
     // Use consistent base URL resolution
     const baseUrl =
@@ -233,9 +234,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         code: error.code,
         description: error.description,
       })
-      return NextResponse.redirect(`${baseUrl}/auth/signin?error=oauth_error`)
+      return NextResponse.redirect(`${baseUrl}/en/auth/signin?error=oauth_error`)
     }
 
-    return NextResponse.redirect(`${baseUrl}/auth/signin?error=server_error`)
+    return NextResponse.redirect(`${baseUrl}/en/auth/signin?error=server_error`)
   }
 }

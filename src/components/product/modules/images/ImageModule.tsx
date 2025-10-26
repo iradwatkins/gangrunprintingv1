@@ -5,7 +5,8 @@ import { ImageUploader } from './ImageUploader'
 import { ImagePreview } from './ImagePreview'
 import { ModuleLoadingBoundary } from '../loading/ModuleLoadingComponents'
 import { useImageModule } from '../hooks/StandardModuleHooks'
-import type { ImageModuleProps, ImageFile, ImageUploadState, DEFAULT_IMAGE_CONFIG } from './types'
+import type { ImageModuleProps, ImageFile } from './types'
+import { ImageUploadState, DEFAULT_IMAGE_CONFIG } from './types'
 import { ModuleType } from '../types/StandardModuleTypes'
 
 /**

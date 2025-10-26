@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { logBusinessEvent, logError } from '@/lib/logger-safe'
@@ -72,6 +73,7 @@ export async function PATCH(
     if (body.status && body.status !== existingOrder.status) {
       await prisma.statusHistory.create({
         data: {
+          id: `sh_${randomBytes(16).toString('hex')}`,
           orderId: id,
           toStatus: body.status,
           fromStatus: existingOrder.status as any,

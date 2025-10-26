@@ -113,10 +113,10 @@ export async function GET(request: NextRequest) {
               Image: true,
             },
           },
-          productSizes: {
+          ProductSize: {
             where: { isActive: true },
           },
-          productPaperStocks: {
+          ProductPaperStock: {
             include: {
               PaperStock: true,
             },
@@ -140,15 +140,15 @@ export async function GET(request: NextRequest) {
         description: product.description,
         shortDescription: product.shortDescription,
         basePrice: product.basePrice,
-        category: product.productCategory?.name,
-        categorySlug: product.productCategory?.slug,
-        image: product.productImages[0]?.Image?.url || null,
-        thumbnailUrl: product.productImages[0]?.Image?.thumbnailUrl || null,
+        category: product.ProductCategory?.name,
+        categorySlug: product.ProductCategory?.slug,
+        image: product.ProductImage[0]?.Image?.url || null,
+        thumbnailUrl: product.ProductImage[0]?.Image?.thumbnailUrl || null,
         isFeatured: product.isFeatured,
         isActive: product.isActive,
         productionTime: product.productionTime,
-        sizesCount: product.productSizes.length,
-        paperStocksCount: product.productPaperStocks.length,
+        sizesCount: product.ProductSize.length,
+        paperStocksCount: product.ProductPaperStock.length,
         setupFee: product.setupFee,
         rushAvailable: product.rushAvailable,
       })),

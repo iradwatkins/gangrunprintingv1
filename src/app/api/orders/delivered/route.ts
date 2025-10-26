@@ -39,16 +39,7 @@ export async function GET(req: NextRequest) {
             email: true,
           },
         },
-        OrderItem: {
-          include: {
-            Product: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
+        OrderItem: true, // OrderItem doesn't have Product relation - productName is stored directly
       },
       orderBy: {
         deliveredAt: 'desc',
@@ -69,9 +60,9 @@ export async function GET(req: NextRequest) {
         deliveredAt: order.deliveredAt,
         createdAt: order.createdAt,
         items: order.OrderItem.map((item) => ({
-          productName: item.Product?.name || item.productName,
+          productName: item.productName, // productName stored directly on OrderItem
           quantity: item.quantity,
-          total: item.total,
+          total: item.price * item.quantity,
         })),
       })),
     })

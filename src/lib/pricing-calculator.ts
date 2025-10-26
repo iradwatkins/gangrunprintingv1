@@ -118,7 +118,7 @@ export class PricingCalculator {
 
         switch (addOn.pricingModel) {
           case 'FLAT':
-            addOnCost = addOn.configuration.price || 0
+            addOnCost = (addOn.configuration.price as number | undefined) || 0
             calculation = `Flat fee: $${addOnCost}`
             break
 

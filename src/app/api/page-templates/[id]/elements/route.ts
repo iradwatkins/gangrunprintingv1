@@ -21,9 +21,9 @@ const createElementSchema = z.object({
     'CONTAINER',
     'COLUMN',
   ]),
-  content: z.record(z.any()),
-  styles: z.record(z.any()),
-  position: z.record(z.any()),
+  content: z.record(z.string(), z.any()),
+  styles: z.record(z.string(), z.any()),
+  position: z.record(z.string(), z.any()),
   parentId: z.string().optional().nullable(),
   sortOrder: z.number().default(0),
 })

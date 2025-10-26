@@ -20,7 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 
 import toast from '@/lib/toast'
 import { ArrowLeft, Save, Loader2, Eye } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 
 interface ProductImage {
   id?: string
@@ -416,7 +416,7 @@ function EditProductClient({ id }: { id: string }) {
                 if (typeof imagesOrCallback === 'function') {
                   setFormData((prev) => ({ ...prev, images: imagesOrCallback(prev.images) }))
                 } else {
-                  setFormData({ ...formData, images: imagesOrCallback })
+                  setFormData((prev) => ({ ...prev, images: imagesOrCallback }))
                 }
               }}
             />

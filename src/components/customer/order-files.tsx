@@ -18,6 +18,7 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from 'lucide-react'
+import Image from 'next/image'
 import toast from '@/lib/toast'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Textarea } from '@/components/ui/textarea'
@@ -416,12 +417,35 @@ function CustomerFileItem({
   const statusConfig = approvalStatusConfig[file.approvalStatus]
   const StatusIcon = statusConfig.icon
 
+  // Check if file is an image
+  const isImage = file.mimeType?.startsWith('image/')
+  const thumbnailUrl = file.thumbnailUrl || (isImage ? file.fileUrl : null)
+
   return (
     <div className="rounded-lg border p-4 space-y-3">
       <div className="flex items-start gap-3">
-        <div className="rounded-md bg-muted p-2">
-          <FileIcon className="h-5 w-5 text-muted-foreground" />
+        {/* Thumbnail or Icon */}
+        <div
+          className="rounded-md bg-muted overflow-hidden flex-shrink-0"
+          style={{ width: '80px', height: '80px' }}
+        >
+          {thumbnailUrl ? (
+            <div className="relative w-full h-full">
+              <Image
+                fill
+                alt={file.label || file.filename}
+                className="object-cover"
+                sizes="80px"
+                src={thumbnailUrl}
+              />
+            </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center p-2">
+              <FileIcon className="h-8 w-8 text-muted-foreground" />
+            </div>
+          )}
         </div>
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
             <div className="flex-1 min-w-0">

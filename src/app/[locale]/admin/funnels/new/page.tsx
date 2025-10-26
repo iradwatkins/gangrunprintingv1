@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ArrowLeft, Loader2, Plus } from 'lucide-react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import toast from '@/lib/toast'
 
 export default function NewFunnelPage() {

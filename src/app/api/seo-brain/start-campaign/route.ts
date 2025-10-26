@@ -45,8 +45,6 @@ export async function POST(request: NextRequest) {
         },
         status: 'PENDING',
         priority: 5,
-        citiesGenerated: 0,
-        citiesIndexed: 0,
       },
     })
 
@@ -86,7 +84,7 @@ async function startCampaignGeneration(campaignId: string, productSpec: any) {
       where: { id: campaignId },
       data: {
         status: 'GENERATING',
-        generationStartedAt: new Date(),
+        startedAt: new Date(),
       },
     })
 

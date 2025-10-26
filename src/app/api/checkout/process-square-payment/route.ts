@@ -1,6 +1,16 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { SquareClient, SquareEnvironment } from 'square'
 import { randomUUID } from 'crypto'
+
+// Zod schema for payment validation
+const paymentRequestSchema = z.object({
+  sourceId: z.string().min(1, 'Payment source ID is required'),
+  amount: z.number().int().positive('Amount must be a positive integer'),
+  currency: z.string().length(3).default('USD'),
+  orderId: z.string().uuid().optional(),
+  orderNumber: z.string().min(1).optional(),
+})
 
 // Validate environment variables on startup
 const SQUARE_ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN
@@ -29,13 +39,22 @@ const client = new SquareClient({
 // This endpoint processes tokenized card payments through Square
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const rawBody = await request.json()
 
-    const { sourceId, amount, currency = 'USD', orderId, orderNumber } = body
+    // Validate request body with Zod
+    const validation = paymentRequestSchema.safeParse(rawBody)
 
-    if (!sourceId || !amount) {
-      return NextResponse.json({ error: 'Missing required payment details' }, { status: 400 })
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          issues: validation.error.issues,
+        },
+        { status: 400 }
+      )
     }
+
+    const { sourceId, amount, currency, orderId, orderNumber } = validation.data
 
     //   amount,
     //   currency,
@@ -57,7 +76,7 @@ export async function POST(request: NextRequest) {
       sourceId: sourceId,
       amountMoney: {
         amount: BigInt(amount),
-        currency: currency,
+        currency: currency as 'USD', // Type assertion for Square SDK Currency type
       },
       idempotencyKey: randomUUID(),
       locationId: SQUARE_LOCATION_ID,
@@ -80,6 +99,17 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     console.error('[Square Payment] Error:', error)
+
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          issues: error.issues,
+        },
+        { status: 400 }
+      )
+    }
 
     // Handle specific Square API errors
     if (error?.errors && Array.isArray(error.errors)) {

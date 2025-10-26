@@ -1,4 +1,4 @@
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import {
   ArrowRight,
   Package,
@@ -62,7 +62,19 @@ const testimonials = [
   },
 ]
 
-export default async function Home() {
+// CRITICAL FIX: Force dynamic rendering to ensure locale is evaluated at runtime
+// Without this, Next.js may statically generate pages with default 'en' locale
+export const dynamic = 'force-dynamic'
+
+type Props = {
+  params: Promise<{ locale: string }>
+}
+
+export default async function Home({ params }: Props) {
+  // CRITICAL FIX: Await locale from params for next-intl compatibility
+  // Without this, Link components in this server component default to 'en'
+  const { locale } = await params
+
   // Fetch real product categories from database (excluding hidden ones)
   const productCategories = await prisma.productCategory.findMany({
     where: {

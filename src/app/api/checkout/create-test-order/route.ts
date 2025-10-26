@@ -3,17 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { validateRequest } from '@/lib/auth'
 import { OrderEmailService } from '@/lib/email/order-email-service'
 import { randomUUID } from 'crypto'
-
-interface CartItem {
-  id: string
-  productName: string
-  sku: string
-  quantity: number
-  price: number
-  options?: any
-  fileName?: string
-  fileSize?: number
-}
+import type { CartItem } from '@/lib/cart-types'
 
 interface UploadedImage {
   id: string

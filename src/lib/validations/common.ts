@@ -262,7 +262,7 @@ export function safeValidate<T>(schema: z.ZodSchema<T>, data: unknown): Validati
   } else {
     return {
       success: false,
-      error: result.error.errors[0]?.message || 'Validation failed',
+      error: result.error.issues[0]?.message || 'Validation failed',
       details: result.error,
     }
   }
@@ -272,8 +272,8 @@ export function safeValidate<T>(schema: z.ZodSchema<T>, data: unknown): Validati
  * Helper function to format Zod errors for display
  */
 export function formatZodError(error: z.ZodError): string {
-  return error.errors
-    .map((err) => {
+  return error.issues
+    .map((err: any) => {
       const path = err.path.join('.')
       return path ? `${path}: ${err.message}` : err.message
     })
@@ -284,7 +284,7 @@ export function formatZodError(error: z.ZodError): string {
  * Helper function to extract first error message
  */
 export function getFirstError(error: z.ZodError): string {
-  return error.errors[0]?.message || 'Validation failed'
+  return error.issues[0]?.message || 'Validation failed'
 }
 
 /**

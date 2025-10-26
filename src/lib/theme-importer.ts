@@ -198,15 +198,15 @@ export class ThemeImporter {
    */
   private parseJSONTheme(data: Record<string, unknown>, url: string): ThemeData {
     return {
-      name: data.name || data.title || 'Imported Theme',
-      description: data.description,
-      cssContent: data.css || this.generateCSSFromVariables(data.variables || data.cssVars || {}),
-      variables: data.variables || data.cssVars || {},
-      darkVariables: data.darkVariables || data.darkCssVars,
+      name: (data.name as string | undefined) || (data.title as string | undefined) || 'Imported Theme',
+      description: data.description as string | undefined,
+      cssContent: (data.css as string | undefined) || this.generateCSSFromVariables((data.variables as Record<string, unknown> | undefined) || (data.cssVars as Record<string, unknown> | undefined) || {}),
+      variables: ((data.variables as Record<string, string> | undefined) || (data.cssVars as Record<string, string> | undefined) || {}) as Record<string, string>,
+      darkVariables: (data.darkVariables as Record<string, string> | undefined) || (data.darkCssVars as Record<string, string> | undefined),
       metadata: {
         source: new URL(url).hostname,
-        author: data.author,
-        version: data.version || '1.0.0',
+        author: data.author as string | undefined,
+        version: (data.version as string | undefined) || '1.0.0',
       },
     }
   }

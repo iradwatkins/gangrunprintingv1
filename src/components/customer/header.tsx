@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
+import { useLocale } from 'next-intl'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -35,13 +36,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { CartButton } from '@/components/cart/cart-button'
+import { CompactLanguageSwitcher } from '@/components/i18n/language-switcher'
 
-// Static navigation items (non-category links)
-const staticNavigation = [
-  { name: 'About', href: '/about', icon: Info },
-  { name: 'Help', href: '/help-center', icon: FileText },
-  { name: 'Contact', href: '/contact', icon: Phone },
-]
+// Static navigation items moved inside component to access locale
 
 interface Category {
   id: string
@@ -99,24 +96,11 @@ interface HeaderProps {
   fallbackCategories?: Category[]
 }
 
-function getMenuItemHref(item: MenuItem): string {
-  switch (item.linkType) {
-    case 'CATEGORY':
-      return `/category/${item.linkValue}`
-    case 'PRODUCT':
-      return `/product/${item.linkValue}`
-    case 'PAGE':
-      return item.linkValue
-    case 'EXTERNAL':
-      return item.linkValue
-    case 'CUSTOM':
-      return item.linkValue
-    default:
-      return '#'
-  }
-}
+// Helper function moved inside component to access locale
 
 export default function Header({ menu, quickLinks = [], fallbackCategories = [] }: HeaderProps) {
+  // LOCALE FIX: Get current locale and prefix URLs manually
+  const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
@@ -124,6 +108,31 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
   const [isSignedIn, setIsSignedIn] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showInstallOption, setShowInstallOption] = useState(false)
+
+  // Static navigation items (next-intl Link adds locale automatically)
+  const staticNavigation = [
+    { name: 'About', href: '/about', icon: Info },
+    { name: 'Help', href: '/help-center', icon: FileText },
+    { name: 'Contact', href: '/contact', icon: Phone },
+  ]
+
+  // Helper function to get menu item href (next-intl Link adds locale automatically)
+  function getMenuItemHref(item: MenuItem | QuickLink): string {
+    switch (item.linkType) {
+      case 'CATEGORY':
+        return `/category/${item.linkValue}`
+      case 'PRODUCT':
+        return `/product/${item.linkValue}`
+      case 'PAGE':
+        return item.linkValue.startsWith('/') ? item.linkValue : item.linkValue
+      case 'EXTERNAL':
+        return item.linkValue
+      case 'CUSTOM':
+        return item.linkValue.startsWith('/') ? item.linkValue : item.linkValue
+      default:
+        return '#'
+    }
+  }
 
   // Use menu items if available, otherwise fall back to categories
   const menuItems = menu?.items || []
@@ -375,6 +384,9 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
               Same Day Available
             </Badge>
 
+            {/* Language Switcher */}
+            <CompactLanguageSwitcher />
+
             {/* User Account */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -535,7 +547,7 @@ export default function Header({ menu, quickLinks = [], fallbackCategories = [] 
                         <Button
                           className={cn(
                             'w-full justify-start',
-                            pathname === '/products' && 'text-primary bg-primary/10'
+                            pathname === `/${locale}/products` && 'text-primary bg-primary/10'
                           )}
                           variant="ghost"
                         >

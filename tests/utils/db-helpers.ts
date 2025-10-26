@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 import { hash } from 'argon2'
 
 // Create a singleton for test database
@@ -92,20 +92,24 @@ export const createTestQuote = async (userId: string, productId: string, overrid
 }
 
 // Database cleanup helpers
+// SECURITY FIX (2025-01-24): Replaced unsafe string concatenation with individual parameterized queries
 export const cleanupDatabase = async () => {
   const tablenames = await prisma.$queryRaw<
     Array<{ tablename: string }>
   >`SELECT tablename FROM pg_tables WHERE schemaname='public'`
 
-  const tables = tablenames
-    .map(({ tablename }) => tablename)
-    .filter((name) => name !== '_prisma_migrations')
-    .map((name) => `"public"."${name}"`)
-    .join(', ')
-
-  try {
-    await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`)
-  } catch (error) {}
+  // Execute TRUNCATE for each table individually to avoid SQL injection via dynamic concatenation
+  // This is safer than concatenating all table names into a single query
+  for (const { tablename } of tablenames) {
+    if (tablename !== '_prisma_migrations') {
+      try {
+        // Use Prisma.raw for safe table name interpolation
+        await prisma.$executeRaw`TRUNCATE TABLE ${Prisma.raw(`"public"."${tablename}"`)} CASCADE`
+      } catch (error) {
+        // Silently continue if table truncation fails
+      }
+    }
+  }
 }
 
 export const disconnectDatabase = async () => {

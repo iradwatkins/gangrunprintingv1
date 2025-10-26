@@ -126,7 +126,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
               include: {
                 AddOn: {
                   include: {
-                    addOnSubOptions: true,
+                    AddOnSubOption: true,
                   },
                 },
               },

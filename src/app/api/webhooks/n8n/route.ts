@@ -121,9 +121,9 @@ async function handleOrderStatusUpdate(identifier: string, payload: Record<strin
           id: `${order.orderNumber}-status-${Date.now()}`,
           orderId: order.id,
           fromStatus: order.status,
-          toStatus: newStatus,
-          notes,
-          changedBy: changedBy || 'N8N Automation',
+          toStatus: newStatus as string,
+          notes: notes as string | undefined,
+          changedBy: (changedBy as string | undefined) || 'N8N Automation',
         },
       })
 
@@ -175,9 +175,9 @@ async function handleVendorAssignment(identifier: string, payload: Record<string
     // Find vendor
     let vendor = null
     if (vendorId) {
-      vendor = await prisma.vendor.findUnique({ where: { id: vendorId } })
+      vendor = await prisma.vendor.findUnique({ where: { id: vendorId as string } })
     } else if (vendorName) {
-      vendor = await prisma.vendor.findUnique({ where: { name: vendorName } })
+      vendor = await prisma.vendor.findUnique({ where: { name: vendorName as string } })
     }
 
     if (!vendor) {

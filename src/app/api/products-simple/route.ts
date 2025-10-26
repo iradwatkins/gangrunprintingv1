@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
     // Try to get from cache first
     const cached = await cache.get(cacheKey)
-    if (cached) {
+    if (cached && Array.isArray(cached)) {
       return NextResponse.json({
         success: true,
         data: cached,

@@ -87,7 +87,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const cities = await prisma.city.findMany({
       where: { isActive: true },
       select: {
-        slug: true,
+        name: true,
+        state: true,
         updatedAt: true,
         Product: {
           select: {
@@ -103,8 +104,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Create bilingual city pages
     cities.forEach((city) => {
       city.Product.forEach((product) => {
+        const citySlug = `${city.name.toLowerCase().replace(/\s+/g, '-')}-${city.state.toLowerCase().replace(/\s+/g, '-')}`
         const bilingualEntries = createBilingualEntry(
-          `/print/${product.slug}/${city.slug}`,
+          `/print/${product.slug}/${citySlug}`,
           baseUrl,
           city.updatedAt,
           'weekly',

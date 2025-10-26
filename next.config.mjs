@@ -21,8 +21,15 @@ const nextConfig = {
   // Output configuration for Docker deployment
   output: 'standalone', // REQUIRED for Docker deployment
 
+  // SEO: Remove trailing slashes from URLs
+  // This ensures clean, consistent URLs (e.g., /products not /products/)
+  // Google treats these as separate pages, so we redirect to canonical version
+  trailingSlash: false,
+
   // Enable experimental features for App Router
   experimental: {
+    // Enable instrumentation hook for startup validation
+    instrumentationHook: true,
     optimizeCss: true,
     optimizePackageImports: [
       // UI component libraries
@@ -236,6 +243,27 @@ const nextConfig = {
         source: '/admin/test-colors',
         destination: '/admin/theme-colors',
         permanent: true,
+      },
+      // Redirect checkout paths without locale to English version
+      {
+        source: '/checkout',
+        destination: '/en/checkout',
+        permanent: false,
+      },
+      {
+        source: '/checkout/shipping',
+        destination: '/en/checkout/shipping',
+        permanent: false,
+      },
+      {
+        source: '/checkout/payment',
+        destination: '/en/checkout/payment',
+        permanent: false,
+      },
+      {
+        source: '/checkout/success',
+        destination: '/en/checkout/success',
+        permanent: false,
       },
     ]
   },

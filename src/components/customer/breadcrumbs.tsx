@@ -1,6 +1,7 @@
 'use client'
 
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
+import { useLocale } from 'next-intl'
 import { ChevronRight, Home } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -15,6 +16,9 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
+  // LOCALE FIX: Get current locale for home link
+  const locale = useLocale()
+
   return (
     <nav
       aria-label="Breadcrumb"
@@ -23,7 +27,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
       {/* Home link */}
       <Link
         className="flex items-center hover:text-primary transition-colors"
-        href="/"
+        href={`/${locale}/`}
         title="Home"
       >
         <Home className="h-4 w-4" />

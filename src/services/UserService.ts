@@ -279,7 +279,7 @@ export class UserService {
             updatedAt: true,
             _count: {
               select: {
-                Orders: true,
+                Order: true,
               },
             },
           },

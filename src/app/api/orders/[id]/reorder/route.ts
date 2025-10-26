@@ -100,7 +100,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           currentPrice: orderItem.price ?? orderItem.price, // Using original price (pricing calc would be complex)
           priceChanged: false,
           available: true,
-          image: product.productImages[0]?.Image?.url || null,
+          image: product.ProductImage[0]?.Image?.url || null,
           options: options,
           dimensions: orderItem.dimensions,
           paperStockWeight: orderItem.calculatedWeight,

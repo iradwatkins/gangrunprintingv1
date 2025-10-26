@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { Plus, Edit, Trash2, Mail, Phone, Globe, Truck, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

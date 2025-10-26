@@ -54,7 +54,7 @@ interface ProductImage extends HookProductImage {
 
 interface ProductImageUploadProps {
   images: ProductImage[]
-  onImagesChange: (images: ProductImage[]) => void
+  onImagesChange: (images: ProductImage[] | ((prevImages: ProductImage[]) => ProductImage[])) => void
   productId?: string
 }
 

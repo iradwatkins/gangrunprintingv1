@@ -18,8 +18,8 @@ export function ProductPerformanceChart({ data }: ProductPerformanceChartProps) 
     }).format(value)
   }
 
-  const CustomTooltip = ({ active, payload, label }: Record<string, unknown>) => {
-    if (active && payload && payload.length) {
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && Array.isArray(payload) && payload.length > 0) {
       const data = payload[0].payload
       return (
         <div className="bg-background border border-border rounded-lg p-3 shadow-lg">

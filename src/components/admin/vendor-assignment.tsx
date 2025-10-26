@@ -32,9 +32,9 @@ interface VendorAssignmentProps {
 export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
   // Auto-populate vendor from product category if not already assigned
   const suggestedVendorId =
-    order.categoryVendors && order.categoryVendors.length > 0 ? order.categoryVendors[0].id : ''
+    order.categoryVendors && Array.isArray(order.categoryVendors) && order.categoryVendors.length > 0 ? order.categoryVendors[0].id : ''
   const suggestedVendor =
-    order.categoryVendors && order.categoryVendors.length > 0 ? order.categoryVendors[0] : null
+    order.categoryVendors && Array.isArray(order.categoryVendors) && order.categoryVendors.length > 0 ? order.categoryVendors[0] : null
 
   const [selectedVendorId, setSelectedVendorId] = useState(
     order.vendorId || suggestedVendorId || ''
@@ -152,7 +152,7 @@ export function VendorAssignment({ order, vendors }: VendorAssignmentProps) {
                   {currentVendor.turnaroundDays} day turnaround
                 </span>
               </div>
-              {currentVendor.supportedCarriers && currentVendor.supportedCarriers.length > 0 && (
+              {currentVendor.supportedCarriers && Array.isArray(currentVendor.supportedCarriers) && currentVendor.supportedCarriers.length > 0 && (
                 <div className="flex items-center gap-2">
                   <Truck className="h-3 w-3 text-muted-foreground" />
                   <div className="flex flex-wrap gap-1">

@@ -471,12 +471,12 @@ export class SegmentationService {
     const users = await prisma.user.findMany({
       where: {
         role: 'CUSTOMER',
-        orders: {
+        Order: {
           some: {},
         },
       },
       include: {
-        orders: {
+        Order: {
           select: {
             total: true,
             createdAt: true,

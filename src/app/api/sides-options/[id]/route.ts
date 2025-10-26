@@ -62,7 +62,7 @@ export async function DELETE(
       where: { id },
       include: {
         _count: {
-          select: { paperStockSides: true },
+          select: { PaperStockSides: true },
         },
       },
     })
@@ -71,7 +71,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Sides option not found' }, { status: 404 })
     }
 
-    if (sidesWithRelations._count.paperStockSides > 0) {
+    // Type assertion for _count field
+    const sidesWithCount = sidesWithRelations as typeof sidesWithRelations & {
+      _count: { paperStockSides: number }
+    }
+
+    if (sidesWithCount._count.paperStockSides > 0) {
       return NextResponse.json(
         { error: 'Cannot delete sides option that is in use by paper stocks' },
         { status: 400 }

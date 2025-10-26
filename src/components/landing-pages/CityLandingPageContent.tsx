@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { Link, useRouter } from '@/lib/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -72,13 +72,13 @@ export function CityLandingPageContent({
             <div>
               {/* Breadcrumb */}
               <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                <a className="hover:text-blue-600" href="/">
+                <Link className="hover:text-blue-600" href="/">
                   Home
-                </a>
+                </Link>
                 <span>/</span>
-                <a className="hover:text-blue-600" href="/products">
+                <Link className="hover:text-blue-600" href="/products">
                   Products
-                </a>
+                </Link>
                 <span>/</span>
                 <span className="text-gray-900">
                   {city.name}, {city.stateCode}

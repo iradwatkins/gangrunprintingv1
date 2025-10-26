@@ -9,7 +9,7 @@ import { useCart } from '@/contexts/cart-context'
 import { CartItemImages } from '@/components/cart/cart-item-images'
 import { FileThumbnails } from '@/components/product/FileThumbnails'
 import { ArtworkUpload } from '@/components/product/ArtworkUpload'
-import { Link } from 'next-intl'
+import { Link } from '@/lib/i18n/navigation'
 import { useRouter } from 'next/navigation'
 import toast from '@/lib/toast'
 

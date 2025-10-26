@@ -8,9 +8,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const quantityGroup = await prisma.quantityGroup.findUnique({
       where: { id },
       include: {
-        products: {
+        ProductQuantityGroup: {
           include: {
-            product: {
+            Product: {
               select: {
                 id: true,
                 name: true,
@@ -57,7 +57,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         )
       }
 
-      const hasCustom = valuesList.some((v) => v.toLowerCase() === 'custom')
+      const hasCustom = valuesList.some((v: string) => v.toLowerCase() === 'custom')
       if (hasCustom && customMin && customMax && customMin >= customMax) {
         return NextResponse.json(
           { error: 'Custom minimum must be less than maximum' },
@@ -81,7 +81,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     return NextResponse.json(quantityGroup)
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'P2002') {
       return NextResponse.json(
         { error: 'A quantity group with this name already exists' },
@@ -124,7 +124,7 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Quantity group not found' }, { status: 404 })
     }

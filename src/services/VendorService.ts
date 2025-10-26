@@ -1,4 +1,5 @@
 import { type Prisma } from '@prisma/client'
+import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { logger, logBusinessEvent, logError } from '@/lib/logger-safe'
 import {
@@ -52,6 +53,7 @@ export class VendorService {
 
       const vendor = await prisma.vendor.create({
         data: {
+          id: `vendor_${randomBytes(16).toString('hex')}`,
           name: input.name,
           contactEmail: input.contactEmail,
           orderEmail: input.orderEmail,
@@ -467,6 +469,7 @@ export class VendorService {
 
       const vendorProduct = await prisma.vendorProduct.create({
         data: {
+          id: `vp_${randomBytes(16).toString('hex')}`,
           vendorId,
           productId,
           vendorSku,

@@ -185,12 +185,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Send email notification to admin about uploaded artwork
     try {
       const { FileApprovalEmailService } = await import('@/lib/email/file-approval-email-service')
+      const userData = order.userId ? await getUserData(order.userId) : undefined
       await FileApprovalEmailService.sendArtworkUploadedNotification(
         {
           id: order.id,
           orderNumber: await getOrderNumber(order.id),
           email: order.email,
-          User: order.userId ? await getUserData(order.userId) : undefined,
+          User: userData ? { name: userData.name ?? undefined } : undefined,
         },
         createdFiles.map((f) => ({
           filename: f.filename,
@@ -210,7 +211,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       )
     }

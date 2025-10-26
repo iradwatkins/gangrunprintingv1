@@ -35,15 +35,15 @@ const orderItemSchema = z.object({
   productSku: z.string(),
   quantity: z.number().int().positive(),
   price: z.number().positive(),
-  options: z.record(z.any()).optional(),
+  options: z.record(z.string(), z.unknown()).optional(),
   paperStockId: z.string().optional(),
-  dimensions: z.record(z.any()).optional(),
+  dimensions: z.record(z.string(), z.unknown()).optional(),
   calculatedWeight: z.number().optional(),
   addOns: z
     .array(
       z.object({
         addOnId: z.string(),
-        configuration: z.record(z.any()),
+        configuration: z.record(z.string(), z.unknown()),
         calculatedPrice: z.number(),
       })
     )
@@ -210,10 +210,10 @@ export async function POST(request: NextRequest) {
             productSku: item.productSku,
             quantity: item.quantity,
             price: item.price,
-            options: item.options,
-            paperStockId: item.paperStockId,
-            dimensions: item.dimensions,
-            calculatedWeight: item.calculatedWeight,
+            options: item.options ?? null,
+            paperStockId: item.paperStockId ?? null,
+            dimensions: item.dimensions ?? null,
+            calculatedWeight: item.calculatedWeight ?? null,
 
             // Create addons if provided
             OrderItemAddOn: item.addOns
@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
                   create: item.addOns.map((addOn) => ({
                     id: `oia_${randomBytes(16).toString('hex')}`,
                     addOnId: addOn.addOnId,
-                    configuration: addOn.configuration,
+                    configuration: addOn.configuration ?? null,
                     calculatedPrice: addOn.calculatedPrice,
                   })),
                 }

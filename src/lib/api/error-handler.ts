@@ -189,7 +189,7 @@ export function withApiHandler<T = any>(
           options.validateSchema.parse(body)
         } catch (error) {
           if (error instanceof z.ZodError) {
-            throw ApiError.validation('Request validation failed', error.errors)
+            throw ApiError.validation('Request validation failed', error.issues)
           }
           throw error
         }
@@ -282,7 +282,7 @@ export function handleApiError(error: unknown, context: ApiContext): NextRespons
       requestId: context.requestId,
       method: context.method,
       url: context.url,
-      errors: error.errors,
+      errors: error.issues,
       duration,
       userId: context.userId,
     })
@@ -291,7 +291,7 @@ export function handleApiError(error: unknown, context: ApiContext): NextRespons
       {
         error: 'Validation failed',
         type: ApiErrorType.VALIDATION,
-        details: error.errors,
+        details: error.issues,
         requestId: context.requestId,
       },
       { status: 400 }
