@@ -56,26 +56,51 @@ export function ArtworkUpload({
     })
   }
 
-  const uploadFile = async (file: File): Promise<{ success: boolean; url?: string }> => {
+  const uploadFile = async (
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<{ success: boolean; url?: string }> => {
     const formData = new FormData()
     formData.append('file', file)
 
-    try {
-      const response = await fetch('/api/upload/temporary', {
-        method: 'POST',
-        body: formData,
+    return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest()
+
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && onProgress) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100)
+          onProgress(percentComplete)
+        }
       })
 
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
+      // Handle completion
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          try {
+            const data = JSON.parse(xhr.responseText)
+            resolve({ success: true, url: data.url })
+          } catch (error) {
+            resolve({ success: false })
+          }
+        } else {
+          resolve({ success: false })
+        }
+      })
 
-      const data = await response.json()
-      return { success: true, url: data.url }
-    } catch (error) {
-      console.error('Upload error:', error)
-      return { success: false }
-    }
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        resolve({ success: false })
+      })
+
+      xhr.addEventListener('abort', () => {
+        resolve({ success: false })
+      })
+
+      // Send request
+      xhr.open('POST', '/api/upload/temporary')
+      xhr.send(formData)
+    })
   }
 
   const handleFiles = useCallback(
@@ -130,8 +155,22 @@ export function ArtworkUpload({
       // Upload files in parallel and wait for all to complete
       Promise.all(
         uploadedFiles.map(async (uploadedFile) => {
-          const result = await uploadFile(uploadedFile.file)
+          // Upload with progress tracking
+          const result = await uploadFile(uploadedFile.file, (progress) => {
+            // Update progress in real-time
+            setFiles((prev) =>
+              prev.map((f) =>
+                f.id === uploadedFile.id
+                  ? {
+                      ...f,
+                      progress: progress,
+                    }
+                  : f
+              )
+            )
+          })
 
+          // Update final status
           setFiles((prev) =>
             prev.map((f) =>
               f.id === uploadedFile.id
@@ -305,6 +344,40 @@ export function ArtworkUpload({
                     )}
                   </div>
 
+                  {/* Progress Bar - Shows during upload */}
+                  {uploadedFile.status === 'uploading' && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-2">
+                      <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
+                        <div
+                          className={cn(
+                            'h-full transition-all duration-300',
+                            // Color progression: Red → Yellow → Green
+                            uploadedFile.progress && uploadedFile.progress < 34
+                              ? 'bg-red-500'
+                              : uploadedFile.progress && uploadedFile.progress < 67
+                              ? 'bg-yellow-500'
+                              : 'bg-green-500'
+                          )}
+                          style={{ width: `${uploadedFile.progress || 0}%` }}
+                        />
+                      </div>
+                      <p className="text-white text-xs text-center mt-1">
+                        {uploadedFile.progress || 0}%
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Success/Error Overlay */}
+                  {uploadedFile.status !== 'uploading' && (
+                    <div className={cn(
+                      "absolute bottom-0 left-0 right-0 text-white text-xs p-1.5 text-center font-medium",
+                      uploadedFile.status === 'success' && 'bg-green-600/90',
+                      uploadedFile.status === 'error' && 'bg-red-600/90'
+                    )}>
+                      {uploadedFile.status === 'success' ? '✓ Uploaded' : '✗ Failed'}
+                    </div>
+                  )}
+
                   {/* Remove Button */}
                   <button
                     className="absolute top-1 left-1 w-6 h-6 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
@@ -314,8 +387,8 @@ export function ArtworkUpload({
                     <X className="w-4 h-4" />
                   </button>
 
-                  {/* File Name Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* File Name Tooltip - On Hover */}
+                  <div className="absolute top-8 left-1 right-1 bg-black/80 text-white text-xs p-1 rounded truncate opacity-0 group-hover:opacity-100 transition-opacity z-10">
                     {uploadedFile.file.name}
                   </div>
                 </div>
