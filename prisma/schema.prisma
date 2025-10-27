@@ -581,17 +581,22 @@ model PromptTemplate {
   isTemplate      Boolean @default(false) // Template vs user-created prompt
   currentIteration Int    @default(1) // Prompt refinement iteration counter
 
+  // Quick-Select Modifiers (Oct 27, 2025 - Design Center Rebuild)
+  selectedModifiers Json? // { style: ["Professional", "Modern"], technical: ["High-res"], holiday: "Christmas", location: "Office" }
+
   // AI Configuration
   aiProvider  String @default("google-imagen") // "google-imagen", "openai-dalle"
   aspectRatio String @default("1:1") // "1:1", "16:9", "4:3"
+  referenceImages Json? // Array of reference image URLs for AI guidance
 
   // Testing history
   testImages PromptTestImage[]
 
   // Usage tracking - where this prompt is used
-  productImages ProductImage[]
-  landingPages  LandingPageSet[]
-  campaigns     ImageCampaign[]
+  productImages     ProductImage[]
+  landingPages      LandingPageSet[]
+  campaigns         ImageCampaign[]
+  ProductCategories ProductCategory[] // Categories using this prompt template for image generation
 
   // Metadata
   isActive  Boolean  @default(true)
@@ -623,12 +628,70 @@ model PromptTestImage {
   notes    String?      // "Too dark", "Perfect!", etc.
   isWinner Boolean      @default(false) // Mark the best one
 
+  // AI-Assisted Variations (Oct 27, 2025)
+  variationType String? // 'lighting', 'composition', 'style', or null (manual)
+  aiSuggestion  String? @db.Text // AI's explanation of this variation
+  variationSet  String? // UUID to group related variations together
+
   createdAt DateTime @default(now())
 
   @@index([promptTemplateId])
   @@index([iteration])
   @@index([isWinner])
   @@index([quality]) // For filtering best results
+  @@index([variationSet]) // For grouping AI variations
+}
+
+// Modifier Presets for Quick-Select UI (Oct 27, 2025 - Design Center Rebuild)
+model ModifierPreset {
+  id          String           @id @default(cuid())
+  category    ModifierCategory // STYLE, TECHNICAL, NEGATIVE, HOLIDAY, LOCATION
+  label       String           // "Professional", "High-res", "Christmas", "Office"
+  value       String           // What gets added to prompt: "professional photography style"
+  description String?          // Tooltip text: "Clean, corporate aesthetic"
+  sortOrder   Int              @default(0)
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([category, label]) // Prevent duplicates
+  @@index([category])
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// Camera-Guided Recommendations (Oct 27, 2025 - Intelligent Workflow)
+// Stores intelligent recommendations for camera → picture type → angle → modifiers
+model CameraRecommendation {
+  id              String   @id @default(cuid())
+
+  // Step 1: Camera Type (e.g., "DSLR Camera", "Mirrorless Camera")
+  cameraType      String   // Must match ModifierPreset.label where category=CAMERA
+  cameraLabel     String   // Display name for UI
+
+  // Step 2: Picture Type (what this camera is best for)
+  pictureType     String   // "Product Photography", "Lifestyle Shots", "Action Photography"
+  pictureTypeDesc String?  // Description: "Still life, commercial products, detail shots"
+
+  // Step 3: Recommended Angle/Shot
+  angleType       String   // "Eye Level", "Top Down", "45 Degree Angle", "Close-up Macro"
+  angleDesc       String?  // Description: "Standard perspective, professional look"
+
+  // Step 4: Auto-fill Recommendations (JSON arrays of modifier labels)
+  recommendedTechnical Json // ["8K resolution", "Sharp focus", "Studio lighting"]
+  recommendedStyle     Json // ["Professional", "Clean", "Minimalist"]
+  recommendedNegative  Json // ["Blurry", "Low quality", "Overexposed"]
+
+  // Metadata
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([cameraType, pictureType, angleType]) // One recommendation per combo
+  @@index([cameraType])
+  @@index([pictureType])
+  @@index([isActive])
 }
 
 model Locale {
@@ -1286,6 +1349,7 @@ model ProductCategory {
   parentCategoryId String?
   vendorId         String? // VENDOR SYSTEM: Default vendor for products in this category (determines shipping options)
   brokerDiscount   Int     @default(0) // Default broker discount percentage (0-100) for products in this category
+  promptTemplateId String? // AI IMAGE GENERATION: Default prompt template for generating product images in this category
 
   // CATEGORY IMAGES & SEO (Shopify-style enhancement)
   imageUrl        String? // Category banner/hero image URL
@@ -1304,8 +1368,10 @@ model ProductCategory {
   ParentCategory ProductCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id], onDelete: SetNull)
   Subcategories  ProductCategory[] @relation("CategoryHierarchy")
   Vendor         Vendor?           @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  PromptTemplate PromptTemplate?   @relation(fields: [promptTemplateId], references: [id], onDelete: SetNull)
 
   @@index([parentCategoryId])
+  @@index([promptTemplateId])
   @@index([vendorId])
 }
 
@@ -3308,6 +3374,15 @@ enum ImageQuality {
   excellent // Perfect result, ready to use
   good      // Acceptable result, may need minor tweaks
   poor      // Needs significant improvement
+}
+
+enum ModifierCategory {
+  STYLE      // Professional, Lifestyle, Minimalist, Vibrant, etc.
+  TECHNICAL  // High-res, Studio lighting, Sharp focus, 4K, etc.
+  NEGATIVE   // Blurry, Low quality, Overexposed, etc.
+  HOLIDAY    // Christmas, Easter, Halloween, Valentine's, etc.
+  LOCATION   // Office, Outside, Home, Warehouse, Factory, etc.
+  CAMERA     // DSLR, Mirrorless, Wide Angle, Macro, Studio Shot, etc.
 }
 
 // ==============================================================================

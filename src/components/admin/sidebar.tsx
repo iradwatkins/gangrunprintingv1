@@ -49,6 +49,12 @@ const navigationStructure = [
     icon: Users,
     description: 'Customer management',
   },
+  {
+    title: 'Design Center',
+    href: '/admin/design-center',
+    icon: Sparkles,
+    description: 'AI product image studio',
+  },
 
   // Products Management - Dropdown
   {
@@ -118,12 +124,6 @@ const navigationStructure = [
         href: '/admin/landing-pages',
         icon: Printer,
         description: '200-city SEO campaigns',
-      },
-      {
-        title: 'Prompts',
-        href: '/admin/marketing/prompts',
-        icon: Sparkles,
-        description: 'AI image prompt studio',
       },
       {
         title: 'Campaigns',

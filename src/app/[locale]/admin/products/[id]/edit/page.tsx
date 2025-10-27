@@ -16,6 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ProductImageUpload } from '@/components/admin/product-image-upload'
+import { ProductAIImageGenerator } from '@/components/admin/product-ai-image-generator'
+import { ProductSEOValidator } from '@/components/admin/product-seo-validator'
 import { Checkbox } from '@/components/ui/checkbox'
 
 import toast from '@/lib/toast'
@@ -440,6 +442,21 @@ function EditProductClient({ id }: { id: string }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* AI Image Generation */}
+      <ProductAIImageGenerator
+        productId={id}
+        productName={formData.name}
+        categoryName={categories.find((c) => c.id === formData.categoryId)?.name}
+      />
+
+      {/* SEO Validation */}
+      <ProductSEOValidator
+        productId={id}
+        productName={formData.name}
+        categoryName={categories.find((c) => c.id === formData.categoryId)?.name}
+        description={formData.description}
+      />
 
       {/* Quantity Group - Single selection */}
       <Card>

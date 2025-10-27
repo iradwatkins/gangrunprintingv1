@@ -84,9 +84,16 @@ interface Vendor {
   supportedCarriers: string[]
 }
 
+interface PromptTemplate {
+  id: string
+  name: string
+  productType: string | null
+}
+
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [vendors, setVendors] = useState<Vendor[]>([])
+  const [promptTemplates, setPromptTemplates] = useState<PromptTemplate[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -111,11 +118,13 @@ export default function CategoriesPage() {
     parentCategoryId: '',
     vendorId: '',
     brokerDiscount: 0,
+    promptTemplateId: '', // AI Image Generation: Link to Design Center prompt template
   })
 
   useEffect(() => {
     fetchCategories()
     fetchVendors()
+    fetchPromptTemplates()
   }, [])
 
   const fetchCategories = async () => {
@@ -140,6 +149,17 @@ export default function CategoriesPage() {
       setVendors(data)
     } catch (error) {
       console.error('Failed to fetch vendors:', error)
+    }
+  }
+
+  const fetchPromptTemplates = async () => {
+    try {
+      const response = await fetch('/api/prompts?isTemplate=true')
+      if (!response.ok) throw new Error('Failed to fetch prompt templates')
+      const data = await response.json()
+      setPromptTemplates(data.prompts || [])
+    } catch (error) {
+      console.error('Failed to fetch prompt templates:', error)
     }
   }
 
@@ -222,6 +242,7 @@ export default function CategoriesPage() {
       parentCategoryId: '',
       vendorId: '',
       brokerDiscount: 0,
+      promptTemplateId: '',
     })
     setEditingCategory(null)
   }
@@ -243,6 +264,7 @@ export default function CategoriesPage() {
       parentCategoryId: category.parentCategoryId || '',
       vendorId: category.vendorId || '',
       brokerDiscount: category.brokerDiscount || 0,
+      promptTemplateId: (category as any).promptTemplateId || '',
     })
     setDialogOpen(true)
   }
@@ -445,146 +467,163 @@ export default function CategoriesPage() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-6xl w-[95vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingCategory ? 'Edit Category' : 'Create New Category'}</DialogTitle>
             <DialogDescription>Configure the category details</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="name">
-                Name
-              </Label>
-              <Input
-                className="col-span-3"
-                id="name"
-                placeholder="e.g., Business Cards"
-                value={formData.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-              />
+          <div className="grid gap-6 py-4">
+            {/* Basic Information Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Category Name *</Label>
+                  <Input
+                    id="name"
+                    placeholder="e.g., Business Cards"
+                    value={formData.name}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="slug">URL Slug *</Label>
+                  <Input
+                    id="slug"
+                    placeholder="e.g., business-cards"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Brief description of this category"
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="slug">
-                Slug
-              </Label>
-              <Input
-                className="col-span-3"
-                id="slug"
-                placeholder="e.g., business-cards"
-                value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              />
-            </div>
+            {/* Relationships Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold border-b pb-2">Relationships</h3>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="parentCategoryId">
-                Parent Category
-              </Label>
-              <Select
-                value={formData.parentCategoryId || 'none'}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, parentCategoryId: value === 'none' ? '' : value })
-                }
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="None (top-level category)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None (top-level category)</SelectItem>
-                  {parentCategories
-                    .filter((cat) => !editingCategory || cat.id !== editingCategory.id)
-                    .map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="parentCategoryId">Parent Category</Label>
+                  <Select
+                    value={formData.parentCategoryId || 'none'}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, parentCategoryId: value === 'none' ? '' : value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="None (top-level category)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None (top-level category)</SelectItem>
+                      {parentCategories
+                        .filter((cat) => !editingCategory || cat.id !== editingCategory.id)
+                        .map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="vendorId">
-                Vendor
-              </Label>
-              <div className="col-span-3">
+                <div className="space-y-2">
+                  <Label htmlFor="vendorId">Vendor Partner</Label>
+                  <Select
+                    value={formData.vendorId || 'none'}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, vendorId: value === 'none' ? '' : value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select vendor" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No vendor (use default shipping)</SelectItem>
+                      {vendors.map((vendor) => (
+                        <SelectItem key={vendor.id} value={vendor.id}>
+                          {vendor.name}{' '}
+                          {vendor.supportedCarriers.length > 0 &&
+                            `- ${vendor.supportedCarriers.join(', ')}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Determines which shipping carriers are available
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="promptTemplateId">AI Prompt Template</Label>
                 <Select
-                  value={formData.vendorId || 'none'}
+                  value={formData.promptTemplateId || 'none'}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, vendorId: value === 'none' ? '' : value })
+                    setFormData({ ...formData, promptTemplateId: value === 'none' ? '' : value })
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select vendor (determines shipping options)" />
+                    <SelectValue placeholder="Select prompt template" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">No vendor (use default shipping)</SelectItem>
-                    {vendors.map((vendor) => (
-                      <SelectItem key={vendor.id} value={vendor.id}>
-                        {vendor.name}{' '}
-                        {vendor.supportedCarriers.length > 0 &&
-                          `- ${vendor.supportedCarriers.join(', ')}`}
+                    <SelectItem value="none">No template (products won't generate images)</SelectItem>
+                    {promptTemplates.map((template) => (
+                      <SelectItem key={template.id} value={template.id}>
+                        {template.name}
+                        {template.productType && ` - ${template.productType}`}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <span className="text-xs text-muted-foreground mt-1 block">
-                  Vendor determines which shipping carriers are available at checkout
-                </span>
+                <p className="text-xs text-muted-foreground">
+                  Products in this category will use this template for AI image generation
+                </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="description">
-                Description
-              </Label>
-              <Textarea
-                className="col-span-3"
-                id="description"
-                placeholder="Brief description of this category"
-                rows={3}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </div>
+            {/* Images & SEO Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold border-b pb-2">Images & SEO</h3>
 
-            {/* IMAGE & SEO FIELDS */}
-            <div className="col-span-4 border-t pt-4">
-              <p className="text-sm font-medium mb-3">Images & SEO</p>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="imageUrl">Hero Image URL</Label>
+                  <Input
+                    id="imageUrl"
+                    placeholder="https://example.com/category-hero.jpg"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                  />
+                </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="imageUrl">
-                Hero Image URL
-              </Label>
-              <Input
-                className="col-span-3"
-                id="imageUrl"
-                placeholder="https://example.com/category-hero.jpg"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
+                  <Input
+                    id="thumbnailUrl"
+                    placeholder="https://example.com/category-thumb.jpg"
+                    value={formData.thumbnailUrl}
+                    onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
+                  />
+                </div>
+              </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="thumbnailUrl">
-                Thumbnail URL
-              </Label>
-              <Input
-                className="col-span-3"
-                id="thumbnailUrl"
-                placeholder="https://example.com/category-thumb.jpg"
-                value={formData.thumbnailUrl}
-                onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
-              />
-            </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="metaTitle">
-                SEO Meta Title
-              </Label>
-              <div className="col-span-3">
+              <div className="space-y-2">
+                <Label htmlFor="metaTitle">SEO Meta Title</Label>
                 <Input
                   id="metaTitle"
                   maxLength={60}
@@ -592,17 +631,13 @@ export default function CategoriesPage() {
                   value={formData.metaTitle}
                   onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
                 />
-                <span className="text-xs text-muted-foreground mt-1 block">
+                <p className="text-xs text-muted-foreground">
                   Max 60 characters recommended ({formData.metaTitle.length}/60)
-                </span>
+                </p>
               </div>
-            </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="metaDescription">
-                SEO Meta Description
-              </Label>
-              <div className="col-span-3">
+              <div className="space-y-2">
+                <Label htmlFor="metaDescription">SEO Meta Description</Label>
                 <Textarea
                   id="metaDescription"
                   maxLength={160}
@@ -611,17 +646,13 @@ export default function CategoriesPage() {
                   value={formData.metaDescription}
                   onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
                 />
-                <span className="text-xs text-muted-foreground mt-1 block">
+                <p className="text-xs text-muted-foreground">
                   Max 160 characters recommended ({formData.metaDescription.length}/160)
-                </span>
+                </p>
               </div>
-            </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="seoKeywords">
-                SEO Keywords
-              </Label>
-              <div className="col-span-3">
+              <div className="space-y-2">
+                <Label htmlFor="seoKeywords">SEO Keywords</Label>
                 <Input
                   id="seoKeywords"
                   placeholder="business cards, printing, custom cards (comma separated)"
@@ -636,87 +667,82 @@ export default function CategoriesPage() {
                     })
                   }
                 />
-                <span className="text-xs text-muted-foreground mt-1 block">
-                  Separate keywords with commas
-                </span>
+                <p className="text-xs text-muted-foreground">Separate keywords with commas</p>
               </div>
             </div>
 
-            <div className="col-span-4 border-t pt-4">
-              <p className="text-sm font-medium mb-3">Settings</p>
-            </div>
+            {/* Settings Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold border-b pb-2">Settings</h3>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="sortOrder">
-                Sort Order
-              </Label>
-              <Input
-                className="col-span-3"
-                id="sortOrder"
-                placeholder="0"
-                type="number"
-                value={formData.sortOrder}
-                onChange={(e) =>
-                  setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
-                }
-              />
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="sortOrder">Sort Order</Label>
+                  <Input
+                    id="sortOrder"
+                    placeholder="0"
+                    type="number"
+                    value={formData.sortOrder}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
+                    }
+                  />
+                </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="brokerDiscount">
-                Broker Discount
-              </Label>
-              <div className="col-span-3">
-                <Input
-                  id="brokerDiscount"
-                  max="100"
-                  min="0"
-                  placeholder="0"
-                  type="number"
-                  value={formData.brokerDiscount}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      brokerDiscount: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)),
-                    })
-                  }
-                />
-                <span className="text-xs text-muted-foreground mt-1 block">
-                  Default discount percentage (0-100%) applied when customer has broker status
-                  enabled
-                </span>
+                <div className="space-y-2">
+                  <Label htmlFor="brokerDiscount">Broker Discount (%)</Label>
+                  <Input
+                    id="brokerDiscount"
+                    max="100"
+                    min="0"
+                    placeholder="0"
+                    type="number"
+                    value={formData.brokerDiscount}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        brokerDiscount: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)),
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Default discount for broker customers (0-100%)
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="isActive">
-                Active
-              </Label>
-              <div className="col-span-3 flex items-center gap-2">
-                <Switch
-                  checked={formData.isActive}
-                  id="isActive"
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                />
-                <span className="text-sm text-muted-foreground">
-                  {formData.isActive ? 'Visible to customers' : 'Hidden from customers'}
-                </span>
-              </div>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3 rounded-md border p-4">
+                  <Switch
+                    checked={formData.isActive}
+                    id="isActive"
+                    onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  />
+                  <div className="space-y-1">
+                    <Label htmlFor="isActive" className="cursor-pointer">
+                      Active Status
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {formData.isActive ? 'Visible to customers' : 'Hidden from customers'}
+                    </p>
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="isHidden">
-                Hide from Navigation
-              </Label>
-              <div className="col-span-3 flex items-center gap-2">
-                <Switch
-                  checked={formData.isHidden}
-                  id="isHidden"
-                  onCheckedChange={(checked) => setFormData({ ...formData, isHidden: checked })}
-                />
-                <span className="text-sm text-muted-foreground">
-                  {formData.isHidden ? 'Hidden from nav (SEO only)' : 'Shown in navigation'}
-                </span>
+                <div className="flex items-center space-x-3 rounded-md border p-4">
+                  <Switch
+                    checked={formData.isHidden}
+                    id="isHidden"
+                    onCheckedChange={(checked) => setFormData({ ...formData, isHidden: checked })}
+                  />
+                  <div className="space-y-1">
+                    <Label htmlFor="isHidden" className="cursor-pointer">
+                      Hide from Navigation
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {formData.isHidden ? 'Hidden from nav (SEO only)' : 'Shown in navigation'}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

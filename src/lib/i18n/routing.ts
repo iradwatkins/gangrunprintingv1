@@ -8,8 +8,8 @@ export const routing = defineRouting({
   defaultLocale: 'en',
 
   // The prefix for the default locale
-  // Using 'always' because app structure uses [locale] in all paths
-  // All URLs require explicit locale: /en/products, /es/products
-  // This ensures stable routing and works with the current app architecture
-  localePrefix: 'always',
+  // Using 'as-needed' - SEO best practice (Google, Amazon, Wikipedia standard)
+  // English (default): No prefix → /admin/dashboard, /products, /contact
+  // Spanish: /es/ prefix → /es/admin/dashboard, /es/products, /es/contact
+  localePrefix: 'as-needed',
 })

@@ -8,9 +8,21 @@ const createPromptSchema = z.object({
   category: z.enum(['PRODUCT', 'PROMOTIONAL', 'SEASONAL', 'LIFESTYLE', 'ENVIRONMENT']),
   productType: z.string().min(1, 'Product type is required'),
   promptText: z.string().min(1, 'Prompt text is required'),
+  // Legacy fields (backwards compatible)
   styleModifiers: z.string().optional(),
   technicalSpecs: z.string().optional(),
   negativePrompt: z.string().optional(),
+  // New structured modifier fields
+  selectedModifiers: z
+    .object({
+      style: z.array(z.string()).optional(),
+      technical: z.array(z.string()).optional(),
+      negative: z.array(z.string()).optional(),
+      holiday: z.string().optional(),
+      location: z.string().optional(),
+      camera: z.string().optional(),
+    })
+    .optional(),
   isTemplate: z.boolean().default(false),
   description: z.string().optional(),
 })
