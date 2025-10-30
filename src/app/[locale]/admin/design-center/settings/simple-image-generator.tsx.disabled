@@ -1,0 +1,295 @@
+'use client'
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Loader2, Check, X, Download } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
+
+interface GeneratedImage {
+  url: string
+  approved: boolean | null
+  id: string
+}
+
+export function SimpleImageGenerator() {
+  const [prompt, setPrompt] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [images, setImages] = useState<GeneratedImage[]>([])
+  const [savingImages, setSavingImages] = useState<Set<string>>(new Set())
+  const { toast } = useToast()
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a prompt',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    setIsGenerating(true)
+    try {
+      const response = await fetch('/api/ai/generate-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate images')
+      }
+
+      const data = await response.json()
+
+      // Initialize images with approval status
+      const generatedImages: GeneratedImage[] = data.images.map((url: string, index: number) => ({
+        url,
+        approved: null,
+        id: `${Date.now()}-${index}`,
+      }))
+
+      setImages(generatedImages)
+
+      toast({
+        title: 'Success',
+        description: '4 images generated successfully',
+      })
+    } catch (error) {
+      console.error('Generation error:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to generate images. Check API settings.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const handleApprove = async (imageId: string) => {
+    const image = images.find((img) => img.id === imageId)
+    if (!image) return
+
+    setSavingImages((prev) => new Set(prev).add(imageId))
+
+    try {
+      const response = await fetch('/api/ai/approve-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: image.url,
+          prompt,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save image')
+      }
+
+      const data = await response.json()
+
+      setImages((prev) =>
+        prev.map((img) =>
+          img.id === imageId ? { ...img, approved: true } : img
+        )
+      )
+
+      toast({
+        title: 'Image Approved',
+        description: `Saved to MinIO: ${data.filename}`,
+      })
+    } catch (error) {
+      console.error('Approval error:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to save image',
+        variant: 'destructive',
+      })
+    } finally {
+      setSavingImages((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(imageId)
+        return newSet
+      })
+    }
+  }
+
+  const handleReject = (imageId: string) => {
+    setImages((prev) =>
+      prev.map((img) =>
+        img.id === imageId ? { ...img, approved: false } : img
+      )
+    )
+
+    toast({
+      title: 'Image Rejected',
+      description: 'Image will not be saved',
+    })
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Generate Product Images</CardTitle>
+        <CardDescription>
+          Enter a prompt to generate 4 images. Approve images to save them to your library.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Prompt Input */}
+        <div className="space-y-2">
+          <label htmlFor="prompt" className="text-sm font-medium">
+            Image Prompt
+          </label>
+          <Textarea
+            id="prompt"
+            placeholder="e.g., Professional business cards on a wooden desk with a coffee cup, natural lighting, high quality photography"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            rows={4}
+            className="resize-none"
+          />
+        </div>
+
+        {/* Generate Button */}
+        <Button
+          onClick={handleGenerate}
+          disabled={isGenerating || !prompt.trim()}
+          size="lg"
+          className="w-full"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Generating 4 Images...
+            </>
+          ) : (
+            'Generate 4 Images'
+          )}
+        </Button>
+
+        {/* Generated Images Grid */}
+        {images.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Generated Images</h3>
+              <p className="text-sm text-muted-foreground">
+                {images.filter((img) => img.approved === true).length} of {images.length} approved
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {images.map((image) => (
+                <div
+                  key={image.id}
+                  className={`relative rounded-lg border-2 overflow-hidden transition-all ${
+                    image.approved === true
+                      ? 'border-green-500 bg-green-50'
+                      : image.approved === false
+                        ? 'border-red-500 bg-red-50 opacity-50'
+                        : 'border-border'
+                  }`}
+                >
+                  {/* Image */}
+                  <div className="aspect-square relative">
+                    <img
+                      src={image.url}
+                      alt="Generated image"
+                      className="w-full h-full object-cover"
+                    />
+
+                    {/* Status Badge */}
+                    {image.approved === true && (
+                      <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-md text-sm font-medium flex items-center gap-1">
+                        <Check className="h-4 w-4" />
+                        Approved
+                      </div>
+                    )}
+                    {image.approved === false && (
+                      <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-medium flex items-center gap-1">
+                        <X className="h-4 w-4" />
+                        Rejected
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  {image.approved === null && (
+                    <div className="p-3 bg-background flex gap-2">
+                      <Button
+                        onClick={() => handleApprove(image.id)}
+                        disabled={savingImages.has(image.id)}
+                        variant="default"
+                        size="sm"
+                        className="flex-1"
+                      >
+                        {savingImages.has(image.id) ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Check className="mr-2 h-4 w-4" />
+                            Approve
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        onClick={() => handleReject(image.id)}
+                        variant="destructive"
+                        size="sm"
+                        className="flex-1"
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Reject
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Reset Button for Approved/Rejected */}
+                  {image.approved !== null && (
+                    <div className="p-3 bg-background">
+                      <Button
+                        onClick={() =>
+                          setImages((prev) =>
+                            prev.map((img) =>
+                              img.id === image.id ? { ...img, approved: null } : img
+                            )
+                          )
+                        }
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
+                        Reset Decision
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Instructions */}
+        {images.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <p className="text-sm">
+              Enter a prompt above and click "Generate 4 Images" to get started.
+            </p>
+            <p className="text-sm mt-2">
+              Once images are generated, you can approve or reject each one.
+            </p>
+            <p className="text-sm mt-2">
+              Approved images will be saved to your library and can be attached to products.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}

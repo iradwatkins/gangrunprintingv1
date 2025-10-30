@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -54,6 +54,7 @@ export default function PaymentPage() {
         // If no shipping data, redirect back to shipping page
         if (!shippingAddressData || !shippingMethodData) {
           toast.error('Please complete shipping information first.')
+          setIsLoading(false) // Stop loading spinner before redirect
           router.push('/checkout/shipping')
           return
         }
@@ -71,6 +72,7 @@ export default function PaymentPage() {
       } catch (error) {
         console.error('[Payment] Error loading order data:', error)
         toast.error('Error loading order data')
+        setIsLoading(false) // Stop loading spinner before redirect
         router.push('/checkout/shipping')
       }
     }

@@ -90,10 +90,12 @@ export function ArtworkUpload({
 
       // Handle errors
       xhr.addEventListener('error', () => {
+        console.error(`[Upload Error] ${file.name} failed to upload - Network error`)
         resolve({ success: false })
       })
 
       xhr.addEventListener('abort', () => {
+        console.warn(`[Upload Aborted] ${file.name} upload was cancelled`)
         resolve({ success: false })
       })
 
@@ -157,6 +159,9 @@ export function ArtworkUpload({
         uploadedFiles.map(async (uploadedFile) => {
           // Upload with progress tracking
           const result = await uploadFile(uploadedFile.file, (progress) => {
+            // Debug logging for upload progress
+            console.log(`[Upload Progress] ${uploadedFile.file.name}: ${progress}%`)
+
             // Update progress in real-time
             setFiles((prev) =>
               prev.map((f) =>
@@ -315,6 +320,7 @@ export function ArtworkUpload({
                     {uploadedFile.preview ? (
                       <Image
                         fill
+                        unoptimized
                         alt={uploadedFile.file.name}
                         className="object-cover"
                         src={uploadedFile.preview}
@@ -398,8 +404,8 @@ export function ArtworkUpload({
         )}
       </Card>
 
-      {/* Helper Text */}
-      {files.length > 0 && (
+      {/* Helper Text - Only show when at least one file has successfully uploaded */}
+      {files.length > 0 && files.filter((f) => f.status === 'success').length > 0 && (
         <p className="text-sm text-muted-foreground">
           <CheckCircle2 className="w-4 h-4 inline mr-1 text-green-500" />
           {files.filter((f) => f.status === 'success').length} of {files.length} files uploaded

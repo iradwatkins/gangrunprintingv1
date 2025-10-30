@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal, Eye, Edit, Copy, Trash2, Rocket } from 'lucide-react'
 import { Link } from '@/lib/i18n/navigation'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/navigation'
 
 interface FunnelsTableProps {
   funnels: (Funnel & {

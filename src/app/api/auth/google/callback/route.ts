@@ -181,7 +181,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const sessionCookie = lucia.createSessionCookie(session.id)
 
     // Redirect based on user role with improved logic
-    // IMPORTANT: Include /en/ locale prefix since all routes use localePrefix: 'always'
+    // CRITICAL: Must include /en/ locale prefix for i18n routing to work
     const redirectPath = user.role === 'ADMIN' ? '/en/admin/dashboard' : '/en/account/dashboard'
 
     // Use consistent base URL resolution

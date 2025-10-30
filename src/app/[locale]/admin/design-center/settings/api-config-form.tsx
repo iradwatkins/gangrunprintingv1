@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -103,7 +103,7 @@ export function ApiConfigForm({ initialSettings }: ApiConfigFormProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
       {AI_PROVIDERS.map((provider) => {
         const state = formState[provider.key]
         const isVisible = showKeys[provider.key]
@@ -171,11 +171,11 @@ export function ApiConfigForm({ initialSettings }: ApiConfigFormProps) {
       })}
 
       <div className="flex justify-end pt-4">
-        <Button onClick={handleSave} disabled={loading}>
+        <Button type="submit" disabled={loading}>
           <Save className="h-4 w-4 mr-2" />
           {loading ? 'Saving...' : 'Save API Settings'}
         </Button>
       </div>
-    </div>
+    </form>
   )
 }

@@ -28,7 +28,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Save, Eye, Plus, Settings } from 'lucide-react'
 import { Link } from '@/lib/i18n/navigation'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/navigation'
 import { FunnelCanvas } from './funnel-canvas'
 import { FunnelSettings } from './funnel-settings'
 

@@ -82,8 +82,26 @@ export function SavedAddresses({
     return <div className="py-8 text-center text-muted-foreground">Loading saved addresses...</div>
   }
 
-  if (!userId || addresses.length === 0) {
+  // If user has no saved addresses, show a button to add one
+  if (!userId) {
     return null
+  }
+
+  if (addresses.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Label className="text-base font-semibold">Shipping Address</Label>
+        </div>
+        <Card className="p-6 text-center">
+          <p className="text-muted-foreground mb-4">No saved addresses found</p>
+          <Button type="button" onClick={onNewAddress}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Address
+          </Button>
+        </Card>
+      </div>
+    )
   }
 
   return (

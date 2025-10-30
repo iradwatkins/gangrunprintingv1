@@ -118,7 +118,6 @@ export default function CategoriesPage() {
     parentCategoryId: '',
     vendorId: '',
     brokerDiscount: 0,
-    promptTemplateId: '', // AI Image Generation: Link to Design Center prompt template
   })
 
   useEffect(() => {
@@ -242,7 +241,6 @@ export default function CategoriesPage() {
       parentCategoryId: '',
       vendorId: '',
       brokerDiscount: 0,
-      promptTemplateId: '',
     })
     setEditingCategory(null)
   }
@@ -264,7 +262,6 @@ export default function CategoriesPage() {
       parentCategoryId: category.parentCategoryId || '',
       vendorId: category.vendorId || '',
       brokerDiscount: category.brokerDiscount || 0,
-      promptTemplateId: (category as any).promptTemplateId || '',
     })
     setDialogOpen(true)
   }
@@ -569,31 +566,6 @@ export default function CategoriesPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="promptTemplateId">AI Prompt Template</Label>
-                <Select
-                  value={formData.promptTemplateId || 'none'}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, promptTemplateId: value === 'none' ? '' : value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select prompt template" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No template (products won't generate images)</SelectItem>
-                    {promptTemplates.map((template) => (
-                      <SelectItem key={template.id} value={template.id}>
-                        {template.name}
-                        {template.productType && ` - ${template.productType}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Products in this category will use this template for AI image generation
-                </p>
-              </div>
             </div>
 
             {/* Images & SEO Section */}

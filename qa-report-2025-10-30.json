@@ -1,0 +1,1385 @@
+{
+  "timestamp": "2025-10-30T12:32:54.173Z",
+  "summary": {
+    "totalPages": 23,
+    "pagesWorking": 17,
+    "pagesFailed": 23,
+    "totalLinks": 0,
+    "linksWorking": 0,
+    "linksBroken": 0,
+    "totalButtons": 0,
+    "buttonsWorking": 0,
+    "buttonsFailed": 0,
+    "totalForms": 0,
+    "formsWorking": 0,
+    "formsFailed": 0,
+    "responsiveIssues": 0,
+    "healthScore": 74
+  },
+  "pages": {
+    "/en": {
+      "url": "/en",
+      "section": "Homepage",
+      "name": "Homepage",
+      "accessible": false,
+      "loadTime": 1540,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=xp89h",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/products?_rsc=xp89h",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/products": {
+      "url": "/en/products",
+      "section": "Customer Pages",
+      "name": "Products",
+      "accessible": false,
+      "loadTime": 1042,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=1r33n",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/about": {
+      "url": "/en/about",
+      "section": "Customer Pages",
+      "name": "About",
+      "accessible": false,
+      "loadTime": 1033,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=t78bx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/contact": {
+      "url": "/en/contact",
+      "section": "Customer Pages",
+      "name": "Contact",
+      "accessible": false,
+      "loadTime": 1029,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": []
+    },
+    "/en/faq": {
+      "url": "/en/faq",
+      "section": "Customer Pages",
+      "name": "FAQ",
+      "accessible": false,
+      "loadTime": 1039,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": []
+    },
+    "/en/faq/business-cards": {
+      "url": "/en/faq/business-cards",
+      "section": "Customer Pages",
+      "name": "Business Cards FAQ",
+      "accessible": false,
+      "loadTime": 1039,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=1ox2e",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=1ox2e",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/faq/flyers": {
+      "url": "/en/faq/flyers",
+      "section": "Customer Pages",
+      "name": "Flyers FAQ",
+      "accessible": false,
+      "loadTime": 1046,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=1f84n",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/help-center": {
+      "url": "/en/help-center",
+      "section": "Customer Pages",
+      "name": "Help Center",
+      "accessible": false,
+      "loadTime": 1039,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": []
+    },
+    "/en/track": {
+      "url": "/en/track",
+      "section": "Customer Pages",
+      "name": "Track Order",
+      "accessible": false,
+      "loadTime": 0,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=gbzmm",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=gbzmm",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/products?_rsc=gbzmm",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/quote": {
+      "url": "/en/quote",
+      "section": "Customer Pages",
+      "name": "Quote Request",
+      "accessible": false,
+      "loadTime": 1057,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=10ewx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/contact?_rsc=10ewx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=10ewx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/auth/signin?_rsc=10ewx",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/privacy-policy": {
+      "url": "/en/privacy-policy",
+      "section": "Customer Pages",
+      "name": "Privacy Policy",
+      "accessible": false,
+      "loadTime": 1043,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=5nbah",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/terms-of-service": {
+      "url": "/en/terms-of-service",
+      "section": "Customer Pages",
+      "name": "Terms of Service",
+      "accessible": false,
+      "loadTime": 1043,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=19qac",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/locations": {
+      "url": "/en/locations",
+      "section": "Customer Pages",
+      "name": "Locations",
+      "accessible": false,
+      "loadTime": 1047,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=59vlo",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/account/dashboard": {
+      "url": "/en/account/dashboard",
+      "section": "Account Pages",
+      "name": "Dashboard",
+      "accessible": false,
+      "loadTime": 1054,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": []
+    },
+    "/en/account/orders": {
+      "url": "/en/account/orders",
+      "section": "Account Pages",
+      "name": "Orders",
+      "accessible": false,
+      "loadTime": 2002,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/account?_rsc=11htc",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/auth/signin?from=%2Faccount%2Forders&_rsc=5f9hk",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/account/orders?_rsc=11htc",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/account/payment-methods?_rsc=11htc",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/account/details?_rsc=11htc",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/account/addresses?_rsc=11htc",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/account/dashboard?_rsc=11htc",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/account/downloads?_rsc=11htc",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/account/addresses": {
+      "url": "/en/account/addresses",
+      "section": "Account Pages",
+      "name": "Addresses",
+      "accessible": false,
+      "loadTime": 1054,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": []
+    },
+    "/en/account/payment-methods": {
+      "url": "/en/account/payment-methods",
+      "section": "Account Pages",
+      "name": "Payment Methods",
+      "accessible": false,
+      "loadTime": 1065,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": []
+    },
+    "/en/account/details": {
+      "url": "/en/account/details",
+      "section": "Account Pages",
+      "name": "Account Details",
+      "accessible": false,
+      "loadTime": 0,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/account?_rsc=gwdqd",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/products?_rsc=gwdqd",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/account/downloads": {
+      "url": "/en/account/downloads",
+      "section": "Account Pages",
+      "name": "Downloads",
+      "accessible": false,
+      "loadTime": 0,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/account?_rsc=m67ll",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/products?_rsc=m67ll",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/auth/signin?redirectUrl=%2Fen%2Faccount%2Fdownloads&_rsc=ox4uq",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/checkout": {
+      "url": "/en/checkout",
+      "section": "Checkout Flow",
+      "name": "Cart/Checkout",
+      "accessible": false,
+      "loadTime": 0,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=1gll9",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/products?_rsc=1gll9",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=1gll9",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/checkout/shipping": {
+      "url": "/en/checkout/shipping",
+      "section": "Checkout Flow",
+      "name": "Shipping",
+      "accessible": false,
+      "loadTime": 0,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=1w89v",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=1w89v",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/products?_rsc=1w89v",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=1llcm",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/contact?_rsc=1w89v",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/about?_rsc=1w89v",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/checkout/payment": {
+      "url": "/en/checkout/payment",
+      "section": "Checkout Flow",
+      "name": "Payment",
+      "accessible": false,
+      "loadTime": 0,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/?_rsc=xa15i",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout?_rsc=xa15i",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/products?_rsc=xa15i",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/quote?_rsc=xa15i",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/en/checkout/shipping?_rsc=mwbsx",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/locations?_rsc=1gll9",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/help-center?_rsc=1gll9",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3020/track?_rsc=1gll9",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "/en/sign-in": {
+      "url": "/en/sign-in",
+      "section": "Auth Pages",
+      "name": "Sign In",
+      "accessible": false,
+      "loadTime": 1032,
+      "links": {
+        "total": 0,
+        "working": 0,
+        "broken": []
+      },
+      "buttons": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "forms": {
+        "total": 0,
+        "working": 0,
+        "failed": []
+      },
+      "images": {
+        "total": 0,
+        "loaded": 0,
+        "failed": []
+      },
+      "responsive": {
+        "mobile": null,
+        "tablet": null,
+        "desktop": null
+      },
+      "consoleErrors": [
+        "Refused to execute script from 'http://localhost:3020/_next/static/css/21248b5bbaf20ec3.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled."
+      ],
+      "networkErrors": [
+        {
+          "url": "http://localhost:3020/en/auth/signin?_rsc=1wf3p",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    }
+  },
+  "issues": [
+    {
+      "severity": "error",
+      "page": "/en",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:32:56.433Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/products",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:32:57.524Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/about",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:32:58.604Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/contact",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:32:59.668Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/faq",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:00.747Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/faq/business-cards",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:01.829Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/faq/flyers",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:02.920Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/help-center",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:03.997Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/track",
+      "element": "Page Load",
+      "message": "Navigation timeout of 30000 ms exceeded",
+      "timestamp": "2025-10-30T12:33:34.039Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/quote",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:35.142Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/privacy-policy",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:36.233Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/terms-of-service",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:37.313Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/locations",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:38.404Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/account/dashboard",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:39.498Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/account/orders",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:41.537Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/account/addresses",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:42.626Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/account/payment-methods",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:33:43.724Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/account/details",
+      "element": "Page Load",
+      "message": "Navigation timeout of 30000 ms exceeded",
+      "timestamp": "2025-10-30T12:34:13.779Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/account/downloads",
+      "element": "Page Load",
+      "message": "Navigation timeout of 30000 ms exceeded",
+      "timestamp": "2025-10-30T12:34:43.838Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/checkout",
+      "element": "Page Load",
+      "message": "Navigation timeout of 30000 ms exceeded",
+      "timestamp": "2025-10-30T12:35:13.877Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/checkout/shipping",
+      "element": "Page Load",
+      "message": "Navigation timeout of 30000 ms exceeded",
+      "timestamp": "2025-10-30T12:35:43.945Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/checkout/payment",
+      "element": "Page Load",
+      "message": "Navigation timeout of 30000 ms exceeded",
+      "timestamp": "2025-10-30T12:36:14.003Z"
+    },
+    {
+      "severity": "error",
+      "page": "/en/sign-in",
+      "element": "Page Load",
+      "message": "page.waitForTimeout is not a function",
+      "timestamp": "2025-10-30T12:36:15.081Z"
+    }
+  ],
+  "warnings": [],
+  "successes": [
+    {
+      "severity": "success",
+      "page": "/en",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1540ms",
+      "timestamp": "2025-10-30T12:32:56.432Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/products",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1042ms",
+      "timestamp": "2025-10-30T12:32:57.524Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/about",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1033ms",
+      "timestamp": "2025-10-30T12:32:58.604Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/contact",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1029ms",
+      "timestamp": "2025-10-30T12:32:59.668Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/faq",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1039ms",
+      "timestamp": "2025-10-30T12:33:00.746Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/faq/business-cards",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1039ms",
+      "timestamp": "2025-10-30T12:33:01.829Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/faq/flyers",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1046ms",
+      "timestamp": "2025-10-30T12:33:02.920Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/help-center",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1039ms",
+      "timestamp": "2025-10-30T12:33:03.997Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/quote",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1057ms",
+      "timestamp": "2025-10-30T12:33:35.142Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/privacy-policy",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1043ms",
+      "timestamp": "2025-10-30T12:33:36.233Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/terms-of-service",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1043ms",
+      "timestamp": "2025-10-30T12:33:37.313Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/locations",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1047ms",
+      "timestamp": "2025-10-30T12:33:38.404Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/account/dashboard",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1054ms",
+      "timestamp": "2025-10-30T12:33:39.498Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/account/orders",
+      "element": "Page Load",
+      "message": "Loaded successfully in 2002ms",
+      "timestamp": "2025-10-30T12:33:41.537Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/account/addresses",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1054ms",
+      "timestamp": "2025-10-30T12:33:42.626Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/account/payment-methods",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1065ms",
+      "timestamp": "2025-10-30T12:33:43.724Z"
+    },
+    {
+      "severity": "success",
+      "page": "/en/sign-in",
+      "element": "Page Load",
+      "message": "Loaded successfully in 1032ms",
+      "timestamp": "2025-10-30T12:36:15.081Z"
+    }
+  ]
+}

@@ -8,10 +8,8 @@ import {
   Package,
   BarChart3,
   Mail,
-  Palette,
   Settings2,
   Printer,
-  Sparkles,
 } from 'lucide-react'
 
 import { NavMainEnhanced, type NavMainItem } from './nav-main-enhanced'
@@ -46,26 +44,6 @@ const navItems: NavMainItem[] = [
     title: 'Customers',
     url: '/admin/customers',
     icon: Users,
-  },
-  {
-    title: 'Design',
-    url: '/admin/design-center',
-    icon: Sparkles,
-    isActive: true,
-    items: [
-      {
-        title: 'Design Center',
-        url: '/admin/design-center',
-      },
-      {
-        title: 'Prompt Library',
-        url: '/admin/design-center/templates',
-      },
-      {
-        title: 'API Settings',
-        url: '/admin/design-center/settings',
-      },
-    ],
   },
   {
     title: 'Products',
@@ -201,6 +179,10 @@ const navItems: NavMainItem[] = [
       {
         title: 'SEO & Search Engines',
         url: '/admin/seo',
+      },
+      {
+        title: 'AI Image Generation',
+        url: '/admin/design-center/settings',
       },
       {
         title: 'System Health',

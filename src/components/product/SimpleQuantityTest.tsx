@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/cart-context'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/navigation'
 import toast from '@/lib/toast'
 import { AddonAccordion } from './addons/AddonAccordion'
 

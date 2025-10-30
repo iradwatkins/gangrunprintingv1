@@ -26,6 +26,8 @@ export function transformProductForFrontend(product: Product): TransformedProduc
   if (!product) return null
 
   return {
+    // Keep lowercase id for navigation/API calls
+    id: product.id,
     // PascalCase for frontend display
     Id: product.id,
     Name: product.name,

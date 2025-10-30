@@ -1,0 +1,279 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Loader2, Search, Trash2, Download, Image as ImageIcon } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+
+interface AIImage {
+  url: string
+  objectName: string
+  filename: string
+  size: number
+  uploadedAt: string
+  etag: string
+}
+
+export function ImageLibrary() {
+  const [images, setImages] = useState<AIImage[]>([])
+  const [filteredImages, setFilteredImages] = useState<AIImage[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<AIImage | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const { toast } = useToast()
+
+  // Load images on mount
+  useEffect(() => {
+    loadImages()
+  }, [])
+
+  // Filter images when search query changes
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredImages(images)
+    } else {
+      const query = searchQuery.toLowerCase()
+      const filtered = images.filter((img) => img.filename.toLowerCase().includes(query))
+      setFilteredImages(filtered)
+    }
+  }, [searchQuery, images])
+
+  const loadImages = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/ai/library')
+      if (!response.ok) {
+        throw new Error('Failed to load images')
+      }
+
+      const data = await response.json()
+      setImages(data.images || [])
+      setFilteredImages(data.images || [])
+    } catch (error) {
+      console.error('Load images error:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to load image library',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(
+        `/api/ai/library?objectName=${encodeURIComponent(deleteTarget.objectName)}`,
+        {
+          method: 'DELETE',
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to delete image')
+      }
+
+      // Remove from state
+      setImages((prev) => prev.filter((img) => img.objectName !== deleteTarget.objectName))
+      setFilteredImages((prev) =>
+        prev.filter((img) => img.objectName !== deleteTarget.objectName)
+      )
+
+      toast({
+        title: 'Image Deleted',
+        description: `${deleteTarget.filename} has been deleted`,
+      })
+
+      setDeleteTarget(null)
+    } catch (error) {
+      console.error('Delete error:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to delete image',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>AI Image Library</CardTitle>
+          <CardDescription>
+            Browse and manage all AI-generated images. These images can be attached to products or
+            categories.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Search Bar */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search images by filename..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline" onClick={loadImages} disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                'Refresh'
+              )}
+            </Button>
+          </div>
+
+          {/* Image Grid */}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+              <Loader2 className="h-8 w-8 animate-spin mb-4" />
+              <p>Loading image library...</p>
+            </div>
+          ) : filteredImages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+              <ImageIcon className="h-12 w-12 mb-4 opacity-50" />
+              <p className="text-lg font-medium">
+                {searchQuery ? 'No images found' : 'No AI-generated images yet'}
+              </p>
+              <p className="text-sm mt-2">
+                {searchQuery
+                  ? 'Try a different search term'
+                  : 'Generate images above to see them here'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <p>
+                  Showing {filteredImages.length} of {images.length} images
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredImages.map((image) => (
+                  <div
+                    key={image.objectName}
+                    className="group relative rounded-lg border overflow-hidden hover:shadow-lg transition-all"
+                  >
+                    {/* Image */}
+                    <div className="aspect-square relative bg-muted">
+                      <img
+                        src={image.url}
+                        alt={image.filename}
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* Overlay Actions */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => window.open(image.url, '_blank')}
+                          title="View full size"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setDeleteTarget(image)}
+                          title="Delete image"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Info */}
+                    <div className="p-2 bg-background">
+                      <p className="text-xs font-medium truncate" title={image.filename}>
+                        {image.filename}
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+                        <span>{formatFileSize(image.size)}</span>
+                        <span>{formatDate(image.uploadedAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Image?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deleteTarget?.filename}"? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  )
+}

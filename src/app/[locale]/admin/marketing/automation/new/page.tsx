@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/navigation'
 import { WorkflowDesigner } from '@/components/marketing/workflow-designer'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'

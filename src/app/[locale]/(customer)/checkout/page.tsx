@@ -9,8 +9,7 @@ import { useCart } from '@/contexts/cart-context'
 import { CartItemImages } from '@/components/cart/cart-item-images'
 import { FileThumbnails } from '@/components/product/FileThumbnails'
 import { ArtworkUpload } from '@/components/product/ArtworkUpload'
-import { Link } from '@/lib/i18n/navigation'
-import { useRouter } from 'next/navigation'
+import { Link, useRouter } from '@/lib/i18n/navigation'
 import toast from '@/lib/toast'
 
 interface UploadedFile {
@@ -221,11 +220,20 @@ export default function CartPage() {
               <CardContent>
                 <ArtworkUpload maxFiles={10} maxSizeMB={50} onFilesChange={handleFilesChange} />
 
-                {/* Simple success confirmation */}
-                {uploadedFiles.length > 0 && (
-                  <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                    <p className="text-sm font-medium text-green-700 dark:text-green-400 flex items-center gap-2">
-                      👍 {uploadedFiles.length} file{uploadedFiles.length !== 1 ? 's' : ''} uploaded successfully
+                {/* Uploading status */}
+                {uploadedFiles.filter(f => f.status === 'uploading').length > 0 && (
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p className="text-sm font-medium text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                      ⏳ Uploading {uploadedFiles.filter(f => f.status === 'uploading').length} file{uploadedFiles.filter(f => f.status === 'uploading').length !== 1 ? 's' : ''}...
+                    </p>
+                  </div>
+                )}
+
+                {/* Error notification */}
+                {uploadedFiles.filter(f => f.status === 'error').length > 0 && (
+                  <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-sm font-medium text-red-700 dark:text-red-400 flex items-center gap-2">
+                      ❌ {uploadedFiles.filter(f => f.status === 'error').length} file{uploadedFiles.filter(f => f.status === 'error').length !== 1 ? 's' : ''} failed to upload
                     </p>
                   </div>
                 )}

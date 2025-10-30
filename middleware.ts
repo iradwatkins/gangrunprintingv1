@@ -28,6 +28,21 @@ export function middleware(request: NextRequest) {
     ? pathname.replace(`/${pathnameLocale}`, '') || '/'
     : pathname
 
+  // CRITICAL FIX (2025-10-30): Redirect old URLs without locale prefix to /en/ prefix
+  // Since we changed localePrefix to 'always', old URLs need to redirect
+  // This includes RSC prefetch requests (URLs with ?_rsc= parameter)
+  if (!pathnameLocale && pathname !== '/' && !pathname.startsWith('/api') && !pathname.startsWith('/_next') && !pathname.startsWith('/.well-known')) {
+    // For RSC requests, preserve the query string
+    const searchParams = request.nextUrl.searchParams
+    const newUrl = new URL(`/en${pathname}`, request.url)
+    searchParams.forEach((value, key) => {
+      newUrl.searchParams.set(key, value)
+    })
+    // Use 307 for RSC requests (temporary, preserve method) or 301 for regular requests
+    const statusCode = searchParams.has('_rsc') ? 307 : 301
+    return NextResponse.redirect(newUrl, statusCode)
+  }
+
   // CATEGORY URL REDIRECTS: Redirect old category URLs to new structure
   if (pathnameWithoutLocale.startsWith('/products/flyers')) {
     const newUrl = pathnameLocale

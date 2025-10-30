@@ -1,7 +1,6 @@
 'use client'
 
-import { Link } from '@/lib/i18n/navigation'
-import { usePathname } from 'next/navigation'
+import { Link, usePathname } from '@/lib/i18n/navigation'
 import { type LucideIcon } from 'lucide-react'
 import { useNavigationState } from '@/hooks/useNavigationState'
 

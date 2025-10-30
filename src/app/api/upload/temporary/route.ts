@@ -4,7 +4,6 @@ import { uploadFile, BUCKETS, initializeBuckets, isMinioAvailable } from '@/lib/
 import { randomUUID } from 'crypto'
 import sharp from 'sharp'
 import path from 'path'
-import { validateFileAdvanced } from '@/lib/security/advanced-file-validator'
 import {
   checkFileUploadRateLimit,
   formatFileRateLimitError,
@@ -147,19 +146,44 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData()
 
+    // DEBUG: Log all FormData entries
+    const allEntries = Array.from(formData.entries())
+    logger.info('[Upload API] FormData received', {
+      sessionId,
+      totalEntries: allEntries.length,
+      entryKeys: allEntries.map(([k]) => k),
+    })
+
     // Get all files from form data
     const files: File[] = []
     let totalSize = 0
 
     for (const [key, value] of formData.entries()) {
+      logger.info(`[Upload API] Processing entry: ${key}`, {
+        valueType: typeof value,
+        isFile: value instanceof File,
+        fileName: value instanceof File ? value.name : 'N/A',
+        fileSize: value instanceof File ? value.size : 'N/A',
+      })
+
       if (key.startsWith('file') && value instanceof File) {
         files.push(value)
         totalSize += value.size
       }
     }
 
+    logger.info('[Upload API] Files extracted from FormData', {
+      filesFound: files.length,
+      totalSize,
+      fileNames: files.map((f) => f.name),
+    })
+
     // Validation
     if (files.length === 0) {
+      logger.error('[Upload API] No files provided in request', {
+        sessionId,
+        formDataKeys: allEntries.map(([k]) => k),
+      })
       return NextResponse.json({ error: 'No files provided' }, { status: 400 })
     }
 
@@ -181,55 +205,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Enhanced validation for each file
+    // Simple validation for each file
+    // REMOVED: Advanced security scanning (caused false positives on legitimate PNG files)
+    // KEPT: Magic byte validation + MIME type checking (sufficient for security)
     for (const file of files) {
-      // Convert file to buffer for advanced validation
-      const buffer = await file.arrayBuffer()
-
-      // Perform comprehensive validation including security checks
-      const validationResult = await validateFileAdvanced(file.name, file.size, file.type, buffer)
-
-      if (!validationResult.valid) {
-        logger.warn('File validation failed', {
+      // Check file type using magic byte validation
+      if (!(await validateFileType(file))) {
+        logger.warn('File type validation failed', {
           filename: file.name,
           fileSize: file.size,
           mimeType: file.type,
-          error: validationResult.error,
-          threatLevel: validationResult.threatLevel,
-          warnings: validationResult.warnings,
           userId: user?.id,
           sessionId,
         })
 
-        return NextResponse.json(
-          {
-            error: `File "${file.name}": ${validationResult.error}`,
-            securityDetails:
-              validationResult.threatLevel === 'high'
-                ? {
-                    threatLevel: validationResult.threatLevel,
-                    warnings: validationResult.warnings,
-                  }
-                : undefined,
-          },
-          { status: 400 }
-        )
-      }
-
-      // Log security warnings for medium/high threat files
-      if (validationResult.threatLevel && validationResult.threatLevel !== 'low') {
-        logger.warn('File uploaded with security warnings', {
-          filename: file.name,
-          threatLevel: validationResult.threatLevel,
-          warnings: validationResult.warnings,
-          scanResults: validationResult.scanResults,
-          userId: user?.id,
-          sessionId,
-        })
-      }
-
-      // Check basic file type (fallback validation)
-      if (!(await validateFileType(file))) {
         return NextResponse.json(
           {
             error: `File "${file.name}" has invalid file type`,

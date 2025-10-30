@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { ApiConfigForm } from './api-config-form'
+// TODO: Fix broken imports in these components before re-enabling
+// import { SimpleImageGenerator } from './simple-image-generator'
+// import { ImageLibrary } from './image-library'
 import { prisma } from '@/lib/prisma'
 
 async function getApiSettings() {
@@ -27,19 +30,19 @@ export default async function DesignCenterSettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Link href="/admin/design-center">
+            <Link href="/admin/settings">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Design Center
+                Back to Settings
               </Button>
             </Link>
           </div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
             <SettingsIcon className="h-8 w-8 text-primary" />
-            AI Provider Settings
+            AI Image Generation
           </h1>
           <p className="text-muted-foreground mt-1">
-            Configure API keys for different AI image generation providers
+            Configure API keys and generate images for your products and categories
           </p>
         </div>
       </div>
@@ -58,6 +61,10 @@ export default async function DesignCenterSettingsPage() {
           </Suspense>
         </CardContent>
       </Card>
+
+      {/* TODO: Re-enable after fixing broken imports */}
+      {/* <SimpleImageGenerator /> */}
+      {/* <ImageLibrary /> */}
 
       {/* Info Cards */}
       <div className="grid gap-4 md:grid-cols-2">

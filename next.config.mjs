@@ -226,44 +226,16 @@ const nextConfig = {
     ]
   },
 
-  // Redirects for SEO
+  // Redirects for SEO and old URL patterns
+  // NOTE: Do NOT add redirects forcing /en/ prefix - this breaks localePrefix: 'as-needed'
+  // English URLs should work WITHOUT prefix per i18n configuration
   async redirects() {
     return [
-      {
-        source: '/sign-in',
-        destination: '/auth/signin',
-        permanent: true,
-      },
-      {
-        source: '/sign-up',
-        destination: '/auth/signup',
-        permanent: true,
-      },
+      // Legacy URL redirects (old paths that changed)
       {
         source: '/admin/test-colors',
         destination: '/admin/theme-colors',
         permanent: true,
-      },
-      // Redirect checkout paths without locale to English version
-      {
-        source: '/checkout',
-        destination: '/en/checkout',
-        permanent: false,
-      },
-      {
-        source: '/checkout/shipping',
-        destination: '/en/checkout/shipping',
-        permanent: false,
-      },
-      {
-        source: '/checkout/payment',
-        destination: '/en/checkout/payment',
-        permanent: false,
-      },
-      {
-        source: '/checkout/success',
-        destination: '/en/checkout/success',
-        permanent: false,
       },
     ]
   },

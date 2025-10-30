@@ -208,16 +208,28 @@ export async function POST(request: NextRequest) {
     try {
       // Get enabled modules and filter by supported carriers
       const enabledModules = registry.getEnabledModules()
+      console.log('[Shipping API] 🔍 All enabled modules:', enabledModules.map(m => ({
+        id: m.id,
+        name: m.name,
+        carrier: m.carrier,
+        enabled: m.config.enabled
+      })))
+
       const modulesToUse = enabledModules.filter((module) => {
         const carrierName = module.carrier.toUpperCase().replace(/\s+/g, '_')
         return supportedCarriers.has(carrierName) || supportedCarriers.has(module.carrier)
       })
+
+      console.log('[Shipping API] 🎯 Modules to use:', modulesToUse.map(m => m.name))
+      console.log('[Shipping API] 📦 Supported carriers:', Array.from(supportedCarriers))
 
       // Fetch rates from each module with error handling
       const ratePromises = modulesToUse.map((module) =>
         module.provider
           .getRates(shipFrom, toAddress, packages)
           .then((moduleRates) => {
+            console.log(`[Shipping API] ✅ ${module.name} returned ${moduleRates.length} rates:`,
+              moduleRates.map(r => ({ service: r.serviceCode, amount: r.rateAmount })))
             return moduleRates
           })
           .catch((err) => {

@@ -16,6 +16,11 @@ import AddonAccordionWithVariable from './AddonAccordionWithVariable'
 import { type DesignConfig } from './addons/types/addon.types'
 import TurnaroundTimeSelector from './TurnaroundTimeSelector'
 import { validateCustomSize, calculateSquareInches } from '@/lib/utils/size-transformer'
+// Import new service layer calculators
+import { productPriceCalculator } from '@/services/product/calculators/ProductPriceCalculator'
+import { sizeCalculator } from '@/services/product/calculators/SizeCalculator'
+import { quantityCalculator } from '@/services/product/calculators/QuantityCalculator'
+import { addonPricingCalculator } from '@/services/product/calculators/AddonPricingCalculator'
 
 // Simplified types
 interface SimpleConfigData {
@@ -280,74 +285,49 @@ export default function SimpleConfigurationForm({
   }, [productId])
 
   // Helper function to get the actual quantity value (handles both regular and custom quantities)
+  // Now uses QuantityCalculator service
   const getQuantityValue = (config: SimpleProductConfiguration): number => {
-    // If Custom is selected and a custom value is provided, use it
     const selectedQuantity = configData?.quantities.find((q) => q.id === config.quantity)
-    if (
-      selectedQuantity?.isCustom &&
-      config.customQuantity !== undefined &&
-      config.customQuantity > 0
-    ) {
-      return config.customQuantity
-    }
+    if (!selectedQuantity) return 0
 
-    // Otherwise use the preset value
-    return selectedQuantity?.value || 0
+    return quantityCalculator.getValue(selectedQuantity, config.customQuantity)
   }
 
   // Helper function to get the actual size dimensions (handles both regular and custom sizes)
+  // Now uses SizeCalculator service
   const getSizeDimensions = (
     config: SimpleProductConfiguration
   ): { width: number; height: number; squareInches: number } => {
     const selectedSize = configData?.sizes.find((s) => s.id === config.size)
+    if (!selectedSize) return { width: 0, height: 0, squareInches: 0 }
 
-    if (selectedSize?.isCustom && config.customWidth && config.customHeight) {
-      // Custom size selected with dimensions provided
-      return {
-        width: config.customWidth,
-        height: config.customHeight,
-        squareInches: config.customWidth * config.customHeight,
-      }
-    }
-
-    // Use preset size dimensions
-    return {
-      width: selectedSize?.width || 0,
-      height: selectedSize?.height || 0,
-      squareInches: selectedSize?.squareInches || 0,
-    }
+    return sizeCalculator.getDimensions(selectedSize, {
+      width: config.customWidth,
+      height: config.customHeight,
+    })
   }
 
   // Calculate price
+  // NOW USES SERVICE LAYER: Delegates to calculator services for all pricing logic
   const calculatePrice = (config: SimpleProductConfiguration): number => {
     if (!configData) return 0
 
-    const quantityOption = configData.quantities.find((q) => q.id === config.quantity)
     const sizeOption = configData.sizes.find((s) => s.id === config.size)
     const paperOption = configData.paperStocks.find((p) => p.id === config.paper)
-
     if (!sizeOption || !paperOption) return 0
 
-    // Find coating and sides options for the selected paper
     const coatingOption = paperOption.coatings.find((c) => c.id === config.coating)
     const sidesOption = paperOption.sides.find((s) => s.id === config.sides)
-
     if (!coatingOption || !sidesOption) return 0
 
     const quantity = getQuantityValue(config)
     const basePrice = paperOption.pricePerUnit
 
-    // For custom sizes, calculate size multiplier based on square inches
-    let sizeMultiplier = sizeOption.priceMultiplier
-    if (sizeOption.isCustom && config.customWidth && config.customHeight) {
-      const squareInches = config.customWidth * config.customHeight
-      // Apply progressive pricing based on square inches
-      if (squareInches <= 10) sizeMultiplier = 1.0
-      else if (squareInches <= 25) sizeMultiplier = 1.2
-      else if (squareInches <= 50) sizeMultiplier = 1.5
-      else if (squareInches <= 100) sizeMultiplier = 2.0
-      else sizeMultiplier = 2.5 + (squareInches - 100) * 0.01
-    }
+    // Use SizeCalculator for size multiplier
+    const sizeMultiplier = sizeCalculator.calculateSizeMultiplier(sizeOption, {
+      width: config.customWidth,
+      height: config.customHeight,
+    })
 
     const coatingMultiplier = coatingOption.priceMultiplier
     const sidesMultiplier = sidesOption.priceMultiplier
@@ -356,81 +336,69 @@ export default function SimpleConfigurationForm({
     const baseProductPrice =
       quantity * basePrice * sizeMultiplier * coatingMultiplier * sidesMultiplier
 
-    // Calculate addon costs
+    // Calculate addon costs using AddonPricingCalculator
     let addonCosts = 0
+
+    // Regular addons (FLAT, PERCENTAGE, PER_UNIT)
     if (config.selectedAddons && config.selectedAddons.length > 0) {
-      config.selectedAddons.forEach((addonId) => {
-        const addon = configData.addons?.find((a) => a.id === addonId)
+      const regularAddons = config.selectedAddons
+        .map((addonId) => configData.addons?.find((a) => a.id === addonId))
+        .filter(
+          (addon) =>
+            addon &&
+            addon.configuration?.type !== 'variable_data' &&
+            addon.configuration?.type !== 'perforation' &&
+            addon.configuration?.type !== 'banding' &&
+            addon.configuration?.type !== 'corner_rounding'
+        )
+
+      for (const addon of regularAddons) {
         if (addon) {
-          // Skip Variable Data, Perforation, and Banding addons as they're handled separately
-          if (
-            addon.configuration?.type === 'variable_data' ||
-            addon.configuration?.type === 'perforation' ||
-            addon.configuration?.type === 'banding'
-          ) {
-            return
-          }
-
-          switch (addon.pricingModel) {
-            case 'FIXED_FEE':
-            case 'FLAT':
-              addonCosts += addon.price
-              break
-            case 'PERCENTAGE':
-              addonCosts += baseProductPrice * addon.price
-              break
-            case 'PER_UNIT':
-              addonCosts += quantity * addon.price
-              break
-          }
-        }
-      })
-    }
-
-    // Add Variable Data cost if enabled
-    if (config.variableDataConfig?.enabled) {
-      const variableDataCost = 60 + 0.02 * quantity
-      addonCosts += variableDataCost
-    }
-
-    // Add Perforation cost if enabled
-    if (config.perforationConfig?.enabled) {
-      const perforationCost = 20 + 0.01 * quantity
-      addonCosts += perforationCost
-    }
-
-    // Add Banding cost if enabled
-    if (config.bandingConfig?.enabled && config.bandingConfig.itemsPerBundle > 0) {
-      const numberOfBundles = Math.ceil(quantity / config.bandingConfig.itemsPerBundle)
-      const bandingCost = numberOfBundles * 0.75
-      addonCosts += bandingCost
-    }
-
-    // Add Corner Rounding cost if enabled
-    if (config.cornerRoundingConfig?.enabled) {
-      const cornerRoundingCost = 20 + 0.01 * quantity
-      addonCosts += cornerRoundingCost
-    }
-
-    // Add Design cost from database-driven design options
-    let designCost = 0
-    if (config.design && configData.designOptions) {
-      const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
-      if (selectedDesign) {
-        if (
-          selectedDesign.requiresSideSelection &&
-          selectedDesign.sideOptions &&
-          config.designSide
-        ) {
-          // SIDE_BASED pricing (Standard/Rush design)
-          designCost = selectedDesign.sideOptions[config.designSide].price
-        } else if (selectedDesign.basePrice) {
-          // FLAT pricing (Minor/Major changes) or FREE (upload_own)
-          designCost = selectedDesign.basePrice
+          addonCosts += addonPricingCalculator.calculateAddonCost(
+            addon,
+            baseProductPrice,
+            quantity
+          )
         }
       }
     }
-    addonCosts += designCost
+
+    // Special addons using dedicated calculator methods
+    if (config.variableDataConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculateVariableDataCost(
+        quantity,
+        config.variableDataConfig
+      )
+    }
+
+    if (config.perforationConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculatePerforationCost(
+        quantity,
+        config.perforationConfig
+      )
+    }
+
+    if (config.bandingConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculateBandingCost(quantity, config.bandingConfig)
+    }
+
+    if (config.cornerRoundingConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculateCornerRoundingCost(
+        quantity,
+        config.cornerRoundingConfig
+      )
+    }
+
+    // Design cost using AddonPricingCalculator
+    if (config.design && configData.designOptions) {
+      const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
+      if (selectedDesign) {
+        addonCosts += addonPricingCalculator.calculateDesignCost(
+          selectedDesign,
+          config.designSide
+        )
+      }
+    }
 
     const subtotalWithAddons = baseProductPrice + addonCosts
 
@@ -458,35 +426,26 @@ export default function SimpleConfigurationForm({
   }
 
   // Calculate base price without turnaround (for TurnaroundTimeSelector)
+  // NOW USES SERVICE LAYER: Same logic as calculatePrice but without turnaround multiplier
   const calculateBasePrice = (config: SimpleProductConfiguration): number => {
     if (!configData) return 0
 
-    const quantityOption = configData.quantities.find((q) => q.id === config.quantity)
     const sizeOption = configData.sizes.find((s) => s.id === config.size)
     const paperOption = configData.paperStocks.find((p) => p.id === config.paper)
-
     if (!sizeOption || !paperOption) return 0
 
-    // Find coating and sides options for the selected paper
     const coatingOption = paperOption.coatings.find((c) => c.id === config.coating)
     const sidesOption = paperOption.sides.find((s) => s.id === config.sides)
-
     if (!coatingOption || !sidesOption) return 0
 
     const quantity = getQuantityValue(config)
     const basePrice = paperOption.pricePerUnit
 
-    // For custom sizes, calculate size multiplier based on square inches
-    let sizeMultiplier = sizeOption.priceMultiplier
-    if (sizeOption.isCustom && config.customWidth && config.customHeight) {
-      const squareInches = config.customWidth * config.customHeight
-      // Apply progressive pricing based on square inches
-      if (squareInches <= 10) sizeMultiplier = 1.0
-      else if (squareInches <= 25) sizeMultiplier = 1.2
-      else if (squareInches <= 50) sizeMultiplier = 1.5
-      else if (squareInches <= 100) sizeMultiplier = 2.0
-      else sizeMultiplier = 2.5 + (squareInches - 100) * 0.01
-    }
+    // Use SizeCalculator for size multiplier
+    const sizeMultiplier = sizeCalculator.calculateSizeMultiplier(sizeOption, {
+      width: config.customWidth,
+      height: config.customHeight,
+    })
 
     const coatingMultiplier = coatingOption.priceMultiplier
     const sidesMultiplier = sidesOption.priceMultiplier
@@ -495,85 +454,73 @@ export default function SimpleConfigurationForm({
     const baseProductPrice =
       quantity * basePrice * sizeMultiplier * coatingMultiplier * sidesMultiplier
 
-    // Calculate addon costs
+    // Calculate addon costs using AddonPricingCalculator
     let addonCosts = 0
+
+    // Regular addons (FLAT, PERCENTAGE, PER_UNIT)
     if (config.selectedAddons && config.selectedAddons.length > 0) {
-      config.selectedAddons.forEach((addonId) => {
-        const addon = configData.addons?.find((a) => a.id === addonId)
+      const regularAddons = config.selectedAddons
+        .map((addonId) => configData.addons?.find((a) => a.id === addonId))
+        .filter(
+          (addon) =>
+            addon &&
+            addon.configuration?.type !== 'variable_data' &&
+            addon.configuration?.type !== 'perforation' &&
+            addon.configuration?.type !== 'banding' &&
+            addon.configuration?.type !== 'corner_rounding'
+        )
+
+      for (const addon of regularAddons) {
         if (addon) {
-          // Skip Variable Data, Perforation, and Banding addons as they're handled separately
-          if (
-            addon.configuration?.type === 'variable_data' ||
-            addon.configuration?.type === 'perforation' ||
-            addon.configuration?.type === 'banding'
-          ) {
-            return
-          }
-
-          switch (addon.pricingModel) {
-            case 'FIXED_FEE':
-            case 'FLAT':
-              addonCosts += addon.price
-              break
-            case 'PERCENTAGE':
-              addonCosts += baseProductPrice * addon.price
-              break
-            case 'PER_UNIT':
-              addonCosts += quantity * addon.price
-              break
-          }
-        }
-      })
-    }
-
-    // Add Variable Data cost if enabled
-    if (config.variableDataConfig?.enabled) {
-      const variableDataCost = 60 + 0.02 * quantity
-      addonCosts += variableDataCost
-    }
-
-    // Add Perforation cost if enabled
-    if (config.perforationConfig?.enabled) {
-      const perforationCost = 20 + 0.01 * quantity
-      addonCosts += perforationCost
-    }
-
-    // Add Banding cost if enabled
-    if (config.bandingConfig?.enabled && config.bandingConfig.itemsPerBundle > 0) {
-      const numberOfBundles = Math.ceil(quantity / config.bandingConfig.itemsPerBundle)
-      const bandingCost = numberOfBundles * 0.75
-      addonCosts += bandingCost
-    }
-
-    // Add Corner Rounding cost if enabled
-    if (config.cornerRoundingConfig?.enabled) {
-      const cornerRoundingCost = 20 + 0.01 * quantity
-      addonCosts += cornerRoundingCost
-    }
-
-    // Add Design cost from database-driven design options (new design system)
-    let designCost = 0
-    if (config.design && configData.designOptions) {
-      const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
-      if (selectedDesign) {
-        if (
-          selectedDesign.requiresSideSelection &&
-          selectedDesign.sideOptions &&
-          config.designSide
-        ) {
-          // SIDE_BASED pricing (Standard/Rush design)
-          designCost = selectedDesign.sideOptions[config.designSide].price
-        } else if (selectedDesign.basePrice) {
-          // FLAT pricing (Minor/Major changes) or FREE (upload_own)
-          designCost = selectedDesign.basePrice
+          addonCosts += addonPricingCalculator.calculateAddonCost(
+            addon,
+            baseProductPrice,
+            quantity
+          )
         }
       }
     }
 
-    // DEPRECATED: Calculate design addon costs (old design system - keep for backward compatibility)
+    // Special addons using dedicated calculator methods
+    if (config.variableDataConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculateVariableDataCost(
+        quantity,
+        config.variableDataConfig
+      )
+    }
+
+    if (config.perforationConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculatePerforationCost(
+        quantity,
+        config.perforationConfig
+      )
+    }
+
+    if (config.bandingConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculateBandingCost(quantity, config.bandingConfig)
+    }
+
+    if (config.cornerRoundingConfig?.enabled) {
+      addonCosts += addonPricingCalculator.calculateCornerRoundingCost(
+        quantity,
+        config.cornerRoundingConfig
+      )
+    }
+
+    // Design cost using AddonPricingCalculator (new design system)
+    if (config.design && configData.designOptions) {
+      const selectedDesign = configData.designOptions.find((d) => d.id === config.design)
+      if (selectedDesign) {
+        addonCosts += addonPricingCalculator.calculateDesignCost(
+          selectedDesign,
+          config.designSide
+        )
+      }
+    }
+
+    // DEPRECATED: Old design system (keep for backward compatibility)
     let designAddonCost = 0
     if (config.designConfig?.enabled && config.designConfig?.selectedOption) {
-      // Find the single Design add-on
       const designAddon = configData.addons?.find((a) => a.name === 'Design')
       if (designAddon) {
         const selectedOptionId = config.designConfig.selectedOption
@@ -581,12 +528,10 @@ export default function SimpleConfigurationForm({
 
         if (optionConfig) {
           if (optionConfig.requiresSideSelection && optionConfig.sideOptions) {
-            // Only add cost if side is selected (for validation)
             if (config.designConfig.selectedSide) {
               const side = config.designConfig.selectedSide
               designAddonCost = optionConfig.sideOptions[side].price
             }
-            // If no side selected, cost remains 0 (incomplete selection)
           } else {
             designAddonCost = optionConfig.basePrice || 0
           }
@@ -594,7 +539,7 @@ export default function SimpleConfigurationForm({
       }
     }
 
-    return baseProductPrice + addonCosts + designCost + designAddonCost
+    return baseProductPrice + addonCosts + designAddonCost
   }
 
   // Handle configuration changes

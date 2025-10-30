@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/lib/i18n/navigation'
 import { format } from '@/lib/date'
 import { RefreshCw, Eye, Search, Calendar, Download, ChevronRight } from 'lucide-react'
 import { TrackingButton } from '@/components/tracking/tracking-button'
