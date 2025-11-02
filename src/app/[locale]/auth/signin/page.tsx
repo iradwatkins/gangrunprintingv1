@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 export default function SignInPage() {
+  const t = useTranslations('auth.signin')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -27,14 +29,14 @@ export default function SignInPage() {
       const data = await response.json()
 
       if (response.ok) {
-        setMessage('Magic link sent! Check your email to sign in.')
+        setMessage(t('successMessage'))
         setIsSuccess(true)
       } else {
-        setMessage(data.error || 'Failed to send magic link')
+        setMessage(data.error || t('errorMessage'))
         setIsSuccess(false)
       }
     } catch (error) {
-      setMessage('Something went wrong. Please try again.')
+      setMessage(t('errorMessage'))
       setIsSuccess(false)
     } finally {
       setIsLoading(false)
@@ -55,8 +57,8 @@ export default function SignInPage() {
               width={432}
             />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign in to GangRun Printing</h1>
-          <p className="text-gray-600">Choose your preferred sign-in method</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('title')}</h1>
+          <p className="text-gray-600">{t('subtitle')}</p>
         </div>
 
         {/* Google Sign In Button */}
@@ -84,7 +86,7 @@ export default function SignInPage() {
                 fill="#EA4335"
               />
             </svg>
-            Continue with Google
+            {t('googleButton')}
           </button>
         </div>
 
@@ -93,21 +95,21 @@ export default function SignInPage() {
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500">Or continue with email</span>
+            <span className="px-4 bg-white text-gray-500">{t('orDivider')}</span>
           </div>
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="email">
-              Email Address *
+              {t('emailRequired')}
             </label>
             <input
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               id="email"
               name="email"
-              placeholder="you@example.com"
+              placeholder={t('emailPlaceholder')}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -116,13 +118,13 @@ export default function SignInPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="name">
-              Name (optional)
+              {t('nameLabel')}
             </label>
             <input
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               id="name"
               name="name"
-              placeholder="Your name"
+              placeholder={t('namePlaceholder')}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -138,7 +140,7 @@ export default function SignInPage() {
             disabled={isLoading}
             type="submit"
           >
-            {isLoading ? 'Sending...' : 'Send Magic Link'}
+            {isLoading ? t('sendingButton') : t('sendButton')}
           </button>
         </form>
 
@@ -153,7 +155,7 @@ export default function SignInPage() {
         )}
 
         <div className="text-center text-sm text-gray-600">
-          <p>Don't have an account? No problem! We'll create one for you automatically.</p>
+          <p>{t('noAccountMessage')}</p>
         </div>
       </div>
     </div>

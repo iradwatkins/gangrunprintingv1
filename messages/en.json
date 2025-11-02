@@ -85,31 +85,20 @@
   },
   "auth": {
     "signin": {
-      "title": "Sign In",
-      "subtitle": "Welcome back to GangRun Printing",
-      "email": "Email address",
-      "password": "Password",
-      "button": "Sign In",
-      "forgot": "Forgot your password?",
-      "noAccount": "Don't have an account?",
-      "signupLink": "Sign up here"
-    },
-    "signup": {
-      "title": "Create Account",
-      "subtitle": "Join GangRun Printing today",
-      "name": "Full name",
-      "email": "Email address",
-      "password": "Password",
-      "confirmPassword": "Confirm password",
-      "button": "Create Account",
-      "haveAccount": "Already have an account?",
-      "signinLink": "Sign in here"
-    },
-    "verify": {
-      "title": "Verify Your Email",
-      "subtitle": "We've sent you a verification link",
-      "resend": "Resend verification email",
-      "backToSignin": "Back to sign in"
+      "title": "Sign in to GangRun Printing",
+      "subtitle": "Choose your preferred sign-in method",
+      "googleButton": "Continue with Google",
+      "orDivider": "Or continue with email",
+      "emailLabel": "Email Address",
+      "emailRequired": "Email Address *",
+      "emailPlaceholder": "you@example.com",
+      "nameLabel": "Name (optional)",
+      "namePlaceholder": "Your name",
+      "sendButton": "Send Magic Link",
+      "sendingButton": "Sending...",
+      "successMessage": "Magic link sent! Check your email to sign in.",
+      "errorMessage": "Something went wrong. Please try again.",
+      "noAccountMessage": "Don't have an account? No problem! We'll create one for you automatically."
     }
   },
   "products": {
@@ -303,8 +292,22 @@
   },
   "footer": {
     "about": "About GangRun Printing",
-    "services": "Services",
-    "support": "Support",
+    "services": {
+      "title": "Services",
+      "design": "Design Services",
+      "bulk": "Bulk Orders",
+      "rush": "Rush Printing",
+      "samples": "Free Samples",
+      "quotes": "Custom Quotes"
+    },
+    "support": {
+      "title": "Support",
+      "track": "Track Order",
+      "helpCenter": "Help Center",
+      "shipping": "Shipping Info",
+      "returns": "Return Policy",
+      "faqs": "FAQs"
+    },
     "legal": "Legal",
     "newsletter": "Newsletter",
     "newsletterDesc": "Subscribe to get updates on new products and offers",
@@ -344,14 +347,6 @@
       "apparel": "Apparel",
       "viewAll": "View All Products"
     },
-    "services": {
-      "title": "Services",
-      "design": "Design Services",
-      "bulk": "Bulk Orders",
-      "rush": "Rush Printing",
-      "samples": "Free Samples",
-      "quotes": "Custom Quotes"
-    },
     "company": {
       "title": "Company",
       "about": "About Us",
@@ -359,14 +354,6 @@
       "locations": "Locations",
       "careers": "Careers",
       "blog": "Blog"
-    },
-    "support": {
-      "title": "Support",
-      "track": "Track Order",
-      "helpCenter": "Help Center",
-      "shipping": "Shipping Info",
-      "returns": "Return Policy",
-      "faqs": "FAQs"
     },
     "preferences": {
       "title": "Preferences",

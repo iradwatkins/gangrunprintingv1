@@ -1,11 +1,11 @@
-version: '3.8'
+version: "3.8"
 services:
   # PostgreSQL Database - Dedicated instance for gangrunprinting
   postgres:
     image: postgres:16-alpine
     container_name: gangrunprinting-postgres
     ports:
-      - '5435:5432' # External access on port 5435
+      - "5435:5432" # External access on port 5435
     environment:
       - POSTGRES_USER=gangrun_user
       - POSTGRES_PASSWORD=GangRun2024Secure
@@ -17,52 +17,10 @@ services:
       - gangrun_network
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U gangrun_user -d gangrun_db']
+      test: ["CMD-SHELL", "pg_isready -U gangrun_user -d gangrun_db"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # MinIO Object Storage - For customer uploads and product images
-  minio:
-    image: minio/minio:latest
-    container_name: gangrunprinting-minio
-    ports:
-      - '9002:9000' # API port
-      - '9102:9001' # Console port
-    environment:
-      - MINIO_ROOT_USER=gangrun_minio_access
-      - MINIO_ROOT_PASSWORD=gangrun_minio_secret_2024
-      - MINIO_BROWSER_REDIRECT_URL=https://gangrunprinting.com/minio
-    volumes:
-      - minio_data:/data
-    command: server /data --console-address ":9001"
-    networks:
-      - gangrun_network
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
-  # Redis - For sessions and job queues
-  redis:
-    image: redis:7-alpine
-    container_name: gangrunprinting-redis
-    ports:
-      - '6302:6379' # External access on 6302
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    networks:
-      - gangrun_network
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   # Next.js Application
   app:
@@ -78,23 +36,25 @@ services:
     image: gangrunprinting:v1
     container_name: gangrunprinting_app
     ports:
-      - '3020:3002' # External port 3020, internal port 3002
+      - "3020:3002" # External port 3020, internal port 3002
     env_file:
       - .env
     environment:
       # Node.js settings
       - NODE_ENV=production
-      - PORT=3002 # Internal container port (stays 3002)
+      - PORT=3002
       - HOSTNAME=0.0.0.0
       - TZ=America/Chicago
 
       # Database - Use dedicated PostgreSQL container
       - DATABASE_URL=postgresql://gangrun_user:GangRun2024Secure@postgres:5432/gangrun_db?schema=public
 
-      # Redis - Use dedicated container
-      - REDIS_URL=redis://redis:6379
-      - REDIS_HOST=redis
+      # Redis - Use SHARED Redis container
+      - REDIS_URL=redis://printing-shared-redis:6379
+      - REDIS_HOST=printing-shared-redis
       - REDIS_PORT=6379
+      - REDIS_PASSWORD=PrintingRedisSecure2024
+      - REDIS_DB=0
 
       # Auth (Lucia)
       - AUTH_SECRET=${AUTH_SECRET}
@@ -121,11 +81,11 @@ services:
       - NEXT_PUBLIC_SQUARE_LOCATION_ID=${NEXT_PUBLIC_SQUARE_LOCATION_ID}
       - NEXT_PUBLIC_SQUARE_ENVIRONMENT=${NEXT_PUBLIC_SQUARE_ENVIRONMENT:-production}
 
-      # MinIO Storage - CRITICAL FOR FILE UPLOADS
-      - MINIO_ENDPOINT=minio
+      # MinIO Storage - SHARED MinIO instance
+      - MINIO_ENDPOINT=printing-shared-minio
       - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=gangrun_minio_access
-      - MINIO_SECRET_KEY=gangrun_minio_secret_2024
+      - MINIO_ACCESS_KEY=printing_minio_admin
+      - MINIO_SECRET_KEY=PrintingMinioSecure2024!
       - MINIO_USE_SSL=false
       - MINIO_BUCKET_NAME=gangrun-uploads
       - MINIO_PUBLIC_ENDPOINT=https://gangrunprinting.com/minio
@@ -141,8 +101,9 @@ services:
       - VAPID_SUBJECT=${VAPID_SUBJECT:-mailto:support@gangrunprinting.com}
 
       # Bull Queue
-      - BULL_REDIS_HOST=redis
+      - BULL_REDIS_HOST=printing-shared-redis
       - BULL_REDIS_PORT=6379
+      - ENABLE_REDIS_CACHE=true
     volumes:
       - uploads:/app/uploads
       - print_files:/app/print-files
@@ -154,18 +115,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      minio:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    external_links:
+      - printing-shared-minio
+      - printing-shared-redis
     restart: unless-stopped
     healthcheck:
       test:
         - CMD
         - wget
-        - '--no-verbose'
-        - '--tries=1'
-        - '--spider'
+        - "--no-verbose"
+        - "--tries=1"
+        - "--spider"
         - http://127.0.0.1:3002/api/health
       interval: 30s
       timeout: 10s
@@ -178,10 +138,6 @@ volumes:
   uploads:
     driver: local
   print_files:
-    driver: local
-  minio_data:
-    driver: local
-  redis_data:
     driver: local
 
 networks:

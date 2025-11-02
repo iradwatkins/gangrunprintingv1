@@ -1,5 +1,6 @@
-import HeaderWrapper from './header-wrapper'
-import Footer from './footer'
+import HeaderWrapper from "./header-wrapper"
+import Footer from "./footer"
+import { ChatwootWidget } from "@/components/chatwoot/chatwoot-widget"
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
       <HeaderWrapper />
       <main className="flex-1">{children}</main>
       <Footer />
+      <ChatwootWidget />
     </div>
   )
 }

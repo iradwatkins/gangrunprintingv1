@@ -85,31 +85,20 @@
   },
   "auth": {
     "signin": {
-      "title": "Iniciar Sesión",
-      "subtitle": "Bienvenido de vuelta a GangRun Printing",
-      "email": "Correo electrónico",
-      "password": "Contraseña",
-      "button": "Iniciar Sesión",
-      "forgot": "¿Olvidó su contraseña?",
-      "noAccount": "¿No tiene una cuenta?",
-      "signupLink": "Regístrese aquí"
-    },
-    "signup": {
-      "title": "Crear Cuenta",
-      "subtitle": "Únase a GangRun Printing hoy",
-      "name": "Nombre completo",
-      "email": "Correo electrónico",
-      "password": "Contraseña",
-      "confirmPassword": "Confirmar contraseña",
-      "button": "Crear Cuenta",
-      "haveAccount": "¿Ya tiene una cuenta?",
-      "signinLink": "Inicie sesión aquí"
-    },
-    "verify": {
-      "title": "Verifique su Correo",
-      "subtitle": "Le hemos enviado un enlace de verificación",
-      "resend": "Reenviar correo de verificación",
-      "backToSignin": "Volver a iniciar sesión"
+      "title": "Iniciar sesión en GangRun Printing",
+      "subtitle": "Elija su método de inicio de sesión preferido",
+      "googleButton": "Continuar con Google",
+      "orDivider": "O continuar con correo electrónico",
+      "emailLabel": "Correo Electrónico",
+      "emailRequired": "Correo Electrónico *",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "nameLabel": "Nombre (opcional)",
+      "namePlaceholder": "Tu nombre",
+      "sendButton": "Enviar Enlace Mágico",
+      "sendingButton": "Enviando...",
+      "successMessage": "¡Enlace mágico enviado! Revisa tu correo electrónico para iniciar sesión.",
+      "errorMessage": "Algo salió mal. Por favor, inténtalo de nuevo.",
+      "noAccountMessage": "¿No tienes una cuenta? ¡No hay problema! Crearemos una para ti automáticamente."
     }
   },
   "products": {
